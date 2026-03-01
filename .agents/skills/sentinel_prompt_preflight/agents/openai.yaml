@@ -1,0 +1,6 @@
+interface:
+  display_name: "Sentinel Prompt Preflight"
+  short_description: "Transforma pedido em prompt executável (sem ler repo), com permissões deny-by-default e stop rules por TBD."
+policy:
+  allow_implicit_invocation: true
+

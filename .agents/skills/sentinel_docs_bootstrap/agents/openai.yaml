@@ -1,0 +1,5 @@
+interface:
+  display_name: "Sentinel Docs Bootstrap"
+  short_description: "Bootstrap de documentação (create only) para projeto existente com discovery e heurísticas por stack. Não toca em PLAN.md."
+policy:
+  allow_implicit_invocation: true
