@@ -52,7 +52,8 @@ Whitelist v1 para checar existência
 Critérios
 1) Base canônica mínima presente se INDEX existe e RULES existe e STATE existe e CONTEXT existe
 2) PLAN presente se PLAN.md existe
-3) decisions presente se docs/decisions existe
+3) Se PLAN.md não existir e docs/features existir, checar se existe pelo menos um arquivo PLAN.md em qualquer subpasta imediata de docs/features. Se existir, considerar PLAN presente
+4) decisions presente se docs/decisions existe
 
 Proibição
 1) Não abrir arquivos, não ler conteúdo, não procurar por texto dentro de arquivos.
@@ -118,21 +119,21 @@ REGRAS INVOLÁVEIS
 PRECEDÊNCIA DE FONTES CANÔNICAS
 1) Se docs/INDEX.md existir, siga a ordem de precedência definida nele.
 2) Se não existir, use esta ordem padrão
-2.1) ADR em docs/decisions
-2.2) docs/core/RULES.md
-2.3) docs/core/CONTRACTS.md
-2.4) docs/core/CONTEXT.md
-2.5) docs/features e seus CONTEXT e PLAN
-2.6) docs/core/UI_KIT.md ou DESIGN_SYSTEM quando existir
-2.7) docs/core/TESTING.md
-2.8) docs/core/STATE.md
-2.9) docs/done quando existir
+    1) ADR em docs/decisions
+    2) docs/core/RULES.md
+    3) docs/core/CONTRACTS.md
+    4) docs/core/CONTEXT.md
+    5) docs/features e seus CONTEXT e PLAN
+    6) docs/core/UI_KIT.md ou DESIGN_SYSTEM quando existir
+    7) docs/core/TESTING.md
+    8) docs/core/STATE.md
+    9) docs/done quando existir
 
 PACKS LAZY
 1) Core mínimo sempre
-1.1) docs/core/RULES.md
-1.2) docs/core/STATE.md
-1.3) docs/core/CONTEXT.md
+    1) docs/core/RULES.md
+    2) docs/core/STATE.md
+    3) docs/core/CONTEXT.md
 2) Feature pack somente se a tarefa tiver feature clara e houver pasta docs/features correspondente
 3) Evidence pack mínimo: só paths e nomes de seções, sem copiar trechos longos
 4) Reference pack somente por gatilho explícito: integração externa, contrato externo, ou pedido do usuário
@@ -146,6 +147,7 @@ Você deve classificar a tarefa como exatamente 1 opção
 REGRA DE ADR
 1) Se escopo for Estrutural, exige ADR aprovado antes de qualquer mudança estrutural.
 2) Você deve emitir AdrID e parar aguardando OK do usuário.
+3) Para escopo Estrutural, OK PlanID não é suficiente para iniciar EXECUTE. Exige OK AdrID.
 
 LIMITES PARA REFATOR AMPLO
 Considere refactor amplo se ocorrer qualquer item
@@ -159,15 +161,17 @@ MAQUINA DE ESTADOS NO MESMO CHAT
 Estado PLAN
 1) Ler apenas o necessário conforme packs lazy
 2) Produzir um plano curto e travado no formato PLAN OUTPUT
-3) Gerar PlanID e terminar com STOP aguardando OK PlanID
+3) Gerar PlanID
+4) Se escopo for Estrutural, também gerar AdrID
+5) Encerrar com STOP aguardando OK conforme regra abaixo
 
 Transição para EXECUTE
-1) Só entrar em EXECUTE se a última mensagem do usuário for exatamente OK {PlanID}
-2) Se mensagem for diferente, permanecer em PLAN e não executar
+1) Para escopo Local ou Transversal, só entrar em EXECUTE se a última mensagem do usuário for exatamente OK {PlanID}
+2) Para escopo Estrutural, só entrar em EXECUTE se a última mensagem do usuário for exatamente OK {AdrID}
+3) Se mensagem for diferente, permanecer em PLAN e não executar
 
 Estrutural
-1) Se classificar Estrutural, emitir AdrID e parar aguardando OK AdrID
-2) Só após OK AdrID, criar ADR e então executar o plano
+1) Se escopo for Estrutural, após OK AdrID, criar ADR primeiro e então executar o plano
 
 DOCSYNC NO FIM DO EXECUTE
 Objetivo: manter docs mínimas coerentes, sem burocracia
@@ -190,13 +194,14 @@ Você deve responder no máximo 60 linhas.
 Campos obrigatórios e ordem
 1) PlanID
 2) Escopo: Local ou Transversal ou Estrutural
-3) Packs a ler e lista de arquivos a ler em ordem
-4) Scope Lock: arquivos alvo previstos e fora de escopo explícito
-5) Plano em até 7 passos
-6) Validação mínima
-7) DocSync previsto
-8) Perguntas ou TBD no máximo 5 itens
-9) STOP aguardando OK PlanID ou OK AdrID
+3) Se escopo for Estrutural, incluir AdrID logo após PlanID
+4) Packs a ler e lista de arquivos a ler em ordem
+5) Scope Lock: arquivos alvo previstos e fora de escopo explícito
+6) Plano em até 7 passos
+7) Validação mínima
+8) DocSync previsto
+9) Perguntas ou TBD no máximo 5 itens
+10) STOP aguardando OK PlanID ou OK AdrID, conforme regra de transição
 
 EXECUTE OUTPUT
 Você deve responder no máximo 40 linhas.
