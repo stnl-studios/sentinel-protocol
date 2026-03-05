@@ -68,7 +68,7 @@ Caso A base canônica mínima ausente
 
 Caso B base canônica mínima presente, provável grande, PLAN ausente
 1) sugerir rodar a skill de PLAN Bootstrap
-2) nome padrão sugerido: sentinel_plan_bootstrap
+2) nome padrão sugerido: sentinel_plan_blueprint
 3) oferecer bypass: SKIP-PLAN
 
 Caso C tudo ok ou usuário optar por bypass

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Sentinel Plan Blueprint"
+  short_description: "Gera 1 PLAN rico quando não existe PLAN no repo, usando discovery por paths e entrevista curta com modo estendido opcional."
+  version: 2026-03
+policy:
+  allow_implicit_invocation: true
+
