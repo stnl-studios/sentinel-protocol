@@ -16,6 +16,18 @@ Executar bootstrap documental mínimo em projeto existente e sem documentação,
 5. Limitar entrevista guiada a no máximo 2 rodadas por documento, sempre após discovery com evidências citadas.
 6. Não usar `TODO` nos docs gerados; toda lacuna vira `TBD` canônico em `docs/core/CONTEXT.md` com ID.
 
+## Addendum — Feature roots, container e subfeature (aditivo)
+
+Aplicar sem remover o fluxo atual:
+1. Detectar roots por heurística e evidência de paths reais (ex.: `src/app/main`, `src/app/modules`).
+2. Tratar diretório de primeiro nível da root como container.
+3. Tratar subdiretórios dentro de coleções (`pages`, `use-cases`, `routes`, `features`, `modules`, `screens`) como subfeatures quando houver confiança.
+4. Mapeamento canônico de docs:
+   - container: `docs/features/<root-slug>/<container-slug>/`
+   - subfeature: `docs/features/<root-slug>/<container-slug>/<collection>/<subfeature-slug>/`
+5. Quando não houver coleção clara para subfeature, usar `items` como default.
+6. Se confiança for baixa, não materializar subfeature; registrar `TBD` no contexto da unidade.
+
 ## Saída esperada no projeto alvo
 
 Criar somente o que faltar, sempre em create only:

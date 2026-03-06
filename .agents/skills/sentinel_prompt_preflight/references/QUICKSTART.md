@@ -1,14 +1,15 @@
 # Quickstart - Sentinel Prompt Preflight
 
-Use esta skill quando o pedido estiver ambíguo ou quando faltarem permissões e limites claros para execução.
+Use esta skill para transformar um pedido em prompt compacto do Router Planner, com baixo consumo de tokens no uso diario.
 
-## Regras de uso rápido
-- Se o pedido já estiver completo (objetivo, escopo IN/OUT, restrições, critérios e permissões), não perguntar nada.
-- Se faltar informação essencial, fazer elicitação mínima (máximo 2 rodadas, até 8 perguntas por rodada).
-- Sempre entregar um único prompt final forte com PLAN/AGENT e stop rules explícitas.
-- Registrar lacunas remanescentes como TBD, sem bloquear a entrega do prompt final.
+## Regras de uso rapido
+- Modo padrao: `LITE`
+- Escalar para `FULL` somente em escopo `Estrutural` ou quando o usuario pedir `FULL`
+- Se faltar base canonica, sugerir bootstrap com `SKIP` ou `SKIP-PLAN`
+- Manter packs lazy: sanity check por existencia antes da primeira leitura, evidence pack so com paths e nomes de secoes
 
-## Saída esperada
-- Markdown em PT-BR.
-- Formato fixo de 8 seções.
-- Sem JSON.
+## Saida esperada
+- Sempre 1 unico bloco de codigo Markdown `md`
+- Nenhum texto fora do bloco
+- `PlanID` em `PLAN-YYYYMMDD-01`
+- `AdrID` em `ADR-YYYYMMDD-01` quando o escopo for `Estrutural`

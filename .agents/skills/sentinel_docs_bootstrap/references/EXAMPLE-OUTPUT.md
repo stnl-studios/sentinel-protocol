@@ -143,3 +143,62 @@ TBD-002: Confirmar estratégia de testes de integração no pipeline.
 ```text
 Não aplicável para Tipo BE.
 ```
+
+# Exemplo 4 — Saída (Projeto A com root main e container registration)
+
+## Tree criado no projeto alvo
+
+```text
+docs/
+  features/
+    main/
+      registration/
+        CONTEXT.md
+        done/
+          .gitkeep
+        pages/
+          <subfeature>/
+            CONTEXT.md
+            done/
+              .gitkeep
+```
+
+## Notas
+
+```text
+- Root detectada: src/app/main
+- Container detectado: registration
+- Subfeatures só materializadas com evidência clara
+- Itens de baixa confiança viram TBD no CONTEXT do container
+```
+
+# Exemplo 5 — Saída (Projeto B com root modules e pages)
+
+## Tree criado no projeto alvo
+
+```text
+docs/
+  features/
+    modules/
+      perimeters/
+        CONTEXT.md
+        done/
+          .gitkeep
+        pages/
+          categories/
+            CONTEXT.md
+            done/
+              .gitkeep
+          groups/
+            CONTEXT.md
+            done/
+              .gitkeep
+```
+
+## Notas
+
+```text
+- Root detectada: src/app/modules
+- Container detectado: perimeters
+- Mapeamento canônico por root/container/subfeature aplicado
+```

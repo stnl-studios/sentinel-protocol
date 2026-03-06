@@ -8,3 +8,12 @@ Ajusta a parte de cobrança porque está meio ruim e aproveita para melhorar a A
 
 ## 3) Refactor sem permissão explícita (deve perguntar autorização)
 Quero reorganizar o módulo de usuários para ficar mais limpo e padronizado. Não tenho definição de escopo detalhada ainda.
+
+## 4) Path completo de subfeature (deve resolver root/container/collection/subfeature)
+Implementar paginação em `src/app/modules/perimeters/pages/categories` sem alterar outros módulos.
+
+## 5) Apenas container (deve resolver root/container e perguntar subfeature só se necessário)
+Melhorar fluxo de registro em `registration`, sem decidir subfeature ainda.
+
+## 6) Mudança transversal entre roots (deve classificar como transversal/estrutural conforme impacto)
+Padronizar permissões em `src/app/main/registration` e `src/app/modules/perimeters`.

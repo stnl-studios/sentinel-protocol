@@ -1,6 +1,5 @@
 interface:
   display_name: "Sentinel Prompt Preflight"
-  short_description: "Transforma pedido em prompt executável (sem ler repo), com permissões deny-by-default e stop rules por TBD."
+  short_description: "Transforma pedido em Router Planner LITE por padrao, com sanity check por existencia e escalonamento para FULL so quando necessario."
 policy:
   allow_implicit_invocation: true
-

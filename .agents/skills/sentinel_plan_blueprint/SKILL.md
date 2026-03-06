@@ -36,6 +36,16 @@ Criar exatamente 1 arquivo:
 1) Default: `docs/features/<feature_slug>/PLAN.md`
 2) Fallback: `PLAN.md` (raiz), somente quando não for possível resolver `feature_slug` com evidência + entrevista curta.
 
+## Addendum — Roots, containers e subfeatures (aditivo)
+
+Aplicar sem remover o fluxo atual:
+1) Quando houver path explícito com root/container/subfeature, resolver a unidade nesse formato.
+2) Path canônico preferencial:
+   - container: `docs/features/<root>/<container>/PLAN.md`
+   - subfeature: `docs/features/<root>/<container>/<collection>/<subfeature>/PLAN.md`
+3) Coleções reconhecidas: `pages`, `use-cases`, `routes`, `features`, `modules`, `screens` e `items` (default).
+4) O mesmo resolvedor deve ser compatível com o preflight para evitar criação de PLAN em unidade errada.
+
 ## Como resolver feature_slug (runtime, com evidência)
 Ordem:
 1) Se existir exatamente 1 diretório em `docs/features/`, usar esse slug.

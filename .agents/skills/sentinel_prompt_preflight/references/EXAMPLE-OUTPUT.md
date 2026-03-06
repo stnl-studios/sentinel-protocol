@@ -224,3 +224,156 @@ TBD
 - quem decide: solicitante.
 - evidência necessária: respostas 2 e 3.
 - gatilho para revisitar: antes de finalizar plano.
+
+---
+
+## 4) Saída para path completo de subfeature (resolução explícita)
+
+### 1) Contexto confirmado (do usuário)
+- Confirmado: path alvo `src/app/modules/perimeters/pages/categories`.
+- Assumido: escopo local na subfeature `categories`.
+- TBD: nenhum.
+
+### 2) Objetivo
+Executar mudança na subfeature alvo sem ampliar escopo para outras áreas.
+
+### 3) Escopo (IN / OUT)
+IN:
+- `src/app/modules/perimeters/pages/categories/**`.
+
+OUT:
+- Alterações fora de `modules/perimeters/pages/categories`.
+
+### 4) Restrições e guardrails
+- Não inventar path, campos ou contratos.
+- Não puxar contexto de features não relacionadas.
+
+### 5) Fontes de verdade (instruções ao executor para ler nesta ordem, se existirem)
+1. docs/core/CONTEXT.md
+2. docs/core/RULES.md
+3. docs/core/STATE.md
+4. docs/features/modules/perimeters/pages/categories/CONTEXT.md (se existir)
+
+### 6) Prompt do Executor (PLAN + AGENT)
+Classificação da tarefa: Feature local.
+Permissões efetivas:
+- Permitido: alteração dentro da subfeature alvo.
+- Proibido: expansão de escopo sem confirmação.
+
+Instruções de execução:
+- Resolver escopo como `root=modules`, `container=perimeters`, `collection=pages`, `subfeature=categories`.
+- Aplicar stop rule se path real divergir do path informado.
+
+### 7) Critérios de pronto e validações
+- Mudança entregue somente na subfeature alvo.
+- Sem alterações fora do path resolvido.
+
+### 8) TBDs
+TBD
+- o que falta: nenhum.
+- quem decide: n/a.
+- evidência necessária: n/a.
+- gatilho para revisitar: n/a.
+
+---
+
+## 5) Saída para pedido com apenas container (subfeature opcional)
+
+### 1) Contexto confirmado (do usuário)
+- Confirmado: container `registration`.
+- Assumido: escopo inicial no container.
+- TBD: subfeature específica apenas se execução exigir.
+
+### 2) Objetivo
+Planejar no nível de container com contexto mínimo, evitando decidir subfeature cedo demais.
+
+### 3) Escopo (IN / OUT)
+IN:
+- Unidade de container `registration`.
+
+OUT:
+- Subfeatures não relacionadas sem confirmação.
+
+### 4) Restrições e guardrails
+- Perguntar subfeature somente se houver impacto em execução.
+- Não inventar coleção quando não houver evidência.
+
+### 5) Fontes de verdade (instruções ao executor para ler nesta ordem, se existirem)
+1. docs/core/CONTEXT.md
+2. docs/core/RULES.md
+3. docs/core/STATE.md
+4. docs/features/main/registration/CONTEXT.md (se existir)
+
+### 6) Prompt do Executor (PLAN + AGENT)
+Classificação da tarefa: Feature.
+Permissões efetivas:
+- Permitido: planejar no escopo do container.
+- Condicional: detalhar subfeature somente com confirmação ou evidência.
+
+Instruções de execução:
+- Resolver escopo inicial como `unit_level=container`.
+- Se precisar subfeature, perguntar e parar.
+
+### 7) Critérios de pronto e validações
+- Escopo de container fechado.
+- Sem inferência de subfeature sem evidência.
+
+### 8) TBDs
+TBD
+- o que falta: subfeature alvo, se necessária.
+- quem decide: solicitante.
+- evidência necessária: confirmação explícita.
+- gatilho para revisitar: ao detalhar plano de execução.
+
+---
+
+## 6) Saída para mudança transversal entre roots
+
+### 1) Contexto confirmado (do usuário)
+- Confirmado: mudança em `src/app/main/registration` e `src/app/modules/perimeters`.
+- Assumido: escopo transversal.
+- TBD: estrutural ou não, depende de impacto em contratos/regras globais.
+
+### 2) Objetivo
+Padronizar permissões entre roots sem quebrar contratos existentes.
+
+### 3) Escopo (IN / OUT)
+IN:
+- `src/app/main/registration/**`
+- `src/app/modules/perimeters/**`
+
+OUT:
+- Áreas não citadas.
+
+### 4) Restrições e guardrails
+- Não alterar contratos globais sem autorização.
+- Se virar estrutural, exigir ADR antes de executar.
+
+### 5) Fontes de verdade (instruções ao executor para ler nesta ordem, se existirem)
+1. docs/core/RULES.md
+2. docs/core/CONTRACTS.md
+3. docs/core/STATE.md
+4. docs/features/main/registration/CONTEXT.md (se existir)
+5. docs/features/modules/perimeters/CONTEXT.md (se existir)
+
+### 6) Prompt do Executor (PLAN + AGENT)
+Classificação da tarefa: Transversal (provisória).
+Permissões efetivas:
+- Permitido: padronização dentro das áreas citadas.
+- Condicional: mudança estrutural só com ADR aprovado.
+
+Instruções de execução:
+- Tratar roots separadas no mesmo plano.
+- Aplicar stop rule para qualquer expansão fora das duas áreas.
+
+### 7) Critérios de pronto e validações
+- Padronização aplicada nas duas áreas.
+- Sem regressão de permissão.
+- Sem alteração global não autorizada.
+
+### 8) TBDs
+TBD
+- o que falta: confirmação se há mudança estrutural.
+- quem decide: solicitante.
+- evidência necessária: impacto real em contratos/regras globais.
+- gatilho para revisitar: antes de EXECUTE.
