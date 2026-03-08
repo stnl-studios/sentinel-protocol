@@ -1,5 +1,5 @@
 interface:
   display_name: "Sentinel Prompt Preflight"
-  short_description: "Transforma pedido em Router Planner LITE por padrao, com sanity check por existencia e escalonamento para FULL so quando necessario."
+  short_description: "Normaliza pedido bruto em prompt governado; faz apenas sanity check por existencia; retorna um unico bloco Markdown."
 policy:
   allow_implicit_invocation: true
