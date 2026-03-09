@@ -27,6 +27,7 @@ Aplicar sem remover o fluxo atual:
    - subfeature: `docs/features/<root-slug>/<container-slug>/<collection>/<subfeature-slug>/`
 5. Quando não houver coleção clara para subfeature, usar `items` como default.
 6. Se confiança for baixa, não materializar subfeature; registrar `TBD` no contexto da unidade.
+7. Mesmo quando a unidade resolvida for aninhada, o `CONTEXT.md` da unidade deve usar `SCOPE: feature`; a hierarquia fica no path e em `FEATURE`, nunca em `SCOPE: subfeature`.
 
 ## Saída esperada no projeto alvo
 
@@ -86,13 +87,14 @@ Centralizar lacunas e perguntas pendentes apenas em `docs/core/CONTEXT.md` com I
 - `CONTRACTS`: apenas nomenclatura e localização de padrões; não catalogar endpoints/models/interfaces; lacunas viram TBD.
 - `TESTING`: como rodar e validar só com evidência; sem evidência, registrar TBD; sem TODO.
 - `UI_KIT`: catálogo operacional curto de componentes e status; sem duplicar design system; sem TODO.
-- `FEATURE CONTEXT`: memória curta por feature; pode linkar DONE existente sem duplicar; lacunas viram TBD no Core Context.
+- `FEATURE CONTEXT`: memória curta por feature com cabeçalho durável (`SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress`, `LAST UPDATED: YYYYMMDD`); pode linkar DONE existente sem duplicar; lacunas viram TBD no Core Context.
 
 ## DONE (padrão, não criar automaticamente)
 
 Não criar arquivos DONE nesta skill.
 Padrão oficial para execução futura:
-- `docs/features/<feature_slug>/done/DONE-YYYYMMDD-<slug>.md`
+- `docs/features/<feature_slug>/done/DONE-YYYYMMDD-<entrega-real>.md`
+- o slug descreve a entrega consolidada, nunca o número da fase
 - Feature Context referencia DONEs por link, sem duplicar conteúdo.
 
 ## Heurísticas de discovery por stack

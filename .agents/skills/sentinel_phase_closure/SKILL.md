@@ -70,7 +70,7 @@ Nota de resolucao:
 ## Saidas obrigatorias
 
 1. `PHASE CLOSURE OUTPUT` curto e operacional
-2. `docs/features/<feature>/done/DONE-YYYYMMDD-<slug>.md` na unidade alvo resolvida
+2. `docs/features/<feature>/done/DONE-YYYYMMDD-<entrega-real>.md` na unidade alvo resolvida
 3. atualizacao minima de `docs/features/<feature>/CONTEXT.md` na unidade alvo resolvida
 4. atualizacao de `docs/core/STATE.md` apenas se houver impacto global real
 5. `docs/decisions/ADR-YYYYMMDD-<slug>.md` apenas se a mudanca for estrutural
@@ -95,6 +95,11 @@ Nota de resolucao:
 16. `PLAN.md` raiz e apenas plano provisiorio; nunca recebe `DONE`, `CONTEXT`, `done/` ou outros artefatos duraveis.
 17. Se o ciclo comecou em `PLAN.md` raiz, a skill deve resolver a unidade alvo real antes de atualizar docs duraveis.
 18. Se a unidade alvo real continuar ambigua, nao inventar diretorio canonico; retornar `PARTIAL` ou `BLOCKED`.
+19. O nome do `DONE` deve refletir a entrega consolidada da rodada; nunca usar `fase-x`, `phase-x` ou equivalente na identidade do arquivo.
+20. O `CONTEXT.md` da unidade resolvida deve manter cabecalho duravel: `SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active` ou `in-progress`, `LAST UPDATED: YYYYMMDD`.
+21. Nunca escrever `SCOPE: subfeature`.
+22. Nunca escrever `STATUS` acoplado a fase, rodada ou fechamento, como `fase-x-closed`, `phase-x-closed` ou equivalente.
+23. O historico no `CONTEXT` registra marcos entregues com data e ponteiro para o `DONE`, nunca em formato `Fase X CLOSED ...`.
 
 ## Pacote minimo de contexto
 
@@ -126,7 +131,7 @@ Regra de expansao:
 
 ### Sempre pode atualizar
 
-1. `docs/features/<feature>/done/DONE-YYYYMMDD-<slug>.md` da unidade alvo resolvida
+1. `docs/features/<feature>/done/DONE-YYYYMMDD-<entrega-real>.md` da unidade alvo resolvida
 2. `docs/features/<feature>/CONTEXT.md` da unidade alvo resolvida
 
 ### Pode atualizar por gatilho real
@@ -186,24 +191,44 @@ Nao considerar como evidencia suficiente:
 Registrar de forma curta:
 
 1. feature
-2. fase
+2. entrega consolidada que identifica o arquivo
 3. status (`CLOSED`, `PARTIAL` ou `BLOCKED`)
 4. objetivo da fase
 5. veredito do DoD
 6. evidencia principal
 7. validacao minima executada
 8. desvios, TBDs e observacoes relevantes
-9. docs atualizadas
+9. impacto documental
 10. proximo passo logico
+11. fase operacional da rodada, se isso ajudar a rastreabilidade
 
 ### CONTEXT
 
 Atualizar somente o minimo necessario para a feature continuar coerente:
 
-1. ultimo status de fechamento da fase
+1. cabecalho estavel e duravel da unidade
 2. fatos duraveis aprendidos com a execucao
-3. TBDs ou restricoes que continuam abertos
-4. referencia para o `DONE` mais recente
+3. historico curto por marco entregue com data e path para o `DONE`
+4. TBDs, restricoes ou riscos locais que continuam abertos
+5. referencias uteis da unidade, sem transformar o arquivo em log de execucao
+
+## Convencoes duraveis obrigatorias
+
+### CONTEXT da unidade resolvida
+
+1. Sempre usar `SCOPE: feature`.
+2. Sempre usar `FEATURE: <feature-path>` com o path resolvido da unidade, inclusive quando ela for aninhada.
+3. O `STATUS` do cabecalho deve ficar em `active` ou `in-progress`, conforme o estado duravel observado; nunca acoplar o valor ao numero da fase.
+4. `LAST UPDATED` deve usar `YYYYMMDD`.
+5. O historico deve registrar o que foi consolidado, a data e o path do `DONE`.
+6. Exemplo aceitavel de historico:
+   - `20260309: interfaces e service do relatorio consolidado concluidos -> docs/features/print-documents/consolidated-report/done/DONE-20260309-interfaces-service-relatorio-consolidado.md`
+
+### DONE da unidade resolvida
+
+1. O arquivo deve seguir `DONE-YYYYMMDD-<entrega-real>.md`.
+2. O slug deve vir da entrega consolidada demonstrada por objetivo e evidencia, nao do numero da fase.
+3. O corpo pode mencionar a fase operacional da rodada, mas isso nao define a identidade do arquivo.
 
 ### STATE
 
@@ -235,11 +260,12 @@ Se a mudanca estrutural existir e nao houver base suficiente para ADR, parar em 
 7. Verificar se houve validacao minima executada e registrada.
 8. Verificar se existe bloqueio, desvio relevante, conflito entre fontes ou falta de evidencia critica.
 9. Classificar a fase como `CLOSED`, `PARTIAL` ou `BLOCKED`.
-10. Criar `DONE` curto no diretorio da unidade resolvida com o veredito, a evidencia principal, validacoes e pendencias.
-11. Atualizar `docs/features/<feature>/CONTEXT.md` da unidade resolvida com os fatos duraveis e o ponteiro para o `DONE`.
-12. Atualizar `docs/core/STATE.md` somente se a mudanca tiver impacto global real.
-13. Criar ou exigir ADR somente se a mudanca for estrutural.
-14. Emitir `PHASE CLOSURE OUTPUT` curto, claro e operacional, incluindo o proximo passo logico.
+10. Derivar o slug do `DONE` a partir da entrega consolidada demonstrada por objetivo e evidencia, nunca pelo numero da fase.
+11. Criar `DONE` curto no diretorio da unidade resolvida com o veredito, a evidencia principal, validacoes e pendencias.
+12. Atualizar `docs/features/<feature>/CONTEXT.md` da unidade resolvida com cabecalho duravel, fatos duraveis e historico por marco entregue apontando para o `DONE`.
+13. Atualizar `docs/core/STATE.md` somente se a mudanca tiver impacto global real.
+14. Criar ou exigir ADR somente se a mudanca for estrutural.
+15. Emitir `PHASE CLOSURE OUTPUT` curto, claro e operacional, incluindo o proximo passo logico.
 
 ## Criterio canonico de fechamento
 
@@ -332,8 +358,8 @@ Regras do output:
 
 ## Observacoes finais de uso
 
-1. `DONE` e o registro de fechamento da tentativa da fase. Pode registrar `CLOSED`, `PARTIAL` ou `BLOCKED`.
-2. `CONTEXT` guarda apenas memoria duravel minima da feature; nao duplicar o `DONE`.
+1. `DONE` e o registro de fechamento da tentativa da fase. Pode registrar `CLOSED`, `PARTIAL` ou `BLOCKED`, mas o nome do arquivo deve representar a entrega real.
+2. `CONTEXT` guarda apenas memoria duravel minima da feature; manter cabecalho estavel e historico por marco entregue, sem duplicar o `DONE`.
 3. `STATE` existe para delta global real; nao usar como despejo de status local da feature.
 4. ADR existe para decisao estrutural; nao usar ADR para pendencia trivial.
 5. Esta skill fecha a fase executada. O replanejamento posterior pertence exclusivamente a `sentinel_plan_blueprint MODE=RECYCLE`.

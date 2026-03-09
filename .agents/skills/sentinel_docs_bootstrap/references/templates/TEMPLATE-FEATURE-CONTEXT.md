@@ -1,75 +1,38 @@
-# CONTEXT
+# FEATURE CONTEXT
 
-Este template serve para Context core e Context de feature.
-Use o cabeçalho para indicar o escopo.
+SCOPE: feature
+FEATURE: <feature-path>
+STATUS: active | in-progress
+LAST UPDATED: YYYYMMDD
 
-## Cabeçalho
-SCOPE
-core ou feature
+## Objetivo da unidade
+Descreva o problema local que esta unidade resolve e o resultado esperado.
+Evite transformar esta seção em log de execução.
 
-FEATURE
-preencha apenas se SCOPE for feature
-use um slug curto, por exemplo agenda, payments, onboarding
-
-OWNER
-quem mantém este contexto
-
-STATUS
-draft ou stable
-
-LAST UPDATED
-YYYYMMDD
-
-## Objetivo
-Descreva o problema e o resultado esperado.
-Evite detalhes de implementação aqui.
-
-## Escopo
+## Escopo local
 ### Inclui
-Liste o que está dentro do escopo.
+Liste o que está dentro do escopo desta unidade.
 
 ### Não inclui
-Liste o que está fora do escopo.
+Liste o que está explicitamente fora do escopo desta unidade.
 
-## Restrições e suposições proibidas
-### Restrições
-Stack, plataforma, bibliotecas obrigatórias, limites de performance, etc.
+## Fatos duráveis
+Registre apenas fatos consolidados que continuam úteis depois da rodada atual.
 
-### Suposições proibidas
-Liste o que a IA não pode inferir.
-Exemplo contratos externos sem evidência, payloads, regras de negócio ambíguas.
+## Histórico de marcos entregues
+Registrar marcos entregues com data e ponteiro para o `DONE`.
+Formato sugerido:
+- `YYYYMMDD: <entrega consolidada> -> docs/features/<feature-path>/done/DONE-YYYYMMDD-<entrega-real>.md`
 
-## Fluxos e casos de borda
-Descreva apenas o necessário para executar sem inventar.
-Se o fluxo for grande, preferir um resumo e apontar para docs específicos.
+Não usar histórico por número de fase.
 
-## Entidades e conceitos
-Glossário mínimo.
-Aponte para CONTRACTS quando existir.
+## Decisões locais
+Registrar apenas decisões locais duráveis desta unidade.
+Se a decisão for estrutural ou global, criar ADR.
 
-## Evidências
-Para afirmar que algo existe, cite evidência.
-Formato recomendado
-path do arquivo
-e um trecho curto ou referência de seção
+## Restrições e riscos ativos
+Liste apenas restrições, pendências ou riscos que ainda importam para a unidade.
+Lacunas gerais e TBD canônicos continuam no Core Context.
 
-Se não houver evidência, registrar TBD.
-
-## Perguntas e TBD
-Regra
-TBD canônico mora aqui.
-PLAN só referencia IDs.
-
-Formato
-TBD-001
-Pergunta
-Impacto baixo, médio, alto
-Bloqueia sim ou não
-Sugestão de como obter resposta
-
-## Decisões locais da feature
-Se SCOPE for feature, registrar decisões específicas aqui.
-Se afetar o projeto todo, criar ADR.
-
-## Links
-Links internos do repositório e referências externas.
+## Referências úteis
+Links internos do repositório e docs locais que ajudam a retomar a unidade sem reabrir o histórico inteiro.

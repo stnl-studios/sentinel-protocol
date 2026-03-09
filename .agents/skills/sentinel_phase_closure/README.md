@@ -8,8 +8,8 @@ Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o m
 
 1. valida objetivo, DoD e evidencias da fase executada
 2. classifica o fechamento como `CLOSED`, `PARTIAL` ou `BLOCKED`
-3. cria `DONE` curto na unidade alvo resolvida
-4. atualiza `CONTEXT` da unidade alvo com o minimo duravel
+3. cria `DONE` curto na unidade alvo resolvida com nome baseado na entrega real
+4. atualiza `CONTEXT` da unidade alvo com o minimo duravel e cabecalho estavel
 5. atualiza `docs/core/STATE.md` apenas se houver impacto global real
 6. cria ou exige ADR apenas quando a mudanca for estrutural
 7. emite `PHASE CLOSURE OUTPUT` curto e operacional
@@ -37,10 +37,16 @@ Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o m
 ## Saidas
 
 1. `PHASE CLOSURE OUTPUT`
-2. `docs/features/<unidade_resolvida>/done/DONE-YYYYMMDD-<slug>.md`
+2. `docs/features/<unidade_resolvida>/done/DONE-YYYYMMDD-<entrega-real>.md`
 3. atualizacao minima de `docs/features/<unidade_resolvida>/CONTEXT.md`
 4. atualizacao de `docs/core/STATE.md` apenas se houver impacto global real
 5. `docs/decisions/ADR-YYYYMMDD-<slug>.md` apenas se a mudanca for estrutural
+
+## Convencoes duraveis de fechamento
+
+1. O `DONE` deve seguir `DONE-YYYYMMDD-<entrega-real>.md`; fase operacional pode aparecer no corpo, nunca na identidade do arquivo.
+2. O `CONTEXT` da unidade resolvida usa cabecalho duravel: `SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress`, `LAST UPDATED: YYYYMMDD`.
+3. O historico do `CONTEXT` registra marcos entregues com data e path para o `DONE`, nunca com status por fase como `Fase X CLOSED`.
 
 ## Relacao com outras skills
 

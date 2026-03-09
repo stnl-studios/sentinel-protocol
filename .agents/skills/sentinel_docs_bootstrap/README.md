@@ -11,6 +11,7 @@ Bootstrap documental minimo para projeto existente que ainda nao tem base canoni
 3. monta a base minima de docs canonicos do Sentinel
 4. centraliza lacunas como `TBD` em `docs/core/CONTEXT.md`
 5. prepara a base documental para uso posterior do protocolo
+6. cria `CONTEXT` de feature com cabecalho duravel, sem semear status de fase
 
 ## O que nao faz
 
@@ -47,6 +48,12 @@ Bootstrap documental minimo para projeto existente que ainda nao tem base canoni
 3. toda lacuna vira `TBD` canonico em `docs/core/CONTEXT.md`
 4. nao usar `TODO`
 5. nao executar implementacao nem alterar comportamento do projeto
+
+## Convencao para CONTEXT e DONE
+
+1. `docs/features/<feature>/CONTEXT.md` nasce com cabecalho duravel: `SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress`, `LAST UPDATED: YYYYMMDD`.
+2. Mesmo para unidades aninhadas, a hierarquia vive no path e em `FEATURE`; o bootstrap nao usa `SCOPE: subfeature`.
+3. Quando um `DONE` futuro for criado pelo fluxo de fechamento, o padrao esperado e `DONE-YYYYMMDD-<entrega-real>.md`, sem numero de fase no nome.
 
 ## Relacao com outras skills
 

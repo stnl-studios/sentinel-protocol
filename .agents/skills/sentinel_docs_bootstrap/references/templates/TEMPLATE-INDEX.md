@@ -75,7 +75,7 @@ Feature Pack
 docs/features/<feature>/CONTEXT.md
 docs/features/<feature>/CONTRACTS.md quando existir
 docs/features/<feature>/TESTING.md quando existir
-docs/features/<feature>/done/DONE-YYYYMMDD-<slug>.md
+docs/features/<feature>/done/DONE-YYYYMMDD-<entrega-real>.md
 
 Evidence Pack
 Apenas trechos necessários, por exemplo
@@ -101,7 +101,7 @@ Divida a fase.
 ## Protocolo de atualização
 Ao finalizar uma fase executada
 1. criar um DONE na pasta done da feature
-2. atualizar o CONTEXT da feature com decisões e estado atual
+2. atualizar o CONTEXT da feature com fatos duráveis e histórico por entrega
 3. atualizar o STATE core apenas se algo global mudou
 4. se houve mudança estrutural, criar ADR e atualizar RULES ou CONTRACTS se aplicável
 
@@ -123,7 +123,7 @@ docs/features/<feature>/CONTEXT.md
 docs/features/<feature>/CONTRACTS.md opcional
 docs/features/<feature>/TESTING.md opcional
 docs/features/<feature>/PLAN.md descartável
-docs/features/<feature>/done/DONE-YYYYMMDD-<slug>.md
+docs/features/<feature>/done/DONE-YYYYMMDD-<entrega-real>.md
 
 Decisions
 docs/decisions/ADR-YYYYMMDD-titulo-curto.md

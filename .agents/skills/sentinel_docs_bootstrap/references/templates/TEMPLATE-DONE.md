@@ -1,35 +1,41 @@
 # DONE
 
+Nome do arquivo:
+`DONE-YYYYMMDD-<entrega-real>.md`
+
 ## Cabeçalho
 FEATURE
-slug
+path da unidade resolvida
 
-PHASE
-nome curto da fase executada
+DELIVERY
+entrega consolidada que identifica este DONE
+
+STATUS
+CLOSED, PARTIAL ou BLOCKED
 
 DATE
 YYYYMMDD
 
+PHASE
+fase operacional da rodada, se isso ajudar na rastreabilidade
+
 RELATED PR
 link se existir
 
-## O que foi feito
-Lista objetiva.
-
-## Arquivos e paths tocados
-Lista curta com paths.
+## O que foi concluído
+Lista objetiva da entrega consolidada.
 
 ## Evidências
 O que foi rodado e como validou.
 Referenciar TESTING e resultados.
 
-## Mudanças de comportamento
-Se mudou UX, fluxo, regras de negócio, listar aqui.
+## Pendências e desvios
+O que ficou parcial, bloqueado ou explicitamente fora da entrega desta rodada.
 
-## Onde parou
-Se houver continuação, deixar claro o estado.
+## Impacto documental
+Quais docs foram atualizadas e o que passou a ser verdade canônica.
 
-## Próximo passo sugerido
+## Próximo passo canônico
 Uma frase objetiva.
 
 ## Decisões
