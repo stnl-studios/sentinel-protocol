@@ -11,7 +11,7 @@ Fechar a fase ja executada com base em evidencia, registrar o conhecimento minim
 
 ## Objetivo unico
 
-Validar se a fase executada pode ser considerada concluida, consolidar o minimo de documentacao duravel e indicar o proximo passo logico do fluxo sem misturar fechamento com planejamento.
+Validar se a fase executada pode ser considerada concluida e consolidar o fechamento documental pos-execucao sem misturar fechamento com planejamento.
 
 ## Posicao canonica no fluxo
 
@@ -28,11 +28,12 @@ Validar se a fase executada pode ser considerada concluida, consolidar o minimo 
 ## Separacao canonica e inviolavel
 
 1. Esta skill fecha a fase executada.
-2. Esta skill nao recicla o `PLAN.md`.
-3. Esta skill nao promove Fase 2 para Fase 1.
-4. Esta skill nao detalha tecnicamente a proxima fase.
-5. Reorganizacao do plano, reciclagem do `PLAN.md` e detalhamento da nova Fase 1 pertencem exclusivamente a `sentinel_plan_blueprint MODE=RECYCLE`.
-6. O executor implementa. Esta skill nao implementa.
+2. Esta skill e o unico ponto canonico de consolidacao documental pos-execucao.
+3. Esta skill nao recicla o `PLAN.md`.
+4. Esta skill nao promove Fase 2 para Fase 1.
+5. Esta skill nao detalha tecnicamente a proxima fase.
+6. Reorganizacao do plano, reciclagem do `PLAN.md` e detalhamento da nova Fase 1 pertencem exclusivamente a `sentinel_plan_blueprint MODE=RECYCLE`.
+7. O executor implementa e valida. Esta skill consolida docs duraveis. Esta skill nao implementa.
 
 ## Quando usar
 
@@ -100,6 +101,8 @@ Nota de resolucao:
 21. Nunca escrever `SCOPE: subfeature`.
 22. Nunca escrever `STATUS` acoplado a fase, rodada ou fechamento, como `fase-x-closed`, `phase-x-closed` ou equivalente.
 23. O historico no `CONTEXT` registra marcos entregues com data e ponteiro para o `DONE`, nunca em formato `Fase X CLOSED ...`.
+24. Esta skill absorve definitivamente toda necessidade de consolidacao documental pos-execucao.
+25. Nao existe papel documental residual no executor apos o `EXECUTE OUTPUT`.
 
 ## Pacote minimo de contexto
 
@@ -166,6 +169,7 @@ Regra de expansao:
 3. Nao produzir narrativa excessiva.
 4. Nao transformar fechamento em auditoria pesada.
 5. Nao duplicar no `PLAN.md` o que deve viver em `DONE`, `CONTEXT`, `STATE` ou ADR.
+6. O fechamento documental real acontece aqui, nao no executor.
 
 ## Evidencia valida
 

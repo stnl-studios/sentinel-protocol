@@ -1,5 +1,5 @@
 interface:
   display_name: "Sentinel Prompt Preflight"
-  short_description: "Normaliza pedido bruto em prompt governado; faz apenas sanity check por existencia; retorna um unico bloco Markdown."
+  short_description: "Normaliza pedido bruto em prompt governado de execucao; faz sanity check por existencia; nao fecha fase."
 policy:
   allow_implicit_invocation: true

@@ -13,6 +13,7 @@ Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o m
 5. atualiza `docs/core/STATE.md` apenas se houver impacto global real
 6. cria ou exige ADR apenas quando a mudanca for estrutural
 7. emite `PHASE CLOSURE OUTPUT` curto e operacional
+8. absorve de forma definitiva a consolidacao documental pos-execucao
 
 ## O que nao faz
 
@@ -22,6 +23,7 @@ Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o m
 4. nao substitui o executor
 5. nao faz discovery amplo do repositorio
 6. nao usa `PLAN.md` raiz como destino de artefatos duraveis
+7. nao recicla plano nem promove fase
 
 ## Entradas
 
@@ -53,7 +55,9 @@ Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o m
 - `sentinel_docs_bootstrap` prepara a base documental minima antes do ciclo por fases, mas nao fecha execucao.
 - `sentinel_plan_blueprint` e o unico dono do ciclo de vida do `PLAN.md`; depois da closure, o passo canonico e `MODE=RECYCLE`.
 - `sentinel_prompt_preflight` apenas prepara o prompt do executor e nao participa do fechamento.
-- No caso principal de fechamento documental pos-execucao, esta skill absorve a necessidade pratica que antes motivava uma skill separada para sincronizacao documental.
+- O executor implementa e valida; nao toca artefatos duraveis.
+- O fechamento documental real acontece aqui.
+- Esta skill absorve de forma definitiva toda necessidade de consolidacao documental pos-execucao.
 
 ## Significado dos status
 

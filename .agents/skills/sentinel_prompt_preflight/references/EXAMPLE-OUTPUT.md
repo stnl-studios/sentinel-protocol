@@ -37,16 +37,16 @@ LIMITES
 Nao invente regras, contratos, estruturas ou stack.
 Nao faca refactor amplo sem permissao.
 Mudanca estrutural exige ADR aprovado.
+Executor nao toca `DONE`, `CONTEXT`, `STATE`, `ADR` nem `PLAN.md`.
+Executor nao fecha fase e nao consolida docs duraveis.
 Na duvida relevante, pergunte e pare.
 
 SAIDA ESPERADA DO EXECUTOR
 Responder com PLAN OUTPUT curto.
 Executar somente apos OK com o ID correto.
-Responder com EXECUTE OUTPUT curto.
+Responder com EXECUTE OUTPUT curto, objetivo e verificavel.
 
-DOCSYNC
-Aplicar so no fim do execute.
-Atualizar no maximo 3 docs.
-Permitir `SKIP-DOCSYNC`.
+POS-EXECUCAO
+Apos o EXECUTE OUTPUT, o proximo passo canonico e `sentinel_phase_closure`.
 ```
 ````

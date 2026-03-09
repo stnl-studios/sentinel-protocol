@@ -52,7 +52,8 @@ O agente executa só o que foi planejado e o retorno vem curto com arquivos toca
 
 **Importante**
 O Preflight não cria nem recicla `PLAN.md` e não promove fases. Isso pertence exclusivamente ao **Sentinel Plan Blueprint**.
-Ele prepara prompt para execucao sobre fase ou tarefa ja definida e nao substitui o Blueprint.
+Ele prepara prompt para execucao sobre fase ou tarefa ja definida, nao substitui o Blueprint e nao substitui a Closure.
+Ele nao inclui bloco documental no prompt e nao instrui o executor a tocar artefatos duraveis.
 
 ---
 
@@ -81,6 +82,7 @@ Antes do primeiro ciclo em `MODE=CREATE` e apos `sentinel_phase_closure` em `MOD
 3) So a fase ativa pode ficar detalhada
 4) Fase 2 fica como esboco e Fase 3 e opcional e curta somente com base suficiente
 5) Recycle e reindexacao operacional, nao replanejamento completo
+6) Nem executor, nem Preflight, nem Closure podem criar, reciclar, promover, resumir ou detalhar `PLAN.md`
 
 **Tratamento por status**
 1) `CLOSED`: promove a proxima fase e detalha a nova Fase 1
@@ -102,6 +104,7 @@ Existe um `EXECUTE OUTPUT` e voce precisa decidir `CLOSED`, `PARTIAL` ou `BLOCKE
 **Importante**
 O fechamento nao recicla `PLAN.md`, nao promove fases e nao detalha a proxima fase.
 O proximo passo canonico apos a closure e `sentinel_plan_blueprint MODE=RECYCLE`.
+O executor implementa e valida. A consolidacao pos-execucao em docs duraveis acontece aqui.
 
 ---
 
@@ -154,6 +157,7 @@ Copie o template e preencha. Se faltar evidência, registre como **TBD** e siga.
 2) 🎒 Contexto mínimo: mandar só o pack que destrava  
 3) 🧾 Mudança estrutural: registrar decisão (ADR) antes de executar  
 4) 🗂️ Ciclo do plano: `PLAN.md` é descartável e só o Blueprint reorganiza a fila
+5) 🧾 Fechamento documental: executor nao toca artefatos duraveis; Closure consolida `DONE`, `CONTEXT`, `STATE` e ADR quando aplicavel
 
 ---
 

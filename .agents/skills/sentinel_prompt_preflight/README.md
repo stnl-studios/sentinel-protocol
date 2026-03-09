@@ -23,8 +23,12 @@ Skill para transformar um pedido bruto em um prompt governado de execucao.
 - Nao substitui o Blueprint.
 - Nao promove fase nem reorganiza a fila do plano.
 - Nao fecha fase.
+- Nao documenta fechamento.
+- Nao substitui a closure.
 - Nao executa nada.
 - Nao atua como planner real, executor ou auditor.
+- Nao instrui o executor a atualizar docs duraveis.
+- Nao instrui o executor a tocar `DONE`, `CONTEXT`, `STATE`, `ADR` ou `PLAN.md`.
 
 ## Entradas
 
@@ -44,7 +48,8 @@ Skill para transformar um pedido bruto em um prompt governado de execucao.
 - Fechamento de fase pertence exclusivamente a `sentinel_phase_closure`.
 - `sentinel_docs_bootstrap` prepara base documental para repositorio ainda sem base canonica.
 - O Preflight apenas prepara o prompt do executor para o ciclo atual, sobre fase ou tarefa ja definida.
-- O bloco `DOCSYNC` do prompt e apenas um gate operacional de documentacao ao fim do execute; nao representa skill separada nem substitui a closure.
+- O executor implementa e valida; nao toca artefatos duraveis.
+- O fechamento documental real acontece em `sentinel_phase_closure`.
 - Quando a unidade alvo for identificavel, o plano principal do fluxo e o `PLAN.md` dessa unidade.
 - `PLAN.md` na raiz e o unico fallback real quando nao houver resolucao melhor da unidade alvo, mas permanece provisiorio.
 - `PLAN.md` raiz nao e a casa canonica de `DONE`, `CONTEXT` ou outros artefatos duraveis.
@@ -70,7 +75,7 @@ Nunca:
 - inferir arquitetura
 - inferir escopo real a partir do codigo
 
-Se o prompt final precisar usar `PLAN.md` raiz, o executor deve trata-lo como plano provisiorio e resolver a unidade real antes do fechamento e da gravacao de artefatos duraveis.
+Se o prompt final precisar usar `PLAN.md` raiz, o executor deve trata-lo como plano provisiorio e resolver a unidade real antes do fechamento documental.
 
 ## Posicao no fluxo canonico
 
@@ -90,7 +95,7 @@ Se o prompt final precisar usar `PLAN.md` raiz, o executor deve trata-lo como pl
 5) `LEITURA SOB DEMANDA`
 6) `LIMITES`
 7) `SAIDA ESPERADA DO EXECUTOR`
-8) `DOCSYNC`
+8) `POS-EXECUCAO`
 
 ## Regra de formato
 

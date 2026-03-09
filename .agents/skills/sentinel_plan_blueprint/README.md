@@ -13,6 +13,7 @@ Skill responsavel pelo ciclo de vida do `PLAN.md` no Sentinel Protocol.
 4. detalha apenas a fase ativa
 5. mantem horizonte curto: Fase 1 detalhada, Fase 2 em esboco e Fase 3 opcional curta somente quando houver base suficiente
 6. trata `PLAN.md` raiz apenas como fallback provisiorio quando a unidade real ainda nao foi resolvida
+7. e o unico dono do ciclo de vida do `PLAN.md`
 
 ## O que nao faz
 
@@ -22,6 +23,7 @@ Nao faz:
 3. criacao de `DONE`
 4. atualizacao principal de `CONTEXT`, `STATE` ou ADR
 5. promocao de fase fora do proprio blueprint
+6. qualquer consolidacao documental pos-execucao
 
 ## Entradas
 
@@ -71,6 +73,7 @@ Somente o blueprint pode:
 6. detalhar a fase ativa pronta para execucao
 
 Nem `sentinel_phase_closure`, nem `sentinel_prompt_preflight`, nem o executor devem fazer isso.
+Blueprint e o unico dono do ciclo de vida do `PLAN.md`.
 
 ## Regras de detecção
 
@@ -129,6 +132,7 @@ Nem `sentinel_phase_closure`, nem `sentinel_prompt_preflight`, nem o executor de
 - `sentinel_docs_bootstrap` prepara a base documental minima, mas nao toca no plano.
 - `sentinel_prompt_preflight` prepara o prompt de execucao sobre uma fase ou tarefa ja definida pelo plano.
 - `sentinel_phase_closure` fecha a fase executada e deixa o proximo recycle para o blueprint.
+- Executor, preflight e closure nao podem criar, reciclar, promover, resumir nem detalhar `PLAN.md`.
 
 ## Posicao no fluxo canonico
 

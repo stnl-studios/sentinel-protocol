@@ -1,6 +1,6 @@
 interface:
   display_name: "Sentinel Plan Blueprint"
-  short_description: "Cria ou recicla o PLAN.md; detalha apenas a fase ativa e mantem o plano curto para o proximo ciclo."
+  short_description: "Cria ou recicla o PLAN.md; promove e reindexa fases; detalha apenas a fase ativa."
   version: 2026-03
 policy:
   allow_implicit_invocation: true

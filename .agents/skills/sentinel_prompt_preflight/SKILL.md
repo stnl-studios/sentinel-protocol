@@ -8,6 +8,7 @@ description: Normaliza prompt cru em prompt estruturado de execucao; faz apenas 
 ## Funcao unica
 
 Receber um pedido ruim, cru, vago ou incompleto e devolve-lo como um prompt estruturado de execucao. O Preflight nao entende o projeto: ele so normaliza a entrada, aplica guardrails operacionais, faz sanity check por existencia e para.
+Ele nao fecha fase, nao documenta fechamento, nao substitui `sentinel_phase_closure` e nao substitui `sentinel_plan_blueprint`.
 
 ## Nunca fazer
 
@@ -19,6 +20,8 @@ Receber um pedido ruim, cru, vago ou incompleto e devolve-lo como um prompt estr
 6) Nao executar nada.
 7) Nao atuar como planner de dominio, executor ou auditor de documentacao.
 8) Nao despejar politica longa, framework interno ou manual operacional no output.
+9) Nao instruir o executor a atualizar docs duraveis.
+10) Nao instruir o executor a tocar `DONE`, `CONTEXT`, `STATE`, `ADR` ou `PLAN.md`.
 
 ## Pode fazer
 
@@ -32,7 +35,7 @@ Receber um pedido ruim, cru, vago ou incompleto e devolve-lo como um prompt estr
 
 1) `sentinel_plan_blueprint` cria e recicla o `PLAN.md`.
 2) O executor produz `PLAN OUTPUT` e `EXECUTE OUTPUT`.
-3) `sentinel_phase_closure` fecha a fase.
+3) `sentinel_phase_closure` fecha a fase e consolida docs duraveis pos-execucao.
 4) Esta skill apenas prepara o prompt do executor.
 
 ## Sanity check permitido
@@ -64,10 +67,10 @@ Regras:
 2) `MODO`: `Router Planner. Primeiro planeje. Nao execute nada antes de OK com o ID correto.`
 3) `SANITY CHECK`: liste somente o presente ou ausente de forma curta.
 4) `FONTES CANONICAS`: cite primeiro o `PLAN.md` da unidade alvo quando identificavel; use `PLAN.md` da raiz apenas como fallback real e provisiorio; a leitura real fica para o executor.
-5) `LEITURA SOB DEMANDA`: o executor le apenas o minimo necessario; nao le o repo inteiro; so amplia leitura se houver evidencia direta; se partir do fallback raiz, deve resolver a unidade real antes do fechamento duravel.
-6) `LIMITES`: nao inventar regras, contratos, estruturas ou stack; nao fazer refactor amplo sem permissao; mudanca estrutural exige ADR; na duvida relevante, perguntar e parar.
-7) `SAIDA ESPERADA DO EXECUTOR`: `PLAN OUTPUT` curto; execucao somente apos `OK` com o ID correto; `EXECUTE OUTPUT` curto.
-8) `DOCSYNC`: somente no fim do execute; no maximo 3 docs; `SKIP-DOCSYNC` permitido.
+5) `LEITURA SOB DEMANDA`: o executor le apenas o minimo necessario; nao le o repo inteiro; so amplia leitura se houver evidencia direta; se partir do fallback raiz, deve resolver a unidade real antes do fechamento documental.
+6) `LIMITES`: nao inventar regras, contratos, estruturas ou stack; nao fazer refactor amplo sem permissao; mudanca estrutural exige ADR; o executor nao toca `DONE`, `CONTEXT`, `STATE`, `ADR` nem `PLAN.md`; na duvida relevante, perguntar e parar.
+7) `SAIDA ESPERADA DO EXECUTOR`: `PLAN OUTPUT` curto; execucao somente apos `OK` com o ID correto; `EXECUTE OUTPUT` curto, objetivo e verificavel.
+8) `POS-EXECUCAO`: apos `EXECUTE OUTPUT`, o proximo passo canonico e `sentinel_phase_closure`.
 
 ## Formato obrigatorio
 
@@ -108,22 +111,22 @@ LEITURA SOB DEMANDA
 Leia apenas o minimo necessario para planejar.
 Nao leia o repo inteiro.
 Comece pelo `PLAN.md` principal resolvido; use fallback real apenas se necessario.
-Se comecar pelo fallback raiz, trate-o como provisiorio e resolva a unidade real antes do fechamento e da gravacao de artefatos duraveis.
+Se comecar pelo fallback raiz, trate-o como provisiorio e resolva a unidade real antes do fechamento documental.
 So amplie leitura se houver evidencia direta.
 
 LIMITES
 Nao invente regras, contratos, estruturas ou stack.
 Nao faca refactor amplo sem permissao.
 Mudanca estrutural exige ADR aprovado.
+Executor nao toca `DONE`, `CONTEXT`, `STATE`, `ADR` nem `PLAN.md`.
+Executor nao fecha fase e nao consolida docs duraveis.
 Na duvida relevante, pergunte e pare.
 
 SAIDA ESPERADA DO EXECUTOR
 Responder com PLAN OUTPUT curto.
 Executar somente apos OK com o ID correto.
-Responder com EXECUTE OUTPUT curto.
+Responder com EXECUTE OUTPUT curto, objetivo e verificavel.
 
-DOCSYNC
-Aplicar so no fim do execute.
-Atualizar no maximo 3 docs.
-Permitir `SKIP-DOCSYNC`.
+POS-EXECUCAO
+Apos o EXECUTE OUTPUT, o proximo passo canonico e `sentinel_phase_closure`.
 ````

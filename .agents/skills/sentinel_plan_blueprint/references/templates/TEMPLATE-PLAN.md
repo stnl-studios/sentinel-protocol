@@ -2,7 +2,7 @@
 
 Este PLAN é descartável.
 Ele existe para executar uma fase curta e completa sem enviar tarefa por tarefa.
-Apos a execucao, o conhecimento e depositado em DONE, CONTEXT da unidade alvo e STATE.
+O executor implementa e valida. A consolidacao pos-execucao em docs duraveis pertence a `sentinel_phase_closure`.
 Reciclagem, reindexacao e promocao de fases pertencem ao `sentinel_plan_blueprint`.
 
 Se este arquivo estiver em `PLAN.md` na raiz do repo, ele e apenas um fallback provisiorio.
@@ -182,10 +182,9 @@ Dividir se ocorrer
 4) esforço grande demais para uma rodada de execução
 
 ## Checklist de encerramento da fase executada
-Referencia de fluxo. O fechamento pertence a `sentinel_phase_closure`.
+Referencia de fluxo. O fechamento documental pertence a `sentinel_phase_closure`.
 Reciclagem e promocao da proxima fase pertencem a `sentinel_plan_blueprint MODE=RECYCLE`.
-1) se este arquivo estiver na raiz, resolver primeiro a unidade alvo real; sem isso, nao gravar artefato duravel em local ambiguo
-2) criar DONE no diretorio `done/` da unidade alvo resolvida, seja feature, container ou subfeature
-3) atualizar CONTEXT da unidade alvo com decisoes, estado, novos componentes, novos contratos
-4) atualizar STATE core se algo global mudou
-5) criar ADR se houve mudança estrutural
+1) se este arquivo estiver na raiz, resolver primeiro a unidade alvo real antes do fechamento documental
+2) o executor nao cria `DONE`, nao atualiza `CONTEXT`, nao atualiza `STATE` e nao cria ADR
+3) `sentinel_phase_closure` decide `CLOSED`, `PARTIAL` ou `BLOCKED` e consolida docs duraveis
+4) `sentinel_plan_blueprint MODE=RECYCLE` recicla, promove e detalha o proximo ciclo

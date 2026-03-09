@@ -23,6 +23,7 @@ Esta skill nao:
 5. atualiza `CONTEXT`, `STATE` ou ADR como papel principal
 6. mistura planejamento com execucao
 7. vira backlog manager
+8. delega o ciclo de vida do `PLAN.md` para outra skill
 
 ## Modos operacionais
 
@@ -55,12 +56,14 @@ Responsabilidades:
 
 Somente `sentinel_plan_blueprint` pode:
 1. criar `PLAN.md`
-2. reorganizar a fila de fases
-3. promover fases
-4. resumir ou remover a fase concluida do bloco ativo
-5. detalhar a fase ativa pronta para o proximo ciclo
+2. reciclar `PLAN.md`
+3. reorganizar a fila de fases
+4. promover fases
+5. resumir ou remover a fase concluida do bloco ativo
+6. detalhar a fase ativa pronta para o proximo ciclo
 
 Nem `sentinel_phase_closure`, nem `sentinel_prompt_preflight`, nem o executor devem fazer isso.
+Blueprint e o unico dono do ciclo de vida do `PLAN.md`.
 
 ## Regras inviolaveis da skill
 
@@ -77,6 +80,7 @@ Nem `sentinel_phase_closure`, nem `sentinel_prompt_preflight`, nem o executor de
 11. Use o menor pacote de contexto possivel.
 12. Evite backlog longo, historico longo e previsao distante.
 13. Sem evidencia, registrar `TBD`.
+14. Nem executor, nem preflight, nem closure podem criar, reciclar, promover, resumir ou detalhar `PLAN.md`.
 
 ## Politica de contexto e tokens
 
