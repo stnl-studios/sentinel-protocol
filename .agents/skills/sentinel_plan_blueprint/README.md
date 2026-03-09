@@ -1,15 +1,20 @@
 # Sentinel Plan Blueprint
 
+## Proposito
+
 Skill responsavel pelo ciclo de vida do `PLAN.md` no Sentinel Protocol.
 
-## Papel
+## O que faz
 
 `sentinel_plan_blueprint`:
 1. cria o plano inicial
 2. recicla o plano apos fechamento de fase
-3. detalha apenas a fase ativa
-4. mantem horizonte curto: Fase 2 como esboco e Fase 3 apenas como opcional curta quando houver base suficiente
-5. trata `PLAN.md` raiz apenas como fallback provisiorio quando a unidade real ainda nao foi resolvida
+3. promove, reindexa e reorganiza a fila de fases
+4. detalha apenas a fase ativa
+5. mantem horizonte curto: Fase 1 detalhada, Fase 2 em esboco e Fase 3 opcional curta somente quando houver base suficiente
+6. trata `PLAN.md` raiz apenas como fallback provisiorio quando a unidade real ainda nao foi resolvida
+
+## O que nao faz
 
 Nao faz:
 1. execucao
@@ -17,6 +22,20 @@ Nao faz:
 3. criacao de `DONE`
 4. atualizacao principal de `CONTEXT`, `STATE` ou ADR
 5. promocao de fase fora do proprio blueprint
+
+## Entradas
+
+1. demanda ou frente que precisa de plano
+2. `PLAN.md` existente da unidade alvo, quando houver recycle
+3. fechamento anterior da fase, quando houver `MODE=RECYCLE`
+4. evidencias suficientes para resolver a unidade alvo ou usar fallback provisiorio
+
+## Saidas
+
+1. `PLAN.md` inicial em `MODE=CREATE`
+2. `PLAN.md` reciclado em `MODE=RECYCLE`
+3. fila reindexada com a nova Fase 1 detalhada quando o recycle for seguro
+4. resultado `SKIPPED` ou `BLOCKED` quando as precondicoes nao forem satisfeitas
 
 ## Modos
 
@@ -45,10 +64,11 @@ Regras:
 
 Somente o blueprint pode:
 1. criar `PLAN.md`
-2. reorganizar a fila de fases
-3. promover fases
-4. resumir ou remover fase concluida do bloco ativo
-5. detalhar a fase ativa pronta para execucao
+2. reciclar `PLAN.md`
+3. reorganizar a fila de fases
+4. promover fases
+5. resumir ou remover fase concluida do bloco ativo
+6. detalhar a fase ativa pronta para execucao
 
 Nem `sentinel_phase_closure`, nem `sentinel_prompt_preflight`, nem o executor devem fazer isso.
 
@@ -104,7 +124,13 @@ Nem `sentinel_phase_closure`, nem `sentinel_prompt_preflight`, nem o executor de
 8. Recycle nao e replanejamento completo da feature.
 9. O blueprint nao pode virar backlog manager.
 
-## Fluxo canonico
+## Relacao com outras skills
+
+- `sentinel_docs_bootstrap` prepara a base documental minima, mas nao toca no plano.
+- `sentinel_prompt_preflight` prepara o prompt de execucao sobre uma fase ou tarefa ja definida pelo plano.
+- `sentinel_phase_closure` fecha a fase executada e deixa o proximo recycle para o blueprint.
+
+## Posicao no fluxo canonico
 
 1. `sentinel_plan_blueprint MODE=CREATE`
 2. `sentinel_prompt_preflight`

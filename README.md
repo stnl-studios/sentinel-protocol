@@ -10,8 +10,11 @@ A ideia é simples: **contexto mínimo**, **evidência primeiro**, e **fechament
 ### 🧱 Cenário 1: o repo existe e está sem base canônica de docs
 1) Rode **Sentinel Docs Bootstrap (v3)**
 2) Resolva **TBDs** no Core Context
-3) Rode **Sentinel Plan Blueprint** em `MODE=CREATE` quando precisar abrir um ciclo por fases
-4) A partir daí, use **Sentinel Prompt Preflight**
+3) Quando a demanda exigir ciclo por fases, rode **Sentinel Plan Blueprint** em `MODE=CREATE`
+4) Depois use **Sentinel Prompt Preflight**
+5) Execute com o agente
+6) Rode **Sentinel Phase Closure**
+7) Antes de iniciar o proximo ciclo, rode **Sentinel Plan Blueprint** em `MODE=RECYCLE`
 
 ### 🛠️ Cenário 2: o repo já tem base e você só quer executar uma demanda
 1) Se a demanda exigir ciclo por fases, rode **Sentinel Plan Blueprint** em `MODE=CREATE`
@@ -49,6 +52,7 @@ O agente executa só o que foi planejado e o retorno vem curto com arquivos toca
 
 **Importante**
 O Preflight não cria nem recicla `PLAN.md` e não promove fases. Isso pertence exclusivamente ao **Sentinel Plan Blueprint**.
+Ele prepara prompt para execucao sobre fase ou tarefa ja definida e nao substitui o Blueprint.
 
 ---
 
@@ -73,9 +77,10 @@ Antes do primeiro ciclo em `MODE=CREATE` e apos `sentinel_phase_closure` em `MOD
 
 **Regras centrais**
 1) So o blueprint pode criar ou reciclar `PLAN.md`
-2) So a fase ativa pode ficar detalhada
-3) Fase 2 fica como esboco e Fase 3 e opcional
-4) Recycle e reindexacao operacional, nao replanejamento completo
+2) So o blueprint promove, reindexa e reorganiza a fila de fases
+3) So a fase ativa pode ficar detalhada
+4) Fase 2 fica como esboco e Fase 3 e opcional e curta somente com base suficiente
+5) Recycle e reindexacao operacional, nao replanejamento completo
 
 **Tratamento por status**
 1) `CLOSED`: promove a proxima fase e detalha a nova Fase 1
@@ -96,6 +101,7 @@ Existe um `EXECUTE OUTPUT` e voce precisa decidir `CLOSED`, `PARTIAL` ou `BLOCKE
 
 **Importante**
 O fechamento nao recicla `PLAN.md`, nao promove fases e nao detalha a proxima fase.
+O proximo passo canonico apos a closure e `sentinel_plan_blueprint MODE=RECYCLE`.
 
 ---
 
@@ -116,7 +122,8 @@ No repo alvo, como primeira organização documental.
 1) Rode o Bootstrap  
 2) Ele cria a base mínima de docs sem sobrescrever nada  
 3) Resolva TBDs no Core Context  
-4) Depois disso, demanda vira Preflight
+4) Quando a demanda exigir ciclo por fases, use **Sentinel Plan Blueprint**
+5) Depois siga com **Sentinel Prompt Preflight**
 
 **Nota**
 O Bootstrap (v3) não cobre Swift por decisão de escopo (foco em projetos já existentes).  
@@ -159,10 +166,9 @@ Copie o template e preencha. Se faltar evidência, registre como **TBD** e siga.
 
 | Entrega | Status | Onde entra | Como usar | Critério de pronto |
 |---|---|---|---|---|
-| Skill de ciclo de vida do PLAN | ✅ Ativo | Antes do primeiro ciclo e apos fechamento de fase | `MODE=CREATE` cria o plano; `MODE=RECYCLE` reindexa a fila e detalha a nova Fase 1 | `PLAN.md` curto com Fase 1 detalhada, Fase 2 em esboco e Fase 3 opcional e curta somente com base suficiente |
-| DocSync como skill dedicada | 🟡 Aprovado | Pós execução | Entra com lista de arquivos alterados e sugere os docs mínimos para atualizar | Saída curta, repetível, no máximo 3 docs |
-| Padronizar fechamento de fase | ✅ Ativo | Ritual fixo pós execução | `sentinel_phase_closure` fecha a fase, cria DONE e atualiza as docs minimas | Fechamento curto, repetivel e sem reciclar o plano |
 | Skill Greenfield (projetos novos) | 🟣 Radar | Só em projeto novo | Bootstrap para projeto novo (parecido com o Docs Bootstrap), cobrindo stacks que o Bootstrap não cobre, incluindo Swift | Definir se usa templates mínimos ou kit completo e publicar a skill |
+| Workflows | 🟣 Radar | Orquestracao recorrente do protocolo | Definir fluxos reutilizaveis entre bootstrap, blueprint, execute e closure | Publicar workflows curtos, repetiveis e sem duplicar responsabilidade das skills |
+| Subagentes / Multiagentes | 🟣 Radar | Execucao coordenada em demandas maiores | Definir quando decompor leitura, execucao e fechamento entre agentes sem quebrar o fluxo canonico | Ter coordenacao, handoff e consolidacao final claros |
 
 ---
 

@@ -1,10 +1,8 @@
 # Sentinel Phase Closure
 
-Skill responsavel por fechar documental e operacionalmente a fase que ja foi executada.
-
 ## Proposito
 
-Encerrar a fase com base em evidencia, consolidar o minimo de conhecimento duravel e devolver um veredito curto e confiavel para o proximo passo do fluxo.
+Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o minimo de conhecimento duravel sem misturar fechamento com planejamento.
 
 ## O que faz
 
@@ -44,6 +42,13 @@ Encerrar a fase com base em evidencia, consolidar o minimo de conhecimento durav
 4. atualizacao de `docs/core/STATE.md` apenas se houver impacto global real
 5. `docs/decisions/ADR-YYYYMMDD-<slug>.md` apenas se a mudanca for estrutural
 
+## Relacao com outras skills
+
+- `sentinel_docs_bootstrap` prepara a base documental minima antes do ciclo por fases, mas nao fecha execucao.
+- `sentinel_plan_blueprint` e o unico dono do ciclo de vida do `PLAN.md`; depois da closure, o passo canonico e `MODE=RECYCLE`.
+- `sentinel_prompt_preflight` apenas prepara o prompt do executor e nao participa do fechamento.
+- No caso principal de fechamento documental pos-execucao, esta skill absorve a necessidade pratica que antes motivava uma skill separada para sincronizacao documental.
+
 ## Significado dos status
 
 ### `CLOSED`
@@ -65,26 +70,13 @@ Usar quando existe impedimento real para fechar a fase, falta evidencia critica,
 3. Artefatos duraveis vivem sempre em `docs/features/<unidade_resolvida>/...`.
 4. Se a unidade continuar ambigua, a closure nao inventa diretorio canonico e deve retornar `PARTIAL` ou `BLOCKED`.
 
-## Relacao com Blueprint
-
-- `sentinel_plan_blueprint` e o unico dono do ciclo de vida do `PLAN.md`.
-- Depois da closure, o passo canonico e `sentinel_plan_blueprint MODE=RECYCLE`.
-- Se o ciclo comecou em `PLAN.md` raiz e a unidade foi resolvida, o Blueprint deve assumir o `PLAN.md` canonico da unidade no recycle seguinte.
-
-## Relacao com Preflight
-
-- `sentinel_prompt_preflight` apenas prepara o prompt do executor.
-- O Preflight pode apontar `PLAN.md` raiz como fallback provisiorio.
-- A closure fecha esse caso exigindo resolucao da unidade real antes dos artefatos duraveis.
-
 ## Posicao no fluxo canonico
 
-1. `sentinel_plan_blueprint MODE=CREATE`
-2. `sentinel_prompt_preflight`
-3. executor -> `PLAN OUTPUT`
-4. `OK {ID}`
-5. executor -> `EXECUTE OUTPUT`
-6. `sentinel_phase_closure`
-7. `sentinel_plan_blueprint MODE=RECYCLE`
-8. `sentinel_prompt_preflight`
-9. executor
+1. `sentinel_docs_bootstrap`, quando faltar base documental
+2. `sentinel_plan_blueprint MODE=CREATE`
+3. `sentinel_prompt_preflight`
+4. executor -> `PLAN OUTPUT`
+5. `OK {ID}`
+6. executor -> `EXECUTE OUTPUT`
+7. `sentinel_phase_closure`
+8. `sentinel_plan_blueprint MODE=RECYCLE`
