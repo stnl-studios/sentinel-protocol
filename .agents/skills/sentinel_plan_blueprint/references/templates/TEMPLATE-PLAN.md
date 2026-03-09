@@ -2,7 +2,13 @@
 
 Este PLAN é descartável.
 Ele existe para executar uma fase curta e completa sem enviar tarefa por tarefa.
-Após a execução, o conhecimento é depositado em DONE, CONTEXT da feature e STATE.
+Apos a execucao, o conhecimento e depositado em DONE, CONTEXT da unidade alvo e STATE.
+Reciclagem, reindexacao e promocao de fases pertencem ao `sentinel_plan_blueprint`.
+
+Se este arquivo estiver em `PLAN.md` na raiz do repo, ele e apenas um fallback provisiorio.
+Ele nao define a unidade canonica do fluxo.
+Assim que a unidade real for resolvida, `DONE`, `CONTEXT`, `done/` e demais artefatos duraveis vivem em `docs/features/<unidade_resolvida>/...`.
+No ciclo seguinte, o `sentinel_plan_blueprint MODE=RECYCLE` deve passar a usar o `PLAN.md` canonico da unidade resolvida.
 
 ## Cabeçalho
 FEATURE
@@ -20,9 +26,10 @@ YYYYMMDD
 ## Horizonte de planejamento
 Regra
 1) Detalhar apenas a fase atual.
-2) Planejar a fase 2 como esboço forte, com macro passos e horizonte.
-3) Planejar a fase 3 como esboço leve, só para norte.
-4) Fase mais distante do que isso não vira tarefa, apenas risco e dependência.
+2) Planejar a Fase 2 como esboco operacional curto e forte.
+3) Planejar a Fase 3 apenas como esboco opcional e curto, so se houver base suficiente.
+4) Nada alem da Fase 3 vira fase planejada; o que estiver mais distante vira apenas risco, dependencia ou norte.
+5) Recycle nao e fechamento e nao e replanejamento completo da feature.
 
 ## Contexto da fase
 Core Pack
@@ -86,6 +93,7 @@ Só criar agora se for dependência direta do DoD da fase atual.
 ## Fases
 Cada fase deve ser pequena e executável em uma rodada do agente.
 Cada fase termina com DoD verificável.
+Somente a fase ativa pode ficar detalhada em tarefas.
 
 ### Fase 1
 Título
@@ -144,11 +152,26 @@ Riscos principais
 1)
 2)
 
-### Fase 3 esboço
+### Fase 3 esboço opcional
 Norte
 1 linha
 
 Principal dependência ou risco
+1 linha
+
+## Historico curto opcional
+No maximo 1 ciclo anterior.
+
+Fase anterior
+1 linha
+
+Status
+`CLOSED`, `PARTIAL` ou `BLOCKED`
+
+Referencia ao DONE
+path ou `none`
+
+Observacao curta
 1 linha
 
 ## Critérios para dividir fase
@@ -159,7 +182,10 @@ Dividir se ocorrer
 4) esforço grande demais para uma rodada de execução
 
 ## Checklist de encerramento da fase executada
-1) criar DONE em docs/features/<feature>/done
-2) atualizar CONTEXT da feature com decisões, estado, novos componentes, novos contratos
-3) atualizar STATE core se algo global mudou
-4) criar ADR se houve mudança estrutural
+Referencia de fluxo. O fechamento pertence a `sentinel_phase_closure`.
+Reciclagem e promocao da proxima fase pertencem a `sentinel_plan_blueprint MODE=RECYCLE`.
+1) se este arquivo estiver na raiz, resolver primeiro a unidade alvo real; sem isso, nao gravar artefato duravel em local ambiguo
+2) criar DONE no diretorio `done/` da unidade alvo resolvida, seja feature, container ou subfeature
+3) atualizar CONTEXT da unidade alvo com decisoes, estado, novos componentes, novos contratos
+4) atualizar STATE core se algo global mudou
+5) criar ADR se houve mudança estrutural

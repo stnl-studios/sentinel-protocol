@@ -1,0 +1,5 @@
+interface:
+  display_name: "Sentinel Phase Closure"
+  short_description: "Fecha a fase apos o EXECUTE OUTPUT com validacao de objetivo, DoD e docs minimas; decide CLOSED, PARTIAL ou BLOCKED."
+policy:
+  allow_implicit_invocation: true

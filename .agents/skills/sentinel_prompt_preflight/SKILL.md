@@ -14,9 +14,11 @@ Receber um pedido ruim, cru, vago ou incompleto e devolve-lo como um prompt estr
 1) Nao ler conteudo do repositorio, docs ou codigo.
 2) Nao abrir arquivo para resumir, inferir regra, arquitetura, stack ou escopo real.
 3) Nao montar plano tecnico com base em evidencia.
-4) Nao executar nada.
-5) Nao atuar como planner de dominio, executor ou auditor de documentacao.
-6) Nao despejar politica longa, framework interno ou manual operacional no output.
+4) Nao criar ou reciclar `PLAN.md`.
+5) Nao promover fase nem reorganizar a fila do plano.
+6) Nao executar nada.
+7) Nao atuar como planner de dominio, executor ou auditor de documentacao.
+8) Nao despejar politica longa, framework interno ou manual operacional no output.
 
 ## Pode fazer
 
@@ -26,6 +28,13 @@ Receber um pedido ruim, cru, vago ou incompleto e devolve-lo como um prompt estr
 4) Instruir leitura sob demanda no proximo passo.
 5) Encerrar apos emitir o prompt final.
 
+## Separacao canonica
+
+1) `sentinel_plan_blueprint` cria e recicla o `PLAN.md`.
+2) O executor produz `PLAN OUTPUT` e `EXECUTE OUTPUT`.
+3) `sentinel_phase_closure` fecha a fase.
+4) Esta skill apenas prepara o prompt do executor.
+
 ## Sanity check permitido
 
 Verifique somente se existem:
@@ -34,26 +43,28 @@ Verifique somente se existem:
 2) `docs/core/RULES.md`
 3) `docs/core/CONTEXT.md`
 4) `docs/core/STATE.md`
-5) `docs/core/PLAN.md`
+5) `PLAN.md` da unidade alvo somente se o texto do usuario indicar um path, feature ou artefato identificavel sem abrir arquivos
 6) `PLAN.md`
-7) PLAN de feature somente se o texto do usuario indicar um path, feature ou artefato identificavel sem abrir arquivos
 
 Regras:
 
 1) Use apenas `PRESENTE`, `AUSENTE` ou `NAO IDENTIFICADO PELO TEXTO DO USUARIO`.
 2) Nunca abra arquivo, leia conteudo, procure texto ou tente validar semantica.
 3) Base critica = `docs/INDEX.md`, `docs/core/RULES.md`, `docs/core/CONTEXT.md`, `docs/core/STATE.md`.
-4) PLAN canonico = `docs/core/PLAN.md`; fallback por existencia = `PLAN.md`.
-5) Se faltar base critica, permitir bypass com `SKIP`.
-6) Se faltar PLAN, permitir bypass com `SKIP-PLAN`.
+4) Plano principal do fluxo = `PLAN.md` da unidade alvo quando identificavel pelo texto do usuario.
+5) `PLAN.md` na raiz e apenas fallback real e provisiorio quando nao houver resolucao melhor da unidade alvo.
+6) `docs/core/PLAN.md` nao e fallback utilizavel nem alternativa operacional de plano.
+7) `PLAN.md` raiz nao e a casa canonica de `DONE`, `CONTEXT` ou outros artefatos duraveis.
+8) Se faltar base critica, permitir bypass com `SKIP`.
+9) Se nao houver plano principal identificavel e nenhum fallback real presente, permitir bypass com `SKIP-PLAN`.
 
 ## Como montar o prompt
 
 1) `TAREFA`: reescreva claramente o pedido do usuario.
 2) `MODO`: `Router Planner. Primeiro planeje. Nao execute nada antes de OK com o ID correto.`
 3) `SANITY CHECK`: liste somente o presente ou ausente de forma curta.
-4) `FONTES CANONICAS`: cite apenas paths ou categorias canonicas; a leitura real fica para o executor.
-5) `LEITURA SOB DEMANDA`: o executor le apenas o minimo necessario; nao le o repo inteiro; so amplia leitura se houver evidencia direta.
+4) `FONTES CANONICAS`: cite primeiro o `PLAN.md` da unidade alvo quando identificavel; use `PLAN.md` da raiz apenas como fallback real e provisiorio; a leitura real fica para o executor.
+5) `LEITURA SOB DEMANDA`: o executor le apenas o minimo necessario; nao le o repo inteiro; so amplia leitura se houver evidencia direta; se partir do fallback raiz, deve resolver a unidade real antes do fechamento duravel.
 6) `LIMITES`: nao inventar regras, contratos, estruturas ou stack; nao fazer refactor amplo sem permissao; mudanca estrutural exige ADR; na duvida relevante, perguntar e parar.
 7) `SAIDA ESPERADA DO EXECUTOR`: `PLAN OUTPUT` curto; execucao somente apos `OK` com o ID correto; `EXECUTE OUTPUT` curto.
 8) `DOCSYNC`: somente no fim do execute; no maximo 3 docs; `SKIP-DOCSYNC` permitido.
@@ -79,11 +90,10 @@ SANITY CHECK
 - docs/core/RULES.md: {STATUS}
 - docs/core/CONTEXT.md: {STATUS}
 - docs/core/STATE.md: {STATUS}
-- PLAN canonico (`docs/core/PLAN.md`): {STATUS}
-- PLAN fallback (`PLAN.md`): {STATUS}
-- PLAN de feature: {STATUS_OU_NAO_IDENTIFICADO}
+- PLAN principal da unidade alvo (`{PLAN_PATH_OU_NAO_IDENTIFICADO}`): {STATUS}
+- PLAN fallback raiz provisiorio (`PLAN.md`): {STATUS}
 Se faltar base critica, pare e aguarde `SKIP`.
-Se faltar PLAN, pare e aguarde `SKIP-PLAN`.
+Se nao houver plano utilizavel, pare e aguarde `SKIP-PLAN`.
 
 FONTES CANONICAS
 Use apenas por referencia de path ou categoria:
@@ -91,13 +101,14 @@ Use apenas por referencia de path ou categoria:
 - `docs/core/`
 - `docs/decisions/`
 - `docs/features/`
-- `docs/core/PLAN.md` ou `PLAN.md`
+- `PLAN.md` da unidade alvo resolvida; se nao houver resolucao melhor, usar fallback provisiorio em `PLAN.md`
 Leia conteudo somente sob demanda no executor.
 
 LEITURA SOB DEMANDA
 Leia apenas o minimo necessario para planejar.
 Nao leia o repo inteiro.
-Comece pelos paths canonicos minimos relevantes.
+Comece pelo `PLAN.md` principal resolvido; use fallback real apenas se necessario.
+Se comecar pelo fallback raiz, trate-o como provisiorio e resolva a unidade real antes do fechamento e da gravacao de artefatos duraveis.
 So amplie leitura se houver evidencia direta.
 
 LIMITES

@@ -15,6 +15,8 @@ Skill para transformar um pedido bruto em um prompt governado de execucao.
 - Nao le ou resume docs.
 - Nao exporta regras das docs para o prompt.
 - Nao monta plano tecnico com base em evidencia.
+- Nao cria ou recicla `PLAN.md`.
+- Nao promove fase nem reorganiza a fila do plano.
 - Nao executa nada.
 - Nao atua como planner real, executor ou auditor.
 
@@ -26,6 +28,16 @@ Skill para transformar um pedido bruto em um prompt governado de execucao.
 - Instrui leitura sob demanda para o executor.
 - Mantem a resposta curta, colavel e barata em tokens.
 
+## Relacao com o plano
+
+- O ciclo de vida do `PLAN.md` pertence exclusivamente a `sentinel_plan_blueprint`.
+- Fechamento de fase pertence exclusivamente a `sentinel_phase_closure`.
+- O Preflight apenas prepara o prompt do executor para o ciclo atual.
+- Quando a unidade alvo for identificavel, o plano principal do fluxo e o `PLAN.md` dessa unidade.
+- `PLAN.md` na raiz e o unico fallback real quando nao houver resolucao melhor da unidade alvo, mas permanece provisiorio.
+- `PLAN.md` raiz nao e a casa canonica de `DONE`, `CONTEXT` ou outros artefatos duraveis.
+- `docs/core/PLAN.md` nao e fallback utilizavel nem alternativa operacional de plano.
+
 ## Sanity check permitido
 
 Somente:
@@ -34,9 +46,8 @@ Somente:
 - `docs/core/RULES.md`
 - `docs/core/CONTEXT.md`
 - `docs/core/STATE.md`
-- `docs/core/PLAN.md`
-- `PLAN.md`
-- PLAN de feature apenas se o texto do usuario permitir identificar um candidato sem abrir arquivos
+- `PLAN.md` da unidade alvo, apenas se o texto do usuario permitir identificar um candidato sem abrir arquivos
+- `PLAN.md` na raiz, apenas como fallback real e provisiorio
 
 Nunca:
 
@@ -46,6 +57,8 @@ Nunca:
 - inferir regra de negocio
 - inferir arquitetura
 - inferir escopo real a partir do codigo
+
+Se o prompt final precisar usar `PLAN.md` raiz, o executor deve trata-lo como plano provisiorio e resolver a unidade real antes do fechamento e da gravacao de artefatos duraveis.
 
 ## Estrutura do prompt gerado
 

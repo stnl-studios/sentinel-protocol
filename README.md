@@ -8,30 +8,33 @@ A ideia é simples: **contexto mínimo**, **evidência primeiro**, e **fechament
 ## 🚀 Comece por aqui
 
 ### 🧱 Cenário 1: o repo existe e está sem base canônica de docs
-1) Rode **Sentinel Docs Bootstrap (v3)**  
-2) Resolva **TBDs** no Core Context  
-3) A partir daí, rode tudo via **Sentinel Prompt Preflight**
+1) Rode **Sentinel Docs Bootstrap (v3)**
+2) Resolva **TBDs** no Core Context
+3) Rode **Sentinel Plan Blueprint** em `MODE=CREATE` quando precisar abrir um ciclo por fases
+4) A partir daí, use **Sentinel Prompt Preflight**
 
 ### 🛠️ Cenário 2: o repo já tem base e você só quer executar uma demanda
-1) Rode **Sentinel Prompt Preflight**  
-2) Execute com o agente  
-3) **DocSync** e **fechamento de fase**
+1) Se a demanda exigir ciclo por fases, rode **Sentinel Plan Blueprint** em `MODE=CREATE`
+2) Rode **Sentinel Prompt Preflight**
+3) Execute com o agente
+4) Rode **Sentinel Phase Closure**
+5) Rode **Sentinel Plan Blueprint** em `MODE=RECYCLE` antes do proximo ciclo
 
 ---
 
 ## 📦 Kit atual
 
 ### 🧭 Sentinel Prompt Preflight
-**O que é**  
+**O que é**
 Um Router Planner que pega sua demanda e devolve **1 prompt único**, pronto para colar no agente executor, com gates e saída curta.
 
-**Status**  
+**Status**
 ✅ Ativo
 
-**Use quando**  
+**Use quando**
 Você vai pedir alteração no repo e quer evitar escopo frouxo, drift e saída verborrágica.
 
-**Onde usar**  
+**Onde usar**
 No chat de preparação do prompt, antes do chat do agente que vai mexer no repo.
 
 **Como usar**
@@ -41,22 +44,72 @@ No chat de preparação do prompt, antes do chat do agente que vai mexer no repo
 4) Responda `OK {PlanID}` para liberar a execução  
 5) Se for mudança estrutural, o gate pede **ADR** antes do OK
 
-**Você sabe que deu certo quando**  
+**Você sabe que deu certo quando**
 O agente executa só o que foi planejado e o retorno vem curto com arquivos tocados e próximos passos.
+
+**Importante**
+O Preflight não cria nem recicla `PLAN.md` e não promove fases. Isso pertence exclusivamente ao **Sentinel Plan Blueprint**.
+
+---
+
+### 🗂️ Sentinel Plan Blueprint
+**O que é**
+A skill dona do ciclo de vida do `PLAN.md`: cria o plano inicial, recicla o plano apos fechamento de fase, detalha apenas a fase ativa e mantem o plano curto.
+
+**Status**
+✅ Ativo
+
+**Use quando**
+Você precisa abrir um plano por fases ou preparar o proximo ciclo apos `CLOSED`, `PARTIAL` ou `BLOCKED`.
+
+**Onde usar**
+Antes do primeiro ciclo em `MODE=CREATE` e apos `sentinel_phase_closure` em `MODE=RECYCLE`.
+
+**Como usar**
+1) Rode `MODE=CREATE` para criar o primeiro `PLAN.md`
+2) Execute o ciclo com Preflight + executor
+3) Feche a fase com **Sentinel Phase Closure**
+4) Rode `MODE=RECYCLE` para reindexar o plano e detalhar a nova Fase 1
+
+**Regras centrais**
+1) So o blueprint pode criar ou reciclar `PLAN.md`
+2) So a fase ativa pode ficar detalhada
+3) Fase 2 fica como esboco e Fase 3 e opcional
+4) Recycle e reindexacao operacional, nao replanejamento completo
+
+**Tratamento por status**
+1) `CLOSED`: promove a proxima fase e detalha a nova Fase 1
+2) `PARTIAL`: recompõe a frente atual sem promover automaticamente
+3) `BLOCKED`: nao promove automaticamente; nao recompõe artificialmente a fase seguinte sem base suficiente; sem base para recycle seguro, mantem a fila atual e permanece `BLOCKED`
+
+---
+
+### 🧾 Sentinel Phase Closure
+**O que é**
+Skill de pos-execucao da fase: valida objetivo, DoD e evidencia, cria `DONE` e atualiza as docs minimas duraveis.
+
+**Status**
+✅ Ativo
+
+**Use quando**
+Existe um `EXECUTE OUTPUT` e voce precisa decidir `CLOSED`, `PARTIAL` ou `BLOCKED`.
+
+**Importante**
+O fechamento nao recicla `PLAN.md`, nao promove fases e nao detalha a proxima fase.
 
 ---
 
 ### 🧰 Sentinel Docs Bootstrap (v3)
-**O que é**  
+**O que é**
 Bootstrap documental mínimo para **projeto já iniciado**, em modo **create-only absoluto**, centralizando lacunas como **TBD**.
 
-**Status**  
+**Status**
 ✅ Ativo
 
-**Use quando**  
+**Use quando**
 O repo está sem docs canônicas do Sentinel ou muito incompleto.
 
-**Onde usar**  
+**Onde usar**
 No repo alvo, como primeira organização documental.
 
 **Como usar**
@@ -65,23 +118,23 @@ No repo alvo, como primeira organização documental.
 3) Resolva TBDs no Core Context  
 4) Depois disso, demanda vira Preflight
 
-**Nota**  
+**Nota**
 O Bootstrap (v3) não cobre Swift por decisão de escopo (foco em projetos já existentes).  
 Cobertura de Swift fica reservada para a skill **Greenfield** (projetos novos), quando fizer sentido.
 
 ---
 
 ### 🧩 Templates canônicos
-**O que é**  
+**O que é**
 Templates padrão de **CONTEXT**, **RULES**, **STATE**, **CONTRACTS**, **TESTING**, **UI_KIT**, **DESIGN_SYSTEM**, **PLAN**, **DONE**, **ADR**.
 
-**Status**  
+**Status**
 ✅ Ativo
 
-**Use quando**  
+**Use quando**
 Você precisa criar ou normalizar um doc sem inventar formato.
 
-**Onde usar**  
+**Onde usar**
 No caminho oficial de docs do repo.
 
 **Como usar**  
@@ -93,6 +146,7 @@ Copie o template e preencha. Se faltar evidência, registre como **TBD** e siga.
 1) 🔎 Evidência primeiro: não inventar stack, regras ou arquitetura  
 2) 🎒 Contexto mínimo: mandar só o pack que destrava  
 3) 🧾 Mudança estrutural: registrar decisão (ADR) antes de executar  
+4) 🗂️ Ciclo do plano: `PLAN.md` é descartável e só o Blueprint reorganiza a fila
 
 ---
 
@@ -105,9 +159,9 @@ Copie o template e preencha. Se faltar evidência, registre como **TBD** e siga.
 
 | Entrega | Status | Onde entra | Como usar | Critério de pronto |
 |---|---|---|---|---|
-| Skill de geração de PLAN quando não existir PLAN | 🟡 Aprovado | Antes da execução quando a demanda é grande e falta PLAN | Gera PLAN canônico por fase curta, pronto para o fluxo do Preflight | PLAN compatível com gates e checklist de fechamento |
+| Skill de ciclo de vida do PLAN | ✅ Ativo | Antes do primeiro ciclo e apos fechamento de fase | `MODE=CREATE` cria o plano; `MODE=RECYCLE` reindexa a fila e detalha a nova Fase 1 | `PLAN.md` curto com Fase 1 detalhada, Fase 2 em esboco e Fase 3 opcional e curta somente com base suficiente |
 | DocSync como skill dedicada | 🟡 Aprovado | Pós execução | Entra com lista de arquivos alterados e sugere os docs mínimos para atualizar | Saída curta, repetível, no máximo 3 docs |
-| Padronizar fechamento de fase | 🟡 Aprovado | Ritual fixo pós execução | Sempre terminar com DONE e ajustes mínimos em CONTEXT e STATE quando aplicável | Regra escrita, exemplo, caminho oficial definido |
+| Padronizar fechamento de fase | ✅ Ativo | Ritual fixo pós execução | `sentinel_phase_closure` fecha a fase, cria DONE e atualiza as docs minimas | Fechamento curto, repetivel e sem reciclar o plano |
 | Skill Greenfield (projetos novos) | 🟣 Radar | Só em projeto novo | Bootstrap para projeto novo (parecido com o Docs Bootstrap), cobrindo stacks que o Bootstrap não cobre, incluindo Swift | Definir se usa templates mínimos ou kit completo e publicar a skill |
 
 ---
