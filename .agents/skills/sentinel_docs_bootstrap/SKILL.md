@@ -3,7 +3,7 @@ name: sentinel_docs_bootstrap
 description: Bootstrap de documentação (create only) para projeto existente usando discovery do repo + entrevista guiada mínima. Centraliza TBD no Core Context. Não toca em PLAN.md.
 ---
 
-# Sentinel Docs Bootstrap v3
+# Sentinel Docs Bootstrap
 
 Executar bootstrap documental mínimo em projeto existente e sem documentação, em modo create only absoluto.
 
