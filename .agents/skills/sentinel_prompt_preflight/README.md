@@ -21,8 +21,8 @@ Skill para transformar um pedido bruto em um prompt governado de execucao.
 - Nao monta plano tecnico com base em evidencia.
 - Nao cria ou recicla `PLAN.md`.
 - Nao substitui o Blueprint.
-- Nao promove fase nem reorganiza a fila do plano.
-- Nao fecha fase.
+- Nao reorganiza `Escopo ativo`, `Bloco seguinte` ou `Bloco posterior`.
+- Nao fecha execucao.
 - Nao documenta fechamento.
 - Nao substitui a closure.
 - Nao executa nada.
@@ -45,9 +45,9 @@ Skill para transformar um pedido bruto em um prompt governado de execucao.
 ## Relacao com outras skills
 
 - O ciclo de vida do `PLAN.md` pertence exclusivamente a `sentinel_plan_blueprint`.
-- Fechamento de fase pertence exclusivamente a `sentinel_phase_closure`.
+- Fechamento da execucao pertence exclusivamente a `sentinel_phase_closure`.
 - `sentinel_docs_bootstrap` prepara base documental para repositorio ainda sem base canonica.
-- O Preflight apenas prepara o prompt do executor para o ciclo atual, sobre fase ou tarefa ja definida.
+- O Preflight apenas prepara o prompt do executor para o ciclo atual, sobre `Escopo ativo` ou tarefa ja definida.
 - O executor implementa e valida; nao toca artefatos duraveis.
 - O fechamento documental real acontece em `sentinel_phase_closure`.
 - Quando a unidade alvo for identificavel, o plano principal do fluxo e o `PLAN.md` dessa unidade.
@@ -80,7 +80,7 @@ Se o prompt final precisar usar `PLAN.md` raiz, o executor deve trata-lo como pl
 ## Posicao no fluxo canonico
 
 1. `sentinel_docs_bootstrap`, quando faltar base documental
-2. `sentinel_plan_blueprint`, quando a demanda exigir ciclo por fases
+2. `sentinel_plan_blueprint`, quando a demanda exigir um `PLAN.md` curto
 3. `sentinel_prompt_preflight`
 4. executor
 5. `sentinel_phase_closure`

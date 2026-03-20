@@ -1,17 +1,17 @@
 ---
 name: sentinel_phase_closure
-description: Fecha documental e operacionalmente a fase apos o EXECUTE OUTPUT; valida objetivo, DoD e evidencias da fase; decide CLOSED, PARTIAL ou BLOCKED; atualiza apenas docs minimas; nao recicla PLAN.md nem detalha a proxima fase.
+description: Fecha documental e operacionalmente a execucao apos o EXECUTE OUTPUT; valida objetivo, DoD e evidencias do escopo executado; decide CLOSED, PARTIAL ou BLOCKED; atualiza apenas docs minimas; nao recicla PLAN.md nem detalha o proximo escopo.
 ---
 
 # Sentinel Phase Closure
 
 ## O que esta skill faz
 
-Fechar a fase ja executada com base em evidencia, registrar o conhecimento minimo duravel e devolver um encerramento curto, confiavel e repetivel.
+Fechar a execucao ja realizada com base em evidencia, registrar o conhecimento minimo duravel e devolver um encerramento curto, confiavel e repetivel.
 
 ## Objetivo unico
 
-Validar se a fase executada pode ser considerada concluida e consolidar o fechamento documental pos-execucao sem misturar fechamento com planejamento.
+Validar se o escopo executado pode ser considerado concluido e consolidar o fechamento documental pos-execucao sem misturar fechamento com planejamento.
 
 ## Posicao canonica no fluxo
 
@@ -27,22 +27,22 @@ Validar se a fase executada pode ser considerada concluida e consolidar o fecham
 
 ## Separacao canonica e inviolavel
 
-1. Esta skill fecha a fase executada.
+1. Esta skill fecha a execucao realizada.
 2. Esta skill e o unico ponto canonico de consolidacao documental pos-execucao.
 3. Esta skill nao recicla o `PLAN.md`.
-4. Esta skill nao promove Fase 2 para Fase 1.
-5. Esta skill nao detalha tecnicamente a proxima fase.
-6. Reorganizacao do plano, reciclagem do `PLAN.md` e detalhamento da nova Fase 1 pertencem exclusivamente a `sentinel_plan_blueprint MODE=RECYCLE`.
+4. Esta skill nao promove `Bloco seguinte` para `Escopo ativo`.
+5. Esta skill nao detalha tecnicamente o proximo escopo.
+6. Reorganizacao do plano, reciclagem do `PLAN.md` e detalhamento do novo `Escopo ativo` pertencem exclusivamente a `sentinel_plan_blueprint MODE=RECYCLE`.
 7. O executor implementa e valida. Esta skill consolida docs duraveis. Esta skill nao implementa.
 
 ## Quando usar
 
-Usar somente apos existir um `EXECUTE OUTPUT` da fase atual e quando for necessario decidir se a fase pode ser encerrada como `CLOSED`, `PARTIAL` ou `BLOCKED`.
+Usar somente apos existir um `EXECUTE OUTPUT` do ciclo atual e quando for necessario decidir se o escopo executado pode ser encerrado como `CLOSED`, `PARTIAL` ou `BLOCKED`.
 
 ## Quando nao usar
 
 1. Nao usar para criar `PLAN.md`.
-2. Nao usar para reciclar, reordenar ou detalhar fases do `PLAN.md`.
+2. Nao usar para reciclar, reordenar ou detalhar blocos do `PLAN.md`.
 3. Nao usar para executar codigo, editar codigo ou completar implementacao faltante.
 4. Nao usar para discovery amplo do repositorio.
 5. Nao usar como substituto do executor.
@@ -78,10 +78,10 @@ Nota de resolucao:
 
 ## Regras inviolaveis da skill (runtime)
 
-1. Nao fechar fase sem evidencia suficiente.
-2. Nao fechar fase apenas porque houve alteracao de codigo.
+1. Nao fechar execucao sem evidencia suficiente.
+2. Nao fechar execucao apenas porque houve alteracao de codigo.
 3. O `EXECUTE OUTPUT` e a evidencia principal, mas nao substitui a validacao do objetivo e do DoD.
-4. Sem objetivo entregue e sem DoD atingido, a fase nao pode virar `CLOSED`.
+4. Sem objetivo entregue e sem DoD atingido, o escopo executado nao pode virar `CLOSED`.
 5. Falta de evidencia critica resulta em `PARTIAL` ou `BLOCKED`.
 6. `STATE` so pode ser atualizado se a mudanca afetar comportamento global, contrato global, regra global, decisao reutilizavel ou entendimento global do sistema.
 7. Mudanca estrutural exige ADR; nao pode ser absorvida silenciosamente.
@@ -96,11 +96,11 @@ Nota de resolucao:
 16. `PLAN.md` raiz e apenas plano provisiorio; nunca recebe `DONE`, `CONTEXT`, `done/` ou outros artefatos duraveis.
 17. Se o ciclo comecou em `PLAN.md` raiz, a skill deve resolver a unidade alvo real antes de atualizar docs duraveis.
 18. Se a unidade alvo real continuar ambigua, nao inventar diretorio canonico; retornar `PARTIAL` ou `BLOCKED`.
-19. O nome do `DONE` deve refletir a entrega consolidada da rodada; nunca usar `fase-x`, `phase-x` ou equivalente na identidade do arquivo.
+19. O nome do `DONE` deve refletir a entrega consolidada da rodada; nunca usar numeracao operacional na identidade do arquivo.
 20. O `CONTEXT.md` da unidade resolvida deve manter cabecalho duravel: `SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active` ou `in-progress`, `LAST UPDATED: YYYYMMDD`.
 21. Nunca escrever `SCOPE: subfeature`.
 22. Nunca escrever `STATUS` acoplado a fase, rodada ou fechamento, como `fase-x-closed`, `phase-x-closed` ou equivalente.
-23. O historico no `CONTEXT` registra marcos entregues com data e ponteiro para o `DONE`, nunca em formato `Fase X CLOSED ...`.
+23. O historico no `CONTEXT` registra marcos entregues com data e ponteiro para o `DONE`, nunca em formato de status operacional numerado.
 24. Esta skill absorve definitivamente toda necessidade de consolidacao documental pos-execucao.
 25. Nao existe papel documental residual no executor apos o `EXECUTE OUTPUT`.
 
@@ -153,8 +153,8 @@ Regra de expansao:
 
 ### Regra especifica sobre o plano
 
-1. Pode ler `docs/features/<feature>/PLAN.md` para validar fase, objetivo e DoD.
-2. Se o ciclo estiver em `PLAN.md` raiz, pode le-lo apenas como registro provisiorio da fase executada.
+1. Pode ler `docs/features/<feature>/PLAN.md` para validar escopo, objetivo e DoD.
+2. Se o ciclo estiver em `PLAN.md` raiz, pode le-lo apenas como registro provisiorio do escopo executado.
 3. Antes de gravar `DONE` ou `CONTEXT`, deve resolver a unidade alvo real e usar o diretorio canonico dessa unidade.
 4. Nao pode reciclar, reordenar, promover, reestruturar ou detalhar o plano.
 
@@ -183,7 +183,7 @@ Considerar como evidencia valida somente o que estiver explicitamente demonstrad
 
 Nao considerar como evidencia suficiente:
 
-1. diff sem relacao clara com o objetivo da fase
+1. diff sem relacao clara com o objetivo do escopo executado
 2. lista de arquivos alterados sem validacao
 3. afirmacao generica de que "foi implementado"
 4. inferencia sem base de que o DoD foi atingido
@@ -197,14 +197,13 @@ Registrar de forma curta:
 1. feature
 2. entrega consolidada que identifica o arquivo
 3. status (`CLOSED`, `PARTIAL` ou `BLOCKED`)
-4. objetivo da fase
+4. objetivo do escopo executado
 5. veredito do DoD
 6. evidencia principal
 7. validacao minima executada
 8. desvios, TBDs e observacoes relevantes
 9. impacto documental
 10. proximo passo logico
-11. fase operacional da rodada, se isso ajudar a rastreabilidade
 
 ### CONTEXT
 
@@ -222,7 +221,7 @@ Atualizar somente o minimo necessario para a feature continuar coerente:
 
 1. Sempre usar `SCOPE: feature`.
 2. Sempre usar `FEATURE: <feature-path>` com o path resolvido da unidade, inclusive quando ela for aninhada.
-3. O `STATUS` do cabecalho deve ficar em `active` ou `in-progress`, conforme o estado duravel observado; nunca acoplar o valor ao numero da fase.
+3. O `STATUS` do cabecalho deve ficar em `active` ou `in-progress`, conforme o estado duravel observado; nunca acoplar o valor a numeracao operacional.
 4. `LAST UPDATED` deve usar `YYYYMMDD`.
 5. O historico deve registrar o que foi consolidado, a data e o path do `DONE`.
 6. Exemplo aceitavel de historico:
@@ -232,7 +231,7 @@ Atualizar somente o minimo necessario para a feature continuar coerente:
 
 1. O arquivo deve seguir `DONE-YYYYMMDD-<entrega-real>.md`.
 2. O slug deve vir da entrega consolidada demonstrada por objetivo e evidencia, nao do numero da fase.
-3. O corpo pode mencionar a fase operacional da rodada, mas isso nao define a identidade do arquivo.
+3. O corpo pode mencionar o escopo executado da rodada, mas isso nao define a identidade do arquivo.
 
 ### STATE
 
@@ -257,13 +256,13 @@ Se a mudanca estrutural existir e nao houver base suficiente para ADR, parar em 
 
 1. Resolver a feature alvo sem discovery amplo.
 2. Se o ciclo veio de `PLAN.md` raiz, resolver primeiro a unidade alvo real com base no `EXECUTE OUTPUT` e nas evidencias minimas; sem isso, nao ha fechamento duravel seguro.
-3. Ler `docs/features/<feature>/PLAN.md` da unidade resolvida, ou o `PLAN.md` raiz apenas como plano provisiorio da fase executada, e identificar a fase executada, o objetivo da fase e o DoD canonico.
+3. Ler `docs/features/<feature>/PLAN.md` da unidade resolvida, ou o `PLAN.md` raiz apenas como plano provisiorio do escopo executado, e identificar o escopo executado, o objetivo e o DoD canonico.
 4. Ler o ultimo `EXECUTE OUTPUT` como evidencia principal.
 5. Reunir apenas as evidencias minimas citadas ou necessarias para verificar o DoD.
 6. Comparar objetivo, DoD e evidencia. Registrar cada item como `ATINGIDO`, `PARCIAL`, `NAO DEMONSTRADO` ou `BLOQUEADO`.
 7. Verificar se houve validacao minima executada e registrada.
 8. Verificar se existe bloqueio, desvio relevante, conflito entre fontes ou falta de evidencia critica.
-9. Classificar a fase como `CLOSED`, `PARTIAL` ou `BLOCKED`.
+9. Classificar o fechamento como `CLOSED`, `PARTIAL` ou `BLOCKED`.
 10. Derivar o slug do `DONE` a partir da entrega consolidada demonstrada por objetivo e evidencia, nunca pelo numero da fase.
 11. Criar `DONE` curto no diretorio da unidade resolvida com o veredito, a evidencia principal, validacoes e pendencias.
 12. Atualizar `docs/features/<feature>/CONTEXT.md` da unidade resolvida com cabecalho duravel, fatos duraveis e historico por marco entregue apontando para o `DONE`.
@@ -273,9 +272,9 @@ Se a mudanca estrutural existir e nao houver base suficiente para ADR, parar em 
 
 ## Criterio canonico de fechamento
 
-A fase so pode retornar `CLOSED` se todos os quatro criterios abaixo forem satisfeitos:
+O fechamento so pode retornar `CLOSED` se todos os quatro criterios abaixo forem satisfeitos:
 
-1. o objetivo da fase foi entregue
+1. o objetivo do escopo executado foi entregue
 2. a validacao minima foi executada e registrada
 3. nao existe bloqueio que invalide o DoD
 4. as docs minimas de fechamento foram atualizadas
@@ -286,7 +285,7 @@ A fase so pode retornar `CLOSED` se todos os quatro criterios abaixo forem satis
 
 Usar somente quando:
 
-1. o objetivo da fase foi entregue
+1. o objetivo do escopo executado foi entregue
 2. todos os itens relevantes do DoD foram demonstrados
 3. a validacao minima foi executada e registrada
 4. nao existe bloqueio canonico aberto
@@ -300,13 +299,13 @@ Usar quando:
 1. houve implementacao ou avancos reais
 2. parte do objetivo foi entregue ou parte do DoD foi demonstrada
 3. ainda nao e seguro afirmar fechamento completo
-4. faltam evidencias nao criticas para concluir a fase, ou existem pendencias objetivas enderecaveis sem reabrir todo o planejamento
+4. faltam evidencias nao criticas para concluir o fechamento, ou existem pendencias objetivas enderecaveis sem reabrir todo o planejamento
 
 ### `BLOCKED`
 
 Usar quando:
 
-1. existe impedimento real para afirmar a fase
+1. existe impedimento real para afirmar o fechamento
 2. falta evidencia critica
 3. o DoD nao e verificavel
 4. ha conflito relevante entre fontes canonicas
@@ -316,7 +315,7 @@ Usar quando:
 
 ## Stop conditions
 
-Parar e nao fechar a fase se houver:
+Parar e nao fechar a execucao se houver:
 
 1. conflito entre fontes canonicas
 2. falta de evidencia critica
@@ -325,7 +324,7 @@ Parar e nao fechar a fase se houver:
 5. necessidade de alterar contrato externo sem base suficiente
 6. necessidade de mudanca estrutural sem ADR
 7. DoD nao verificavel
-8. objetivo da fase nao demonstrado
+8. objetivo do escopo executado nao demonstrado
 9. ausencia de validacao minima quando ela era necessaria
 
 Nessas condicoes, a skill deve retornar `PARTIAL` ou `BLOCKED`, nunca `CLOSED`.
@@ -333,7 +332,7 @@ Nessas condicoes, a skill deve retornar `PARTIAL` ou `BLOCKED`, nunca `CLOSED`.
 ## Regra de proximo passo
 
 1. Se o status for `CLOSED`, o proximo passo padrao e `sentinel_plan_blueprint MODE=RECYCLE`.
-2. Se o status for `PARTIAL`, o proximo passo padrao e `sentinel_plan_blueprint MODE=RECYCLE` para recompor a frente atual sem promover automaticamente a proxima fase.
+2. Se o status for `PARTIAL`, o proximo passo padrao e `sentinel_plan_blueprint MODE=RECYCLE` para recompor o `Escopo ativo` sem promover automaticamente o proximo bloco.
 3. Se o status for `BLOCKED`, o proximo passo padrao e avaliar `sentinel_plan_blueprint MODE=RECYCLE`; se o recycle nao fizer sentido operacional, manter o bloqueio registrado e parar.
 
 ## Formato obrigatorio de saida
@@ -344,7 +343,7 @@ Nessas condicoes, a skill deve retornar `PARTIAL` ou `BLOCKED`, nunca `CLOSED`.
 STATUS: CLOSED | PARTIAL | BLOCKED
 
 FEATURE: <feature>
-PHASE: <fase>
+ENTREGA: <entrega consolidada>
 DOD: <atingido | parcial | nao atingido | nao verificavel>
 EVIDENCE SUMMARY: <resumo curto da evidencia principal e da validacao minima>
 DOCS UPDATED: <lista curta de docs atualizadas ou none>
@@ -358,12 +357,12 @@ Regras do output:
 2. Sem relatorio prolixo.
 3. Sem explicacao longa desnecessaria.
 4. Sem reciclar plano no output.
-5. Sem detalhar tecnicamente a proxima fase.
+5. Sem detalhar tecnicamente o proximo escopo.
 
 ## Observacoes finais de uso
 
-1. `DONE` e o registro de fechamento da tentativa da fase. Pode registrar `CLOSED`, `PARTIAL` ou `BLOCKED`, mas o nome do arquivo deve representar a entrega real.
+1. `DONE` e o registro de fechamento da tentativa executada. Pode registrar `CLOSED`, `PARTIAL` ou `BLOCKED`, mas o nome do arquivo deve representar a entrega real.
 2. `CONTEXT` guarda apenas memoria duravel minima da feature; manter cabecalho estavel e historico por marco entregue, sem duplicar o `DONE`.
 3. `STATE` existe para delta global real; nao usar como despejo de status local da feature.
 4. ADR existe para decisao estrutural; nao usar ADR para pendencia trivial.
-5. Esta skill fecha a fase executada. O replanejamento posterior pertence exclusivamente a `sentinel_plan_blueprint MODE=RECYCLE`.
+5. Esta skill fecha a execucao realizada. O replanejamento posterior pertence exclusivamente a `sentinel_plan_blueprint MODE=RECYCLE`.

@@ -2,11 +2,11 @@
 
 ## Proposito
 
-Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o minimo de conhecimento duravel sem misturar fechamento com planejamento.
+Fechar a execucao realizada com base em evidencia, registrar `DONE` e consolidar o minimo de conhecimento duravel sem misturar fechamento com planejamento.
 
 ## O que faz
 
-1. valida objetivo, DoD e evidencias da fase executada
+1. valida objetivo, DoD e evidencias do escopo executado
 2. classifica o fechamento como `CLOSED`, `PARTIAL` ou `BLOCKED`
 3. cria `DONE` curto na unidade alvo resolvida com nome baseado na entrega real
 4. atualiza `CONTEXT` da unidade alvo com o minimo duravel e cabecalho estavel
@@ -18,7 +18,7 @@ Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o m
 ## O que nao faz
 
 1. nao cria `PLAN.md`
-2. nao recicla, promove ou detalha fases do `PLAN.md`
+2. nao recicla, promove ou detalha blocos do `PLAN.md`
 3. nao executa implementacao
 4. nao substitui o executor
 5. nao faz discovery amplo do repositorio
@@ -46,13 +46,13 @@ Fechar a fase executada com base em evidencia, registrar `DONE` e consolidar o m
 
 ## Convencoes duraveis de fechamento
 
-1. O `DONE` deve seguir `DONE-YYYYMMDD-<entrega-real>.md`; fase operacional pode aparecer no corpo, nunca na identidade do arquivo.
+1. O `DONE` deve seguir `DONE-YYYYMMDD-<entrega-real>.md`; a entrega consolidada e a identidade duravel do arquivo.
 2. O `CONTEXT` da unidade resolvida usa cabecalho duravel: `SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress`, `LAST UPDATED: YYYYMMDD`.
-3. O historico do `CONTEXT` registra marcos entregues com data e path para o `DONE`, nunca com status por fase como `Fase X CLOSED`.
+3. O historico do `CONTEXT` registra marcos entregues com data e path para o `DONE`, nunca com status operacional numerado.
 
 ## Relacao com outras skills
 
-- `sentinel_docs_bootstrap` prepara a base documental minima antes do ciclo por fases, mas nao fecha execucao.
+- `sentinel_docs_bootstrap` prepara a base documental minima antes do ciclo com `PLAN.md`, mas nao fecha execucao.
 - `sentinel_plan_blueprint` e o unico dono do ciclo de vida do `PLAN.md`; depois da closure, o passo canonico e `MODE=RECYCLE`.
 - `sentinel_prompt_preflight` apenas prepara o prompt do executor e nao participa do fechamento.
 - O executor implementa e valida; nao toca artefatos duraveis.

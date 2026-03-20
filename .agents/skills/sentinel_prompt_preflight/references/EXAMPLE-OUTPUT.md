@@ -3,7 +3,7 @@
 ````md
 ```md
 TAREFA
-Executar a Fase 1 do plano da unidade alvo indicada pelo usuario, criando apenas o service e a interface citados no escopo informado.
+Executar o `Escopo ativo` do plano da unidade alvo indicada pelo usuario, criando apenas o service e a interface citados no escopo informado.
 
 MODO
 Router Planner. Primeiro planeje. Nao execute nada antes de OK com o ID correto.
@@ -38,7 +38,7 @@ Nao invente regras, contratos, estruturas ou stack.
 Nao faca refactor amplo sem permissao.
 Mudanca estrutural exige ADR aprovado.
 Executor nao toca `DONE`, `CONTEXT`, `STATE`, `ADR` nem `PLAN.md`.
-Executor nao fecha fase e nao consolida docs duraveis.
+Executor nao fecha execucao e nao consolida docs duraveis.
 Na duvida relevante, pergunte e pare.
 
 SAIDA ESPERADA DO EXECUTOR

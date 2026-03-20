@@ -1,9 +1,9 @@
 # PLAN
 
 Este PLAN é descartável.
-Ele existe para executar uma fase curta e completa sem enviar tarefa por tarefa.
+Ele existe para executar um escopo curto e coeso sem enviar tarefa por tarefa.
 O executor implementa e valida. A consolidacao pos-execucao em docs duraveis pertence a `sentinel_phase_closure`.
-Reciclagem, reindexacao e promocao de fases pertencem ao `sentinel_plan_blueprint`.
+Reciclagem, recomposicao e promocao de blocos pertencem ao `sentinel_plan_blueprint`.
 
 Se este arquivo estiver em `PLAN.md` na raiz do repo, ele e apenas um fallback provisiorio.
 Ele nao define a unidade canonica do fluxo.
@@ -25,13 +25,14 @@ YYYYMMDD
 
 ## Horizonte de planejamento
 Regra
-1) Detalhar apenas a fase atual.
-2) Planejar a Fase 2 como esboco operacional curto e forte.
-3) Planejar a Fase 3 apenas como esboco opcional e curto, so se houver base suficiente.
-4) Nada alem da Fase 3 vira fase planejada; o que estiver mais distante vira apenas risco, dependencia ou norte.
-5) Recycle nao e fechamento e nao e replanejamento completo da feature.
+1) Detalhar apenas o `Escopo ativo`.
+2) Manter `Bloco seguinte` curto e voltado a previsibilidade operacional.
+3) Usar `Bloco posterior` apenas como esboco opcional e curto, so se houver base suficiente.
+4) `Bloco seguinte` pode ser absorvido pelo `Escopo ativo` quando for continuacao natural do mesmo recorte e o plano continuar curto e coerente.
+5) Separar os blocos quando o escopo ficar grande, mudar de natureza, puxar contexto demais ou deixar de parecer uma rodada coesa.
+6) Recycle nao e fechamento e nao e replanejamento completo da feature.
 
-## Contexto da fase
+## Contexto do escopo
 Core Pack
 listar arquivos core que entram ou TBD
 
@@ -49,8 +50,8 @@ listar apenas se houver gatilho e dizer qual ou vazio
 2)
 3)
 
-## Objetivo da fase atual
-Descreva o que será entregue ao final desta fase.
+## Objetivo do escopo ativo
+Descreva o que sera entregue ao final deste escopo.
 
 ## Entregáveis
 1)
@@ -88,14 +89,14 @@ Como detectar regressão
 
 ## Just in time build
 Proibido criar artefatos que só serão usados muito mais à frente.
-Só criar agora se for dependência direta do DoD da fase atual.
+So criar agora se for dependencia direta do DoD do `Escopo ativo`.
 
-## Fases
-Cada fase deve ser pequena e executável em uma rodada do agente.
-Cada fase termina com DoD verificável.
-Somente a fase ativa pode ficar detalhada em tarefas.
+## Blocos do plano
+Cada bloco deve ser pequeno e coerente com uma rodada do agente.
+O `Escopo ativo` termina com DoD verificavel.
+Somente o `Escopo ativo` pode ficar detalhado em tarefas.
 
-### Fase 1
+### Escopo ativo
 Título
 
 Escopo
@@ -128,7 +129,7 @@ Referências internas
 referenciar IDs do CONTEXT
 referenciar ADR se existir
 
-### Fase 2 esboço
+### Bloco seguinte
 Título
 
 Objetivo
@@ -152,7 +153,7 @@ Riscos principais
 1)
 2)
 
-### Fase 3 esboço opcional
+### Bloco posterior
 Norte
 1 linha
 
@@ -162,7 +163,7 @@ Principal dependência ou risco
 ## Historico curto opcional
 No maximo 1 ciclo anterior.
 
-Fase anterior
+Escopo anterior
 1 linha
 
 Status
@@ -174,16 +175,16 @@ path ou `none`
 Observacao curta
 1 linha
 
-## Critérios para dividir fase
+## Criterios para dividir o escopo
 Dividir se ocorrer
 1) mais de um objetivo principal
 2) dependência grande de Reference
 3) mudança transversal ou estrutural
 4) esforço grande demais para uma rodada de execução
 
-## Checklist de encerramento da fase executada
+## Checklist de encerramento do escopo executado
 Referencia de fluxo. O fechamento documental pertence a `sentinel_phase_closure`.
-Reciclagem e promocao da proxima fase pertencem a `sentinel_plan_blueprint MODE=RECYCLE`.
+Reciclagem e promocao dos proximos blocos pertencem a `sentinel_plan_blueprint MODE=RECYCLE`.
 1) se este arquivo estiver na raiz, resolver primeiro a unidade alvo real antes do fechamento documental
 2) o executor nao cria `DONE`, nao atualiza `CONTEXT`, nao atualiza `STATE` e nao cria ADR
 3) `sentinel_phase_closure` decide `CLOSED`, `PARTIAL` ou `BLOCKED` e consolida docs duraveis

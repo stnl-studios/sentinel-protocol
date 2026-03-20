@@ -39,4 +39,4 @@ Paths
 Ambiente
 
 ## Evidências
-Ao concluir fase, registrar no DONE o que foi rodado e o resultado.
+Ao concluir a execucao, registrar no DONE o que foi rodado e o resultado.

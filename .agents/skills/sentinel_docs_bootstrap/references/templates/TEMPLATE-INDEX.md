@@ -95,17 +95,17 @@ Inclua Reference apenas se a tarefa exigir pelo menos um dos itens
 5. resolver conflito entre fontes canônicas
 
 Anti padrão
-Se você precisou incluir Reference repetidamente na mesma fase, a fase está grande demais.
-Divida a fase.
+Se voce precisou incluir Reference repetidamente no mesmo `Escopo ativo`, o escopo esta grande demais.
+Divida o escopo.
 
 ## Protocolo de atualização
-Ao finalizar uma fase executada
+Ao finalizar uma execucao concluida
 1. criar um DONE na pasta done da feature
 2. atualizar o CONTEXT da feature com fatos duráveis e histórico por entrega
 3. atualizar o STATE core apenas se algo global mudou
 4. se houve mudança estrutural, criar ADR e atualizar RULES ou CONTRACTS se aplicável
 
-O PLAN é descartável e pode ser removido após a execução.
+O PLAN e descartavel e pode ser removido apos a execucao.
 O conhecimento fica em CONTEXT da feature, DONE e STATE.
 
 ## Mapa de arquivos

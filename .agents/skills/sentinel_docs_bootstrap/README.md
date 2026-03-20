@@ -11,7 +11,7 @@ Bootstrap documental minimo para projeto existente que ainda nao tem base canoni
 3. monta a base minima de docs canonicos do Sentinel
 4. centraliza lacunas como `TBD` em `docs/core/CONTEXT.md`
 5. prepara a base documental para uso posterior do protocolo
-6. cria `CONTEXT` de feature com cabecalho duravel, sem semear status de fase
+6. cria `CONTEXT` de feature com cabecalho duravel, sem semear status operacional numerado
 
 ## O que nao faz
 
@@ -58,14 +58,14 @@ Bootstrap documental minimo para projeto existente que ainda nao tem base canoni
 ## Relacao com outras skills
 
 - `sentinel_plan_blueprint` assume o ciclo de vida do `PLAN.md` depois que a base documental minima estiver suficiente.
-- `sentinel_prompt_preflight` prepara prompt de execucao sobre fase ou tarefa ja definida; nao substitui o bootstrap.
-- `sentinel_phase_closure` entra apenas depois de uma fase executada; nao participa do bootstrap.
+- `sentinel_prompt_preflight` prepara prompt de execucao sobre `Escopo ativo` ou tarefa ja definida; nao substitui o bootstrap.
+- `sentinel_phase_closure` entra apenas depois de uma execucao concluida; nao participa do bootstrap.
 
 ## Posicao no fluxo canonico
 
 1. `sentinel_docs_bootstrap`
 2. confirmar e completar o contexto minimo necessario
-3. quando a demanda exigir planejamento por fases, `sentinel_plan_blueprint MODE=CREATE`
+3. quando a demanda exigir um `PLAN.md` curto, `sentinel_plan_blueprint MODE=CREATE`
 4. `sentinel_prompt_preflight`
 5. executor
 6. `sentinel_phase_closure`
@@ -73,4 +73,4 @@ Bootstrap documental minimo para projeto existente que ainda nao tem base canoni
 
 ## Proximo passo canonico
 
-Depois do bootstrap, confirme a base minima e resolva os `TBD` necessarios no contexto. Quando a demanda pedir ciclo por fases, o proximo passo canonico e usar `sentinel_plan_blueprint`.
+Depois do bootstrap, confirme a base minima e resolva os `TBD` necessarios no contexto. Quando a demanda pedir um `PLAN.md` curto, o proximo passo canonico e usar `sentinel_plan_blueprint`.

@@ -1,7 +1,7 @@
 # 🛡️ Sentinel Protocol
 
 Sentinel Protocol é um kit de skills e templates para usar agentes com previsibilidade.  
-A ideia é simples: **contexto mínimo**, **evidência primeiro**, e **fechamento de fase** que vira memória útil.
+A ideia é simples: **contexto mínimo**, **evidência primeiro**, e **fechamento de execução** que vira memória útil.
 
 ---
 
@@ -10,14 +10,14 @@ A ideia é simples: **contexto mínimo**, **evidência primeiro**, e **fechament
 ### 🧱 Cenário 1: o repo existe e está sem base canônica de docs
 1) Rode **Sentinel Docs Bootstrap (v3)**
 2) Resolva **TBDs** no Core Context
-3) Quando a demanda exigir ciclo por fases, rode **Sentinel Plan Blueprint** em `MODE=CREATE`
+3) Quando a demanda exigir um `PLAN.md` curto, rode **Sentinel Plan Blueprint** em `MODE=CREATE`
 4) Depois use **Sentinel Prompt Preflight**
 5) Execute com o agente
 6) Rode **Sentinel Phase Closure**
 7) Antes de iniciar o proximo ciclo, rode **Sentinel Plan Blueprint** em `MODE=RECYCLE`
 
 ### 🛠️ Cenário 2: o repo já tem base e você só quer executar uma demanda
-1) Se a demanda exigir ciclo por fases, rode **Sentinel Plan Blueprint** em `MODE=CREATE`
+1) Se a demanda exigir um `PLAN.md` curto, rode **Sentinel Plan Blueprint** em `MODE=CREATE`
 2) Rode **Sentinel Prompt Preflight**
 3) Execute com o agente
 4) Rode **Sentinel Phase Closure**
@@ -51,21 +51,21 @@ No chat de preparação do prompt, antes do chat do agente que vai mexer no repo
 O agente executa só o que foi planejado e o retorno vem curto com arquivos tocados e próximos passos.
 
 **Importante**
-O Preflight não cria nem recicla `PLAN.md` e não promove fases. Isso pertence exclusivamente ao **Sentinel Plan Blueprint**.
-Ele prepara prompt para execucao sobre fase ou tarefa ja definida, nao substitui o Blueprint e nao substitui a Closure.
+O Preflight não cria nem recicla `PLAN.md` e não reorganiza seus blocos. Isso pertence exclusivamente ao **Sentinel Plan Blueprint**.
+Ele prepara prompt para execucao sobre `Escopo ativo` ou tarefa ja definida, nao substitui o Blueprint e nao substitui a Closure.
 Ele nao inclui bloco documental no prompt e nao instrui o executor a tocar artefatos duraveis.
 
 ---
 
 ### 🗂️ Sentinel Plan Blueprint
 **O que é**
-A skill dona do ciclo de vida do `PLAN.md`: cria o plano inicial, recicla o plano apos fechamento de fase, detalha apenas a fase ativa e mantem o plano curto.
+A skill dona do ciclo de vida do `PLAN.md`: cria o plano inicial, recicla o plano apos fechamento, detalha apenas o `Escopo ativo` e mantem o plano curto.
 
 **Status**
 ✅ Ativo
 
 **Use quando**
-Você precisa abrir um plano por fases ou preparar o proximo ciclo apos `CLOSED`, `PARTIAL` ou `BLOCKED`.
+Voce precisa abrir um plano com horizonte curto ou preparar o proximo ciclo apos `CLOSED`, `PARTIAL` ou `BLOCKED`.
 
 **Onde usar**
 Antes do primeiro ciclo em `MODE=CREATE` e apos `sentinel_phase_closure` em `MODE=RECYCLE`.
@@ -73,27 +73,27 @@ Antes do primeiro ciclo em `MODE=CREATE` e apos `sentinel_phase_closure` em `MOD
 **Como usar**
 1) Rode `MODE=CREATE` para criar o primeiro `PLAN.md`
 2) Execute o ciclo com Preflight + executor
-3) Feche a fase com **Sentinel Phase Closure**
-4) Rode `MODE=RECYCLE` para reindexar o plano e detalhar a nova Fase 1
+3) Feche a execucao com **Sentinel Phase Closure**
+4) Rode `MODE=RECYCLE` para recompor o plano e detalhar o novo `Escopo ativo`
 
 **Regras centrais**
 1) So o blueprint pode criar ou reciclar `PLAN.md`
-2) So o blueprint promove, reindexa e reorganiza a fila de fases
-3) So a fase ativa pode ficar detalhada
-4) Fase 2 fica como esboco e Fase 3 e opcional e curta somente com base suficiente
+2) So o blueprint reorganiza a ordem visivel do plano
+3) So o `Escopo ativo` pode ficar detalhado
+4) `Bloco seguinte` e curto e `Bloco posterior` e opcional e curto somente com base suficiente
 5) Recycle e reindexacao operacional, nao replanejamento completo
 6) Nem executor, nem Preflight, nem Closure podem criar, reciclar, promover, resumir ou detalhar `PLAN.md`
 
 **Tratamento por status**
-1) `CLOSED`: promove a proxima fase e detalha a nova Fase 1
-2) `PARTIAL`: recompõe a frente atual sem promover automaticamente
-3) `BLOCKED`: nao promove automaticamente; nao recompõe artificialmente a fase seguinte sem base suficiente; sem base para recycle seguro, mantem a fila atual e permanece `BLOCKED`
+1) `CLOSED`: tira o escopo concluido do centro; `Bloco seguinte` pode subir para `Escopo ativo` quando houver base
+2) `PARTIAL`: recompõe o `Escopo ativo` sem promocao automatica
+3) `BLOCKED`: nao promove artificialmente o proximo bloco sem base suficiente; sem base para recycle seguro, mantem a estrutura atual e permanece `BLOCKED`
 
 ---
 
 ### 🧾 Sentinel Phase Closure
 **O que é**
-Skill de pos-execucao da fase: valida objetivo, DoD e evidencia, cria `DONE` e atualiza as docs minimas duraveis.
+Skill de pos-execucao: valida objetivo, DoD e evidencia, cria `DONE` e atualiza as docs minimas duraveis.
 
 **Status**
 ✅ Ativo
@@ -102,7 +102,7 @@ Skill de pos-execucao da fase: valida objetivo, DoD e evidencia, cria `DONE` e a
 Existe um `EXECUTE OUTPUT` e voce precisa decidir `CLOSED`, `PARTIAL` ou `BLOCKED`.
 
 **Importante**
-O fechamento nao recicla `PLAN.md`, nao promove fases e nao detalha a proxima fase.
+O fechamento nao recicla `PLAN.md`, nao reorganiza seus blocos e nao detalha o proximo escopo.
 O proximo passo canonico apos a closure e `sentinel_plan_blueprint MODE=RECYCLE`.
 O executor implementa e valida. A consolidacao pos-execucao em docs duraveis acontece aqui.
 
@@ -125,7 +125,7 @@ No repo alvo, como primeira organização documental.
 1) Rode o Bootstrap  
 2) Ele cria a base mínima de docs sem sobrescrever nada  
 3) Resolva TBDs no Core Context  
-4) Quando a demanda exigir ciclo por fases, use **Sentinel Plan Blueprint**
+4) Quando a demanda exigir um `PLAN.md` curto, use **Sentinel Plan Blueprint**
 5) Depois siga com **Sentinel Prompt Preflight**
 
 **Nota**
@@ -156,7 +156,7 @@ Copie o template e preencha. Se faltar evidência, registre como **TBD** e siga.
 1) 🔎 Evidência primeiro: não inventar stack, regras ou arquitetura  
 2) 🎒 Contexto mínimo: mandar só o pack que destrava  
 3) 🧾 Mudança estrutural: registrar decisão (ADR) antes de executar  
-4) 🗂️ Ciclo do plano: `PLAN.md` é descartável e só o Blueprint reorganiza a fila
+4) 🗂️ Ciclo do plano: `PLAN.md` e descartavel e so o Blueprint reorganiza `Escopo ativo`, `Bloco seguinte` e `Bloco posterior`
 5) 🧾 Fechamento documental: executor nao toca artefatos duraveis; Closure consolida `DONE`, `CONTEXT`, `STATE` e ADR quando aplicavel
 
 ---

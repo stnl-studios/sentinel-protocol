@@ -7,7 +7,7 @@ Nome do arquivo:
 FEATURE
 path da unidade resolvida
 
-DELIVERY
+ENTREGA
 entrega consolidada que identifica este DONE
 
 STATUS
@@ -15,9 +15,6 @@ CLOSED, PARTIAL ou BLOCKED
 
 DATE
 YYYYMMDD
-
-PHASE
-fase operacional da rodada, se isso ajudar na rastreabilidade
 
 RELATED PR
 link se existir

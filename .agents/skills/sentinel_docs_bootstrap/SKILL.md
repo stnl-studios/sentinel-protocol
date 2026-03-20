@@ -94,7 +94,7 @@ Centralizar lacunas e perguntas pendentes apenas em `docs/core/CONTEXT.md` com I
 Não criar arquivos DONE nesta skill.
 Padrão oficial para execução futura:
 - `docs/features/<feature_slug>/done/DONE-YYYYMMDD-<entrega-real>.md`
-- o slug descreve a entrega consolidada, nunca o número da fase
+- o slug descreve a entrega consolidada, nunca numeracao operacional da rodada
 - Feature Context referencia DONEs por link, sem duplicar conteúdo.
 
 ## Heurísticas de discovery por stack
@@ -225,4 +225,4 @@ Sempre imprimir ao final:
 - arquivos criados
 - arquivos `SKIPPED`
 - lista de IDs `TBD` apontando para `docs/core/CONTEXT.md`
-- próximo passo sugerido: executar skill separada de geração de `PLAN.md`
+- proximo passo sugerido: executar skill separada de geracao de `PLAN.md`

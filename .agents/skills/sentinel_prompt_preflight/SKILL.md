@@ -8,7 +8,7 @@ description: Normaliza prompt cru em prompt estruturado de execucao; faz apenas 
 ## Funcao unica
 
 Receber um pedido ruim, cru, vago ou incompleto e devolve-lo como um prompt estruturado de execucao. O Preflight nao entende o projeto: ele so normaliza a entrada, aplica guardrails operacionais, faz sanity check por existencia e para.
-Ele nao fecha fase, nao documenta fechamento, nao substitui `sentinel_phase_closure` e nao substitui `sentinel_plan_blueprint`.
+Ele nao fecha execucao, nao documenta fechamento, nao substitui `sentinel_phase_closure` e nao substitui `sentinel_plan_blueprint`.
 
 ## Nunca fazer
 
@@ -16,7 +16,7 @@ Ele nao fecha fase, nao documenta fechamento, nao substitui `sentinel_phase_clos
 2) Nao abrir arquivo para resumir, inferir regra, arquitetura, stack ou escopo real.
 3) Nao montar plano tecnico com base em evidencia.
 4) Nao criar ou reciclar `PLAN.md`.
-5) Nao promover fase nem reorganizar a fila do plano.
+5) Nao reorganizar `Escopo ativo`, `Bloco seguinte` ou `Bloco posterior`.
 6) Nao executar nada.
 7) Nao atuar como planner de dominio, executor ou auditor de documentacao.
 8) Nao despejar politica longa, framework interno ou manual operacional no output.
@@ -35,7 +35,7 @@ Ele nao fecha fase, nao documenta fechamento, nao substitui `sentinel_phase_clos
 
 1) `sentinel_plan_blueprint` cria e recicla o `PLAN.md`.
 2) O executor produz `PLAN OUTPUT` e `EXECUTE OUTPUT`.
-3) `sentinel_phase_closure` fecha a fase e consolida docs duraveis pos-execucao.
+3) `sentinel_phase_closure` fecha a execucao e consolida docs duraveis pos-execucao.
 4) Esta skill apenas prepara o prompt do executor.
 
 ## Sanity check permitido
