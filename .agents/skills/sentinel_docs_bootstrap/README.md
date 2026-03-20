@@ -1,5 +1,9 @@
 # Sentinel Docs Bootstrap
 
+Version: 2026.3.0
+Status: Active
+Protocol line: 2026.3
+
 ## Proposito
 
 Bootstrap documental minimo para projeto existente que ainda nao tem base canonica suficiente para operar o protocolo com seguranca.

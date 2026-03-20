@@ -8,7 +8,7 @@ A ideia é simples: **contexto mínimo**, **evidência primeiro**, e **fechament
 ## 🚀 Comece por aqui
 
 ### 🧱 Cenário 1: o repo existe e está sem base canônica de docs
-1) Rode **Sentinel Docs Bootstrap (v3)**
+1) Rode **Sentinel Docs Bootstrap**
 2) Resolva **TBDs** no Core Context
 3) Quando a demanda exigir um `PLAN.md` curto, rode **Sentinel Plan Blueprint** em `MODE=CREATE`
 4) Depois use **Sentinel Prompt Preflight**
@@ -22,6 +22,18 @@ A ideia é simples: **contexto mínimo**, **evidência primeiro**, e **fechament
 3) Execute com o agente
 4) Rode **Sentinel Phase Closure**
 5) Rode **Sentinel Plan Blueprint** em `MODE=RECYCLE` antes do proximo ciclo
+
+---
+
+## Versões atuais das skills
+
+| Skill | Version | Status |
+|---|---:|---|
+| Sentinel Prompt Preflight | 2026.3.0 | Active |
+| Sentinel Plan Blueprint | 2026.3.0 | Active |
+| Sentinel Phase Closure | 2026.3.0 | Active |
+| Sentinel Docs Bootstrap | 2026.3.0 | Active |
+| Templates canônicos | 2026.3.0 | Active |
 
 ---
 
@@ -108,7 +120,7 @@ O executor implementa e valida. A consolidacao pos-execucao em docs duraveis aco
 
 ---
 
-### 🧰 Sentinel Docs Bootstrap (v3)
+### 🧰 Sentinel Docs Bootstrap
 **O que é**
 Bootstrap documental mínimo para **projeto já iniciado**, em modo **create-only absoluto**, centralizando lacunas como **TBD**.
 
@@ -129,7 +141,7 @@ No repo alvo, como primeira organização documental.
 5) Depois siga com **Sentinel Prompt Preflight**
 
 **Nota**
-O Bootstrap (v3) não cobre Swift por decisão de escopo (foco em projetos já existentes).  
+O Bootstrap não cobre Swift por decisão de escopo (foco em projetos já existentes).  
 Cobertura de Swift fica reservada para a skill **Greenfield** (projetos novos), quando fizer sentido.
 
 ---

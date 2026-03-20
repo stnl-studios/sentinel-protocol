@@ -1,5 +1,9 @@
 # Sentinel Plan Blueprint
 
+Version: 2026.3.0
+Status: Active
+Protocol line: 2026.3
+
 ## Proposito
 
 Skill responsavel pelo ciclo de vida do `PLAN.md` no Sentinel Protocol.

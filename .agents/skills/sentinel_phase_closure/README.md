@@ -1,5 +1,9 @@
 # Sentinel Phase Closure
 
+Version: 2026.3.0
+Status: Active
+Protocol line: 2026.3
+
 ## Proposito
 
 Fechar a execucao realizada com base em evidencia, registrar `DONE` e consolidar o minimo de conhecimento duravel sem misturar fechamento com planejamento.

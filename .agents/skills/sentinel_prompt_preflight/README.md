@@ -1,5 +1,9 @@
 # Sentinel Prompt Preflight
 
+Version: 2026.3.0
+Status: Active
+Protocol line: 2026.3
+
 ## Proposito
 
 Skill para transformar um pedido bruto em um prompt governado de execucao.
