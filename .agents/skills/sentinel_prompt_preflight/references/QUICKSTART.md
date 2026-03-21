@@ -1,14 +1,18 @@
 # Quickstart - Sentinel Prompt Preflight
 
-Use esta skill quando o pedido estiver ambíguo ou quando faltarem permissões e limites claros para execução.
+Use esta skill para transformar um pedido bruto em um prompt curto e governado para o executor.
 
-## Regras de uso rápido
-- Se o pedido já estiver completo (objetivo, escopo IN/OUT, restrições, critérios e permissões), não perguntar nada.
-- Se faltar informação essencial, fazer elicitação mínima (máximo 2 rodadas, até 8 perguntas por rodada).
-- Sempre entregar um único prompt final forte com PLAN/AGENT e stop rules explícitas.
-- Registrar lacunas remanescentes como TBD, sem bloquear a entrega do prompt final.
+## Regras de uso rapido
 
-## Saída esperada
-- Markdown em PT-BR.
-- Formato fixo de 8 seções.
-- Sem JSON.
+- Nao leia conteudo do repo.
+- Faca apenas sanity check por existencia.
+- Reescreva o pedido em formato operacional.
+- Referencie fontes canonicas so por path.
+- Instrua leitura sob demanda no executor.
+- Pare apos emitir o prompt final.
+
+## Saida esperada
+
+- Sempre 1 unico bloco de codigo Markdown `md`
+- Nenhum texto fora do bloco
+- Sem relatorio, analise ou diff

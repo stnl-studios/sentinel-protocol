@@ -3,7 +3,7 @@ name: sentinel_docs_bootstrap
 description: Bootstrap de documentação (create only) para projeto existente usando discovery do repo + entrevista guiada mínima. Centraliza TBD no Core Context. Não toca em PLAN.md.
 ---
 
-# Sentinel Docs Bootstrap v3
+# Sentinel Docs Bootstrap
 
 Executar bootstrap documental mínimo em projeto existente e sem documentação, em modo create only absoluto.
 
@@ -15,6 +15,19 @@ Executar bootstrap documental mínimo em projeto existente e sem documentação,
 4. Ler arquivos do repo para discovery sem executar comandos; não alterar código da aplicação.
 5. Limitar entrevista guiada a no máximo 2 rodadas por documento, sempre após discovery com evidências citadas.
 6. Não usar `TODO` nos docs gerados; toda lacuna vira `TBD` canônico em `docs/core/CONTEXT.md` com ID.
+
+## Addendum — Feature roots, container e subfeature (aditivo)
+
+Aplicar sem remover o fluxo atual:
+1. Detectar roots por heurística e evidência de paths reais (ex.: `src/app/main`, `src/app/modules`).
+2. Tratar diretório de primeiro nível da root como container.
+3. Tratar subdiretórios dentro de coleções (`pages`, `use-cases`, `routes`, `features`, `modules`, `screens`) como subfeatures quando houver confiança.
+4. Mapeamento canônico de docs:
+   - container: `docs/features/<root-slug>/<container-slug>/`
+   - subfeature: `docs/features/<root-slug>/<container-slug>/<collection>/<subfeature-slug>/`
+5. Quando não houver coleção clara para subfeature, usar `items` como default.
+6. Se confiança for baixa, não materializar subfeature; registrar `TBD` no contexto da unidade.
+7. Mesmo quando a unidade resolvida for aninhada, o `CONTEXT.md` da unidade deve usar `SCOPE: feature`; a hierarquia fica no path e em `FEATURE`, nunca em `SCOPE: subfeature`.
 
 ## Saída esperada no projeto alvo
 
@@ -74,13 +87,14 @@ Centralizar lacunas e perguntas pendentes apenas em `docs/core/CONTEXT.md` com I
 - `CONTRACTS`: apenas nomenclatura e localização de padrões; não catalogar endpoints/models/interfaces; lacunas viram TBD.
 - `TESTING`: como rodar e validar só com evidência; sem evidência, registrar TBD; sem TODO.
 - `UI_KIT`: catálogo operacional curto de componentes e status; sem duplicar design system; sem TODO.
-- `FEATURE CONTEXT`: memória curta por feature; pode linkar DONE existente sem duplicar; lacunas viram TBD no Core Context.
+- `FEATURE CONTEXT`: memória curta por feature com cabeçalho durável (`SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress`, `LAST UPDATED: YYYYMMDD`); pode linkar DONE existente sem duplicar; lacunas viram TBD no Core Context.
 
 ## DONE (padrão, não criar automaticamente)
 
 Não criar arquivos DONE nesta skill.
 Padrão oficial para execução futura:
-- `docs/features/<feature_slug>/done/DONE-YYYYMMDD-<slug>.md`
+- `docs/features/<feature_slug>/done/DONE-YYYYMMDD-<entrega-real>.md`
+- o slug descreve a entrega consolidada, nunca numeracao operacional da rodada
 - Feature Context referencia DONEs por link, sem duplicar conteúdo.
 
 ## Heurísticas de discovery por stack
@@ -211,4 +225,4 @@ Sempre imprimir ao final:
 - arquivos criados
 - arquivos `SKIPPED`
 - lista de IDs `TBD` apontando para `docs/core/CONTEXT.md`
-- próximo passo sugerido: executar skill separada de geração de `PLAN.md`
+- proximo passo sugerido: executar skill separada de geracao de `PLAN.md`

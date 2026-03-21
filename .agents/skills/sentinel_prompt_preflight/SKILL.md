@@ -1,229 +1,132 @@
 ---
 name: sentinel_prompt_preflight
-description: Router Planner. Heurística de demanda grande + sanity check por existência + sugestões de bootstrap + prompt único para PLAN/OK/EXECUTE no mesmo chat com gates (PlanID e AdrID), packs lazy, stop conditions e DocSync.
+description: Normaliza prompt cru em prompt estruturado de execucao; faz apenas sanity check por existencia; retorna sempre um unico bloco Markdown.
 ---
 
-# Sentinel Prompt Preflight (2026-03)
+# Sentinel Prompt Preflight
 
-## Contrato
+## Funcao unica
 
-Entrada
-1) Uma tarefa em linguagem natural.
+Receber um pedido ruim, cru, vago ou incompleto e devolve-lo como um prompt estruturado de execucao. O Preflight nao entende o projeto: ele so normaliza a entrada, aplica guardrails operacionais, faz sanity check por existencia e para.
+Ele nao fecha execucao, nao documenta fechamento, nao substitui `sentinel_phase_closure` e nao substitui `sentinel_plan_blueprint`.
 
-Saída
-1) Somente 1 prompt pronto para copiar e colar no chat do agente.
-2) Nenhum relatório, nenhuma explicação adicional fora do prompt.
+## Nunca fazer
 
-Regras de ouro
-1) Esta skill pode checar somente existência de arquivos e pastas quando a heurística indicar demanda grande.
-2) Esta skill não pode abrir nem ler conteúdo de arquivos para tomar decisões.
-3) Se faltar base canônica, sugerir bootstraps, mas nunca bloquear sem oferecer bypass explícito.
+1) Nao ler conteudo do repositorio, docs ou codigo.
+2) Nao abrir arquivo para resumir, inferir regra, arquitetura, stack ou escopo real.
+3) Nao montar plano tecnico com base em evidencia.
+4) Nao criar ou reciclar `PLAN.md`.
+5) Nao reorganizar `Escopo ativo`, `Bloco seguinte` ou `Bloco posterior`.
+6) Nao executar nada.
+7) Nao atuar como planner de dominio, executor ou auditor de documentacao.
+8) Nao despejar politica longa, framework interno ou manual operacional no output.
+9) Nao instruir o executor a atualizar docs duraveis.
+10) Nao instruir o executor a tocar `DONE`, `CONTEXT`, `STATE`, `ADR` ou `PLAN.md`.
 
-## Heurística de demanda grande
+## Pode fazer
 
-Considere "provável grande" se o texto da tarefa indicar 1 ou mais itens abaixo
-1) mexe em mais de um módulo ou área
-2) fala em consolidar, padronizar, reestruturar, migrar
-3) envolve permissões, perfis, papéis, acesso
-4) cria algo agregado a partir de muitos itens ou pastas
-5) inclui condições do tipo "somente se", "apenas quando", "depende de"
-6) sugere múltiplos arquivos ou múltiplos relatórios
+1) Reescrever o pedido do usuario em formato estruturado, com escopo apenas inicial e provisorio.
+2) Rodar somente sanity check por existencia.
+3) Referenciar fontes canonicas apenas por path ou categoria.
+4) Instruir leitura sob demanda no proximo passo.
+5) Encerrar apos emitir o prompt final.
 
-Se não for provável grande
-1) Não fazer sanity check
-2) Gerar direto o prompt principal Router Planner
+## Separacao canonica
 
-## Sanity check por existência
+1) `sentinel_plan_blueprint` cria e recicla o `PLAN.md`.
+2) O executor produz `PLAN OUTPUT` e `EXECUTE OUTPUT`.
+3) `sentinel_phase_closure` fecha a execucao e consolida docs duraveis pos-execucao.
+4) Esta skill apenas prepara o prompt do executor.
 
-Executar somente se a heurística marcar provável grande.
+## Sanity check permitido
 
-Whitelist v1 para checar existência
-1) docs/INDEX.md
-2) docs/core/RULES.md
-3) docs/core/STATE.md
-4) docs/core/CONTEXT.md
-5) docs/core/CONTRACTS.md
-6) docs/core/TESTING.md
-7) docs/core/UI_KIT.md
-8) docs/decisions
-9) PLAN.md
-10) docs/features
+Verifique somente se existem:
 
-Critérios
-1) Base canônica mínima presente se INDEX existe e RULES existe e STATE existe e CONTEXT existe
-2) PLAN presente se PLAN.md existe
-3) Se PLAN.md não existir e docs/features existir, checar se existe pelo menos um arquivo PLAN.md em qualquer subpasta imediata de docs/features. Se existir, considerar PLAN presente
-4) decisions presente se docs/decisions existe
+1) `docs/INDEX.md`
+2) `docs/core/RULES.md`
+3) `docs/core/CONTEXT.md`
+4) `docs/core/STATE.md`
+5) `PLAN.md` da unidade alvo somente se o texto do usuario indicar um path, feature ou artefato identificavel sem abrir arquivos
+6) `PLAN.md`
 
-Proibição
-1) Não abrir arquivos, não ler conteúdo, não procurar por texto dentro de arquivos.
+Regras:
 
-## Roteamento por sugestão
+1) Use apenas `PRESENTE`, `AUSENTE` ou `NAO IDENTIFICADO PELO TEXTO DO USUARIO`.
+2) Nunca abra arquivo, leia conteudo, procure texto ou tente validar semantica.
+3) Base critica = `docs/INDEX.md`, `docs/core/RULES.md`, `docs/core/CONTEXT.md`, `docs/core/STATE.md`.
+4) Plano principal do fluxo = `PLAN.md` da unidade alvo quando identificavel pelo texto do usuario.
+5) `PLAN.md` na raiz e apenas fallback real e provisiorio quando nao houver resolucao melhor da unidade alvo.
+6) `docs/core/PLAN.md` nao e fallback utilizavel nem alternativa operacional de plano.
+7) `PLAN.md` raiz nao e a casa canonica de `DONE`, `CONTEXT` ou outros artefatos duraveis.
+8) Se faltar base critica, permitir bypass com `SKIP`.
+9) Se nao houver plano principal identificavel e nenhum fallback real presente, permitir bypass com `SKIP-PLAN`.
 
-Use os resultados do sanity check para gerar um prompt que comece sugerindo um próximo passo.
+## Como montar o prompt
 
-Caso A base canônica mínima ausente
-1) sugerir rodar a skill sentinel_docs_bootstrap
-2) oferecer bypass: SKIP
+1) `TAREFA`: reescreva claramente o pedido do usuario.
+2) `MODO`: `Router Planner. Primeiro planeje. Nao execute nada antes de OK com o ID correto.`
+3) `SANITY CHECK`: liste somente o presente ou ausente de forma curta.
+4) `FONTES CANONICAS`: cite primeiro o `PLAN.md` da unidade alvo quando identificavel; use `PLAN.md` da raiz apenas como fallback real e provisiorio; a leitura real fica para o executor.
+5) `LEITURA SOB DEMANDA`: o executor le apenas o minimo necessario; nao le o repo inteiro; so amplia leitura se houver evidencia direta; se partir do fallback raiz, deve resolver a unidade real antes do fechamento documental.
+6) `LIMITES`: nao inventar regras, contratos, estruturas ou stack; nao fazer refactor amplo sem permissao; mudanca estrutural exige ADR; o executor nao toca `DONE`, `CONTEXT`, `STATE`, `ADR` nem `PLAN.md`; na duvida relevante, perguntar e parar.
+7) `SAIDA ESPERADA DO EXECUTOR`: `PLAN OUTPUT` curto; execucao somente apos `OK` com o ID correto; `EXECUTE OUTPUT` curto, objetivo e verificavel.
+8) `POS-EXECUCAO`: apos `EXECUTE OUTPUT`, o proximo passo canonico e `sentinel_phase_closure`.
 
-Caso B base canônica mínima presente, provável grande, PLAN ausente
-1) sugerir rodar a skill de PLAN Bootstrap
-2) nome padrão sugerido: sentinel_plan_bootstrap
-3) oferecer bypass: SKIP-PLAN
+## Formato obrigatorio
 
-Caso C tudo ok ou usuário optar por bypass
-1) seguir com prompt principal Router Planner
+1) Emita sempre exatamente um unico bloco de codigo Markdown `md`.
+2) Nao escreva nada fora do bloco.
+3) Nao retorne relatorio, analise, explicacao ou diff.
+4) A resposta inteira do Preflight deve ser o prompt final pronto para copiar e colar.
 
-## Como gerar o prompt final
+## Template obrigatorio
 
-1) Incluir a tarefa original em uma seção "TAREFA"
-2) Incluir um bloco curto "SANITY CHECK" apenas se o sanity check foi executado
-3) Incluir recomendações com bypass apenas se aplicável
-4) Incluir o prompt principal Router Planner sempre, como o corpo único do prompt
-5) O prompt deve ser em português
-6) O prompt deve ser compacto, sem prosa extra
-
-## Prompt único a ser emitido
-
-Você deve emitir exatamente o texto abaixo, preenchendo os campos entre chaves.
-Não emita nenhum texto antes ou depois.
-
-Começar prompt
-
-[INICIO DO PROMPT]
-
+````md
 TAREFA
-{TAREFA_USUARIO}
+{PEDIDO_REESCRITO}
 
 MODO
-Router Planner. Primeiro você planeja. Você não executa nada antes de aprovação explícita via OK com o ID correto.
+Router Planner. Primeiro planeje. Nao execute nada antes de OK com o ID correto.
 
-SE HOUVER SANITY CHECK, INSERIR
 SANITY CHECK
-{RESULTADOS_SANITY_CHECK}
+- docs/INDEX.md: {STATUS}
+- docs/core/RULES.md: {STATUS}
+- docs/core/CONTEXT.md: {STATUS}
+- docs/core/STATE.md: {STATUS}
+- PLAN principal da unidade alvo (`{PLAN_PATH_OU_NAO_IDENTIFICADO}`): {STATUS}
+- PLAN fallback raiz provisiorio (`PLAN.md`): {STATUS}
+Se faltar base critica, pare e aguarde `SKIP`.
+Se nao houver plano utilizavel, pare e aguarde `SKIP-PLAN`.
 
-SE HOUVER RECOMENDAÇÃO, INSERIR
-RECOMENDAÇÃO
-{RECOMENDACAO_ROTEAMENTO}
+FONTES CANONICAS
+Use apenas por referencia de path ou categoria:
+- `docs/INDEX.md`
+- `docs/core/`
+- `docs/decisions/`
+- `docs/features/`
+- `PLAN.md` da unidade alvo resolvida; se nao houver resolucao melhor, usar fallback provisiorio em `PLAN.md`
+Leia conteudo somente sob demanda no executor.
 
-BYPASS
-1) Para ignorar recomendação e seguir, usuário pode responder SKIP ou SKIP-PLAN conforme indicado.
-2) Para ignorar DocSync no fim, usuário pode responder SKIP-DOCSYNC.
+LEITURA SOB DEMANDA
+Leia apenas o minimo necessario para planejar.
+Nao leia o repo inteiro.
+Comece pelo `PLAN.md` principal resolvido; use fallback real apenas se necessario.
+Se comecar pelo fallback raiz, trate-o como provisiorio e resolva a unidade real antes do fechamento documental.
+So amplie leitura se houver evidencia direta.
 
-REGRAS INVOLÁVEIS
-1) Stop conditions: na dúvida relevante, pergunte e pare.
-2) Proibido refactor amplo sem permissão explícita.
-3) Proibido inventar stack, regras, contratos, estruturas.
-4) Proibido executar antes de OK com o ID correto.
+LIMITES
+Nao invente regras, contratos, estruturas ou stack.
+Nao faca refactor amplo sem permissao.
+Mudanca estrutural exige ADR aprovado.
+Executor nao toca `DONE`, `CONTEXT`, `STATE`, `ADR` nem `PLAN.md`.
+Executor nao fecha fase e nao consolida docs duraveis.
+Na duvida relevante, pergunte e pare.
 
-PRECEDÊNCIA DE FONTES CANÔNICAS
-1) Se docs/INDEX.md existir, siga a ordem de precedência definida nele.
-2) Se não existir, use esta ordem padrão
-    1) ADR em docs/decisions
-    2) docs/core/RULES.md
-    3) docs/core/CONTRACTS.md
-    4) docs/core/CONTEXT.md
-    5) docs/features e seus CONTEXT e PLAN
-    6) docs/core/UI_KIT.md ou DESIGN_SYSTEM quando existir
-    7) docs/core/TESTING.md
-    8) docs/core/STATE.md
-    9) docs/done quando existir
+SAIDA ESPERADA DO EXECUTOR
+Responder com PLAN OUTPUT curto.
+Executar somente apos OK com o ID correto.
+Responder com EXECUTE OUTPUT curto, objetivo e verificavel.
 
-PACKS LAZY
-1) Core mínimo sempre
-    1) docs/core/RULES.md
-    2) docs/core/STATE.md
-    3) docs/core/CONTEXT.md
-2) Feature pack somente se a tarefa tiver feature clara e houver pasta docs/features correspondente
-3) Evidence pack mínimo: só paths e nomes de seções, sem copiar trechos longos
-4) Reference pack somente por gatilho explícito: integração externa, contrato externo, ou pedido do usuário
-
-CLASSIFICAÇÃO DE ESCOPO
-Você deve classificar a tarefa como exatamente 1 opção
-1) Local: poucos arquivos, uma área, sem impactos em contratos globais
-2) Transversal: múltiplas áreas ou múltiplos módulos, mas sem mudar arquitetura base
-3) Estrutural: muda arquitetura, padrões globais, contratos globais, estrutura de pastas base, build ou convenções centrais
-
-REGRA DE ADR
-1) Se escopo for Estrutural, exige ADR aprovado antes de qualquer mudança estrutural.
-2) Você deve emitir AdrID e parar aguardando OK do usuário.
-3) Para escopo Estrutural, OK PlanID não é suficiente para iniciar EXECUTE. Exige OK AdrID.
-
-LIMITES PARA REFATOR AMPLO
-Considere refactor amplo se ocorrer qualquer item
-1) mais de 10 arquivos alterados sem justificativa direta
-2) mover ou renomear arquivos ou pastas
-3) renomear símbolos públicos com múltiplos usos
-4) tocar em shared core infra sem estar no escopo
-Ação: pedir permissão e parar
-
-MAQUINA DE ESTADOS NO MESMO CHAT
-Estado PLAN
-1) Ler apenas o necessário conforme packs lazy
-2) Produzir um plano curto e travado no formato PLAN OUTPUT
-3) Gerar PlanID
-4) Se escopo for Estrutural, também gerar AdrID
-5) Encerrar com STOP aguardando OK conforme regra abaixo
-
-Transição para EXECUTE
-1) Para escopo Local ou Transversal, só entrar em EXECUTE se a última mensagem do usuário for exatamente OK {PlanID}
-2) Para escopo Estrutural, só entrar em EXECUTE se a última mensagem do usuário for exatamente OK {AdrID}
-3) Se mensagem for diferente, permanecer em PLAN e não executar
-
-Estrutural
-1) Se escopo for Estrutural, após OK AdrID, criar ADR primeiro e então executar o plano
-
-DOCSYNC NO FIM DO EXECUTE
-Objetivo: manter docs mínimas coerentes, sem burocracia
-Regras
-1) Por padrão, atualizar no máximo 3 arquivos de docs por execução
-2) Alterar somente as seções necessárias, sem reformatar arquivos inteiros
-3) Se precisar mexer em mais de 3 docs, pedir permissão e parar
-4) Bypass: se usuário usar SKIP-DOCSYNC, registrar TBD e seguir
-
-Gatilhos DocSync
-1) PLAN.md: atualizar se houve desvio do plano ou para marcar concluído
-2) docs/core/STATE.md: atualizar se mudou comportamento, permissão, fluxo, config ou feature
-3) docs/core/CONTRACTS.md: atualizar se mudou contrato, DTO, payload, permissões públicas ou integrações
-4) docs/core/RULES.md ou CONTEXT: atualizar se mudou regra de negócio
-5) UI_KIT ou DESIGN_SYSTEM: atualizar se mudou padrão de UI ou componente reutilizável
-6) TESTING: atualizar se mudou validação mínima recomendada
-
-PLAN OUTPUT
-Você deve responder no máximo 60 linhas.
-Campos obrigatórios e ordem
-1) PlanID
-2) Escopo: Local ou Transversal ou Estrutural
-3) Se escopo for Estrutural, incluir AdrID logo após PlanID
-4) Packs a ler e lista de arquivos a ler em ordem
-5) Scope Lock: arquivos alvo previstos e fora de escopo explícito
-6) Plano em até 7 passos
-7) Validação mínima
-8) DocSync previsto
-9) Perguntas ou TBD no máximo 5 itens
-10) STOP aguardando OK PlanID ou OK AdrID, conforme regra de transição
-
-EXECUTE OUTPUT
-Você deve responder no máximo 40 linhas.
-Campos obrigatórios e ordem
-1) STATUS: DONE ou BLOCKED
-2) Escopo
-3) Arquivos alterados
-4) Validação executada
-5) DocSync aplicado ou SKIPPED
-6) Mudança de comportamento relevante
-7) Próximo passo ou motivo do bloqueio
-
-STOP CONDITIONS
-Você deve perguntar e parar se ocorrer qualquer item
-1) ambiguidade que muda comportamento do usuário
-2) falta de evidência para regra crítica
-3) conflito entre fontes canônicas
-4) necessidade de refactor amplo não autorizado
-5) mudança estrutural sem ADR aprovado
-
-[FINAL DO PROMPT]
-
-Terminar prompt
-
-[FIM DO PROMPT]
+POS-EXECUCAO
+Apos o EXECUTE OUTPUT, o proximo passo canonico e `sentinel_phase_closure`.
+````

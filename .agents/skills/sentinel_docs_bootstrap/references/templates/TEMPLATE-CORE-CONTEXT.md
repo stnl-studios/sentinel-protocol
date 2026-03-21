@@ -1,75 +1,39 @@
-# CONTEXT
+# CORE CONTEXT
 
-Este template serve para Context core e Context de feature.
-Use o cabeçalho para indicar o escopo.
+Tipo: APP | FE | BE | FS | TBD
+LAST UPDATED: YYYYMMDD
 
-## Cabeçalho
-SCOPE
-core ou feature
+## Objetivo do projeto
+Descreva o problema que o projeto resolve e o resultado esperado.
+Evite detalhes de implementação desnecessários.
 
-FEATURE
-preencha apenas se SCOPE for feature
-use um slug curto, por exemplo agenda, payments, onboarding
-
-OWNER
-quem mantém este contexto
-
-STATUS
-draft ou stable
-
-LAST UPDATED
-YYYYMMDD
-
-## Objetivo
-Descreva o problema e o resultado esperado.
-Evite detalhes de implementação aqui.
-
-## Escopo
+## Escopo atual
 ### Inclui
-Liste o que está dentro do escopo.
+Liste o que está dentro do escopo atual do projeto.
 
 ### Não inclui
-Liste o que está fora do escopo.
-
-## Restrições e suposições proibidas
-### Restrições
-Stack, plataforma, bibliotecas obrigatórias, limites de performance, etc.
-
-### Suposições proibidas
-Liste o que a IA não pode inferir.
-Exemplo contratos externos sem evidência, payloads, regras de negócio ambíguas.
-
-## Fluxos e casos de borda
-Descreva apenas o necessário para executar sem inventar.
-Se o fluxo for grande, preferir um resumo e apontar para docs específicos.
-
-## Entidades e conceitos
-Glossário mínimo.
-Aponte para CONTRACTS quando existir.
+Liste o que está fora do escopo ou foi explicitamente descartado.
 
 ## Evidências
-Para afirmar que algo existe, cite evidência.
-Formato recomendado
-path do arquivo
-e um trecho curto ou referência de seção
+Para afirmar que algo existe, cite evidência com path real e referência curta.
+Se não houver evidência suficiente, registrar TBD.
 
-Se não houver evidência, registrar TBD.
+## Restrições operacionais
+Stack, plataforma, bibliotecas obrigatórias, integrações críticas e limites relevantes.
 
 ## Perguntas e TBD
-Regra
 TBD canônico mora aqui.
-PLAN só referencia IDs.
+Formato sugerido:
 
-Formato
 TBD-001
 Pergunta
 Impacto baixo, médio, alto
 Bloqueia sim ou não
 Sugestão de como obter resposta
 
-## Decisões locais da feature
-Se SCOPE for feature, registrar decisões específicas aqui.
-Se afetar o projeto todo, criar ADR.
+## Decisões canônicas em vigor
+Registrar apenas fatos duráveis e decisões já assumidas como válidas.
+Se a decisão for estrutural e reutilizável, criar ADR.
 
-## Links
-Links internos do repositório e referências externas.
+## Referências úteis
+Links internos do repositório e referências externas que realmente ajudam a navegar o projeto.
