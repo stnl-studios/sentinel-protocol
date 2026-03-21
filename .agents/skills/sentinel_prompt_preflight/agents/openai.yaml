@@ -4,6 +4,6 @@ interface:
   version: "2026.3.0"
   protocol_release: "2026.3"
   status: "active"
-  short_description: "Normaliza pedido bruto em prompt governado de execucao; faz sanity check por existencia; nao fecha fase."
+  short_description: "Normaliza pedido bruto em prompt governado de execucao; nao le o conteudo do repo por design; nao fecha fase."
 policy:
   allow_implicit_invocation: true
