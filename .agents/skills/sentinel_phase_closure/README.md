@@ -1,90 +1,20 @@
 # Sentinel Phase Closure
 
-Version: 2026.3.0
-Status: Active
+Version: 2026.3.0  
+Status: Active  
 Protocol line: 2026.3
 
-## Proposito
+## Propósito
 
-Fechar a execucao realizada com base em evidencia, registrar `DONE` e consolidar o minimo de conhecimento duravel sem misturar fechamento com planejamento.
+`sentinel_phase_closure` é a skill de fechamento pós-execução do Sentinel Protocol.
 
-## O que faz
+Ela existe para fechar a execução com base em evidência, classificar o resultado como `CLOSED`, `PARTIAL` ou `BLOCKED`, criar o `DONE` da entrega real e consolidar apenas o mínimo de conhecimento durável, sem misturar fechamento com planejamento.
 
-1. valida objetivo, DoD e evidencias do escopo executado
-2. classifica o fechamento como `CLOSED`, `PARTIAL` ou `BLOCKED`
-3. cria `DONE` curto na unidade alvo resolvida com nome baseado na entrega real
-4. atualiza `CONTEXT` da unidade alvo com o minimo duravel e cabecalho estavel
-5. atualiza `docs/core/STATE.md` apenas se houver impacto global real
-6. cria ou exige ADR apenas quando a mudanca for estrutural
-7. emite `PHASE CLOSURE OUTPUT` curto e operacional
-8. absorve de forma definitiva a consolidacao documental pos-execucao
+---
 
-## O que nao faz
+## Onde entra no fluxo
 
-1. nao cria `PLAN.md`
-2. nao recicla, promove ou detalha blocos do `PLAN.md`
-3. nao executa implementacao
-4. nao substitui o executor
-5. nao faz discovery amplo do repositorio
-6. nao usa `PLAN.md` raiz como destino de artefatos duraveis
-7. nao recicla plano nem promove fase
-
-## Entradas
-
-1. `docs/INDEX.md`
-2. `docs/core/RULES.md`
-3. `docs/core/STATE.md`
-4. `docs/features/<unidade_resolvida>/CONTEXT.md`
-5. `docs/features/<unidade_resolvida>/PLAN.md`, ou `PLAN.md` raiz apenas como plano provisiorio do ciclo atual
-6. ultimo `EXECUTE OUTPUT`
-7. evidencias minimas associadas ao execute
-8. ultimo `DONE` da unidade, se existir
-
-## Saidas
-
-1. `PHASE CLOSURE OUTPUT`
-2. `docs/features/<unidade_resolvida>/done/DONE-YYYYMMDD-<entrega-real>.md`
-3. atualizacao minima de `docs/features/<unidade_resolvida>/CONTEXT.md`
-4. atualizacao de `docs/core/STATE.md` apenas se houver impacto global real
-5. `docs/decisions/ADR-YYYYMMDD-<slug>.md` apenas se a mudanca for estrutural
-
-## Convencoes duraveis de fechamento
-
-1. O `DONE` deve seguir `DONE-YYYYMMDD-<entrega-real>.md`; a entrega consolidada e a identidade duravel do arquivo.
-2. O `CONTEXT` da unidade resolvida usa cabecalho duravel: `SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress`, `LAST UPDATED: YYYYMMDD`.
-3. O historico do `CONTEXT` registra marcos entregues com data e path para o `DONE`, nunca com status operacional numerado.
-
-## Relacao com outras skills
-
-- `sentinel_docs_bootstrap` prepara a base documental minima antes do ciclo com `PLAN.md`, mas nao fecha execucao.
-- `sentinel_plan_blueprint` e o unico dono do ciclo de vida do `PLAN.md`; depois da closure, o passo canonico e `MODE=RECYCLE`.
-- `sentinel_prompt_preflight` apenas prepara o prompt do executor e nao participa do fechamento.
-- O executor implementa e valida; nao toca artefatos duraveis.
-- O fechamento documental real acontece aqui.
-- Esta skill absorve de forma definitiva toda necessidade de consolidacao documental pos-execucao.
-
-## Significado dos status
-
-### `CLOSED`
-
-Usar quando o objetivo da fase foi entregue, o DoD relevante foi demonstrado, a validacao minima foi registrada e as docs minimas de fechamento foram atualizadas.
-
-### `PARTIAL`
-
-Usar quando houve avancos reais, mas ainda nao e seguro afirmar fechamento completo porque parte do objetivo, do DoD ou da evidencia segue pendente.
-
-### `BLOCKED`
-
-Usar quando existe impedimento real para fechar a fase, falta evidencia critica, o DoD nao e verificavel, ha conflito relevante entre fontes ou existe mudanca estrutural sem ADR suficiente.
-
-## Regra para `PLAN.md` raiz
-
-1. `PLAN.md` na raiz e apenas fallback provisiorio para ciclos que ainda nao tinham unidade resolvida.
-2. Antes de gravar `DONE`, `CONTEXT` ou qualquer artefato duravel, a skill deve resolver a unidade alvo real com evidencia suficiente.
-3. Artefatos duraveis vivem sempre em `docs/features/<unidade_resolvida>/...`.
-4. Se a unidade continuar ambigua, a closure nao inventa diretorio canonico e deve retornar `PARTIAL` ou `BLOCKED`.
-
-## Posicao no fluxo canonico
+Fluxo canônico:
 
 1. `sentinel_docs_bootstrap`, quando faltar base documental
 2. `sentinel_plan_blueprint MODE=CREATE`
@@ -94,3 +24,148 @@ Usar quando existe impedimento real para fechar a fase, falta evidencia critica,
 6. executor -> `EXECUTE OUTPUT`
 7. `sentinel_phase_closure`
 8. `sentinel_plan_blueprint MODE=RECYCLE`
+
+> A Closure entra depois da execução. Ela não implementa, não recicla plano e não substitui o Blueprint.
+
+---
+
+## O que faz
+
+`sentinel_phase_closure`:
+
+1. valida objetivo, DoD e evidências do escopo executado
+2. classifica o fechamento como `CLOSED`, `PARTIAL` ou `BLOCKED`
+3. cria `DONE` curto na unidade alvo resolvida, com nome baseado na entrega real
+4. atualiza `CONTEXT` da unidade alvo com o mínimo durável
+5. atualiza `docs/core/STATE.md` apenas se houver impacto global real
+6. cria ou exige ADR apenas quando a mudança for estrutural
+7. emite `PHASE CLOSURE OUTPUT` curto e operacional
+8. absorve de forma definitiva a consolidação documental pós-execução
+
+---
+
+## O que não faz
+
+Não faz:
+
+1. criação de `PLAN.md`
+2. recycle de `PLAN.md`
+3. promoção, reordenação ou detalhamento de blocos do plano
+4. execução de implementação
+5. discovery amplo do repositório
+6. fechamento fictício sem evidência suficiente
+7. uso de `PLAN.md` raiz como destino de artefatos duráveis
+
+---
+
+## Quando usar
+
+Use `sentinel_phase_closure` quando:
+
+- já existe `EXECUTE OUTPUT`
+- você precisa decidir se o ciclo foi `CLOSED`, `PARTIAL` ou `BLOCKED`
+- o resultado precisa virar fechamento canônico
+- a memória durável mínima precisa ser atualizada
+
+Não use para:
+
+- abrir o primeiro `PLAN.md`
+- preparar o próximo `Escopo ativo`
+- reciclar ou promover blocos do plano
+- substituir a etapa de execução
+
+---
+
+## Entradas e saídas
+
+### Entradas
+
+1. `docs/INDEX.md`
+2. `docs/core/RULES.md`
+3. `docs/core/STATE.md`
+4. `docs/features/<unidade_resolvida>/CONTEXT.md`
+5. `docs/features/<unidade_resolvida>/PLAN.md`, ou `PLAN.md` raiz apenas como plano provisório do ciclo atual
+6. último `EXECUTE OUTPUT`
+7. evidências mínimas associadas à execução
+8. último `DONE` da unidade, se existir
+
+### Saídas
+
+1. `PHASE CLOSURE OUTPUT`
+2. `docs/features/<unidade_resolvida>/done/DONE-YYYYMMDD-<entrega-real>.md`
+3. atualização mínima de `docs/features/<unidade_resolvida>/CONTEXT.md`
+4. atualização de `docs/core/STATE.md` apenas se houver impacto global real
+5. `docs/decisions/ADR-YYYYMMDD-<slug>.md` apenas se a mudança for estrutural
+
+---
+
+## Significado dos status
+
+### `CLOSED`
+
+Use quando o objetivo do ciclo foi entregue, o DoD relevante foi demonstrado, a validação mínima foi registrada e as docs mínimas de fechamento foram atualizadas.
+
+### `PARTIAL`
+
+Use quando houve avanço real, mas ainda não é seguro afirmar fechamento completo porque parte do objetivo, do DoD ou da evidência segue pendente.
+
+### `BLOCKED`
+
+Use quando existe impedimento real para fechar o ciclo, falta evidência crítica, o DoD não é verificável, há conflito relevante entre fontes ou existe mudança estrutural sem ADR suficiente.
+
+---
+
+## Convenções duráveis de fechamento
+
+1. o `DONE` deve seguir `DONE-YYYYMMDD-<entrega-real>.md`
+2. o nome do `DONE` deve refletir a entrega consolidada, não o nome interno da etapa
+3. o `CONTEXT` da unidade usa cabeçalho durável estável
+4. o histórico do `CONTEXT` registra marcos entregues com data e link para `DONE`, nunca status operacional numerado
+5. conhecimento durável fica em `DONE`, `CONTEXT`, `STATE` e ADR quando aplicável, não em `PLAN.md`
+
+---
+
+## Regra para `PLAN.md` raiz
+
+1. `PLAN.md` na raiz é apenas fallback provisório para ciclos que ainda não tinham unidade resolvida
+2. antes de gravar `DONE`, `CONTEXT` ou qualquer artefato durável, a skill deve resolver a unidade alvo real com evidência suficiente
+3. artefatos duráveis vivem sempre em `docs/features/<unidade_resolvida>/...`
+4. se a unidade continuar ambígua, a Closure não inventa diretório canônico e deve retornar `PARTIAL` ou `BLOCKED`
+
+---
+
+## Relação com as outras skills
+
+- `sentinel_docs_bootstrap` prepara a base documental mínima, mas não fecha execução
+- `sentinel_plan_blueprint` é o único dono do ciclo de vida do `PLAN.md`; depois da Closure, o passo canônico seguinte, quando houver continuidade, é `MODE=RECYCLE`
+- `sentinel_prompt_preflight` apenas prepara o prompt do executor e não participa do fechamento
+- o executor implementa e valida, mas não toca artefatos duráveis
+- o fechamento documental real acontece aqui
+
+---
+
+## Regras invioláveis
+
+1. fechamento exige evidência suficiente
+2. fechamento não é recycle
+3. fechamento não é execução
+4. fechamento não é replanejamento
+5. `PLAN.md` não é casa de memória durável
+6. `DONE` e `CONTEXT` precisam refletir a entrega real
+7. mudança estrutural sem ADR suficiente não pode ser normalizada como fechamento completo
+
+---
+
+## Leitura rápida
+
+Se a dúvida for "quem fecha a execução e consolida o mínimo durável?", a resposta é: **sentinel_phase_closure**.
+
+Se a dúvida for "quem mexe no `PLAN.md` depois disso?", a resposta é: **sentinel_plan_blueprint MODE=RECYCLE**.
+
+Se a dúvida for "o que a Closure entrega?", a resposta é:
+
+- `PHASE CLOSURE OUTPUT`
+- `DONE` da entrega real
+- atualização mínima de `CONTEXT`
+- atualização de `STATE` só quando houver impacto global real
+- ADR apenas quando a mudança for estrutural

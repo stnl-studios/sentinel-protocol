@@ -4,6 +4,6 @@ interface:
   version: "2026.3.0"
   protocol_release: "2026.3"
   status: "active"
-  short_description: "Fecha a fase apos o EXECUTE OUTPUT e consolida docs duraveis; decide CLOSED, PARTIAL ou BLOCKED."
+  short_description: "Fecha a fase apos o EXECUTE OUTPUT, consolida docs duraveis e decide CLOSED, PARTIAL ou BLOCKED. Nao recicla PLAN.md."
 policy:
   allow_implicit_invocation: true
