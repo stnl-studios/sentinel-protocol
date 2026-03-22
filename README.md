@@ -228,25 +228,48 @@ Você precisa criar ou normalizar um doc sem inventar formato.
 
 ---
 
-## 🧠 Dois modos práticos do Prompt Preflight
+## 🧠 Dois usos práticos do Prompt Preflight
 
-O Preflight **não lê o repo por design**, não por limitação.
+O `sentinel_prompt_preflight` continua sendo a mesma skill nos dois casos.  
+Ele não vira planejador de domínio, não vira executor e não lê o repo por design.
 
-### Modo 1 — preparar o plano
-Use quando você quer que o executor primeiro devolva um plano operacional curto antes de qualquer mudança.
+O que muda é **em que ponto do ciclo** você está usando o prompt gerado por ele.
+
+### 1. Preflight para preparar o plano
+
+Aqui o Preflight organiza a entrada para o executor primeiro devolver um `PLAN OUTPUT` curto.  
+É o caso em que o pedido ainda está cru, vago ou mal delimitado, ou quando você quer transformar um recorte já conhecido em um plano operacional objetivo.
 
 Exemplos:
 - “quero ajustar a feature X sem quebrar Y”
 - “refatora isso sem mexer em contrato externo”
 - “me devolva primeiro o plano e só execute depois do OK”
 
-### Modo 2 — preparar a execução
-Use quando já existe um escopo delimitado e você quer só empacotar a execução com guardrails claros.
+Em outras palavras:  
+o Preflight não faz o plano técnico por conta própria;  
+ele só prepara o prompt que leva o executor até o `PLAN OUTPUT`.
+
+### 2. Preflight para preparar a execução
+
+Aqui o Preflight continua sendo só um normalizador/orquestrador.  
+A diferença é que o ciclo já está governado pelo handoff:
+
+`PLAN OUTPUT` → `OK {ID}` → `EXECUTE OUTPUT`
+
+Depois do `OK`, o mesmo prompt conduz o executor para a execução aprovada.  
+Isso não transforma o Preflight em executor.  
+Também não transforma o Preflight em dono do `PLAN.md`.
 
 Exemplos:
 - já existe `Escopo ativo` definido no `PLAN.md`
 - a tarefa já está delimitada por arquivos, regras e fora de escopo
 - você quer reduzir drift antes de executar
+
+### Regra simples para não confundir
+
+- se a dúvida é sobre **quem organiza ou recicla o `PLAN.md`**, a resposta é: **Blueprint**
+- se a dúvida é sobre **quem transforma pedido cru em prompt operacional bom**, a resposta é: **Preflight**
+- se a dúvida é sobre **quem fecha o ciclo com evidência e docs duráveis**, a resposta é: **Phase Closure**
 
 ### O que ele não faz
 - não lê conteúdo do repo;
@@ -395,6 +418,89 @@ Somente o **Sentinel Plan Blueprint**.
 6. 🧾 **Executor não fecha documentação durável**  
    O executor implementa e valida.  
    A consolidação durável acontece na Closure.
+
+---
+
+## 🔁 Saídas canônicas do ciclo
+
+No Sentinel, o ciclo curto não termina em “executar”.  
+O handoff esperado entre as etapas é:
+
+`PLAN OUTPUT` → `OK {ID}` → `EXECUTE OUTPUT` → `PHASE CLOSURE OUTPUT`
+
+A ideia não é gerar relatório longo em cada passo.  
+A ideia é produzir saídas curtas, objetivas e úteis para o próximo handoff.
+
+Os exemplos abaixo são **genéricos e ilustrativos**.  
+Eles existem para mostrar o formato e o nível de detalhe esperado, não para representar um projeto específico.
+
+### Exemplo curto de `PLAN OUTPUT`
+
+```md
+## PLAN OUTPUT
+
+ID: F1-YYYYMMDD-EXEMPLO
+
+OBJETIVO: ajustar o escopo ativo sem alterar contratos externos nem ampliar a frente atual
+
+ARQUIVOS ALVO:
+- caminho/do/arquivo-a
+- caminho/do/arquivo-b
+
+O QUE VOU FAZER
+1. aplicar o ajuste mínimo necessário no escopo ativo
+2. preservar comportamento existente fora do recorte
+3. validar que não houve expansão indevida do trabalho
+
+RISCOS / GATES
+- parar se exigir mudança fora do escopo ativo
+- parar se depender de contrato ou base não disponível
+
+VALIDAÇÃO
+- build / checagem equivalente sem erro
+- validação objetiva do comportamento alterado
+
+AGUARDANDO: `OK F1-YYYYMMDD-EXEMPLO`
+```
+
+### Exemplo curto de `EXECUTE OUTPUT`
+
+```md
+## EXECUTE OUTPUT
+
+ARQUIVOS TOCADOS:
+- caminho/do/arquivo-a
+- caminho/do/arquivo-b
+
+O QUE FOI FEITO
+1. apliquei o ajuste previsto no plano
+2. preservei o comportamento existente fora do escopo
+3. mantive os contratos externos inalterados
+
+VALIDAÇÃO
+- build / checagem equivalente OK
+- validação objetiva do recorte OK
+
+OBSERVAÇÕES
+- sem expansão de escopo
+- próximo passo canônico: `sentinel_phase_closure`
+```
+
+### Exemplo curto de `PHASE CLOSURE OUTPUT`
+
+```md
+## PHASE CLOSURE OUTPUT
+
+STATUS: CLOSED
+
+FEATURE: example/feature
+ENTREGA: ajuste concluído no escopo ativo
+DOD: atingido
+EVIDENCE SUMMARY: validações previstas executadas com resultado satisfatório e sem regressão observada no recorte alterado
+DOCS UPDATED: CONTEXT.md, DONE-YYYYMMDD-ajuste-concluido.md
+TBDS / OBSERVATIONS: none
+NEXT STEP: sentinel_plan_blueprint MODE=RECYCLE
+```
 
 ---
 

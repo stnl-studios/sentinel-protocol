@@ -122,6 +122,57 @@ Regras:
 
 ---
 
+## Contrato mínimo de um `PLAN.md` válido
+
+Este bloco não substitui as regras completas da skill.
+Ele existe para responder rapidamente: “esse output do Blueprint ficou bom o suficiente?”
+
+### Em `MODE=CREATE`
+
+Um `PLAN.md` válido em `MODE=CREATE`:
+
+- cria exatamente 1 `PLAN.md` para a unidade alvo, ou usa fallback provisório apenas quando a unidade real ainda não foi resolvida
+- organiza a demanda em horizonte curto
+- detalha somente o `Escopo ativo`
+- mantém `Bloco seguinte` curto
+- usa `Bloco posterior` apenas se houver base suficiente
+- não transforma risco, ideia solta ou backlog longo em bloco detalhado
+- devolve `SKIPPED` em vez de duplicar plano quando o plano alvo já existir
+
+Sinal de boa saída:
+quem lê o plano entende imediatamente qual é o recorte executável agora, sem precisar transformar o `PLAN.md` em backlog.
+
+### Em `MODE=RECYCLE`
+
+Um `PLAN.md` válido em `MODE=RECYCLE`:
+
+- parte do fechamento real do ciclo anterior
+- recompõe o plano sem replanejar a frente inteira
+- remove ou resume do centro o que já saiu do foco
+- detalha somente o novo `Escopo ativo`
+- mantém o restante como `Bloco seguinte` curto e `Bloco posterior` opcional e curto
+- só promove `Bloco seguinte` quando o fechamento e a base realmente permitirem
+- não promove automaticamente o próximo bloco em caso de `PARTIAL`
+- não promove artificialmente o próximo bloco em caso de `BLOCKED`
+- devolve `BLOCKED` se não houver base suficiente para recycle seguro
+
+Sinal de boa saída:
+o plano fica pronto para o próximo ciclo sem inflar horizonte, sem histórico longo e sem virar replanejamento completo da frente.
+
+### Regra de bolso
+
+Se a dúvida for “o plano está bom o suficiente?”:
+
+- existe um `Escopo ativo` claro e executável?
+- só ele está detalhado?
+- o restante ficou curto?
+- o output respeitou `CREATE` ou `RECYCLE` sem misturar papéis?
+- o Blueprint evitou virar backlog manager?
+
+Se a resposta for “sim”, o plano está no formato certo para seguir o fluxo.
+
+---
+
 ## Autoridade exclusiva sobre o plano
 
 Somente o Blueprint pode:
