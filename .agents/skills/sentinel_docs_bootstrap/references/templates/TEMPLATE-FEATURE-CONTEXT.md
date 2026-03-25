@@ -1,9 +1,17 @@
 # FEATURE CONTEXT
 
+## Snapshot de recycle
+- LAST DONE: TBD
+- LAST DECISION: TBD
+- LAST MILESTONE: TBD
+- OPEN THREADS:
+  - TBD
+- NEXT RECYCLE BASIS: TBD
+- LAST UPDATED: YYYYMMDD
+
 SCOPE: feature
 FEATURE: <feature-path>
 STATUS: active | in-progress
-LAST UPDATED: YYYYMMDD
 
 ## Objetivo da unidade
 Descreva o problema local que esta unidade resolve e o resultado esperado.

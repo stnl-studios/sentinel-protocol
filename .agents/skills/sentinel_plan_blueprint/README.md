@@ -1,6 +1,6 @@
 # Sentinel Plan Blueprint
 
-Version: 2026.3.0  
+Version: 2026.3.1  
 Status: Active  
 Protocol line: 2026.3
 
@@ -113,12 +113,18 @@ Usar após `sentinel_phase_closure`.
 
 Regras:
 
-1. recompor a estrutura do plano sem replanejar a feature inteira
-2. remover ou resumir o escopo concluído do centro do plano
-3. subir `Bloco seguinte` para `Escopo ativo` somente quando o fechamento permitir
-4. detalhar o novo `Escopo ativo`
-5. preparar o plano para o próximo ciclo
-6. se não houver base suficiente para recycle seguro, devolver `BLOCKED`
+1. usar esta precedência de base: `PLAN.md` atual -> último `PHASE CLOSURE OUTPUT` -> último `DONE` referenciado ou mais recente -> `CONTEXT.md` da feature só se ainda faltar base
+2. ao abrir `CONTEXT.md`, ler primeiro o bloco `## Snapshot de recycle`
+3. sem snapshot, fazer fallback dirigido: topo -> seções críticas -> trecho final ou histórico recente
+4. não assumir que só as primeiras linhas bastam
+5. não ler o `CONTEXT.md` inteiro por padrão
+6. recompor a estrutura do plano sem replanejar a feature inteira
+7. remover ou resumir o escopo concluído do centro do plano
+8. subir `Bloco seguinte` para `Escopo ativo` somente quando o fechamento permitir
+9. detalhar o novo `Escopo ativo`
+10. preparar o plano para o próximo ciclo
+11. `DONE` e `done/` são evidência complementar de fechamento; não substituem automaticamente o `CONTEXT`
+12. se não houver base suficiente para recycle seguro, devolver `BLOCKED`
 
 ---
 

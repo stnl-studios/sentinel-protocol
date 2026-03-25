@@ -1,6 +1,6 @@
 # Sentinel Phase Closure
 
-Version: 2026.3.0  
+Version: 2026.3.1  
 Status: Active  
 Protocol line: 2026.3
 
@@ -36,11 +36,12 @@ Fluxo canônico:
 1. valida objetivo, DoD e evidências do escopo executado
 2. classifica o fechamento como `CLOSED`, `PARTIAL` ou `BLOCKED`
 3. cria `DONE` curto na unidade alvo resolvida, com nome baseado na entrega real
-4. atualiza `CONTEXT` da unidade alvo com o mínimo durável
+4. atualiza `CONTEXT` da unidade alvo com o mínimo durável e mantém o snapshot de recycle no topo
 5. atualiza `docs/core/STATE.md` apenas se houver impacto global real
 6. cria ou exige ADR apenas quando a mudança for estrutural
 7. emite `PHASE CLOSURE OUTPUT` curto e operacional
 8. absorve de forma definitiva a consolidação documental pós-execução
+9. é a dona do snapshot durável de handoff da feature
 
 ---
 
@@ -119,9 +120,16 @@ Use quando existe impedimento real para fechar o ciclo, falta evidência crític
 
 1. o `DONE` deve seguir `DONE-YYYYMMDD-<entrega-real>.md`
 2. o nome do `DONE` deve refletir a entrega consolidada, não o nome interno da etapa
-3. o `CONTEXT` da unidade usa cabeçalho durável estável
-4. o histórico do `CONTEXT` registra marcos entregues com data e link para `DONE`, nunca status operacional numerado
-5. conhecimento durável fica em `DONE`, `CONTEXT`, `STATE` e ADR quando aplicável, não em `PLAN.md`
+3. o `CONTEXT` da unidade usa no topo o snapshot canônico:
+   - `LAST DONE`
+   - `LAST DECISION`
+   - `LAST MILESTONE`
+   - `OPEN THREADS`
+   - `NEXT RECYCLE BASIS`
+   - `LAST UPDATED`
+4. o snapshot deve permanecer curto, estável e coerente com o `DONE` recém-criado
+5. o histórico do `CONTEXT` registra marcos entregues com data e link para `DONE`, nunca status operacional numerado
+6. conhecimento durável fica em `DONE`, `CONTEXT`, `STATE` e ADR quando aplicável, não em `PLAN.md`
 
 ---
 

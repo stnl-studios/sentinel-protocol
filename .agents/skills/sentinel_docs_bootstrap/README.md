@@ -1,6 +1,6 @@
 # Sentinel Docs Bootstrap
 
-Version: 2026.3.0  
+Version: 2026.3.1  
 Status: Active  
 Protocol line: 2026.3
 
@@ -161,12 +161,19 @@ Entra apenas depois de uma execução concluída. Não participa do bootstrap.
 
 ### CONTEXT de feature
 Quando esta skill cria `docs/features/<feature>/CONTEXT.md`, ele nasce com cabeçalho durável:
+- `## Snapshot de recycle`
+- `LAST DONE: <path-ou-TBD>`
+- `LAST DECISION: CLOSED | PARTIAL | BLOCKED | TBD`
+- `LAST MILESTONE: <frase-curta-ou-TBD>`
+- `OPEN THREADS` com itens curtos ou `- TBD`
+- `NEXT RECYCLE BASIS: <frase curta sobre o que habilita o próximo recycle>`
+- `LAST UPDATED: YYYYMMDD`
 - `SCOPE: feature`
 - `FEATURE: <feature-path>`
 - `STATUS: active | in-progress`
-- `LAST UPDATED: YYYYMMDD`
 
 Mesmo para unidades aninhadas, a hierarquia vive no path e em `FEATURE`; o Bootstrap não usa `SCOPE: subfeature`.
+O restante do arquivo continua sendo memória durável curta da feature, sem virar mini-`PLAN.md` nem mini-`DONE`.
 
 ### DONE futuro
 O Bootstrap não cria `DONE`, mas o padrão esperado para fechamento posterior é:

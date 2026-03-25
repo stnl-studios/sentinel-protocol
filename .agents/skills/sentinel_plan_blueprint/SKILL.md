@@ -166,8 +166,25 @@ Pacote base:
 Ler apenas o minimo para reorganizar o plano:
 1. `PLAN.md` atual da feature
 2. ultimo `PHASE CLOSURE OUTPUT`
-3. ultimo `DONE` referenciado, se existir
-4. `CONTEXT` da feature somente se o fechamento nao bastar para recompor o `Escopo ativo`
+3. ultimo `DONE` referenciado ou mais recente da unidade, se existir
+4. `CONTEXT.md` da feature somente se ainda faltar base para recompor o `Escopo ativo`
+
+Precedencia obrigatoria:
+1. `PLAN.md` atual
+2. ultimo `PHASE CLOSURE OUTPUT`
+3. ultimo `DONE` referenciado ou mais recente da unidade, quando houver
+4. `CONTEXT.md` da feature somente se ainda faltar base
+
+Ao abrir `CONTEXT.md`, usar leitura dirigida nesta ordem:
+1. bloco `## Snapshot de recycle` no topo, quando existir
+2. secoes criticas: `TBD`, pendencias, riscos, perguntas abertas e referencias uteis
+3. trecho final ou historico recente
+
+Regras:
+1. nao assumir que as primeiras linhas fora do snapshot bastam
+2. nao ler o `CONTEXT.md` inteiro por padrao
+3. `done/` e `DONE` sao evidencia complementar de fechamento; nao substituem automaticamente o `CONTEXT.md`
+4. quando o snapshot nao existir, usar o fallback dirigido acima para compatibilidade com contextos antigos
 
 ## Como preencher o plano
 
@@ -243,12 +260,14 @@ Nunca:
 
 1. Ler o `PLAN.md` atual e identificar o `Escopo ativo`.
 2. Ler o ultimo `PHASE CLOSURE OUTPUT`.
-3. Aplicar a regra de `CLOSED`, `PARTIAL` ou `BLOCKED`.
-4. Recompor os blocos sem replanejar a feature inteira.
-5. Detalhar o novo `Escopo ativo` e reduzir o resto para esboco curto.
-6. Manter historico curto opcional, no maximo 1 ciclo.
-7. Atualizar por padrao o mesmo `PLAN.md`; se o ciclo saiu do fallback raiz para unidade resolvida, materializar ou atualizar o `PLAN.md` canonico dessa unidade.
-8. Se nao houver `PLAN.md` do ciclo atual ou fechamento suficiente para recycle seguro, parar com `BLOCKED`.
+3. Ler o ultimo `DONE` referenciado ou mais recente da unidade, quando houver.
+4. Abrir `CONTEXT.md` da feature somente se ainda faltar base; priorizar o bloco `## Snapshot de recycle` e, sem snapshot, usar leitura dirigida de topo, secoes criticas e trecho final ou historico recente.
+5. Aplicar a regra de `CLOSED`, `PARTIAL` ou `BLOCKED`.
+6. Recompor os blocos sem replanejar a feature inteira.
+7. Detalhar o novo `Escopo ativo` e reduzir o resto para esboco curto.
+8. Manter historico curto opcional, no maximo 1 ciclo.
+9. Atualizar por padrao o mesmo `PLAN.md`; se o ciclo saiu do fallback raiz para unidade resolvida, materializar ou atualizar o `PLAN.md` canonico dessa unidade.
+10. Se nao houver `PLAN.md` do ciclo atual ou fechamento suficiente para recycle seguro, parar com `BLOCKED`.
 
 ## Posicao canonica no fluxo
 
@@ -279,3 +298,4 @@ Retornar curto e objetivo, com:
 2. `references/templates/TEMPLATE-PLAN.md` preserva o template e a separacao entre `Escopo ativo`, `Bloco seguinte` e `Bloco posterior`.
 3. A skill deixa claro que a autoridade sobre a fila do plano e exclusiva do blueprint.
 4. O fluxo canonico fica consistente com `sentinel_prompt_preflight` e `sentinel_phase_closure`.
+5. `MODE=RECYCLE` deixa explicito que o snapshot do `CONTEXT.md` e a interface duravel prioritaria de handoff quando o plano, o fechamento e o `DONE` ainda nao bastarem.

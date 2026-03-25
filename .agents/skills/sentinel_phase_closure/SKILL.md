@@ -103,6 +103,8 @@ Nota de resolucao:
 23. O historico no `CONTEXT` registra marcos entregues com data e ponteiro para o `DONE`, nunca em formato de status operacional numerado.
 24. Esta skill absorve definitivamente toda necessidade de consolidacao documental pos-execucao.
 25. Nao existe papel documental residual no executor apos o `EXECUTE OUTPUT`.
+26. Esta skill e a dona do snapshot de recycle no topo do `CONTEXT.md` da unidade resolvida.
+27. O snapshot de recycle deve permanecer curto, estavel e coerente com o `DONE` recem-criado, sem virar mini-`PLAN.md`, mini-`DONE` ou log operacional.
 
 ## Pacote minimo de contexto
 
@@ -210,10 +212,11 @@ Registrar de forma curta:
 Atualizar somente o minimo necessario para a feature continuar coerente:
 
 1. cabecalho estavel e duravel da unidade
-2. fatos duraveis aprendidos com a execucao
-3. historico curto por marco entregue com data e path para o `DONE`
-4. TBDs, restricoes ou riscos locais que continuam abertos
-5. referencias uteis da unidade, sem transformar o arquivo em log de execucao
+2. snapshot curto de recycle no topo
+3. fatos duraveis aprendidos com a execucao
+4. historico curto por marco entregue com data e path para o `DONE`
+5. TBDs, restricoes ou riscos locais que continuam abertos
+6. referencias uteis da unidade, sem transformar o arquivo em log de execucao
 
 ## Convencoes duraveis obrigatorias
 
@@ -222,9 +225,19 @@ Atualizar somente o minimo necessario para a feature continuar coerente:
 1. Sempre usar `SCOPE: feature`.
 2. Sempre usar `FEATURE: <feature-path>` com o path resolvido da unidade, inclusive quando ela for aninhada.
 3. O `STATUS` do cabecalho deve ficar em `active` ou `in-progress`, conforme o estado duravel observado; nunca acoplar o valor a numeracao operacional.
-4. `LAST UPDATED` deve usar `YYYYMMDD`.
-5. O historico deve registrar o que foi consolidado, a data e o path do `DONE`.
-6. Exemplo aceitavel de historico:
+4. No topo, manter sempre o bloco canonico:
+   `## Snapshot de recycle`
+   `- LAST DONE: <path-ou-TBD>`
+   `- LAST DECISION: CLOSED | PARTIAL | BLOCKED | TBD`
+   `- LAST MILESTONE: <frase-curta-ou-TBD>`
+   `- OPEN THREADS:`
+   `  - <item curto ou TBD>`
+   `- NEXT RECYCLE BASIS: <frase curta sobre o que habilita o proximo recycle>`
+   `- LAST UPDATED: YYYYMMDD`
+5. `OPEN THREADS` pode ficar apenas com `- TBD` quando nao houver base melhor.
+6. O snapshot deve ser coerente com o `DONE` recem-criado e nao deve duplicar conteudo longo do `DONE`.
+7. O historico deve registrar o que foi consolidado, a data e o path do `DONE`.
+8. Exemplo aceitavel de historico:
    - `20260309: interfaces e service do relatorio consolidado concluidos -> docs/features/print-documents/consolidated-report/done/DONE-20260309-interfaces-service-relatorio-consolidado.md`
 
 ### DONE da unidade resolvida
@@ -265,7 +278,7 @@ Se a mudanca estrutural existir e nao houver base suficiente para ADR, parar em 
 9. Classificar o fechamento como `CLOSED`, `PARTIAL` ou `BLOCKED`.
 10. Derivar o slug do `DONE` a partir da entrega consolidada demonstrada por objetivo e evidencia, nunca pelo numero da fase.
 11. Criar `DONE` curto no diretorio da unidade resolvida com o veredito, a evidencia principal, validacoes e pendencias.
-12. Atualizar `docs/features/<feature>/CONTEXT.md` da unidade resolvida com cabecalho duravel, fatos duraveis e historico por marco entregue apontando para o `DONE`.
+12. Atualizar `docs/features/<feature>/CONTEXT.md` da unidade resolvida com o snapshot canonico de recycle no topo, cabecalho duravel, fatos duraveis e historico por marco entregue apontando para o `DONE`.
 13. Atualizar `docs/core/STATE.md` somente se a mudanca tiver impacto global real.
 14. Criar ou exigir ADR somente se a mudanca for estrutural.
 15. Emitir `PHASE CLOSURE OUTPUT` curto, claro e operacional, incluindo o proximo passo logico.
@@ -362,7 +375,7 @@ Regras do output:
 ## Observacoes finais de uso
 
 1. `DONE` e o registro de fechamento da tentativa executada. Pode registrar `CLOSED`, `PARTIAL` ou `BLOCKED`, mas o nome do arquivo deve representar a entrega real.
-2. `CONTEXT` guarda apenas memoria duravel minima da feature; manter cabecalho estavel e historico por marco entregue, sem duplicar o `DONE`.
+2. `CONTEXT` guarda apenas memoria duravel minima da feature; manter snapshot curto no topo, cabecalho estavel e historico por marco entregue, sem duplicar o `DONE`.
 3. `STATE` existe para delta global real; nao usar como despejo de status local da feature.
 4. ADR existe para decisao estrutural; nao usar ADR para pendencia trivial.
 5. Esta skill fecha a execucao realizada. O replanejamento posterior pertence exclusivamente a `sentinel_plan_blueprint MODE=RECYCLE`.
