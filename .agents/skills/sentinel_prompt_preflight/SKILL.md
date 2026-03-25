@@ -8,7 +8,7 @@ description: Normaliza prompt cru em prompt estruturado de execucao; faz apenas 
 ## Funcao unica
 
 Receber um pedido ruim, cru, vago ou incompleto e devolve-lo como um prompt estruturado de execucao. O Preflight nao entende o projeto: ele so normaliza a entrada, aplica guardrails operacionais, faz sanity check por existencia e para.
-Ele nao fecha execucao, nao documenta fechamento, nao substitui `sentinel_phase_closure` e nao substitui `sentinel_plan_blueprint`.
+Ele nao fecha execucao, nao documenta fechamento, nao le docs, nao escreve `CONTEXT` e nao substitui `sentinel_phase_closure` nem `sentinel_plan_blueprint`.
 
 ## Nunca fazer
 
@@ -22,6 +22,7 @@ Ele nao fecha execucao, nao documenta fechamento, nao substitui `sentinel_phase_
 8) Nao despejar politica longa, framework interno ou manual operacional no output.
 9) Nao instruir o executor a atualizar docs duraveis.
 10) Nao instruir o executor a tocar `DONE`, `CONTEXT`, `STATE`, `ADR` ou `PLAN.md`.
+11) Nao consolidar memoria duravel nem participar do handoff documental entre Closure e Blueprint.
 
 ## Pode fazer
 
@@ -37,6 +38,7 @@ Ele nao fecha execucao, nao documenta fechamento, nao substitui `sentinel_phase_
 2) O executor produz `PLAN OUTPUT` e `EXECUTE OUTPUT`.
 3) `sentinel_phase_closure` fecha a execucao e consolida docs duraveis pos-execucao.
 4) Esta skill apenas prepara o prompt do executor.
+5) O handoff duravel via `CONTEXT.md` da feature pertence a Closure e Blueprint, nao ao Preflight.
 
 ## Sanity check permitido
 
@@ -119,7 +121,7 @@ Nao invente regras, contratos, estruturas ou stack.
 Nao faca refactor amplo sem permissao.
 Mudanca estrutural exige ADR aprovado.
 Executor nao toca `DONE`, `CONTEXT`, `STATE`, `ADR` nem `PLAN.md`.
-Executor nao fecha fase e nao consolida docs duraveis.
+Executor nao faz fechamento pos-execucao e nao consolida docs duraveis.
 Na duvida relevante, pergunte e pare.
 
 SAIDA ESPERADA DO EXECUTOR

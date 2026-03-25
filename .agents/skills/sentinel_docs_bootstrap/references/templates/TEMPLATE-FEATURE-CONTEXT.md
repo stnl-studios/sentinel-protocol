@@ -1,9 +1,16 @@
 # FEATURE CONTEXT
 
-SCOPE: feature
-FEATURE: <feature-path>
-STATUS: active | in-progress
-LAST UPDATED: YYYYMMDD
+## Snapshot de recycle
+- LAST DONE: TBD
+- LAST DECISION: TBD
+- LAST MILESTONE: TBD
+- OPEN THREADS:
+  - TBD
+- NEXT RECYCLE BASIS: TBD
+- SCOPE: feature
+- FEATURE: <feature-path>
+- STATUS: active | in-progress
+- LAST UPDATED: YYYYMMDD
 
 ## Objetivo da unidade
 Descreva o problema local que esta unidade resolve e o resultado esperado.
@@ -24,7 +31,7 @@ Registrar marcos entregues com data e ponteiro para o `DONE`.
 Formato sugerido:
 - `YYYYMMDD: <entrega consolidada> -> docs/features/<feature-path>/done/DONE-YYYYMMDD-<entrega-real>.md`
 
-Não usar histórico por número de fase.
+Não usar histórico por numeração operacional.
 
 ## Decisões locais
 Registrar apenas decisões locais duráveis desta unidade.

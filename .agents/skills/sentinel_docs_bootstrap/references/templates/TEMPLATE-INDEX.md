@@ -101,7 +101,7 @@ Divida o escopo.
 ## Protocolo de atualização
 Ao finalizar uma execucao concluida
 1. criar um DONE na pasta done da feature
-2. atualizar o CONTEXT da feature com fatos duráveis e histórico por entrega
+2. atualizar o CONTEXT da feature com o snapshot curto de recycle no topo, fatos duráveis e histórico por entrega
 3. atualizar o STATE core apenas se algo global mudou
 4. se houve mudança estrutural, criar ADR e atualizar RULES ou CONTRACTS se aplicável
 

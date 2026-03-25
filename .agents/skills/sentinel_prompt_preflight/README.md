@@ -1,6 +1,6 @@
 # Sentinel Prompt Preflight
 
-Version: 2026.3.0  
+Version: 2026.3.1  
 Status: Active  
 Protocol line: 2026.3
 
@@ -51,6 +51,7 @@ O papel dele é mais estreito e mais útil: **organizar a entrada, aplicar guard
 - não executa nada
 - não fecha execução
 - não documenta fechamento
+- não lê docs nem consolida memória durável
 - não instrui o executor a tocar `DONE`, `CONTEXT`, `STATE`, `ADR` ou `PLAN.md`
 - não atua como planner de domínio, executor ou auditor
 
@@ -99,6 +100,7 @@ Exemplos:
 
 - O ciclo de vida do `PLAN.md` pertence exclusivamente a `sentinel_plan_blueprint`.
 - Fechamento da execução pertence exclusivamente a `sentinel_phase_closure`.
+- O handoff durável via `CONTEXT.md` da feature pertence exclusivamente a Closure e Blueprint.
 - `sentinel_docs_bootstrap` prepara a base documental quando o repositório ainda não tem base canônica suficiente.
 - O Preflight apenas prepara o prompt do executor para o ciclo atual, sobre `Escopo ativo` ou tarefa já definida.
 - O executor implementa e valida; não toca artefatos duráveis.

@@ -58,14 +58,14 @@ Nunca incluir Reference por padrão
 Reference só entra por gatilho
 
 Se a execução exigir Reference repetidamente
-dividir a fase
+dividir o escopo
 
 ## Colaboração
 Core muda pouco e sempre via PR com revisão
 Feature é onde o trabalho diário acontece
 Evitar editar o mesmo arquivo Core em paralelo
 
-## Atualização obrigatória ao concluir fase
+## Atualização obrigatória ao concluir a execução
 1. criar DONE da feature
 2. atualizar CONTEXT da feature
 3. atualizar STATE apenas se global mudou

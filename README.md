@@ -128,8 +128,8 @@ Leitura rápida do pipeline:
 | Prompt Preflight | Pedido cru ou escopo já definido | 1 prompt governado em bloco `md` |
 | Executor (plano) | Prompt do Preflight + contexto mínimo permitido | `PLAN OUTPUT` |
 | Executor (execução) | `OK` do dev + plano aprovado | Implementação, validação e `EXECUTE OUTPUT` |
-| Phase Closure | `EXECUTE OUTPUT` + evidências + docs mínimas | `PHASE CLOSURE OUTPUT`, `DONE` e updates duráveis |
-| Blueprint RECYCLE | `PLAN.md` atual + closure | Novo `Escopo ativo` e plano recomposto |
+| Phase Closure | `EXECUTE OUTPUT` + evidências + docs mínimas | `PHASE CLOSURE OUTPUT`, `DONE`, snapshot no `CONTEXT` e updates duráveis |
+| Blueprint RECYCLE | `PLAN.md` atual + closure | Novo `Escopo ativo` e plano recomposto a partir da base mínima do ciclo |
 
 ### O que é obrigatório vs opcional no handoff
 - **Bootstrap** é obrigatório só quando faltar base documental mínima
@@ -181,6 +181,7 @@ Só o Blueprint pode:
 - reciclar `PLAN.md`
 - reorganizar `Escopo ativo`, `Bloco seguinte` e `Bloco posterior`
 - detalhar o `Escopo ativo`
+- ler primeiro o snapshot de recycle do `CONTEXT.md` quando o recycle ainda precisar dessa base
 
 ---
 
@@ -196,6 +197,7 @@ Existe um `EXECUTE OUTPUT` e você precisa fechar a execução como `CLOSED`, `P
 
 **Importante**  
 A Closure não recicla `PLAN.md`, não reorganiza seus blocos e não detalha o próximo escopo.  
+Ela mantém o snapshot curto no topo do `CONTEXT.md` da feature como handoff durável para recycle.  
 O passo canônico seguinte, quando houver continuidade, é `sentinel_plan_blueprint MODE=RECYCLE`.
 
 ---
@@ -212,6 +214,7 @@ O repo está sem docs canônicas do Sentinel ou muito incompleto.
 
 **Importante**  
 O Bootstrap não é backlog manager, não abre ciclo de execução e não substitui o Blueprint.  
+Quando cria `CONTEXT` de feature, ele já semeia o snapshot curto de recycle no topo.  
 Ele prepara a base mínima para o protocolo operar melhor.
 
 ---
@@ -270,6 +273,7 @@ Exemplos:
 - se a dúvida é sobre **quem organiza ou recicla o `PLAN.md`**, a resposta é: **Blueprint**
 - se a dúvida é sobre **quem transforma pedido cru em prompt operacional bom**, a resposta é: **Preflight**
 - se a dúvida é sobre **quem fecha o ciclo com evidência e docs duráveis**, a resposta é: **Phase Closure**
+- se a dúvida é sobre **quem mantém o handoff durável no `CONTEXT.md`**, a resposta é: **Closure escreve, Blueprint consome**
 
 ### O que ele não faz
 - não lê conteúdo do repo;
@@ -385,6 +389,7 @@ Quando a demanda precisa de recorte operacional, horizonte curto e separação e
 ### Quando registrar no plano vs memória durável?
 - **Plano**: recorte operacional temporário do ciclo
 - **Memória durável**: o que precisa sobreviver ao ciclo em `DONE`, `CONTEXT`, `STATE` e ADR quando aplicável
+- o topo do `CONTEXT.md` da feature começa com `## Snapshot de recycle`; nele ficam `SCOPE`, `FEATURE`, `STATUS` e `LAST UPDATED`, sem substituir `DONE` nem virar mini-`PLAN.md`
 
 ### Quando uma execução incompleta deve virar `PARTIAL`?
 Quando houve avanço real, mas o objetivo do ciclo não foi concluído integralmente e o fechamento ainda precisa consolidar evidência e preparar continuidade.
@@ -508,11 +513,11 @@ NEXT STEP: sentinel_plan_blueprint MODE=RECYCLE
 
 | Skill | Version | Status |
 |---|---:|---|
-| Sentinel Prompt Preflight | 2026.3.0 | Active |
-| Sentinel Plan Blueprint | 2026.3.0 | Active |
-| Sentinel Phase Closure | 2026.3.0 | Active |
-| Sentinel Docs Bootstrap | 2026.3.0 | Active |
-| Templates canônicos | 2026.3.0 | Active |
+| Sentinel Prompt Preflight | 2026.3.1 | Active |
+| Sentinel Plan Blueprint | 2026.3.1 | Active |
+| Sentinel Phase Closure | 2026.3.1 | Active |
+| Sentinel Docs Bootstrap | 2026.3.1 | Active |
+| Templates canônicos | 2026.3.1 | Active |
 
 ---
 

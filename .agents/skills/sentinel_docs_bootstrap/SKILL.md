@@ -87,7 +87,7 @@ Centralizar lacunas e perguntas pendentes apenas em `docs/core/CONTEXT.md` com I
 - `CONTRACTS`: apenas nomenclatura e localização de padrões; não catalogar endpoints/models/interfaces; lacunas viram TBD.
 - `TESTING`: como rodar e validar só com evidência; sem evidência, registrar TBD; sem TODO.
 - `UI_KIT`: catálogo operacional curto de componentes e status; sem duplicar design system; sem TODO.
-- `FEATURE CONTEXT`: memória curta por feature com cabeçalho durável (`SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress`, `LAST UPDATED: YYYYMMDD`); pode linkar DONE existente sem duplicar; lacunas viram TBD no Core Context.
+- `FEATURE CONTEXT`: memória curta por feature com bloco `## Snapshot de recycle` no topo, incluindo `SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress` e `LAST UPDATED: YYYYMMDD`; abaixo ficam fatos duráveis e histórico curto por marco; pode linkar DONE existente sem duplicar; lacunas viram TBD no Core Context.
 
 ## DONE (padrão, não criar automaticamente)
 
@@ -96,6 +96,30 @@ Padrão oficial para execução futura:
 - `docs/features/<feature_slug>/done/DONE-YYYYMMDD-<entrega-real>.md`
 - o slug descreve a entrega consolidada, nunca numeracao operacional da rodada
 - Feature Context referencia DONEs por link, sem duplicar conteúdo.
+
+## Snapshot canônico do FEATURE CONTEXT
+
+Quando esta skill cria `docs/features/<feature>/CONTEXT.md`, o arquivo deve nascer com este bloco no topo:
+
+`## Snapshot de recycle`
+- `LAST DONE: <path-ou-TBD>`
+- `LAST DECISION: CLOSED | PARTIAL | BLOCKED | TBD`
+- `LAST MILESTONE: <frase-curta-ou-TBD>`
+- `OPEN THREADS:`
+  - `<item curto ou TBD>`
+- `NEXT RECYCLE BASIS: <frase curta sobre o que habilita o próximo recycle>`
+- `SCOPE: feature`
+- `FEATURE: <feature-path>`
+- `STATUS: active | in-progress`
+- `LAST UPDATED: YYYYMMDD`
+
+Regras:
+1. manter curto e estável
+2. não virar mini-`PLAN.md`
+3. não virar mini-`DONE`
+4. `OPEN THREADS` pode ficar só com `- TBD` quando não houver base melhor
+5. abaixo do snapshot ficam fatos duráveis e histórico resumido por marco, apontando para `DONE` quando existir
+6. o restante do arquivo continua sendo memória durável curta da feature
 
 ## Heurísticas de discovery por stack
 
