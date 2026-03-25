@@ -113,7 +113,7 @@ Usar após `sentinel_phase_closure`.
 
 Regras:
 
-1. usar esta precedência de base: `PLAN.md` atual -> último `PHASE CLOSURE OUTPUT` -> último `DONE` referenciado ou mais recente -> `CONTEXT.md` da feature só se ainda faltar base
+1. usar esta precedência de base: `PLAN.md` atual -> último `PHASE CLOSURE OUTPUT` -> último `DONE` referenciado ou mais recente, como evidência complementar -> `CONTEXT.md` da feature só se ainda faltar base
 2. ao abrir `CONTEXT.md`, ler primeiro o bloco `## Snapshot de recycle`
 3. sem snapshot, fazer fallback dirigido: topo -> seções críticas -> trecho final ou histórico recente
 4. não assumir que só as primeiras linhas bastam

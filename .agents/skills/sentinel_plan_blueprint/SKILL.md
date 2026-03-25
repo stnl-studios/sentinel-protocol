@@ -74,7 +74,7 @@ Blueprint e o unico dono do ciclo de vida do `PLAN.md`.
 6. `MODE=RECYCLE` nao e fechamento.
 7. `MODE=RECYCLE` nao e execucao.
 8. `MODE=RECYCLE` nao e replanejamento completo da feature.
-9. Se a fase ficar grande demais, divida a fase.
+9. Se o `Escopo ativo` ficar grande demais, divida em blocos menores.
 10. Se houver mudanca estrutural relevante, apenas sinalize necessidade de ADR.
 11. Use o menor pacote de contexto possivel.
 12. Evite backlog longo, historico longo e previsao distante.
@@ -166,13 +166,13 @@ Pacote base:
 Ler apenas o minimo para reorganizar o plano:
 1. `PLAN.md` atual da feature
 2. ultimo `PHASE CLOSURE OUTPUT`
-3. ultimo `DONE` referenciado ou mais recente da unidade, se existir
+3. ultimo `DONE` referenciado ou mais recente da unidade, como evidencia complementar, se existir
 4. `CONTEXT.md` da feature somente se ainda faltar base para recompor o `Escopo ativo`
 
 Precedencia obrigatoria:
 1. `PLAN.md` atual
 2. ultimo `PHASE CLOSURE OUTPUT`
-3. ultimo `DONE` referenciado ou mais recente da unidade, quando houver
+3. ultimo `DONE` referenciado ou mais recente da unidade, como evidencia complementar, quando houver
 4. `CONTEXT.md` da feature somente se ainda faltar base
 
 Ao abrir `CONTEXT.md`, usar leitura dirigida nesta ordem:
@@ -260,7 +260,7 @@ Nunca:
 
 1. Ler o `PLAN.md` atual e identificar o `Escopo ativo`.
 2. Ler o ultimo `PHASE CLOSURE OUTPUT`.
-3. Ler o ultimo `DONE` referenciado ou mais recente da unidade, quando houver.
+3. Ler o ultimo `DONE` referenciado ou mais recente da unidade, como evidencia complementar, quando houver.
 4. Abrir `CONTEXT.md` da feature somente se ainda faltar base; priorizar o bloco `## Snapshot de recycle` e, sem snapshot, usar leitura dirigida de topo, secoes criticas e trecho final ou historico recente.
 5. Aplicar a regra de `CLOSED`, `PARTIAL` ou `BLOCKED`.
 6. Recompor os blocos sem replanejar a feature inteira.

@@ -120,15 +120,18 @@ Use quando existe impedimento real para fechar o ciclo, falta evidência crític
 
 1. o `DONE` deve seguir `DONE-YYYYMMDD-<entrega-real>.md`
 2. o nome do `DONE` deve refletir a entrega consolidada, não o nome interno da etapa
-3. o `CONTEXT` da unidade usa no topo o snapshot canônico:
+3. o `CONTEXT` da unidade começa com o snapshot canônico:
    - `LAST DONE`
    - `LAST DECISION`
    - `LAST MILESTONE`
    - `OPEN THREADS`
    - `NEXT RECYCLE BASIS`
+   - `SCOPE`
+   - `FEATURE`
+   - `STATUS`
    - `LAST UPDATED`
 4. o snapshot deve permanecer curto, estável e coerente com o `DONE` recém-criado
-5. o histórico do `CONTEXT` registra marcos entregues com data e link para `DONE`, nunca status operacional numerado
+5. abaixo do snapshot ficam os fatos duráveis da unidade e o histórico resumido por marco, com data e link para `DONE`
 6. conhecimento durável fica em `DONE`, `CONTEXT`, `STATE` e ADR quando aplicável, não em `PLAN.md`
 
 ---

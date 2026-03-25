@@ -121,7 +121,7 @@ Nao invente regras, contratos, estruturas ou stack.
 Nao faca refactor amplo sem permissao.
 Mudanca estrutural exige ADR aprovado.
 Executor nao toca `DONE`, `CONTEXT`, `STATE`, `ADR` nem `PLAN.md`.
-Executor nao fecha fase e nao consolida docs duraveis.
+Executor nao faz fechamento pos-execucao e nao consolida docs duraveis.
 Na duvida relevante, pergunte e pare.
 
 SAIDA ESPERADA DO EXECUTOR

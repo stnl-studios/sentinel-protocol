@@ -87,7 +87,7 @@ Centralizar lacunas e perguntas pendentes apenas em `docs/core/CONTEXT.md` com I
 - `CONTRACTS`: apenas nomenclatura e localização de padrões; não catalogar endpoints/models/interfaces; lacunas viram TBD.
 - `TESTING`: como rodar e validar só com evidência; sem evidência, registrar TBD; sem TODO.
 - `UI_KIT`: catálogo operacional curto de componentes e status; sem duplicar design system; sem TODO.
-- `FEATURE CONTEXT`: memória curta por feature com snapshot curto de recycle no topo, seguido de cabeçalho durável (`SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress`) e memória local curta; pode linkar DONE existente sem duplicar; lacunas viram TBD no Core Context.
+- `FEATURE CONTEXT`: memória curta por feature com bloco `## Snapshot de recycle` no topo, incluindo `SCOPE: feature`, `FEATURE: <feature-path>`, `STATUS: active | in-progress` e `LAST UPDATED: YYYYMMDD`; abaixo ficam fatos duráveis e histórico curto por marco; pode linkar DONE existente sem duplicar; lacunas viram TBD no Core Context.
 
 ## DONE (padrão, não criar automaticamente)
 
@@ -108,6 +108,9 @@ Quando esta skill cria `docs/features/<feature>/CONTEXT.md`, o arquivo deve nasc
 - `OPEN THREADS:`
   - `<item curto ou TBD>`
 - `NEXT RECYCLE BASIS: <frase curta sobre o que habilita o próximo recycle>`
+- `SCOPE: feature`
+- `FEATURE: <feature-path>`
+- `STATUS: active | in-progress`
 - `LAST UPDATED: YYYYMMDD`
 
 Regras:
@@ -115,7 +118,8 @@ Regras:
 2. não virar mini-`PLAN.md`
 3. não virar mini-`DONE`
 4. `OPEN THREADS` pode ficar só com `- TBD` quando não houver base melhor
-5. o restante do arquivo continua sendo memória durável curta da feature
+5. abaixo do snapshot ficam fatos duráveis e histórico resumido por marco, apontando para `DONE` quando existir
+6. o restante do arquivo continua sendo memória durável curta da feature
 
 ## Heurísticas de discovery por stack
 

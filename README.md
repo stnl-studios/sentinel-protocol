@@ -389,7 +389,7 @@ Quando a demanda precisa de recorte operacional, horizonte curto e separação e
 ### Quando registrar no plano vs memória durável?
 - **Plano**: recorte operacional temporário do ciclo
 - **Memória durável**: o que precisa sobreviver ao ciclo em `DONE`, `CONTEXT`, `STATE` e ADR quando aplicável
-- o topo do `CONTEXT.md` da feature carrega um snapshot curto de recycle; ele não substitui `DONE` nem vira mini-`PLAN.md`
+- o topo do `CONTEXT.md` da feature começa com `## Snapshot de recycle`; nele ficam `SCOPE`, `FEATURE`, `STATUS` e `LAST UPDATED`, sem substituir `DONE` nem virar mini-`PLAN.md`
 
 ### Quando uma execução incompleta deve virar `PARTIAL`?
 Quando houve avanço real, mas o objetivo do ciclo não foi concluído integralmente e o fechamento ainda precisa consolidar evidência e preparar continuidade.
@@ -517,7 +517,7 @@ NEXT STEP: sentinel_plan_blueprint MODE=RECYCLE
 | Sentinel Plan Blueprint | 2026.3.1 | Active |
 | Sentinel Phase Closure | 2026.3.1 | Active |
 | Sentinel Docs Bootstrap | 2026.3.1 | Active |
-| Templates canônicos | 2026.3.0 | Active |
+| Templates canônicos | 2026.3.1 | Active |
 
 ---
 
