@@ -2,55 +2,42 @@ SCOPE: core
 PROJECT: <project-name>
 LAST UPDATED: YYYYMMDD
 
-# Rules
+# Core Rules
 
-## 1. Regras invioláveis
-Liste apenas regras que valem para o projeto inteiro.
+## Objetivo
+Registrar regras globais do projeto e limites operacionais do workflow, sem duplicar contexto factual ou inventário estrutural.
 
-- `<regra global 1>`
-- `<regra global 2>`
-- `PLAN.md` não é alterado pelo Bootstrap.
-- Sem evidência, não inventar; registrar `TBD` no `CONTEXT` do escopo correto.
+## Regras invioláveis
+- sem evidência, não inventar; registrar `TBD` no contexto correto
+- memória durável não vive em artefato efêmero
+- `EXECUTION BRIEF` e `VALIDATION PACK` são artefatos efêmeros
+- `Feature CONTEXT`, `DONE`, docs factuais atualizadas por `Resync` e ADR são memória durável
+- `PLAN.md` não é memória durável do workflow novo
 
-## 2. Stop rules
-Liste situações em que o agente deve parar, bloquear ou pedir decisão antes de seguir.
+## Gates humanos relevantes
+- usar `NEEDS_DEV_DECISION_BASE` quando faltar decisão de base, escopo ou direção
+- usar `NEEDS_DEV_DECISION_HARNESS` quando faltar decisão sobre harness ou estratégia viável de validação
+- usar `NEEDS_DEV_APPROVAL_EXECUTION` quando a execução exigir aprovação explícita
 
-- `<stop rule 1>`
-- `<stop rule 2>`
+## Limites de atuação dos agents
+- agents executores não fecham memória durável sozinhos
+- `orchestrator` coordena gates e handoffs, não implementa
+- `planner` gera `EXECUTION BRIEF`, não vira backlog manager
+- `finalizer` e `resync` concentram fechamento mínimo e sincronização factual
 
-## 3. Regras de mudança estrutural
-Defina o que exige ADR, aprovação ou tratamento especial.
+## Mudança estrutural ou normativa
+- mudança estrutural, normativa, arquitetural, de fronteira relevante ou de contrato externo relevante exige tratamento explícito
+- quando aplicável, registrar ADR
+- não normalizar breaking change silenciosa
 
-- `<mudança estrutural 1>`
-- `<mudança estrutural 2>`
+## Restrições de execução
+- não ampliar escopo por conveniência
+- não usar artefato efêmero como fonte de verdade durável
+- não reescrever docs factuais fora da feature sem necessidade real de `Resync`
 
-## 4. Regras de arquitetura
-Use esta seção para leis de dependência entre camadas e fronteiras globais.
-
-### Dependência entre camadas
-- `<camada A>` não chama `<camada B>` diretamente.
-- `<camada X>` fala apenas com a camada canônica definida em `docs/core/CONTRACTS.md`.
-
-### Fronteiras entre units
-- `<unit A>` não acessa `<unit B>` diretamente fora de `<contrato ou boundary>`.
-- `<integração crítica>` passa apenas por `<camada ou boundary>`.
-
-### Exceções aprovadas
-- `<exceção com evidência>`
-
-## 5. Convenções globais
-Liste somente convenções que valem para todo o repo.
-
-- `<convenção global 1>`
-- `<convenção global 2>`
-
-## 6. Restrições de execução
-Registre proibições ou limites operacionais relevantes ao fluxo.
-
-- `<restrição 1>`
-- `<restrição 2>`
-
-## 7. Referências
+## Referências
 - `docs/core/CONTEXT.md`
+- `docs/core/STATE.md`
 - `docs/core/CONTRACTS.md`
-- `docs/decisions/INDEX.md`
+- `docs/core/TESTING.md`
+- `docs/workflow/STATUS-GATES.md`

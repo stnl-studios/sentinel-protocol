@@ -2,50 +2,44 @@ SCOPE: unit
 UNIT: <unit-slug>
 LAST UPDATED: YYYYMMDD
 
-# Testing
+# Unit Testing
 
-## 1. Objetivo
-Descreva como validar esta unit com segurança.
+## Objetivo
+Registrar como validar esta unit em modelo eval-first: que harness existe, quais checks determinísticos são possíveis, quando usar evals comportamentais, como a estratégia manual funciona e quando o fluxo precisa subir `NEEDS_DEV_DECISION_HARNESS`.
 
-## 2. Estratégia local
-Registre apenas o que existe por evidência.
+## Estado do harness local
+| Superfície | Harness disponível | Forma principal de prova | Observação |
+| --- | --- | --- | --- |
+| `<superfície>` | `sim | não | parcial | TBD` | `check | eval | manual | misto` | `<obs>` |
+| `<superfície>` | `sim | não | parcial | TBD` | `check | eval | manual | misto` | `<obs>` |
 
-- Unit: `<sim | não | TBD>`
-- Integration: `<sim | não | TBD>`
-- E2E / Smoke: `<sim | não | TBD>`
-- Manual: `<sim | não | TBD>`
+## Estratégia mínima por superfície
+| Superfície | Checks determinísticos | Evals comportamentais | Estratégia manual | Múltiplos trials | Observação |
+| --- | --- | --- | --- | --- | --- |
+| `<superfície>` | `<checks>` | `<evals>` | `<fluxo manual ou n/a>` | `sim | não | TBD` | `<obs>` |
 
-## 3. Onde vivem os testes
-| Tipo | Path principal | Observação |
-| --- | --- | --- |
-| unit | `<path ou TBD>` | `<obs>` |
-| integration | `<path ou TBD>` | `<obs>` |
-| e2e / smoke | `<path ou TBD>` | `<obs>` |
-| manual | `<fluxo ou link>` | `<obs>` |
+## Gate de harness
+- se a rodada pedir automação ou prova reprodutível e a unit não tiver harness viável, sinalizar `NEEDS_DEV_DECISION_HARNESS`
+- se a prova for apenas parcial, isso precisa aparecer cedo no `VALIDATION PACK`
+- quando fizer sentido automatizar, mas a base ainda não existir, pode haver marco separado de implantação mínima da base de testes
 
-## 4. Como rodar
-Registre apenas comandos ou fluxos reais.
+## Base mínima quando faltar harness
+- definir checks simples, smoke local ou roteiro manual verificável
+- separar falha real de impossibilidade de prova
+- não fingir cobertura que a unit não possui
 
-### Local
-- `<comando local>`
+## Evidência operacional
+Registrar apenas comandos, pipelines, rotinas ou roteiros que existam por evidência.
 
-### CI
-- `<job ou pipeline>`
+### Checks determinísticos
+- `<comando, script ou pipeline>`
 
-## 5. Mínimos por tipo de mudança
-### Feature
-- `<mínimo esperado>`
+### Evals comportamentais
+- `<harness, rotina ou fluxo>`
 
-### Bugfix
-- `<mínimo esperado>`
+### Manual
+- `<roteiro manual mínimo>`
 
-### Refactor
-- `<mínimo esperado>`
-
-## 6. Riscos e lacunas
-- `<lacuna real 1>`
-- `<lacuna real 2>`
-
-## 7. Referências
+## Referências
 - `docs/core/TESTING.md`
 - `docs/units/<unit-slug>/STATE.md`

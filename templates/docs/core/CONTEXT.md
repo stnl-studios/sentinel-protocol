@@ -3,58 +3,44 @@ PROJECT: <project-name>
 REPO SHAPE: single-unit | multi-unit | TBD
 LAST UPDATED: YYYYMMDD
 
-# Context
+# Core Context
 
-## 1. Resumo executivo
-Descreva em poucas linhas o que este projeto é, qual problema resolve e qual papel este repo sustenta.
+## Objetivo
+Registrar a base factual mínima do projeto. Este documento orienta entendimento global, delimita escopo e serve como insumo inicial para especialização futura dos agents por projeto.
 
-## 2. Escopo do projeto
-Liste o que este repo cobre de fato hoje.
+## Visão factual do projeto
+Descreva em poucas linhas o que o projeto é, qual problema cobre e qual papel este repo sustenta.
 
-- `<escopo 1>`
-- `<escopo 2>`
-- `<escopo 3>`
+## Escopo
+- `<escopo real 1>`
+- `<escopo real 2>`
+- `<escopo real 3>`
 
-## 3. Fora de escopo
-Liste explicitamente o que não pertence a este repo ou não deve ser presumido.
-
+## Fora de escopo
 - `<fora de escopo 1>`
 - `<fora de escopo 2>`
 
-## 4. Forma do repo
-Explique se o repo é single-unit ou multi-unit e quais units existem.
+## Superfícies principais
+| Superfície | Path principal | Papel |
+| --- | --- | --- |
+| `<unit-ou-area>` | `<path>` | `<papel>` |
+| `<unit-ou-area>` | `<path>` | `<papel>` |
 
-| Unit | Classe | Path principal | Papel |
-| --- | --- | --- | --- |
-| `<unit-slug>` | `app | api | mobile | worker | package | bff | admin | TBD` | `<path>` | `<papel>` |
+## Base mínima para especialização dos agents
+- forma do repo: `single-unit | multi-unit | TBD`
+- fronteiras principais entre superfícies
+- dependências estruturais relevantes
+- termos e áreas que qualquer agent precisa reconhecer cedo
 
-## 5. Mapa de units
-Para cada unit relevante, descreva em uma linha:
-- o que ela entrega
-- com quais units ela se relaciona
-- qual a fronteira operacional dela
+## TBDs centrais
+Registrar apenas lacunas que afetam o entendimento global do projeto.
 
-## 6. Visão macro de arquitetura
-Registre apenas a arquitetura transversal do projeto:
-- relação entre units
-- fronteiras principais
-- dependências de alto nível
-- integrações estruturais relevantes
+- `TBD-001` — `<lacuna global>`
+- `TBD-002` — `<lacuna global>`
 
-## 7. Convenções estruturais relevantes
-Registre apenas convenções que ajudam qualquer agente a se orientar no repo.
-Não duplicar `RULES.md`.
-
-## 8. Fontes canônicas relacionadas
+## Referências
 - `docs/core/RULES.md`
 - `docs/core/STATE.md`
 - `docs/core/CONTRACTS.md`
 - `docs/core/TESTING.md`
 - `docs/decisions/INDEX.md`
-- docs de unit aplicáveis
-
-## 9. TBDs globais
-Registrar somente pendências que afetem o entendimento do projeto como um todo.
-
-- `TBD-001` — `<pergunta ou lacuna global>`
-- `TBD-002` — `<pergunta ou lacuna global>`

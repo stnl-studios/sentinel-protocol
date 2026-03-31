@@ -2,47 +2,38 @@ SCOPE: unit
 UNIT: <unit-slug>
 LAST UPDATED: YYYYMMDD
 
-# State
+# Unit State
 
-## 1. Snapshot da unit
-- Path raiz: `<path>`
-- Classe da unit: `app | api | mobile | worker | package | bff | admin | TBD`
-- Stack principal observada: `<stack>`
-- Status curto: `present | partial | TBD`
+## Objetivo
+Ser a fotografia factual curta da estrutura e das superfícies da unit para localização rápida, seleção de agents e especialização local.
 
-## 2. Estrutura local relevante
-Liste apenas diretórios, módulos ou camadas úteis para localização rápida.
+## Snapshot da unit
+- path raiz: `<path>`
+- classe da unit: `app | api | mobile | worker | package | bff | admin | TBD`
+- stack principal observada: `<stack>`
+- status curto: `present | partial | TBD`
 
+## Estrutura local relevante
 | Área | Path | Papel |
 | --- | --- | --- |
 | `<área>` | `<path>` | `<papel>` |
+| `<área>` | `<path>` | `<papel>` |
 
-## 3. Pontos de entrada e saída
-Registre entrypoints e saídas relevantes por evidência.
+## Superfícies relevantes
+| Superfície | Tipo | Path | Observação |
+| --- | --- | --- | --- |
+| `<surface>` | `<page | route | screen | controller | handler | job | consumer | component | TBD>` | `<path>` | `<obs>` |
 
-| Tipo | Path | Observação |
+## Entradas e saídas úteis
+| Entrada ou saída | Path | Uso rápido |
 | --- | --- | --- |
-| `<page | route | screen | controller | handler | job | consumer | TBD>` | `<path>` | `<obs>` |
+| `<entrypoint ou boundary>` | `<path>` | `<obs>` |
 
-## 4. Integrações e dependências visíveis
-Liste apenas dependências locais importantes.
+## Observações factuais
+- `<fato operacional 1>`
+- `<fato operacional 2>`
 
-- `<dependência visível 1>`
-- `<dependência visível 2>`
-
-## 5. Superfícies de teste visíveis
-- Unit tests: `<path ou TBD>`
-- Integration tests: `<path ou TBD>`
-- E2E / smoke: `<path ou TBD>`
-- Manual: `<obs ou TBD>`
-
-## 6. Observações de estado
-Registre fatos operacionais curtos.
-
-- `<observação factual 1>`
-- `<observação factual 2>`
-
-## 7. Referências
+## Referências
 - `docs/units/<unit-slug>/CONTEXT.md`
 - `docs/units/<unit-slug>/RULES.md`
 - `docs/units/<unit-slug>/TESTING.md`

@@ -1,52 +1,36 @@
-# Docs Index
+# Índice de Documentação
 
 ## Objetivo
-Este índice organiza a base documental do projeto e aponta a fonte de verdade de cada escopo.
+Servir como navegação mínima do kit base e indicar a ordem de leitura da documentação operacional.
 
-## Estrutura ativa
+## Precedência documental
+Use esta ordem quando houver dúvida sobre onde ler primeiro:
 
-### Core
-- [`docs/core/CONTEXT.md`](coreONTEXT.md) — contexto global do projeto, escopo, fora de escopo e TBDs globais.
-- [`docs/core/RULES.md`](coreULES.md) — regras globais, stop rules e limites de mudança.
-- [`docs/core/STATE.md`](coreTATE.md) — fotografia operacional do repo, units e áreas compartilhadas.
-- [`docs/core/CONTRACTS.md`](coreONTRACTS.md) — vocabulário canônico e localização de padrões globais.
-- [`docs/core/TESTING.md`](coreESTING.md) — estratégia global de validação.
+1. [`docs/core/*`](./core/CONTEXT.md) define o contrato global do projeto.
+2. [`docs/units/*`](./units/_unit-template/CONTEXT.md) especializa a unit sem contrariar `core`.
+3. `docs/features/*` contextualiza recortes ativos sem substituir `core` ou `units`.
+4. [`docs/decisions/*`](./decisions/INDEX.md) registra decisões duráveis já formalizadas.
+5. [`docs/reference/*`](./reference/DESIGN_SYSTEM.md) é apoio factual e consulta sob gatilho.
 
-### Units
-Registrar abaixo apenas units reais do projeto.
+## Navegação mínima sugerida
 
-| Unit | Classe | Path principal | Docs |
-| --- | --- | --- | --- |
-| `<unit-slug>` | `app | api | mobile | worker | package | bff | admin | TBD` | `<path>` | [`docs/units/<unit-slug>/`](./units/) |
+### Visão global
+1. [`docs/core/CONTEXT.md`](./core/CONTEXT.md)
+2. [`docs/core/RULES.md`](./core/RULES.md)
+3. [`docs/core/STATE.md`](./core/STATE.md)
+4. [`docs/core/CONTRACTS.md`](./core/CONTRACTS.md)
+5. [`docs/core/TESTING.md`](./core/TESTING.md)
 
-### Features
-- `docs/features/` — contexto curto por feature ativa quando aplicável.
+### Visão por unit
+Quando existir uma unit real, leia a sequência equivalente em `docs/units/<unit-slug>/`.
+No kit base, use o template:
 
-### Decisions
-- [`docs/decisions/INDEX.md`](decisionsNDEX.md) — índice de ADRs e decisões duráveis.
+1. [`docs/units/_unit-template/CONTEXT.md`](./units/_unit-template/CONTEXT.md)
+2. [`docs/units/_unit-template/RULES.md`](./units/_unit-template/RULES.md)
+3. [`docs/units/_unit-template/STATE.md`](./units/_unit-template/STATE.md)
+4. [`docs/units/_unit-template/CONTRACTS.md`](./units/_unit-template/CONTRACTS.md)
+5. [`docs/units/_unit-template/TESTING.md`](./units/_unit-template/TESTING.md)
 
-### Reference
-- `docs/reference/` — referência fria e leitura sob gatilho.
-- [`docs/reference/DESIGN_SYSTEM.md`](referenceESIGN_SYSTEM.md) — design system central, quando existir.
-
-## Regras de precedência
-1. `docs/core/*` governa o projeto inteiro.
-2. `docs/units/*` detalha apenas a unit correspondente.
-3. `docs/reference/*` entra por necessidade específica; não substitui docs operacionais.
-4. Em caso de falta de evidência, registrar `TBD` no `CONTEXT` do escopo correto.
-
-## Leitura mínima sugerida
-
-### Para visão global do projeto
-1. `docs/core/CONTEXT.md`
-2. `docs/core/RULES.md`
-3. `docs/core/STATE.md`
-4. `docs/core/TESTING.md`
-
-### Para atuar em uma unit específica
-1. `docs/units/<unit-slug>/CONTEXT.md`
-2. `docs/units/<unit-slug>/RULES.md`
-3. `docs/units/<unit-slug>/STATE.md`
-4. `docs/units/<unit-slug>/TESTING.md`
-5. `docs/units/<unit-slug>/CONTRACTS.md` quando existir
-6. `docs/units/<unit-slug>/UI_KIT.md` quando a unit for visual
+### Consulta dirigida
+- [`docs/decisions/INDEX.md`](./decisions/INDEX.md)
+- [`docs/reference/DESIGN_SYSTEM.md`](./reference/DESIGN_SYSTEM.md)

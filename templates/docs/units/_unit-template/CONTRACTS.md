@@ -2,34 +2,32 @@ SCOPE: unit
 UNIT: <unit-slug>
 LAST UPDATED: YYYYMMDD
 
-# Contracts
+# Unit Contracts
 
-> Template opcional. Criar apenas quando a unit tiver vocabulário, camadas ou fronteiras próprias que não caibam bem no `docs/core/CONTRACTS.md`.
+> Template opcional. Criar apenas quando a unit tiver vocabulário, camadas, boundaries ou contratos locais que não caibam bem em `docs/core/CONTRACTS.md`.
 
-## 1. Objetivo
-Registrar linguagem canônica local desta unit e apontar os paths reais.
+## Objetivo
+Registrar nomenclatura, padrões e localização dos contratos locais da unit. Este arquivo serve como apoio direto para especialização dos coders por projeto e não deve virar inventário prolixo.
 
-## 2. Nomenclatura local
-| Categoria | Termo canônico | Papel | Observação |
+## Vocabulário local
+| Categoria | Termo canônico | Papel | Observação curta |
 | --- | --- | --- | --- |
 | apresentação | `<termo>` | `<papel>` | `<obs>` |
 | aplicação | `<termo>` | `<papel>` | `<obs>` |
 | persistência | `<termo>` | `<papel>` | `<obs>` |
 | integração | `<termo>` | `<papel>` | `<obs>` |
 
-## 3. Localização na unit
-| Termo | Path principal | Observação |
+## Localização de contratos e padrões
+| Contrato ou padrão | Path principal | Observação |
 | --- | --- | --- |
-| `<termo>` | `<path>` | `<obs>` |
+| `<tipo, interface, schema, boundary ou convenção>` | `<path>` | `<obs>` |
+| `<tipo, interface, schema, boundary ou convenção>` | `<path>` | `<obs>` |
 
-## 4. Evidências
-- `<evidência local 1>`
-- `<evidência local 2>`
-
-## 5. Ambiguidades e TBDs
+## Ambiguidades e TBDs
 - `TBD-001` — `<ambiguidade local>`
 - `TBD-002` — `<lacuna local>`
 
-## 6. Referências
+## Referências
 - `docs/core/CONTRACTS.md`
 - `docs/units/<unit-slug>/RULES.md`
+- `docs/units/<unit-slug>/STATE.md`

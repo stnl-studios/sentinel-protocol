@@ -2,53 +2,52 @@ SCOPE: core
 PROJECT: <project-name>
 LAST UPDATED: YYYYMMDD
 
-# Testing
+# Core Testing
 
-## 1. Objetivo
-Descreva a estratégia global de validação do projeto.
+## Objetivo
+Registrar a estratégia global de validação em modelo eval-first: o que pode ser provado com checks determinísticos, o que precisa de evals comportamentais, onde existe harness e quando o fluxo deve parar em `NEEDS_DEV_DECISION_HARNESS`.
 
-## 2. Estratégia mínima
-Registre apenas o que existe por evidência.
+## Princípios do projeto
+- nem toda validação será automação clássica
+- partes determinísticas pedem checks determinísticos
+- partes agentic, IA ou altamente comportamentais podem exigir evals comportamentais
+- estratégia manual bem definida continua válida quando for a melhor forma honesta de prova
+- ausência de harness viável precisa aparecer cedo no fluxo
 
-- Unit: `<sim | não | TBD>`
-- Integration: `<sim | não | TBD>`
-- E2E / Smoke: `<sim | não | TBD>`
-- Manual: `<sim | não | TBD>`
-
-## 3. Mapa de teste por unit
-| Unit | Tipos de teste | Paths principais | Observação |
+## Estado do harness
+| Superfície | Harness disponível | Forma de prova principal | Observação |
 | --- | --- | --- | --- |
-| `<unit-slug>` | `<unit | integration | e2e | manual | TBD>` | `<path>` | `<obs>` |
+| `<superfície>` | `sim | não | parcial | TBD` | `check | eval | manual | misto` | `<obs>` |
+| `<superfície>` | `sim | não | parcial | TBD` | `check | eval | manual | misto` | `<obs>` |
 
-## 4. Como rodar
-Registre apenas comandos, entrypoints ou fluxos validados por evidência.
+## Estratégia mínima por superfície
+| Superfície | Checks determinísticos | Evals comportamentais | Estratégia manual | Múltiplos trials | Observação |
+| --- | --- | --- | --- | --- | --- |
+| `<superfície>` | `<quais checks>` | `<quais evals>` | `<fluxo manual ou n/a>` | `sim | não | TBD` | `<obs>` |
 
-### Local
-- `<comando ou fluxo local>`
+## Gate de harness
+- se a rodada pedir automação ou prova reprodutível e não houver harness viável, sinalizar `NEEDS_DEV_DECISION_HARNESS`
+- se existir apenas prova parcial, explicitar a limitação no `VALIDATION PACK`
+- quando fizer sentido automatizar mas a base ainda não existir, isso pode virar marco separado de implantação mínima da base de testes
 
-### CI
-- `<pipeline, job ou observação>`
+## Base mínima quando faltar harness
+- definir ao menos checks simples, smoke manual ou roteiro verificável por evidência
+- separar claramente falha real de impossibilidade de prova
+- não fingir cobertura que o projeto não possui
 
-## 5. Mínimos por tipo de mudança
-### Feature
-- `<mínimo esperado>`
+## Evidência operacional
+Registrar apenas comandos, pipelines, rotinas manuais ou entrypoints realmente existentes.
 
-### Bugfix
-- `<mínimo esperado>`
+### Checks determinísticos
+- `<comando, script ou pipeline>`
 
-### Refactor
-- `<mínimo esperado>`
+### Evals comportamentais
+- `<harness, rotina ou fluxo>`
 
-## 6. Validação manual relevante
-Usar apenas quando fizer parte da realidade do projeto.
+### Manual
+- `<roteiro manual mínimo>`
 
-- `<superfície manual 1>`
-- `<smoke manual mínimo>`
-
-## 7. Limitações conhecidas
-- `<lacuna ou limitação real>`
-- `<dependência externa relevante>`
-
-## 8. Referências
+## Referências
+- `docs/workflow/STATUS-GATES.md`
 - `docs/core/STATE.md`
 - docs de unit aplicáveis

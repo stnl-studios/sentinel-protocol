@@ -2,49 +2,37 @@ SCOPE: core
 PROJECT: <project-name>
 LAST UPDATED: YYYYMMDD
 
-# State
+# Core State
 
-## 1. Snapshot do repo
-- Formato do repo: `single-unit | multi-unit | TBD`
-- Path raiz principal: `<path>`
-- Convenção estrutural visível: `<resumo curto>`
+## Objetivo
+Manter uma fotografia factual e operacional curta do repo para localização rápida, seleção de agents e futura especialização por projeto.
 
-## 2. Units materializadas
-| Unit | Classe | Path principal | Status |
+## Snapshot do repo
+- formato: `single-unit | multi-unit | TBD`
+- path raiz principal: `<path>`
+- organização visível dominante: `<resumo curto>`
+
+## Superfícies principais
+| Superfície | Tipo | Path principal | Status |
 | --- | --- | --- | --- |
-| `<unit-slug>` | `app | api | mobile | worker | package | bff | admin | TBD` | `<path>` | `present | partial | TBD` |
+| `<superfície>` | `app | api | worker | package | admin | mobile | TBD` | `<path>` | `present | partial | TBD` |
+| `<superfície>` | `app | api | worker | package | admin | mobile | TBD` | `<path>` | `present | partial | TBD` |
 
-## 3. Áreas compartilhadas relevantes
-Registre apenas libs, packages, infra interna ou módulos transversais com impacto operacional.
-
-| Área | Path | Papel |
+## Áreas compartilhadas relevantes
+| Área | Path | Papel operacional |
 | --- | --- | --- |
 | `<shared-area>` | `<path>` | `<papel>` |
 
-## 4. Superfícies operacionais
-Liste superfícies materializadas por evidência.
-
-- `<app>`
-- `<api>`
-- `<worker>`
-- `<admin>`
-- `<mobile>`
-
-## 5. Entradas estruturais relevantes
-Aponte apenas entrypoints e módulos principais úteis para localização rápida.
-
-| Entrada | Path | Observação |
+## Pontos de entrada úteis
+| Entrada | Path | Uso rápido |
 | --- | --- | --- |
-| `<entrypoint>` | `<path>` | `<observação>` |
+| `<entrypoint>` | `<path>` | `<observação curta>` |
 
-## 6. Observações de estado
-Registre fatos operacionais curtos.
+## Observações factuais
+- `<fato operacional 1>`
+- `<fato operacional 2>`
 
-- `<observação factual 1>`
-- `<observação factual 2>`
-
-## 7. Referências relacionadas
+## Referências
 - `docs/core/CONTEXT.md`
-- `docs/core/RULES.md`
+- `docs/core/CONTRACTS.md`
 - `docs/core/TESTING.md`
-- docs de unit aplicáveis
