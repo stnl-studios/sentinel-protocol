@@ -69,8 +69,9 @@ It stays active as the operational coordinator for the whole round, but it deleg
 - Hand off to `coder-frontend.agent.md` when the cut affects screens, components, client behavior, accessibility in UI, front-end integrations, or front-end tests.
 - Hand off to `coder-backend.agent.md` when the cut affects APIs, services, persistence, auth, jobs, integrations, runtime wiring, or server-side tests.
 - Hand off to both coders only after shared contracts and boundaries are stable enough for safe split ownership.
-- Hand off to `validation-runner.agent.md` after implementation with the completed work and the already-defined `VALIDATION PACK`.
-- Hand off to `finalizer.agent.md` after the runner verdict with the full round evidence, not a partial summary.
+- Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact and no execution owner emitted `BLOCKED`.
+- If execution becomes `BLOCKED` before honest validation can run, skip `validation-runner.agent.md` and hand off directly to `finalizer.agent.md` with the execution-stage blockage evidence and its exact cause.
+- Hand off to `finalizer.agent.md` after the runner verdict, or after an execution-stage blockage that prevented validation, always with the full round evidence, not a partial summary.
 - Hand off to `resync.agent.md` only when `finalizer.agent.md` explicitly requests factual sync outside the feature.
 
 ## When to escalate to DEV
@@ -122,10 +123,12 @@ Do not send work downstream while the request is still vague in a way that chang
 Select agents by real ownership, not by convenience:
 - always start with `planner.agent.md` once the base gate is satisfied
 - include `designer.agent.md` only for real interface impact, not as a decorative default
+- when `designer.agent.md` enters, classify it as `required` or `advisory` for this round
 - use `coder-frontend.agent.md` for UI and client-owned work
 - use `coder-backend.agent.md` for API, service, persistence, integration, and runtime-owned work
 - use both coders only when the cut truly spans both layers and the interface between them is stable enough
-- send all completed execution to `validation-runner.agent.md`
+- if `designer.agent.md` is `required`, a design `BLOCKED` stops the round; if it is `advisory`, the round may continue only when execution and validation can still proceed honestly without design guessing
+- send only validation-eligible completed execution to `validation-runner.agent.md`
 - always route closure through `finalizer.agent.md`
 - call `resync.agent.md` only on explicit finalizer request
 
@@ -180,6 +183,7 @@ Apply gates in canonical order:
 4. Harness gate: if validation design reveals a missing harness decision, route `NEEDS_DEV_DECISION_HARNESS` and stop until DEV resolves it.
 5. Execution approval gate: if execution needs explicit approval, emit `NEEDS_DEV_APPROVAL_EXECUTION`; if approval is already granted, emit `APPROVED_EXECUTION`; if the protocol allows direct continuation, emit `SKIP_EXECUTION_APPROVAL`.
 6. Execution readiness: emit `READY` only when the next downstream agent has enough input to proceed without guessing.
+7. Execution-stage blockage routing: if a coder or required design contribution emits `BLOCKED` before a validation-eligible result exists, do not call `validation-runner.agent.md`; route directly to `finalizer.agent.md` with explicit execution-stage blockage evidence, or escalate to DEV when the blockage is actually a missing decision.
 
 Do not bypass a gate by hiding uncertainty inside a downstream handoff.
 
@@ -217,6 +221,7 @@ Across the round, check that:
 - coders are not implementing against contradictory contract assumptions
 - validation is being run against the actual planned cut, not an invented one
 - the evidence passed to `finalizer.agent.md` is complete enough to support honest closure
+- runner verdicts are preserved as runner-owned verdicts, and execution-stage blockage is explicitly labeled as pre-validation when the runner never entered
 
 If the round drifts, route back to the responsible upstream agent or escalate. Do not personally absorb the missing work.
 

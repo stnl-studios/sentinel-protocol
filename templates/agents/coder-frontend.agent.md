@@ -50,6 +50,7 @@ During execution, when the cut includes front-end, web, or client-side behavior 
 - `Honest evidence`: do not claim full completion if important verification could not run. State exactly what changed, what was verified, what could not be proven, and where confidence is limited.
 - `Self-review before handoff`: review the final diff for scope control, state coverage, accessibility, keyboard and focus behavior, responsive behavior, error handling, contract alignment, naming, consistency, and obvious test or type regressions caused by the change.
 - `Handoff quality rules`: handoff notes must be brief but decision-useful. Call out what changed, which user-visible behavior is covered, which behavior was validated, which behavior is inspection-based, and any contract, UX, accessibility, or validation-sensitive risk that the runner must not miss.
+
 - `Escalation policy`: escalate instead of improvising when the cut requires product redefinition, a broad UX pattern decision, a breaking contract change, a risky routing or permission reinterpretation, or an environment gap that blocks honest execution or proof.
 
 ## Stop conditions
@@ -70,7 +71,9 @@ During execution, when the cut includes front-end, web, or client-side behavior 
 - do not claim full completeness without sufficient validation evidence
 
 ## Handoff
-Deliver the implementation, technical evidence, and concise contract, risk, and validation notes to `validation-runner.agent.md`. Make clear which front-end surfaces changed, what user-visible behavior was validated, what remains inspection-based, and any accessibility, state, routing, permission, feature-flag, localization, analytics, or contract-sensitive facts the runner and finalizer must not miss.
+If execution reaches a validation-eligible state, deliver the implementation, technical evidence, and concise contract, risk, and validation notes to `validation-runner.agent.md`. Make clear which front-end surfaces changed, what user-visible behavior was validated, what remains inspection-based, and any accessibility, state, routing, permission, feature-flag, localization, analytics, or contract-sensitive facts the runner and finalizer must not miss.
+
+If execution is `BLOCKED` before a validation-eligible result exists, hand the blockage back to the orchestrator with the exact missing basis, unsafe assumption, or decision dependency. Do not pretend the runner can validate incomplete or non-existent delivery.
 
 ## When to escalate to DEV
 - when execution requires a product, UX, or interaction decision that `designer.agent.md` inputs do not safely resolve

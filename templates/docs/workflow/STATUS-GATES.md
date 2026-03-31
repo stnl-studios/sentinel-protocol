@@ -19,11 +19,18 @@ Fluxo alvo:
 ## Status de validação e fechamento
 | Status | Significado | Momento do fluxo |
 | --- | --- | --- |
-| `PASS` | A validação confirmou o objetivo do ciclo sem pendência relevante. | Run de validação/eval ou fechamento. |
-| `PARTIAL` | Houve avanço válido, mas o objetivo ficou parcialmente atendido. | Run de validação/eval ou fechamento. |
-| `FAIL` | A validação mostrou que o objetivo não foi atingido. | Run de validação/eval ou fechamento. |
-| `BLOCKED` | O ciclo não pode prosseguir ou fechar por impedimento externo ou estrutural. | Qualquer ponto de bloqueio real, com fechamento explícito. |
+| `PASS` | A validação confirmou o objetivo do ciclo sem pendência relevante. | Emitido pelo `validation-runner` na run de validação/eval; consumido no fechamento, não reemitido pelo `finalizer`. |
+| `PARTIAL` | Houve avanço válido, mas o objetivo ficou parcialmente atendido. | Emitido pelo `validation-runner` na run de validação/eval; consumido no fechamento, não reemitido pelo `finalizer`. |
+| `FAIL` | A validação mostrou que o objetivo não foi atingido. | Emitido pelo `validation-runner` na run de validação/eval; consumido no fechamento, não reemitido pelo `finalizer`. |
+| `BLOCKED` | O ciclo não pode prosseguir ou ser consolidado por impedimento real. A origem do bloqueio deve ser nomeada. | Pode surgir em design, execução, validação ou finalização; no fechamento, o registro deve explicitar se o bloqueio foi pré-validação, de validação ou de consolidação durável. |
 
 ## Artefatos do workflow
 - Os artefatos efêmeros do workflow são `EXECUTION BRIEF` e `VALIDATION PACK`.
 - A memória durável fica em `DONE`, `Feature CONTEXT` e docs factuais tocadas por Resync.
+
+
+## Notas de ownership
+- `PASS`, `PARTIAL` e `FAIL` pertencem ao `validation-runner` como vereditos de validação.
+- O `finalizer` consome esses vereditos para consolidar memória durável, mas não os reemite como seus próprios status.
+- Quando a execução bloqueia antes do runner, o `orchestrator` roteia o caso direto ao `finalizer` como bloqueio pré-validação, sem inventar veredito do runner.
+- Quando `designer` entra, o `orchestrator` deve classificá-lo como `required` ou `advisory`; só o caso `required` bloqueia a rodada por padrão.

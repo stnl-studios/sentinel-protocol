@@ -65,7 +65,9 @@ During execution, when the cut includes server-side behavior, APIs, services, do
 - do not claim full completeness without sufficient validation evidence
 
 ## Handoff
-Deliver the implementation, technical evidence, and concise contract, risk, and validation notes to `validation-runner.agent.md`. Make clear which server-side paths changed, what was actually verified, what remains sensitive, and any migration, rollout, or consumer-impact facts the runner and finalizer must not miss.
+If execution reaches a validation-eligible state, deliver the implementation, technical evidence, and concise contract, risk, and validation notes to `validation-runner.agent.md`. Make clear which server-side paths changed, what was actually verified, what remains sensitive, and any migration, rollout, or consumer-impact facts the runner and finalizer must not miss.
+
+If execution is `BLOCKED` before a validation-eligible result exists, hand the blockage back to the orchestrator with the exact missing basis, unsafe assumption, or decision dependency. Do not pretend the runner can validate incomplete or non-existent delivery.
 
 ## When to escalate to DEV
 - when execution requires a structural change, a breaking change, or a significant external contract change

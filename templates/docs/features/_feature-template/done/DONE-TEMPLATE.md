@@ -13,14 +13,14 @@ Registrar a entrega consolidada de uma rodada que gerou marco real. `DONE` é me
 
 FEATURE: <feature-path>
 ENTREGA CONSOLIDADA: <entrega-real>
-STATUS: CLOSED | PARTIAL | BLOCKED
+VEREDITO DO RUNNER: PASS | PARTIAL
 DATA: YYYYMMDD
 
 ## Objetivo do corte executado
 - O que este corte entregou de forma concreta.
 
-## Veredito do DoD
-- `CLOSED`, `PARTIAL` ou `BLOCKED`, com uma frase objetiva de justificativa.
+## Veredito da rodada
+- Registrar o veredito consumido no fechamento (`PASS` ou, em exceção explícita, `PARTIAL`) com uma frase objetiva de justificativa.
 
 ## Evidência principal
 - Artefato, diff, validação ou referência factual que comprova o marco.
@@ -40,5 +40,7 @@ DATA: YYYYMMDD
 
 ## Regras de uso
 - Abrir `DONE` apenas quando houver marco real.
+- `DONE` normalmente nasce de rodada com `PASS`; `PARTIAL` só cabe quando o próprio marco estiver provado e a parcialidade remanescente for claramente secundária.
+- Rodadas `FAIL` ou `BLOCKED` não devem abrir `DONE`.
 - Manter o texto curto, verificável e durável.
 - `DONE` não substitui `Feature CONTEXT`.

@@ -17,8 +17,8 @@ It enters only after the round already has execution evidence, a runner verdict,
 
 ## Required input
 - execution evidence for the completed round
-- explicit runner verdict: `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`
-- validation evidence summary from `validation-runner.agent.md`
+- either an explicit runner verdict: `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`, or an explicit execution-stage `BLOCKED` routed by the orchestrator when validation could not honestly run
+- validation evidence summary from `validation-runner.agent.md` when the runner entered
 - current `Feature CONTEXT`
 - enough round context to identify the intended cut and the actual outcome
 
@@ -33,15 +33,19 @@ It enters only after the round already has execution evidence, a runner verdict,
 - final round consolidation summary
 - minimum honest update to `Feature CONTEXT`
 - `DONE` only when the round established a real milestone
+- explicit preservation of the runner-owned verdict, or explicit preservation of the execution-stage blockage when validation never ran
 - explicit decision: no resync needed, or request `resync.agent.md` with the factual delta that must be synchronized
 
 ## Status it may emit
 - `READY`
 - `BLOCKED`
 
+These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FAIL`, and validation-owned `BLOCKED` belong to `validation-runner.agent.md` and are consumed here as inputs, not re-issued by the finalizer. When validation never ran because execution blocked earlier, preserve that state explicitly as an execution-stage blockage instead of inventing a runner verdict.
+
 ## Stop conditions
 - the round evidence is too incomplete to update `Feature CONTEXT` honestly
 - the runner verdict and the observed evidence materially contradict each other
+- an execution-stage blockage was routed in, but its origin or effect is too unclear to preserve honestly
 - it is impossible to tell whether the round changed current truth or only attempted change
 - the decision to create `DONE` depends on guessing delivery significance rather than grounded evidence
 - resync need cannot be judged because the factual impact surface is too unclear
@@ -85,9 +89,10 @@ It enters only after the round already has execution evidence, a runner verdict,
 - shared canonical docs directly, when the required action is factual resync
 
 ## Protocol-fixed part
-- enters after `validation-runner.agent.md`
-- receives execution evidence, runner verdict, validation evidence, and enough round context to consolidate the outcome
+- enters after `validation-runner.agent.md`, or directly from the orchestrator when execution blocked before validation could honestly run
+- receives execution evidence, the runner verdict when it exists, validation evidence when it exists, and enough round context to consolidate the outcome
 - owns round finalization, not execution, planning, proof design, proof execution, or resync execution
+- preserves runner-owned verdicts instead of re-issuing them, and preserves execution-stage blockage explicitly when the runner never entered
 - updates `Feature CONTEXT` as the short durable map of current feature reality
 - creates `DONE` only for real milestone-level closure
 - decides whether factual out-of-feature impact requires `resync.agent.md`
@@ -117,7 +122,9 @@ Read the round in this order:
 Start from proof and outcome, then confirm intended scope. Do not start from the plan and then force the evidence to match it.
 
 ### How to consume execution evidence and runner verdict
-Treat the runner verdict as the canonical validation outcome for the round.
+Treat the runner verdict as the canonical validation outcome for the round when validation ran.
+
+If the runner did not enter because execution blocked earlier, treat the orchestrator-routed execution-stage blockage as the canonical explanation for why proof never happened. Do not translate pre-validation blockage into `FAIL`, `PARTIAL`, or synthetic runner `BLOCKED`.
 
 Use execution evidence to understand:
 - what was attempted
@@ -210,7 +217,7 @@ It is not enough that:
 The round must have delivered something that is credibly true now, at the level the milestone claims.
 
 ### Handling `PASS`, `PARTIAL`, `FAIL`, and `BLOCKED`
-Handle verdicts as closure categories, not just validation labels.
+Handle these as runner-owned verdict categories consumed by closure, not as finalizer-emitted statuses.
 
 `PASS`
 - consolidate the delivered outcome
