@@ -9,7 +9,7 @@ LAST UPDATED: YYYYMMDD
 Registrar a base factual mínima do projeto. Este documento orienta entendimento global, delimita escopo e serve como insumo inicial para especialização futura dos agents por projeto.
 
 ## Visão factual do projeto
-Descreva em poucas linhas o que o projeto é, qual problema cobre e qual papel este repo sustenta.
+Descreva em poucas linhas o que o projeto é, qual problema cobre e qual papel esta codebase sustenta.
 
 ## Escopo
 - `<escopo real 1>`
@@ -27,7 +27,7 @@ Descreva em poucas linhas o que o projeto é, qual problema cobre e qual papel e
 | `<unit-ou-area>` | `<path>` | `<papel>` |
 
 ## Base mínima para especialização dos agents
-- forma do repo: `single-unit | multi-unit | TBD`
+- forma da codebase: `single-unit | multi-unit | TBD`
 - fronteiras principais entre superfícies
 - dependências estruturais relevantes
 - termos e áreas que qualquer agent precisa reconhecer cedo
@@ -39,8 +39,9 @@ Registrar apenas lacunas que afetam o entendimento global do projeto.
 - `TBD-002` — `<lacuna global>`
 
 ## Referências
+- `docs/INDEX.md`
 - `docs/core/RULES.md`
 - `docs/core/STATE.md`
 - `docs/core/CONTRACTS.md`
 - `docs/core/TESTING.md`
-- `docs/decisions/INDEX.md`
+- docs complementares do projeto, se existirem

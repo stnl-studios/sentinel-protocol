@@ -1,7 +1,7 @@
 # Índice de Documentação
 
 ## Objetivo
-Servir como navegação mínima do kit base e indicar a ordem de leitura da documentação operacional.
+Servir como navegação mínima do kit factual base e indicar a ordem real de leitura da documentação mínima do projeto.
 
 ## Precedência documental
 Use esta ordem quando houver dúvida sobre onde ler primeiro:
@@ -9,8 +9,10 @@ Use esta ordem quando houver dúvida sobre onde ler primeiro:
 1. [`docs/core/*`](./core/CONTEXT.md) define o contrato global do projeto.
 2. [`docs/units/*`](./units/_unit-template/CONTEXT.md) especializa a unit sem contrariar `core`.
 3. `docs/features/*` contextualiza recortes ativos sem substituir `core` ou `units`.
-4. [`docs/decisions/*`](./decisions/INDEX.md) registra decisões duráveis já formalizadas.
-5. [`docs/reference/*`](./reference/DESIGN_SYSTEM.md) é apoio factual e consulta sob gatilho.
+4. `docs/decisions/*`, quando existir, registra decisões duráveis já formalizadas.
+5. `docs/reference/*`, quando existir, funciona como apoio factual sob gatilho.
+
+`docs/INDEX.md` não substitui os docs de `core`, `units` ou `features`; ele só organiza a navegação mínima do kit base.
 
 ## Navegação mínima sugerida
 
@@ -32,5 +34,5 @@ No kit base, use o template:
 5. [`docs/units/_unit-template/TESTING.md`](./units/_unit-template/TESTING.md)
 
 ### Consulta dirigida
-- [`docs/decisions/INDEX.md`](./decisions/INDEX.md)
-- [`docs/reference/DESIGN_SYSTEM.md`](./reference/DESIGN_SYSTEM.md)
+- `docs/decisions/*`, se o projeto mantiver esse conjunto
+- `docs/reference/*`, se o projeto mantiver esse conjunto

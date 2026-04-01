@@ -6,9 +6,9 @@ description: Levanta contexto factual do projeto e materializa ou ressincroniza 
 # STNL Project Context
 
 ## Missão
-Levantar contexto factual do projeto e reduzir releitura desnecessária da codebase ao materializar e manter contexto reutilizável em `docs/core/*`, `docs/units/*` e `docs/features/*`.
+Levantar contexto factual mínimo do projeto e materializar memória durável reutilizável em `docs/INDEX.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`.
 
-Esta skill é um utilitário global. Ela não é um agent do workflow e deve continuar útil mesmo fora dele.
+Esta skill é um utilitário global. Ela não é um agent de workflow e deve continuar útil fora dele.
 
 ## Quando usar
 - quando for preciso bootstrapar a base documental factual mínima de um projeto
@@ -24,50 +24,31 @@ Esta skill é um utilitário global. Ela não é um agent do workflow e deve con
 - para criar features arbitrárias sem alvo claro
 - para transformar hipótese, intenção ou recomendação em memória durável
 
-## Fontes e camadas
-Distinga sempre estas três camadas:
-
-1. `templates/docs/*`
-Fonte central compartilhada do kit documental. Esta skill pode consultar essa fonte como referência canônica. Não duplique essa fonte por padrão e não mude seu ownership.
-
-2. reference ou bundle local da skill
-No estado atual deste repositório, o fluxo explícito via `sentinel.mjs` pode preparar esse apoio local em `reference/docs/` durante `init` e `update`, com suporte de `doctor`. Use-o apenas como apoio instalado quando ele realmente existir e não mude o ownership de `templates/docs/*`.
-
-3. `docs/*` do projeto-alvo
-É a materialização consumível por prompts, agents e leituras sob demanda:
-- `docs/core/*`
-- `docs/units/*`
-- `docs/features/*`
-
-Ignore `docs/workflow/*` nesta skill.
-
 ## Modos suportados
 - `MODE=BOOTSTRAP`
 - `MODE=RESYNC`
 
-## Entradas esperadas
-### Comuns
-- raiz do projeto-alvo
-- evidência factual observável no repositório
-- contexto documental já existente em `docs/`, se houver
-- `templates/docs/*` como referência canônica compartilhada
-
-### `MODE=BOOTSTRAP`
-- projeto-alvo a ser levantado
-- escopo de leitura inicial suficiente para classificar `core`, `units` e shape do repo
-
-### `MODE=RESYNC`
-- `MODE=RESYNC`
-- feature alvo explícita
-- delta factual explícito ou evidência suficiente para localizar drift documental
+## Escopo operacional
+- materializar apenas o kit factual mínimo em `docs/INDEX.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`
+- seguir a ordem `core -> units -> features`
+- usar o kit documental canônico disponível no ambiente apenas como apoio de materialização
+- ignorar `docs/workflow/*`
 
 ## Saídas esperadas
+- navegação mínima factual em `docs/INDEX.md`
 - base factual útil em `docs/core/*`
 - `docs/units/*` apenas quando houver `unit` real
 - `docs/features/*` apenas quando houver alvo ou evidência clara
 - classificação de `repo shape`: `single-unit`, `multi-unit` ou `TBD`
 - registro explícito de lacunas reais como `TBD` quando faltarem fatos
 - atualização mínima e localizada no `RESYNC`
+
+## Princípios
+- discovery guiado por evidência da codebase, docs existentes e paths reais
+- `TBD` no lugar de inferência
+- blast radius mínimo
+- memória durável curta, factual e reutilizável
+- bootstrap para criar o que falta; resync para atualizar o que já existe
 
 ## Heurísticas de `core`
 - `docs/core/*` é a base global do projeto e sempre vem primeiro
@@ -97,29 +78,42 @@ Se não houver evidência suficiente, trate como superfície ou área do projeto
 - só criar ou atualizar feature quando houver alvo explícito, evidência clara ou necessidade prática real
 - não abrir features arbitrariamente
 
-## Heurísticas de `reference`
-- `reference` é apoio estável e consulta sob demanda
-- não trate `reference` como memória viva principal do projeto
-- nesta skill, qualquer bundle local de referência depende do fluxo explícito de install/update do repositório
-- não modele a materialização principal desta skill como cópia para `docs/reference`
-
 ## Critérios para `repo shape`
 - `single-unit`: zero ou uma `unit` canônica
 - `multi-unit`: duas ou mais `units` canônicas
 - `TBD`: quando não for possível decidir honestamente com a evidência disponível
 
-## Regras de materialização mínima
-### `MODE=BOOTSTRAP`
-- começar por `docs/core/*`
-- garantir a base útil em `core`
-- criar `units` somente com evidência suficiente
-- criar docs de feature somente com alvo, evidência clara ou necessidade prática real
-- não gerar docs vazias só para completar estrutura
-- não inflar documentação
-- não inventar fatos
-- manter blast radius mínimo
+## `MODE=BOOTSTRAP`
+`BOOTSTRAP` é create-only absoluto.
+
+Regras obrigatórias:
+- antes de criar qualquer doc alvo, verificar se ele já existe
+- se existir, não editar e registrar `SKIPPED`
+- não usar `BOOTSTRAP` para refresh de docs existentes
+- usar `RESYNC` quando a necessidade for atualização mínima localizada
+- não gerar docs vazios só para completar estrutura
+- tratar `docs/INDEX.md` como navegação mínima do kit base, não como expansão de escopo
+
+Matriz do que pode ser criado:
+- sempre que faltar: `docs/INDEX.md`
+- sempre que faltar: `docs/core/CONTEXT.md`, `docs/core/RULES.md`, `docs/core/STATE.md`, `docs/core/CONTRACTS.md`, `docs/core/TESTING.md`
+- somente com `unit` real evidenciada: `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md`, `TESTING.md`
+- somente com evidência clara de superfície visual própria: `docs/units/<unit-slug>/UI_KIT.md`
+- somente com feature alvo clara ou feature inicial com evidência suficiente: `docs/features/<feature-path>/CONTEXT.md`
+- quando a feature for criada: `docs/features/<feature-path>/done/.gitkeep`
+
+Ordem operacional:
+1. ler a raiz do projeto e o `docs/` já existente
+2. classificar stack, superfícies e `repo shape`
+3. materializar primeiro `docs/core/*`
+4. materializar `docs/INDEX.md` como navegação mínima do kit base
+5. abrir `units` reais, se houver
+6. abrir features iniciais apenas quando houver alvo claro ou evidência suficiente
+7. encerrar com saída verificável de criados, `SKIPPED` e `TBD`
 
 ## Regras de propagação mínima no `RESYNC`
+`RESYNC` é o modo de atualização mínima localizada.
+
 - começar e terminar na feature alvo
 - por padrão, tocar apenas a camada da feature
 - subir para `unit` só se a mudança alterar regra, contrato, state ou testing útil daquela `unit`
@@ -128,16 +122,52 @@ Se não houver evidência suficiente, trate como superfície ou área do projeto
 - nunca aproveitar `RESYNC` para refresh amplo
 - nunca reescrever documentação inteira se uma edição localizada resolver
 
+## Heurísticas práticas por stack
+Aplicar somente com evidência. Se os sinais forem conflitantes ou insuficientes, registrar `TBD`.
+
+### Angular
+- detectar por `angular.json` e/ou dependências `@angular/*`
+- buscar evidências em `src/app`, `modules`, `pages`, `shared`, `core`, `services`, `facades`, `repositories`, `validators` e `*.spec.ts`
+- registrar apenas padrões, contratos e regras realmente observáveis
+
+### React
+- detectar por `react` e `react-dom`
+- buscar evidências em `components`, `pages`, `screens`, `routes`, `features`, hooks `use*`, stores, schemas e testes
+- registrar organização, termos canônicos e estratégia de validação sem inventar convenções
+
+### Next.js
+- detectar por dependência `next` e/ou `next.config*`
+- diferenciar `app router` e `pages router` por evidência
+- verificar `app/api`, `pages/api` e server actions para distinguir FE de FS
+- se coexistirem padrões concorrentes, registrar `TBD`
+
+### Node TypeScript
+- detectar por `package.json` com `typescript` e runtime/backend evidenciado
+- buscar evidências em `controllers`, `routes`, `handlers`, `services`, `use-cases`, validação, `db`, migrations, scripts e testes
+- registrar contratos, camadas e testing apenas quando existirem com path real
+
+### C#/.NET
+- detectar por `.sln` ou `.csproj`
+- buscar evidências em `Program.cs`, `controllers`, minimal APIs, `services`, `dtos`, `validators`, handlers, migrations e projetos de teste
+- registrar arquitetura e testing com base no que a codebase realmente expõe
+
+## Entrevista guiada mínima
+Perguntar só depois do discovery e apenas para fechar lacunas relevantes que bloqueiem a materialização factual mínima.
+
+Limites:
+- no máximo 2 rodadas curtas por execução
+- no máximo o necessário para fechar tipo do projeto, objetivo, prioridade de feature ou forma de testar
+- se a resposta não vier ou continuar inconclusiva, registrar `TBD` e seguir dentro do escopo seguro
+
 ## Restrições e proibições
-- não puxar nada do legado
 - não considerar `docs/workflow/*`
 - não inventar templates
 - não inventar paths
 - não inventar scripts
 - não inventar hooks
 - não inventar convenções
-- não inventar mecanismos além do fluxo explícito já suportado pelo repositório
-- não duplicar `templates/docs/*` por padrão
+- não inventar mecanismo fora do contrato da skill e do ambiente disponível
+- não duplicar o kit documental canônico por padrão
 - não tratar hipótese como memória durável
 - não tocar áreas fora do escopo sem necessidade direta
 - não assumir `units` por padrão
@@ -145,22 +175,22 @@ Se não houver evidência suficiente, trate como superfície ou área do projeto
 - não reescrever arquivo inteiro se uma edição localizada resolver
 
 ## Stop conditions
-- não existe evidência suficiente para afirmar o shape do repo e também não é honesto manter `TBD`
+- falta informação estrutural sem a qual qualquer decisão viraria chute
 - a feature alvo do `RESYNC` não foi explicitada
 - o delta factual do `RESYNC` está amplo demais para atualização mínima
-- a atualização exigiria inventar comportamento fora do fluxo explícito já suportado pelo repositório
-- o pedido deriva para `docs/workflow/*`, legado ou refresh amplo fora do escopo
-- a única saída possível seria inferir fatos não sustentados pelo repositório
+- o pedido deriva para `docs/workflow/*` ou refresh amplo fora do escopo
+- a única saída possível seria inferir fatos não sustentados pela codebase
 
 ## Procedimento operacional
 ### `MODE=BOOTSTRAP`
 1. Ler a raiz factual do projeto-alvo e o que já existir em `docs/`.
-2. Consultar `templates/docs/*` apenas como fonte central compartilhada de referência.
-3. Materializar primeiro `docs/core/*`.
-4. Classificar o shape do repo.
-5. Criar `docs/units/*` somente se houver evidência suficiente de `unit` real.
-6. Criar ou atualizar `docs/features/*` somente quando houver alvo claro, evidência clara ou necessidade prática real.
-7. Registrar `TBD` apenas onde a lacuna afeta entendimento durável.
+2. Fazer discovery guiado por evidência para classificar stack, superfícies e `repo shape`.
+3. Antes de cada criação, verificar existência; se existir, registrar `SKIPPED`.
+4. Criar primeiro `docs/core/*`.
+5. Criar `docs/INDEX.md` quando faltar.
+6. Criar `docs/units/*` somente para `units` reais.
+7. Criar `docs/features/*` somente para features com alvo claro ou evidência suficiente.
+8. Registrar `TBD` apenas onde a lacuna afeta entendimento durável.
 
 ### `MODE=RESYNC`
 1. Confirmar a feature alvo explícita.
@@ -175,9 +205,11 @@ Use saída curta, verificável e factual.
 ### Para `BOOTSTRAP`
 - `MODE`
 - `repo shape`
-- `docs criadas ou atualizadas`
+- `docs criadas`
+- `docs SKIPPED`
+- `navegação mínima criada`, se houver
 - `units abertas`
-- `features abertas ou atualizadas`
+- `features abertas`
 - `TBDs relevantes`
 
 ### Para `RESYNC`
@@ -187,6 +219,3 @@ Use saída curta, verificável e factual.
 - `camada adicional tocada`, se houver
 - `delta factual sincronizado`
 - `limites mantidos`
-
-## Observação sobre install/update
-No estado atual deste repositório, `sentinel.mjs` já fornece fluxo explícito de `init`, `update` e `doctor`, e esse fluxo pode preparar o bundle local de apoio em `reference/docs/` sem mudar o ownership de `templates/docs/*`. A instalação não materializa `docs/` no projeto-alvo; a skill continua responsável apenas pela materialização factual mínima quando for acionada.

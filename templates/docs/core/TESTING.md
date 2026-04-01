@@ -48,6 +48,7 @@ Registrar apenas comandos, pipelines, rotinas manuais ou entrypoints realmente e
 - `<roteiro manual mínimo>`
 
 ## Referências
-- `docs/workflow/STATUS-GATES.md`
+- `docs/INDEX.md`
 - `docs/core/STATE.md`
 - docs de unit aplicáveis
+- docs operacionais complementares do projeto, se existirem

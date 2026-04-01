@@ -5,7 +5,7 @@ LAST UPDATED: YYYYMMDD
 # Core Rules
 
 ## Objetivo
-Registrar regras globais do projeto e limites operacionais do workflow, sem duplicar contexto factual ou inventário estrutural.
+Registrar regras globais do projeto e limites operacionais relevantes, sem duplicar contexto factual ou inventário estrutural.
 
 ## Regras invioláveis
 - sem evidência, não inventar; registrar `TBD` no contexto correto
@@ -36,8 +36,9 @@ Registrar regras globais do projeto e limites operacionais do workflow, sem dupl
 - não reescrever docs factuais fora da feature sem necessidade real de `Resync`
 
 ## Referências
+- `docs/INDEX.md`
 - `docs/core/CONTEXT.md`
 - `docs/core/STATE.md`
 - `docs/core/CONTRACTS.md`
 - `docs/core/TESTING.md`
-- `docs/workflow/STATUS-GATES.md`
+- docs operacionais complementares do projeto, se existirem
