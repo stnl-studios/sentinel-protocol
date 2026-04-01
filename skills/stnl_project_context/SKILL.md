@@ -37,8 +37,8 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 ## Saídas esperadas
 - navegação mínima factual em `docs/INDEX.md`
 - base factual útil em `docs/core/*`
-- `docs/units/*` apenas quando houver `unit` real
-- `docs/features/*` apenas quando houver alvo ou evidência clara
+- `docs/units/*` apenas quando houver especialização útil de `unit` além do que cabe em `core`
+- `docs/features/*` apenas quando houver alvo explícito ou feature canônica descoberta com evidência forte
 - classificação de `repo shape`: `single-unit`, `multi-unit` ou `TBD`
 - registro explícito de lacunas reais como `TBD` quando faltarem fatos
 - atualização mínima e localizada no `RESYNC`
@@ -59,8 +59,22 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 ## Heurísticas de `units`
 - `units` é camada condicional
 - não assuma `units` por padrão
+- classificar `repo shape` e materializar `docs/units/*` são decisões separadas
+- `single-unit` significa apenas zero ou uma `unit` canônica possível; não obriga abrir `docs/units/*`
+- materializar `docs/units/*` exige evidência adicional de especialização factual útil que não caiba adequadamente em `docs/core/*`
+- em `repo shape = single-unit`, preferir por padrão apenas `docs/INDEX.md` e `docs/core/*`
+- se a única `unit` candidata coincidir essencialmente com o nome do app, serviço, API principal ou entrypoint, isso por si só não basta para abrir `unit`
 - monorepo não implica `multi-unit`
-- só promover uma área a `unit` quando houver papel próprio claro e pelo menos 2 sinais fortes
+- não confundir `unit` com projeto técnico, assembly, camada interna ou particionamento arquitetural
+- não abrir `unit` só porque existem múltiplos projetos técnicos, pastas ou assemblies `Api`, `Application`, `Domain`, `Data`, `IoC`, `Tests`, camadas de implementação ou um entrypoint principal com nome próprio
+- esses sinais podem sustentar entendimento de arquitetura global e devem ir para `docs/core/*`, mas não bastam por si só para abrir `docs/units/*`
+- só promover uma área a `unit` quando houver especialização factual útil, documentalmente distinta do `core`, sustentada por pelo menos um sinal forte claro; em casos limítrofes, corroborar com mais de um sinal
+
+Evidência suficiente para abrir `unit`:
+- fronteira funcional ou de domínio claramente distinta
+- superfície própria com regras, contratos, state ou testing que mereçam especialização fora de `core`
+- bounded context ou módulo canônico reconhecível e recorrente
+- separação que faça sentido documental e não apenas estrutural ou técnica
 
 Sinais fortes:
 - entrypoint ou runtime próprio
@@ -69,19 +83,49 @@ Sinais fortes:
 - testing ou harness próprio
 - regras locais próprias
 
-Se não houver evidência suficiente, trate como superfície ou área do projeto, não como `unit`.
+Se não houver essa especialização útil, trate como superfície, área ou arquitetura interna do projeto e registre em `docs/core/*`, não como `unit`.
 
 ## Heurísticas de `features`
 - `docs/features/*` é contexto local
 - feature não substitui `core`
 - feature também não substitui `unit` quando `unit` existir
+- no `MODE=BOOTSTRAP`, mesmo sem alvo explícito, tentar discovery inicial de 0 a 3 features canônicas
+- o limite absoluto no `BOOTSTRAP` é 3; abrir 0, 1, 2 ou 3 é válido, e nunca há obrigação de fechar 3
+- só materializar as features mais fortes, com evidência forte e não arbitrária
+- se não houver feature forte o suficiente, abrir 0 é o comportamento correto
+- feature candidata deve representar comportamento funcional, superfície útil ou recorte documental reconhecível; não apenas uma camada técnica
 - só criar ou atualizar feature quando houver alvo explícito, evidência clara ou necessidade prática real
 - não abrir features arbitrariamente
 
+Sinais que podem sustentar feature:
+- fluxos funcionais recorrentes
+- endpoints ou rotas agrupáveis por comportamento
+- páginas, screens, routes ou áreas de produto
+- services, handlers ou use-cases recorrentes com propósito funcional claro
+- testes organizados por comportamento funcional
+- contratos, schemas ou integrações que revelem um recorte funcional canônico
+- módulos ou bounded contexts realmente reconhecíveis
+
+Sinais que não bastam por si só:
+- `Api`, `Application`, `Domain`, `Data`, `IoC`, `Tests`
+- nomes de camada técnica
+- pastas puramente arquiteturais
+- entrypoint principal
+- assemblies ou projetos técnicos
+- nomes genéricos sem recorte funcional claro
+
+Discovery de feature no `BOOTSTRAP`:
+- fazer discovery por evidência real da codebase e de `docs/` existentes, conforme a stack observada
+- usar até 3 tentativas internas de discovery para encontrar candidatas fortes antes de desistir
+- não inventar agrupamentos nem promover hipótese fraca a feature materializada
+- se houver candidatas de confiança média ou baixa, não abrir automaticamente; só registrar no output se isso ajudar sem poluir
+
 ## Critérios para `repo shape`
-- `single-unit`: zero ou uma `unit` canônica
+- `single-unit`: zero ou uma `unit` canônica possível
 - `multi-unit`: duas ou mais `units` canônicas
 - `TBD`: quando não for possível decidir honestamente com a evidência disponível
+
+A classificação de `repo shape` não materializa `docs/units/*` sozinha; ela apenas limita quantas `units` canônicas podem existir.
 
 ## `MODE=BOOTSTRAP`
 `BOOTSTRAP` é create-only absoluto.
@@ -97,19 +141,33 @@ Regras obrigatórias:
 Matriz do que pode ser criado:
 - sempre que faltar: `docs/INDEX.md`
 - sempre que faltar: `docs/core/CONTEXT.md`, `docs/core/RULES.md`, `docs/core/STATE.md`, `docs/core/CONTRACTS.md`, `docs/core/TESTING.md`
-- somente com `unit` real evidenciada: `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md`, `TESTING.md`
+- somente com especialização útil de `unit` evidenciada além do que cabe em `core`: `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md`, `TESTING.md`
 - somente com evidência clara de superfície visual própria: `docs/units/<unit-slug>/UI_KIT.md`
-- somente com feature alvo clara ou feature inicial com evidência suficiente: `docs/features/<feature-path>/CONTEXT.md`
+- somente com feature alvo explícita ou feature inicial canônica com evidência forte: `docs/features/<feature-path>/CONTEXT.md`
 - quando a feature for criada: `docs/features/<feature-path>/done/.gitkeep`
+
+Regras de decisão para `BOOTSTRAP`:
+- a ausência de `docs/units/*` é resultado válido e frequentemente preferível em `repo shape = single-unit`
+- em `single-unit`, preferir criar apenas `docs/INDEX.md` e `docs/core/*`
+- abrir `docs/units/*` apenas quando houver especialização factual útil fora de `core`
+- se a única `unit` identificada coincidir essencialmente com o app, serviço, API principal ou entrypoint, manter em `core` salvo evidência adicional forte
+- depois de materializar o kit mínimo base e decidir `units`, tentar semear de 0 a 3 features canônicas iniciais
+- esse feature seeding vale para qualquer stack, inclusive frontend, backend, fullstack, `single-unit`, `multi-unit` e monorepo
+- não usar `features` para compensar ausência de `unit`
+- não abrir mais que 3 features no total durante o `BOOTSTRAP`
+- não abrir feature a partir de camada técnica, assembly, projeto interno ou nome genérico sem recorte funcional forte
 
 Ordem operacional:
 1. ler a raiz do projeto e o `docs/` já existente
 2. classificar stack, superfícies e `repo shape`
 3. materializar primeiro `docs/core/*`
 4. materializar `docs/INDEX.md` como navegação mínima do kit base
-5. abrir `units` reais, se houver
-6. abrir features iniciais apenas quando houver alvo claro ou evidência suficiente
-7. encerrar com saída verificável de criados, `SKIPPED` e `TBD`
+5. decidir se existe evidência suficiente para materializar `units` além do `core`
+6. se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `units`
+7. abrir `units` apenas quando houver especialização factual útil evidenciada
+8. fazer feature discovery inicial por evidência, com até 3 tentativas internas de discovery
+9. abrir até 3 features canônicas de alta confiança
+10. encerrar com saída verificável de criados, `SKIPPED`, `TBD` e candidatas não abertas quando isso for útil
 
 ## Regras de propagação mínima no `RESYNC`
 `RESYNC` é o modo de atualização mínima localizada.
@@ -172,6 +230,8 @@ Limites:
 - não tocar áreas fora do escopo sem necessidade direta
 - não assumir `units` por padrão
 - não assumir `multi-unit` só porque é monorepo
+- não abrir `unit` só porque a solução tem múltiplos projetos técnicos ou camadas internas
+- não tratar camada técnica ou pasta arquitetural como feature
 - não reescrever arquivo inteiro se uma edição localizada resolver
 
 ## Stop conditions
@@ -188,9 +248,13 @@ Limites:
 3. Antes de cada criação, verificar existência; se existir, registrar `SKIPPED`.
 4. Criar primeiro `docs/core/*`.
 5. Criar `docs/INDEX.md` quando faltar.
-6. Criar `docs/units/*` somente para `units` reais.
-7. Criar `docs/features/*` somente para features com alvo claro ou evidência suficiente.
-8. Registrar `TBD` apenas onde a lacuna afeta entendimento durável.
+6. Decidir se há ou não evidência suficiente para materializar `docs/units/*` além do `core`.
+7. Se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `docs/units/*`; isso não é incompletude.
+8. Criar `docs/units/*` somente para `units` com especialização útil evidenciada.
+9. Fazer feature discovery inicial por evidência da codebase e `docs/` existentes, com até 3 tentativas internas de discovery.
+10. Criar `docs/features/*` somente para feature alvo explícita ou para até 3 features canônicas de alta confiança.
+11. Se as candidatas forem fracas, conflitantes ou genéricas, não materializar.
+12. Registrar `TBD` apenas onde a lacuna afeta entendimento durável.
 
 ### `MODE=RESYNC`
 1. Confirmar a feature alvo explícita.
@@ -208,8 +272,9 @@ Use saída curta, verificável e factual.
 - `docs criadas`
 - `docs SKIPPED`
 - `navegação mínima criada`, se houver
-- `units abertas`
-- `features abertas`
+- `units abertas` ou `none`, quando não houver especialização útil suficiente; isso é especialmente normal em `single-unit`
+- `features abertas` ou `none`, quando não houver candidatas fortes o suficiente
+- `features candidatas não abertas`, se houver e se isso ajudar sem poluir
 - `TBDs relevantes`
 
 ### Para `RESYNC`
