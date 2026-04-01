@@ -31,7 +31,7 @@ Distinga sempre estas três camadas:
 Fonte central compartilhada do kit documental. Esta skill pode consultar essa fonte como referência canônica. Não duplique essa fonte por padrão e não mude seu ownership.
 
 2. reference ou bundle local da skill
-Só existe se houver mecanismo explícito de install/update no repositório que justifique isso. Na ausência desse mecanismo, trate como inexistente e não invente fluxo.
+No estado atual deste repositório, o fluxo explícito via `sentinel.mjs` pode preparar esse apoio local em `reference/docs/` durante `init` e `update`, com suporte de `doctor`. Use-o apenas como apoio instalado quando ele realmente existir e não mude o ownership de `templates/docs/*`.
 
 3. `docs/*` do projeto-alvo
 É a materialização consumível por prompts, agents e leituras sob demanda:
@@ -100,7 +100,7 @@ Se não houver evidência suficiente, trate como superfície ou área do projeto
 ## Heurísticas de `reference`
 - `reference` é apoio estável e consulta sob demanda
 - não trate `reference` como memória viva principal do projeto
-- nesta skill, qualquer bundle local de referência depende de mecanismo explícito de install/update
+- nesta skill, qualquer bundle local de referência depende do fluxo explícito de install/update do repositório
 - não modele a materialização principal desta skill como cópia para `docs/reference`
 
 ## Critérios para `repo shape`
@@ -136,7 +136,7 @@ Se não houver evidência suficiente, trate como superfície ou área do projeto
 - não inventar scripts
 - não inventar hooks
 - não inventar convenções
-- não inventar mecanismo de install/update/cópia
+- não inventar mecanismos além do fluxo explícito já suportado pelo repositório
 - não duplicar `templates/docs/*` por padrão
 - não tratar hipótese como memória durável
 - não tocar áreas fora do escopo sem necessidade direta
@@ -148,7 +148,7 @@ Se não houver evidência suficiente, trate como superfície ou área do projeto
 - não existe evidência suficiente para afirmar o shape do repo e também não é honesto manter `TBD`
 - a feature alvo do `RESYNC` não foi explicitada
 - o delta factual do `RESYNC` está amplo demais para atualização mínima
-- a atualização exigiria inventar mecanismo de install/update/cópia não existente
+- a atualização exigiria inventar comportamento fora do fluxo explícito já suportado pelo repositório
 - o pedido deriva para `docs/workflow/*`, legado ou refresh amplo fora do escopo
 - a única saída possível seria inferir fatos não sustentados pelo repositório
 
@@ -189,4 +189,4 @@ Use saída curta, verificável e factual.
 - `limites mantidos`
 
 ## Observação sobre install/update
-No estado atual deste repositório não existe mecanismo explícito de install/update/cópia fora do legado. Não invente esse mecanismo. Se ele passar a existir, o bundle local da skill pode ser descrito ou usado de forma explícita sem mudar o ownership de `templates/docs/*`.
+No estado atual deste repositório, `sentinel.mjs` já fornece fluxo explícito de `init`, `update` e `doctor`, e esse fluxo pode preparar o bundle local de apoio em `reference/docs/` sem mudar o ownership de `templates/docs/*`. A instalação não materializa `docs/` no projeto-alvo; a skill continua responsável apenas pela materialização factual mínima quando for acionada.

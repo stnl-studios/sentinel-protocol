@@ -52,7 +52,7 @@ It stays active as the operational coordinator for the whole round, but it deleg
 
 ## Prohibitions
 - do not implement
-- do not absorb bootstrap
+- do not absorb `stnl_project_context` responsibilities
 - do not absorb deep planning work
 - do not write `EXECUTION BRIEF`
 - do not write `VALIDATION PACK`
@@ -63,6 +63,8 @@ It stays active as the operational coordinator for the whole round, but it deleg
 - do not recreate the legacy phase-plan model
 
 ## Handoff
+- When the round lacks the minimum factual base to proceed honestly, route to the global utility skill `stnl_project_context` in `MODE=BOOTSTRAP`. The orchestrator routes this base gate; it does not execute the skill's responsibility itself.
+- When the round has an explicit feature delta but the factual context is in drift, route to the global utility skill `stnl_project_context` in `MODE=RESYNC`. Do not confuse this skill mode with `resync.agent.md`, which remains a separate workflow piece entered only on explicit `finalizer.agent.md` request.
 - Hand off to `planner.agent.md` once the request is framed enough to survive the base gate. The planner owns the cut and returns `EXECUTION BRIEF`.
 - Hand off to `validation-eval-designer.agent.md` after `EXECUTION BRIEF`. That agent owns `VALIDATION PACK` and harness judgment.
 - Bring in `designer.agent.md` only when there is real UX, interaction, accessibility, responsiveness, or visual consistency impact that execution or validation would otherwise guess.
@@ -99,9 +101,10 @@ It stays active as the operational coordinator for the whole round, but it deleg
 - enters at the start of the round
 - coordinates the flow `Base gate -> Planner -> Validation/eval design -> Harness gate -> Execution approval gate -> Execution -> Validation run -> Finalization -> Resync only if requested`
 - applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`, `NEEDS_DEV_DECISION_HARNESS`, `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL`, and `READY`
+- routes the canonical factual-context utility `stnl_project_context` when the base gate or factual drift requires `MODE=BOOTSTRAP` or `MODE=RESYNC`
 - decides which agents enter the round and in what order
 - preserves execution safety through ownership clarity, contract awareness, and conflict prevention
-- never implements, never closes durable docs, never absorbs bootstrap, and never replaces planner, validation design, runner, finalizer, or resync
+- never implements, never closes durable docs, never absorbs `stnl_project_context`, and never replaces planner, validation design, runner, finalizer, or resync
 
 ## Operating policy
 ### Orchestration stance
@@ -177,7 +180,7 @@ If two tasks are likely to touch the same file, same contract, or same user-faci
 
 ### Gate routing logic
 Apply gates in canonical order:
-1. Base gate: emit `NEEDS_DEV_DECISION_BASE` when the round lacks enough truth to frame the request, identify boundaries, or name the real source of truth. Otherwise continue.
+1. Base gate: when the round lacks enough factual base to frame the request, identify boundaries, or name the real source of truth, route to `stnl_project_context` in `MODE=BOOTSTRAP`. If DEV intent or source-of-truth conflict still prevents an honest start after that minimum factual pass, emit `NEEDS_DEV_DECISION_BASE`. Otherwise continue.
 2. Planning handoff: once framing is honest, route to `planner.agent.md` and expect `EXECUTION BRIEF`.
 3. Validation-design handoff: route the brief to `validation-eval-designer.agent.md` and preserve its harness judgment.
 4. Harness gate: if validation design reveals a missing harness decision, route `NEEDS_DEV_DECISION_HARNESS` and stop until DEV resolves it.
@@ -186,6 +189,7 @@ Apply gates in canonical order:
 7. Execution-stage blockage routing: if a coder or required design contribution emits `BLOCKED` before a validation-eligible result exists, do not call `validation-runner.agent.md`; route directly to `finalizer.agent.md` with explicit execution-stage blockage evidence, or escalate to DEV when the blockage is actually a missing decision.
 
 Do not bypass a gate by hiding uncertainty inside a downstream handoff.
+Do not collapse factual-context routing into the orchestrator itself, and do not confuse `stnl_project_context` in `MODE=RESYNC` with `resync.agent.md`.
 
 ### Escalation policy
 Escalate early when uncertainty changes the round's truthfulness.
