@@ -1,0 +1,9 @@
+interface:
+  name: "stnl_project_context"
+  display_name: "STNL Project Context"
+  version: "2026.4.0"
+  protocol_release: "2026.4"
+  status: "active"
+  short_description: "Levanta contexto factual do projeto e faz resync minimo por feature para reduzir releitura da codebase."
+policy:
+  allow_implicit_invocation: false
