@@ -34,3 +34,8 @@ Fluxo alvo:
 - O `finalizer` consome esses vereditos para consolidar memória durável, mas não os reemite como seus próprios status.
 - Quando a execução bloqueia antes do runner, o `orchestrator` roteia o caso direto ao `finalizer` como bloqueio pré-validação, sem inventar veredito do runner.
 - Quando `designer` entra, o `orchestrator` deve classificá-lo como `required` ou `advisory`; só o caso `required` bloqueia a rodada por padrão.
+
+## Invariantes para especialização por projeto
+- A especialização por projeto pode adaptar heurísticas e contexto local, mas não pode alterar este conjunto de status canônicos.
+- A especialização por projeto não pode alterar o ownership canônico dos status.
+- A especialização por projeto não pode alterar a ordem canônica dos gates do workflow.
