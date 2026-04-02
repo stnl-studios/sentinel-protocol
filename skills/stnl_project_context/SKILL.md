@@ -310,22 +310,69 @@ Regra obrigatória de auditabilidade:
 - em `docs criadas`, `docs alteradas` e `docs SKIPPED`, listar sempre paths completos relativos ao repo
 - nunca retornar apenas nomes soltos como `INDEX.md`, `CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md` ou `TESTING.md`
 - usar formatos como `docs/INDEX.md`, `docs/core/CONTEXT.md` ou `docs/features/<feature-path>/CONTEXT.md`
+- o fechamento final deve ser o último bloco da resposta; não acrescentar observações, perguntas ou log depois dele
+- não misturar output final com log intermediário, raciocínio, checklist operacional ou narrativa de execução
+- nunca terminar com perguntas de continuação como `Continue to iterate?`
+- nunca emitir lixo serializado como `[object Object]`
+- se uma seção listar docs, cada item deve ser uma linha própria contendo apenas o path relativo completo
+
+Formato canônico:
+- usar exatamente os headings previstos para o modo em execução
+- manter ordem fixa das seções
+- quando não houver itens em uma seção listável, usar `- none`
+- depois da última linha do fechamento, encerrar a resposta sem texto adicional
 
 ### Para `BOOTSTRAP`
-- `MODE`
-- `repo shape`
-- `docs criadas`
-- `docs SKIPPED`
-- `índice criado`, se houver
-- `units abertas` ou `none`, quando não houver especialização útil suficiente; isso é especialmente normal em `single-unit`
-- `features abertas` ou `none`, quando não houver candidatas fortes o suficiente
-- `features candidatas não abertas`, se houver e se isso ajudar sem poluir
-- `TBDs relevantes`
+- `MODE: BOOTSTRAP`
+- `REPO SHAPE: <single-unit | multi-unit | TBD>`
+- `DOCS CRIADAS:`
+- `DOCS SKIPPED:`
+- `INDICE CRIADO: <docs/INDEX.md | none>`
+- `UNITS ABERTAS:`
+- `FEATURES ABERTAS:`
+- `FEATURES CANDIDATAS NAO ABERTAS:`
+- `TBDS RELEVANTES:`
+
+Template canônico de `BOOTSTRAP`:
+```text
+MODE: BOOTSTRAP
+REPO SHAPE: <single-unit | multi-unit | TBD>
+DOCS CRIADAS:
+- docs/INDEX.md
+- docs/core/CONTEXT.md
+DOCS SKIPPED:
+- none
+INDICE CRIADO: <docs/INDEX.md | none>
+UNITS ABERTAS:
+- none
+FEATURES ABERTAS:
+- docs/features/<feature-path>/CONTEXT.md
+FEATURES CANDIDATAS NAO ABERTAS:
+- none
+TBDS RELEVANTES:
+- none
+```
 
 ### Para `RESYNC`
-- `MODE`
-- `feature alvo`
-- `docs alteradas`
-- `camada adicional tocada`, se houver
-- `delta factual sincronizado`
-- `limites mantidos`
+- `MODE: RESYNC`
+- `FEATURE ALVO: <feature-path>`
+- `DOCS ALTERADAS:`
+- `CAMADA ADICIONAL TOCADA: <core | unit:<unit-slug> | none>`
+- `DELTA FACTUAL SINCRONIZADO:`
+- `LIMITES MANTIDOS:`
+
+Template canônico de `RESYNC`:
+```text
+MODE: RESYNC
+FEATURE ALVO: <feature-path>
+DOCS ALTERADAS:
+- docs/core/CONTRACTS.md
+- docs/features/<feature-path>/CONTEXT.md
+CAMADA ADICIONAL TOCADA: <core | unit:<unit-slug> | none>
+DELTA FACTUAL SINCRONIZADO:
+- <ajuste factual curto>
+- <ajuste factual curto ou none>
+LIMITES MANTIDOS:
+- <limite mantido>
+- <limite mantido ou none>
+```
