@@ -29,21 +29,13 @@ Mapa durável e operacional da feature. Este documento orienta estado atual, esc
 - `<path, rota, tela, endpoint, worker ou arquivo central>`
 - `<path, rota, tela, endpoint, worker ou arquivo central>`
 
-## Dependências e referências factuais
-- `<doc, integração, boundary ou dependência que sustenta o entendimento da feature>`
-- `<doc, integração, boundary ou dependência que sustenta o entendimento da feature>`
-
-## Marcos relevantes
-- `YYYYMMDD` - [`DONE-YYYYMMDD-<entrega-real>.md`](./done/DONE-YYYYMMDD-<entrega-real>.md) - marco entregue relacionado ao estado atual.
+## Dependências imediatas e referências úteis
+- `docs/core/CONTRACTS.md` ou `docs/units/<unit-slug>/CONTRACTS.md`, quando a feature depender de contrato estável
+- `docs/core/TESTING.md` ou `docs/units/<unit-slug>/TESTING.md`, quando a estratégia de validação precisar ser consultada
+- `<path real do repo, doc local, integração ou boundary que sustenta o entendimento atual da feature>`
 
 ## Riscos, TBDs e limites de exaustividade
 - Risco, pendência factual, limite de leitura ou `TBD` ainda aberto na feature.
-
-## Referências úteis da unidade
-- Link para docs da unit, contratos, regras ou referência factual que sustentam a feature.
-
-## Histórico de marcos
-- `YYYYMMDD` - entrega consolidada resumida em uma linha. Ver [`DONE-YYYYMMDD-<entrega-real>.md`](./done/DONE-YYYYMMDD-<entrega-real>.md).
 
 ## Regras de uso
 - manter o snapshot curto, estável e útil para entendimento rápido da feature
@@ -51,7 +43,8 @@ Mapa durável e operacional da feature. Este documento orienta estado atual, esc
 - a hierarquia fica no path de `FEATURE`, não no valor de `SCOPE`
 - não duplicar histórico detalhado do `DONE`
 - não transformar este contexto em catálogo de contratos, mapa estrutural completo ou política de testes
-- quando precisar desses detalhes, apontar `docs/core/*`, `docs/units/*` ou paths reais em vez de copiar volume
+- não abrir seções próprias para testes detalhados, mini `CONTRACTS`, dump de entidades ou inventário estrutural amplo
+- quando precisar desses detalhes, apontar `docs/core/CONTRACTS.md`, `docs/core/TESTING.md`, `docs/units/*` ou paths reais em vez de copiar volume
 - quando faltar fato relevante, usar `TBD` ou marcar parcialidade em vez de inferir
 - usar `principais pontos observados` quando a feature tiver amostragem forte sem inventário total
 - atualizar este contexto quando o estado da feature mudar ou quando um novo `DONE` relevante existir

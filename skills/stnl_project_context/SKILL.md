@@ -40,7 +40,7 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - `STATE`: mapa factual do que existe; entrypoints, paths, módulos, jobs, pipelines, testes e superfícies
 - `CONTRACTS`: padrões, convenções e localização dos contratos importantes; nunca dump massivo de DTOs, endpoints ou interfaces
 - `TESTING`: estratégia de validação, níveis de teste, mínimos por tipo de mudança e limites de prova; nunca catálogo exaustivo de harness
-- `docs/features/*/CONTEXT.md`: snapshot factual e operacional da feature; não substitui `RULES`, `STATE`, `CONTRACTS` ou `TESTING`
+- `docs/features/*/CONTEXT.md`: snapshot factual e operacional da feature; deve conter estado atual, escopo ativo, hot paths, dependências imediatas, referências úteis e lacunas reais sem substituir `RULES`, `STATE`, `CONTRACTS` ou `TESTING`
 
 ## Saídas esperadas
 - navegação simples e útil em `docs/INDEX.md`, organizada para leitura operacional
@@ -119,6 +119,8 @@ Se não houver essa especialização útil, trate como superfície, área ou arq
 - feature candidata deve representar comportamento funcional, superfície útil ou recorte documental reconhecível; não apenas uma camada técnica
 - só criar ou atualizar feature quando houver alvo explícito, evidência clara ou necessidade prática real
 - a feature tocada deve concentrar estado atual, escopo ativo, hot paths, dependências imediatas e gaps reais sem virar mini-inventário, catálogo contratual ou política de testes
+- a feature tocada não deve absorver seção detalhada de testes, mini catálogo contratual, dump de entidades, inventário estrutural amplo ou seção longa de dependências externas
+- quando contratos, testes ou referências mais estáveis forem relevantes para a feature, apontar `docs/core/CONTRACTS.md`, `docs/core/TESTING.md`, `docs/units/*` quando existir, e paths reais do repo em vez de duplicar volume
 - não abrir features arbitrariamente
 
 Sinais que podem sustentar feature:
@@ -304,6 +306,11 @@ Limites:
 ## Formato de saída operacional da skill
 Use saída curta, verificável e factual.
 
+Regra obrigatória de auditabilidade:
+- em `docs criadas`, `docs alteradas` e `docs SKIPPED`, listar sempre paths completos relativos ao repo
+- nunca retornar apenas nomes soltos como `INDEX.md`, `CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md` ou `TESTING.md`
+- usar formatos como `docs/INDEX.md`, `docs/core/CONTEXT.md` ou `docs/features/<feature-path>/CONTEXT.md`
+
 ### Para `BOOTSTRAP`
 - `MODE`
 - `repo shape`
@@ -318,7 +325,7 @@ Use saída curta, verificável e factual.
 ### Para `RESYNC`
 - `MODE`
 - `feature alvo`
-- `docs atualizadas`
+- `docs alteradas`
 - `camada adicional tocada`, se houver
 - `delta factual sincronizado`
 - `limites mantidos`
