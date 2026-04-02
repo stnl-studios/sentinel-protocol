@@ -34,9 +34,17 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - usar o kit documental canônico disponível no ambiente apenas como apoio de materialização
 - ignorar `docs/workflow/*`
 
+## Modelo documental alvo
+- `CONTEXT`: base factual do projeto ou recorte; domínio, superfícies, integrações relevantes, linguagem e lacunas observáveis
+- `RULES`: invariantes, proibições arquiteturais, boundaries obrigatórias e stop rules reais; seeds por stack só como base ajustável por evidência
+- `STATE`: mapa factual do que existe; entrypoints, paths, módulos, jobs, pipelines, testes e superfícies
+- `CONTRACTS`: padrões, convenções e localização dos contratos importantes; nunca dump massivo de DTOs, endpoints ou interfaces
+- `TESTING`: estratégia de validação, níveis de teste, mínimos por tipo de mudança e limites de prova; nunca catálogo exaustivo de harness
+- `docs/features/*/CONTEXT.md`: snapshot factual e operacional da feature; não substitui `RULES`, `STATE`, `CONTRACTS` ou `TESTING`
+
 ## Saídas esperadas
 - navegação simples e útil em `docs/INDEX.md`, organizada para leitura operacional
-- base factual profunda em `docs/core/*`, com paths, entrypoints, contratos observáveis, testing, hot paths e lacunas reais quando houver evidência suficiente
+- base factual profunda em `docs/core/*`, com separação clara entre contexto, regras, estado, contratos e testing
 - `docs/units/*` apenas quando houver especialização útil de `unit` além do que cabe em `core`
 - `docs/features/*` apenas quando houver alvo explícito ou feature canônica descoberta com evidência forte
 - classificação de `repo shape`: `single-unit`, `multi-unit` ou `TBD`
@@ -63,7 +71,12 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 ## Heurísticas de `core`
 - `docs/core/*` é a base global profunda do projeto e sempre vem primeiro
 - materializar a maior densidade factual útil que a evidência sustentar para entendimento global
-- registrar objetivo, escopo, superfícies, paths principais, entrypoints, contratos observáveis, testing, estado global, hot paths e lacunas reais apenas por evidência
+- distribuir o conteúdo conforme o papel correto de cada doc:
+  - `CONTEXT`: visão factual, escopo, superfícies, integrações, linguagem e lacunas
+  - `RULES`: invariantes, boundaries, proibições e stop rules
+  - `STATE`: mapa do que existe e onde fica
+  - `CONTRACTS`: padrões estruturais, convenções e localização dos contratos
+  - `TESTING`: estratégia, mínimos de validação e limites de prova
 - quando faltar fato global relevante, registrar `TBD`, parcialidade ou limite de exaustividade em vez de inferir
 
 ## Heurísticas de `units`
@@ -105,7 +118,7 @@ Se não houver essa especialização útil, trate como superfície, área ou arq
 - se não houver feature forte o suficiente, abrir 0 é o comportamento correto
 - feature candidata deve representar comportamento funcional, superfície útil ou recorte documental reconhecível; não apenas uma camada técnica
 - só criar ou atualizar feature quando houver alvo explícito, evidência clara ou necessidade prática real
-- a feature tocada deve concentrar paths principais, contratos observáveis, testing local, hot paths e gaps reais sem virar mini-inventário total
+- a feature tocada deve concentrar estado atual, escopo ativo, hot paths, dependências imediatas e gaps reais sem virar mini-inventário, catálogo contratual ou política de testes
 - não abrir features arbitrariamente
 
 Sinais que podem sustentar feature:

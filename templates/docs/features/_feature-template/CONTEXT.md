@@ -14,28 +14,24 @@ STATUS: active | in-progress
 LAST UPDATED: YYYYMMDD
 
 ## Objetivo
-Mapa durável e operacional da feature. Este documento orienta estado atual, paths principais, contratos locais, testes relevantes e riscos sem virar log detalhado ou duplicar notas de entrega.
+Mapa durável e operacional da feature. Este documento orienta estado atual, escopo ativo, paths principais, dependências imediatas e riscos sem virar log detalhado nem absorver conteúdo que pertence a `RULES`, `STATE`, `CONTRACTS` ou `TESTING`.
 
 ## Estado atual
 - Resumo factual do foco atual da feature.
 - Escopo ativo do momento.
 - Dependências locais ou fronteiras que realmente importam agora.
 
-## Paths principais e entrypoints locais
+## Escopo ativo e fora de escopo imediato
+- `<escopo ativo ou entrega em andamento>`
+- `<fora de escopo imediato ou limite importante>`
+
+## Paths principais e hot paths
 - `<path, rota, tela, endpoint, worker ou arquivo central>`
 - `<path, rota, tela, endpoint, worker ou arquivo central>`
 
-## Contratos e dependências locais
-- `<schema, interface, boundary, serviço ou integração relevante>`
-- `<schema, interface, boundary, serviço ou integração relevante>`
-
-## Hot paths / onde mexer primeiro
-- `<arquivo, pasta ou fluxo que concentra mudança útil>`
-- `<arquivo, pasta ou fluxo que concentra mudança útil>`
-
-## Testes principais / prova local
-- `<suite, comando, roteiro manual ou limite de harness>`
-- `<suite, comando, roteiro manual ou limite de harness>`
+## Dependências e referências factuais
+- `<doc, integração, boundary ou dependência que sustenta o entendimento da feature>`
+- `<doc, integração, boundary ou dependência que sustenta o entendimento da feature>`
 
 ## Marcos relevantes
 - `YYYYMMDD` - [`DONE-YYYYMMDD-<entrega-real>.md`](./done/DONE-YYYYMMDD-<entrega-real>.md) - marco entregue relacionado ao estado atual.
@@ -54,6 +50,8 @@ Mapa durável e operacional da feature. Este documento orienta estado atual, pat
 - não usar `SCOPE: subfeature`
 - a hierarquia fica no path de `FEATURE`, não no valor de `SCOPE`
 - não duplicar histórico detalhado do `DONE`
+- não transformar este contexto em catálogo de contratos, mapa estrutural completo ou política de testes
+- quando precisar desses detalhes, apontar `docs/core/*`, `docs/units/*` ou paths reais em vez de copiar volume
 - quando faltar fato relevante, usar `TBD` ou marcar parcialidade em vez de inferir
 - usar `principais pontos observados` quando a feature tiver amostragem forte sem inventário total
 - atualizar este contexto quando o estado da feature mudar ou quando um novo `DONE` relevante existir

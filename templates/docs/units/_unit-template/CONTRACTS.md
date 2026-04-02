@@ -7,23 +7,31 @@ LAST UPDATED: YYYYMMDD
 > Template opcional. Criar apenas quando a unit tiver vocabulário, camadas, boundaries ou contratos locais que não caibam bem em `docs/core/CONTRACTS.md`.
 
 ## Objetivo
-Registrar nomenclatura, padrões e localização dos contratos locais da unit. Este arquivo serve como apoio direto para especialização dos coders por projeto e não deve virar inventário prolixo.
+Registrar apenas padrões, convenções e localização dos contratos locais da unit. Este arquivo não deve virar inventário prolixo nem espelho da codebase.
 
-## Vocabulário local
-| Categoria | Termo canônico | Papel | Observação curta |
-| --- | --- | --- | --- |
-| apresentação | `<termo>` | `<papel>` | `<obs>` |
-| aplicação | `<termo>` | `<papel>` | `<obs>` |
-| persistência | `<termo>` | `<papel>` | `<obs>` |
-| integração | `<termo>` | `<papel>` | `<obs>` |
+## Como usar este arquivo
+- documentar o padrão local e o path onde ele vive; se houver muitos contratos, apontar a localização em vez de copiar volume
+- registrar convenções de naming, DTOs, payloads, events, interfaces e boundaries apenas quando forem recorrentes ou sensíveis
+- destacar só contratos representativos ou críticos para manutenção local
 
-## Localização de contratos e padrões
-| Contrato ou padrão | Path principal | Observação |
+## Onde os contratos locais vivem
+| Tipo de contrato ou padrão | Path principal | O que governa |
 | --- | --- | --- |
-| `<tipo, interface, schema, boundary ou convenção>` | `<path>` | `<obs>` |
-| `<tipo, interface, schema, boundary ou convenção>` | `<path>` | `<obs>` |
+| `<DTO, schema, interface, event, payload, boundary ou convenção>` | `<path>` | `<obs>` |
+| `<DTO, schema, interface, event, payload, boundary ou convenção>` | `<path>` | `<obs>` |
 
-## Ambiguidades e TBDs
+## Convenções locais de contrato
+- naming de requests, responses, commands, events ou interfaces: `<convenção>`
+- compatibilidade, versionamento ou evolução: `<regra local>`
+- origem e consumo dos contratos: `<onde definem e onde costumam ser usados>`
+
+## Contratos representativos ou sensíveis
+| Padrão | Exemplo curto | Sensibilidade |
+| --- | --- | --- |
+| `<padrão recorrente>` | `<exemplo curto>` | `baixa | média | alta` |
+| `<padrão recorrente>` | `<exemplo curto>` | `baixa | média | alta` |
+
+## Ambiguidades, lacunas e TBDs
 - `TBD-001` — `<ambiguidade local>`
 - `TBD-002` — `<lacuna local>`
 
@@ -31,3 +39,4 @@ Registrar nomenclatura, padrões e localização dos contratos locais da unit. E
 - `docs/core/CONTRACTS.md`
 - `docs/units/<unit-slug>/RULES.md`
 - `docs/units/<unit-slug>/STATE.md`
+- `docs/units/<unit-slug>/TESTING.md`

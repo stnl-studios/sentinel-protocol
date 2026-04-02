@@ -5,53 +5,83 @@ LAST UPDATED: YYYYMMDD
 # Core Testing
 
 ## Objetivo
-Registrar a estratégia global de validação em modelo eval-first com base em evidência operacional: o que pode ser provado com checks determinísticos, o que precisa de evals comportamentais, onde existe harness e quais limitações impedem prova reprodutível.
+Registrar a política e a estratégia global de validação do projeto: quais níveis de teste existem, quando usar cada um, quais mínimos seguir por tipo de mudança, quando smoke ou teste manual bastam e como a CI participa da prova. Este documento não deve virar catálogo exaustivo de suites ou harness.
 
-## Princípios do projeto
-- nem toda validação será automação clássica
-- partes determinísticas pedem checks determinísticos
-- partes com IA, comportamento emergente ou forte dependência contextual podem exigir evals comportamentais
-- estratégia manual bem definida continua válida quando for a melhor forma honesta de prova
-- ausência de harness viável precisa aparecer cedo na documentação de testes
+## Política de validação
+- a prova deve ser proporcional ao risco da mudança
+- comportamento determinístico pede validação determinística quando houver harness viável
+- smoke, teste manual ou evidência operacional só bastam quando o risco for compatível com esse nível de prova
+- falta de harness não autoriza fingir cobertura; a limitação precisa ficar explícita
+- CI ajuda a sustentar o mínimo reprodutível, mas não substitui análise de risco nem prova local adequada
 
-## Estado do harness
-| Superfície | Harness disponível | Path principal | Forma de prova principal | Observação |
-| --- | --- | --- | --- | --- |
-| `<superfície>` | `sim | não | parcial | TBD` | `<path>` | `check | eval | manual | misto` | `<obs>` |
-| `<superfície>` | `sim | não | parcial | TBD` | `<path>` | `check | eval | manual | misto` | `<obs>` |
+## Níveis de validação
+| Nível | Quando usar | Prova esperada |
+| --- | --- | --- |
+| `unit` | `<regras locais, branching, comportamento isolado>` | `<suite curta e determinística>` |
+| `integration` | `<integração entre módulos, persistência, infra encapsulada>` | `<teste com boundaries reais ou doubles controlados>` |
+| `contract` | `<mudança de DTO, endpoint, evento, schema ou integração>` | `<validação de compatibilidade, consumer ou producer>` |
+| `e2e | smoke | manual` | `<fluxo crítico, prova operacional ou falta de harness>` | `<roteiro compatível com o risco>` |
 
-## Estratégia principal por superfície
-| Superfície | Checks determinísticos | Evals comportamentais | Estratégia manual | Múltiplos trials | Observação |
-| --- | --- | --- | --- | --- | --- |
-| `<superfície>` | `<quais checks>` | `<quais evals>` | `<fluxo manual ou n/a>` | `sim | não | TBD` | `<obs>` |
+## Mínimos por tipo de mudança
+- bugfix pede cobertura de regressão quando viável
+- mudança contratual pede validação dos consumidores relevantes e compatibilidade explícita
+- mudança em regra crítica pede prova compatível com o risco, não apenas smoke
+- refactor sem mudança funcional ainda precisa provar que o comportamento sensível foi preservado
+- mudança operacional, pipeline ou infra pede validação do caminho afetado e do fallback quando houver
+
+## Seeds iniciais por stack ou superfície
+
+### Angular, React, Next ou UI web
+- mudanças visuais simples podem aceitar smoke ou teste manual objetivo quando o risco for baixo
+- mudança de estado, fluxo de formulário, permissões, carregamento ou erro pede prova de interação e comportamento
+- boundary entre UI, application e data precisa ser exercitada ao menos no nível mais barato que detecte regressão real
+
+### Backend em geral, Node ou .NET
+- regra de negócio pede prova em service, use case ou handler canônico
+- mudança de endpoint, DTO ou schema pede validação contratual além de teste puramente interno
+- integração externa sensível pede cobertura de sucesso, erro e fallback compatível com o risco
+
+### Jobs, workers e consumers
+- mudanças em retry, idempotência, ordenação ou efeitos externos pedem prova desses comportamentos
+- payload de entrada e saída precisa ser validado quando houver producer ou consumer relevante
+- smoke isolado não basta para fluxos assíncronos críticos
+
+## Quando smoke basta
+- mudança pequena e local, sem alteração de contrato, regra crítica, autorização, persistência ou integração sensível
+- ajuste cosmético ou operacional de baixo risco com comportamento principal preservado
+
+## Quando smoke não basta
+- mudança em regra de negócio, autorização, persistência, contrato, integração externa ou fluxo crítico
+- bugfix que já demonstrou regressão reproduzível
+- alteração cujo impacto não pode ser observado honestamente com um roteiro superficial
+
+## Quando teste manual é aceitável
+- quando não houver harness viável e o risco estiver controlado por escopo, roteiro objetivo e evidência observável
+- quando a checagem necessária for exploratória, visual ou operacional e a automação não se pagar ainda
+- sempre registrar limites do teste manual quando ele não cobrir regressão de forma reprodutível
 
 ## Quando faltar harness
-- se a superfície pedir automação ou prova reprodutível e não houver harness viável, registrar a limitação e o impacto prático
-- se existir apenas prova parcial, explicitar a limitação na evidência operacional e nas lacunas de prova
-- quando fizer sentido automatizar mas a base ainda não existir, isso pode virar marco separado de implantação inicial da base de testes
+- definir o menor conjunto honesto de prova: check simples, smoke, contrato parcial ou roteiro manual verificável
+- explicitar o que ficou sem cobertura e qual risco residual permanece
+- quando a ausência de harness bloquear validação recorrente importante, registrar isso como dívida ou marco separado
 
-## Base de prova quando faltar harness
-- definir ao menos checks simples, smoke manual ou roteiro verificável por evidência
-- separar claramente falha real de impossibilidade de prova
-- não fingir cobertura que o projeto não possui
+## Suites, comandos e paths principais
+Registrar apenas comandos, pipelines e paths realmente existentes.
 
-## Evidência operacional
-Registrar apenas comandos, pipelines, rotinas manuais ou entrypoints realmente existentes.
+- `<comando, script, pipeline ou suite principal>`
+- `<comando, script, pipeline ou suite principal>`
 
-### Checks determinísticos
-- `<comando, script ou pipeline>`
-
-### Evals comportamentais
-- `<harness, rotina ou fluxo>`
-
-### Manual
-- `<roteiro manual verificável>`
+## CI e validação reprodutível
+- pipeline principal: `<path, job ou comando>`
+- gatilhos obrigatórios ou recomendados: `<quando CI precisa rodar>`
+- observação curta sobre cobertura real da CI: `<o que a CI garante e o que não garante>`
 
 ## Lacunas e limites de prova
-- `<lacuna real de harness, cobertura ou repetibilidade>`
+- `<lacuna real de harness, cobertura, regressão ou repetibilidade>`
 
 ## Referências
 - `docs/INDEX.md`
 - `docs/core/STATE.md`
+- `docs/core/CONTRACTS.md`
 - docs de unit aplicáveis
 - docs operacionais complementares do projeto, se existirem

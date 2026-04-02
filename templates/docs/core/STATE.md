@@ -5,7 +5,7 @@ LAST UPDATED: YYYYMMDD
 # Core State
 
 ## Objetivo
-Manter uma fotografia factual e operacional do repo para localização rápida e análise sobre paths e entrypoints observáveis.
+Manter uma fotografia factual e operacional do repo para localização rápida. Este documento deve mapear o que existe hoje e onde fica cada superfície relevante, sem virar narrativa de domínio, regras ou política de teste.
 
 ## Snapshot do repo
 - formato: `single-unit | multi-unit | TBD`
@@ -19,23 +19,33 @@ Manter uma fotografia factual e operacional do repo para localização rápida e
 | `<superfície>` | `app | api | worker | package | admin | mobile | TBD` | `<path>` | `present | partial | TBD` |
 | `<superfície>` | `app | api | worker | package | admin | mobile | TBD` | `<path>` | `present | partial | TBD` |
 
-## Áreas compartilhadas relevantes
+## Entrypoints e superfícies úteis
+| Entrada | Tipo | Path | Uso rápido |
+| --- | --- | --- | --- |
+| `<entrypoint>` | `app | route | api | cli | job | worker | pipeline | TBD` | `<path>` | `<observação curta>` |
+| `<entrypoint>` | `app | route | api | cli | job | worker | pipeline | TBD` | `<path>` | `<observação curta>` |
+
+## Áreas compartilhadas e módulos relevantes
 | Área | Path | Papel operacional |
 | --- | --- | --- |
 | `<shared-area>` | `<path>` | `<papel>` |
+| `<shared-area>` | `<path>` | `<papel>` |
 
-## Pontos de entrada úteis
-| Entrada | Path | Uso rápido |
+## Jobs, pipelines e rotinas operacionais
+| Fluxo | Path ou comando | Papel |
 | --- | --- | --- |
-| `<entrypoint>` | `<path>` | `<observação curta>` |
+| `<job, pipeline ou rotina>` | `<path ou comando>` | `<papel operacional>` |
+| `<job, pipeline ou rotina>` | `<path ou comando>` | `<papel operacional>` |
+
+## Testes existentes e localização rápida
+| Suite ou tipo | Path principal | Escopo |
+| --- | --- | --- |
+| `<suite, pasta ou harness>` | `<path>` | `<o que cobre>` |
+| `<suite, pasta ou harness>` | `<path>` | `<o que cobre>` |
 
 ## Hot paths / onde mexer primeiro
 - `<path ou arquivo que concentra mudanças frequentes ou críticas>`
 - `<path ou arquivo que concentra mudanças frequentes ou críticas>`
-
-## Dependências locais relevantes
-- `<dependência local, package, projeto ou integração que muda o comportamento>`
-- `<dependência local, package, projeto ou integração que muda o comportamento>`
 
 ## Observações factuais
 - `<fato operacional 1>`
@@ -46,5 +56,6 @@ Manter uma fotografia factual e operacional do repo para localização rápida e
 
 ## Referências
 - `docs/core/CONTEXT.md`
+- `docs/core/RULES.md`
 - `docs/core/CONTRACTS.md`
 - `docs/core/TESTING.md`

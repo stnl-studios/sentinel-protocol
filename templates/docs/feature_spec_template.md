@@ -30,7 +30,7 @@ If tickets, chats, or informal notes conflict with this spec, this spec wins unl
 [Explain where this feature fits in the product, user journey, or business process.]
 
 ### Technical / Architectural Context
-[Summarize the relevant system context, current architecture, constraints, patterns, and conventions this feature must follow.]
+[Summarize only the system context, constraints, patterns, and conventions that materially affect this feature. Reference stable project docs instead of restating project-wide context, rules, contracts, or testing policy.]
 
 ### Motivation
 [Why now? Bug, customer request, growth opportunity, operational issue, compliance need, technical debt, etc.]
@@ -589,11 +589,22 @@ Do not duplicate stable project-wide documentation such as:
 - global architecture
 - engineering standards
 - permanent domain glossary
+- repo state maps and structural inventories
+- stable contract conventions and contract location guides
+- project-wide testing strategy or minimum validation policy
 - design system rules
 - repo onboarding
 - general runbooks
 
 Reference those documents instead.
+
+### Relationship With Context Docs
+Use the project docs as follows instead of absorbing their role into the feature spec:
+- `CONTEXT`: factual project or unit backdrop
+- `RULES`: invariants, prohibitions, and mandatory boundaries
+- `STATE`: where things live and what exists today
+- `CONTRACTS`: stable contract patterns, conventions, and locations
+- `TESTING`: validation strategy and minimum proof expectations
 
 ### Filling Guidance
 When writing a real feature spec:

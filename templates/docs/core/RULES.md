@@ -5,36 +5,61 @@ LAST UPDATED: YYYYMMDD
 # Core Rules
 
 ## Objetivo
-Registrar regras globais do projeto e limites operacionais relevantes com densidade factual alta, sem duplicar contexto factual nem simular inventário estrutural total.
+Registrar invariantes do projeto, proibições arquiteturais, boundaries obrigatórias e stop rules reais. Este documento não deve virar guia de documentação nem inventário estrutural.
 
-## Regras invioláveis
-- sem evidência, não inventar; registrar `TBD` no contexto correto
-- evidência parcial precisa ser marcada como parcial; profundidade não autoriza inferência
-- usar `principais pontos observados` quando a amostragem for forte, mas não exaustiva
-- documentação durável precisa viver nos docs canônicos do projeto e nas ADRs aplicáveis
-- mudanças de comportamento, estrutura, contrato ou restrição real precisam ser refletidas na documentação correspondente
-- toda lacuna relevante precisa ser registrada explicitamente, sem ser mascarada por abstração vaga
+## Como preencher
+- registrar aqui apenas regras reais do projeto, decisões arquiteturais vigentes e restrições que precisam ser preservadas
+- quando ainda não houver confirmação local suficiente, usar os seeds abaixo apenas como base de trabalho e ajustar, confirmar ou remover por evidência
+- não promover seed genérico a fato do projeto sem sustentação observável
 
-## Registro de lacunas e decisões
-- quando faltar decisão de produto, arquitetura, integração ou operação, explicitar a pendência no documento correto
-- quando uma mudança exigir decisão formal, apontar a dependência sem assumir conclusão implícita
-- diferenciar fato observado, hipótese de trabalho e decisão já tomada
+## Invariantes globais
+- `<invariante de domínio, arquitetura ou operação que deve permanecer verdadeiro>`
+- `<invariante de domínio, arquitetura ou operação que deve permanecer verdadeiro>`
+- mudanças de contrato, boundary ou integração sensível exigem revisão explícita dos consumidores relevantes
 
-## Consistência documental
-- `docs/core/*` define o contexto global e não deve ser contradito por docs locais
-- `docs/units/*` e `docs/features/*` especializam o recorte local sem reescrever regras globais
-- notas transitórias, alinhamentos informais ou rascunhos não devem virar fonte de verdade durável
+## Boundaries obrigatórias
+- `<boundary que separa apresentação, aplicação, domínio, dados, integrações ou outra fronteira obrigatória>`
+- validação de entrada acontece na borda apropriada
+- acesso a infra segue as boundaries previstas e não contamina camadas acima sem mediação clara
 
-## Mudança estrutural ou normativa
-- mudança estrutural, normativa, arquitetural, de fronteira relevante ou de contrato externo relevante exige tratamento explícito
-- quando aplicável, registrar ADR
-- não normalizar breaking change silenciosa
+## Proibições arquiteturais
+- `<acoplamento ou atalho que o projeto não admite>`
+- não concentrar regra crítica de negócio em controllers, rotas, telas, componentes ou adapters de borda
+- não espalhar regra crítica entre múltiplos adapters ou integrações sem ponto claro de orquestração
+- não introduzir breaking change contratual silenciosa
 
-## Restrições de manutenção
-- não ampliar escopo por conveniência
-- não usar documento transitório ou nota informal como fonte de verdade durável
-- não reescrever docs factuais fora da área impactada sem necessidade real
-- quando faltar profundidade sustentável numa área, registrar a lacuna em vez de preencher com abstração vaga
+## Seeds iniciais por stack ou superfície
+
+### UI web, Angular, React ou Next
+- UI não chama repository, client de infra ou acesso a dados diretamente sem boundary prevista
+- componente, page, screen ou route não concentra regra de negócio crítica
+- presentation, application e data precisam ter fronteira clara quando o projeto usar essas camadas
+
+### Backend em geral
+- validação de entrada acontece na borda apropriada antes de a regra avançar para camadas internas
+- contratos não quebram silenciosamente; mudança relevante pede revisão de compatibilidade e consumidores
+- integrações externas ficam encapsuladas em boundary própria, não espalhadas pela lógica central
+
+### .NET, APIs ou BFFs
+- controller, endpoint handler ou minimal API não concentra regra de negócio crítica
+- regra de negócio não fica em camada de borda nem em mapeamentos ad hoc
+- acesso a dados segue a boundary definida pelo projeto, sem atalhos a partir da borda
+
+### Jobs, workers ou consumers
+- job, consumer ou scheduler orquestra fluxo, mas não vira depósito de regra de negócio
+- payload de entrada e saída precisa ter dono claro e compatibilidade explícita quando houver consumidores externos
+- efeitos externos, retry e idempotência precisam respeitar a boundary prevista pelo projeto
+
+## Mudanças sensíveis que exigem revisão explícita
+- mudança de contrato exige revisar consumidores, producers, schemas, DTOs ou payloads afetados
+- mudança em regra crítica exige confirmar ponto canônico de implementação e evitar duplicação acidental
+- mudança em acesso a dados, integração externa ou autorização exige verificar se a boundary prevista continua íntegra
+
+## Stop rules reais
+- parar quando a mudança exigir quebrar uma boundary sem decisão explícita
+- parar quando a solução espalhar regra crítica por borda, adapter ou UI por conveniência
+- parar quando houver breaking change contratual sem validação dos consumidores relevantes
+- parar quando a validação exigida pelo risco da mudança não puder ser sustentada
 
 ## Referências
 - `docs/INDEX.md`
@@ -42,4 +67,4 @@ Registrar regras globais do projeto e limites operacionais relevantes com densid
 - `docs/core/STATE.md`
 - `docs/core/CONTRACTS.md`
 - `docs/core/TESTING.md`
-- docs operacionais complementares do projeto, se existirem
+- ADRs e docs operacionais complementares do projeto, se existirem

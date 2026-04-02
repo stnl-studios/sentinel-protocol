@@ -5,27 +5,33 @@ LAST UPDATED: YYYYMMDD
 # Core Contracts
 
 ## Objetivo
-Registrar vocabulário canônico, padrões nomeados e localização dos contratos observáveis do projeto. Este arquivo serve como apoio direto para execução e especialização futura dos coders e não deve virar inventário prolixo nem fingir cobertura total sem evidência.
+Registrar apenas padrões de contrato realmente úteis para navegação e implementação. Este arquivo deve mostrar onde os contratos vivem, quais convenções importam e quais contratos são sensíveis, sem virar dump de DTOs, endpoints, interfaces ou payloads.
 
-## Vocabulário canônico
-Preencher apenas com termos que realmente existam no projeto.
+## Como usar este arquivo
+- documentar o padrão e a localização dos contratos; quando houver volume alto, apontar o path em vez de copiar tudo
+- registrar convenções estruturais, naming, versionamento e compatibilidade apenas quando forem recorrentes ou sensíveis
+- destacar só contratos críticos, representativos ou especialmente sensíveis
 
-| Categoria | Termo canônico | Papel | Observação curta |
+## Onde os contratos vivem
+| Tipo de contrato ou padrão | Path principal | O que governa | Escopo |
 | --- | --- | --- | --- |
-| apresentação | `<Page | Screen | View | Component | TBD>` | `<papel>` | `<obs>` |
-| aplicação | `<UseCase | Service | Handler | Facade | TBD>` | `<papel>` | `<obs>` |
-| persistência | `<Repository | Gateway | Adapter | TBD>` | `<papel>` | `<obs>` |
-| integração | `<Client | Consumer | Publisher | Webhook | TBD>` | `<papel>` | `<obs>` |
+| `<DTO, schema, interface, event, payload, client, boundary ou convenção>` | `<path>` | `<o que esse artefato governa>` | `global | unit:<unit-slug>` |
+| `<DTO, schema, interface, event, payload, client, boundary ou convenção>` | `<path>` | `<o que esse artefato governa>` | `global | unit:<unit-slug>` |
 
-## Localização de contratos e padrões
-| Contrato ou padrão | Path principal | Observável relevante | Escopo |
+## Convenções estruturais
+- naming de DTOs, requests, responses, events, commands ou interfaces: `<convenção observável>`
+- compatibilidade, versionamento ou evolução de contrato: `<regra observável>`
+- boundary de definição e consumo: `<onde contrato nasce e onde costuma ser consumido>`
+
+## Padrões e exemplos representativos
+| Padrão | Exemplo curto | Onde se aplica | Sensibilidade |
 | --- | --- | --- | --- |
-| `<tipo, schema, interface, boundary ou convenção>` | `<path>` | `<o que esse artefato governa>` | `global | unit:<unit-slug>` |
-| `<tipo, schema, interface, boundary ou convenção>` | `<path>` | `<o que esse artefato governa>` | `global | unit:<unit-slug>` |
+| `<padrão recorrente>` | `<exemplo curto e representativo>` | `<superfície ou path>` | `baixa | média | alta` |
+| `<padrão recorrente>` | `<exemplo curto e representativo>` | `<superfície ou path>` | `baixa | média | alta` |
 
-## Entrypoints e fronteiras observáveis
-- `<entrypoint, boundary ou integração principal>`
-- `<entrypoint, boundary ou integração principal>`
+## Contratos sensíveis
+- `<contrato ou boundary cuja mudança exige cuidado extra>`
+- `<contrato ou boundary cuja mudança exige cuidado extra>`
 
 ## Ambiguidades, lacunas e limites
 - usar `principais contratos observados` quando a evidência vier de amostragem forte
@@ -36,3 +42,4 @@ Preencher apenas com termos que realmente existam no projeto.
 - `docs/core/CONTEXT.md`
 - `docs/core/STATE.md`
 - `docs/core/RULES.md`
+- `docs/core/TESTING.md`
