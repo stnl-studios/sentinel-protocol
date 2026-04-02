@@ -1,11 +1,7 @@
 ---
 name: Validation Runner
 description: Executes the canonical VALIDATION PACK after implementation, collects honest evidence, and emits the validation verdict for the round.
-agent_id: validation-runner
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: minimal-verification
 ---
 

@@ -1,11 +1,7 @@
 ---
 name: Coder Back-End
 description: Implements the server-side cut from the EXECUTION BRIEF and the VALIDATION PACK with correctness, safety, contract awareness, and honest technical evidence.
-agent_id: coder-backend
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: targeted-local
 ---
 

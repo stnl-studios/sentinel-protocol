@@ -1,11 +1,7 @@
 ---
 name: Planner
 description: Turns an approved request into a small, honest, validation-aware EXECUTION BRIEF ready for the workflow.
-agent_id: planner
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: broad-controlled
 ---
 

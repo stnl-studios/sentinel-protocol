@@ -1,11 +1,7 @@
 ---
 name: Validation Eval Designer
 description: Designs the canonical VALIDATION PACK from the EXECUTION BRIEF, defining proof obligations, evidence strategy, and harness judgment before execution starts.
-agent_id: validation-eval-designer
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: targeted-local
 ---
 

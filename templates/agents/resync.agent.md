@@ -1,11 +1,7 @@
 ---
 name: Resync
 description: Synchronizes narrowly-scoped factual impact outside the feature when the finalizer identifies stale shared memory that must be corrected.
-agent_id: resync
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: targeted-local
 ---
 

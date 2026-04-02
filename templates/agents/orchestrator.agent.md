@@ -1,11 +1,7 @@
 ---
 name: Orchestrator
 description: Coordinates the full round, routes canonical gates, selects agents, and enforces safe sequencing without implementing.
-agent_id: orchestrator
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: broad-controlled
 ---
 

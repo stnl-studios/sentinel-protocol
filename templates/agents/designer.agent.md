@@ -1,11 +1,7 @@
 ---
 name: Designer
 description: Optional round specialist for UX, interaction, accessibility, responsiveness, and visual consistency decisions that reduce execution ambiguity.
-agent_id: designer
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: targeted-local
 ---
 

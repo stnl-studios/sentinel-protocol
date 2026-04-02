@@ -1,11 +1,7 @@
 ---
 name: Coder Front-End
 description: Implements the front-end or web cut from the EXECUTION BRIEF and the VALIDATION PACK with strong scope discipline, UX awareness, and honest technical evidence.
-agent_id: coder-frontend
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: targeted-local
 ---
 

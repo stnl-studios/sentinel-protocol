@@ -1,11 +1,7 @@
 ---
 name: Finalizer
 description: Consolidates the round after validation, writes only the durable memory that was actually earned, and decides whether factual resync is required.
-agent_id: finalizer
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: minimal-verification
 ---
 

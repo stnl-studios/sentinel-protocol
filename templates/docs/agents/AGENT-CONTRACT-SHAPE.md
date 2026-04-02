@@ -3,28 +3,29 @@
 ## Propósito
 Definir o shape mínimo e canônico que todo agent base do Sentinel precisa explicitar, inclusive quando houver especialização por projeto.
 
-Esse contrato inclui metadata canônica parseável no topo do arquivo. Essa metadata faz parte do contrato gerável e auditável consumível pela futura skill de especialização e pelos fluxos futuros de drift, compatibilidade e overwrite seguro.
+Esse contrato inclui metadata canônica parseável no topo do arquivo. Essa metadata continua mínima e existe para indicar a versão base usada, expor uma classificação parseável de leitura para tooling e, no futuro materializado, suportar revisão local simples e overwrite seguro.
 
 ## Metadata canônica parseável
 Todo agent base em `templates/agents/*.agent.md` deve carregar frontmatter YAML curto, estável e parseável no topo do arquivo.
 
 Campos canônicos do agent base:
 
-- `agent_id`
-- `agent_kind: base`
 - `agent_version`
-- `contract_schema_version`
-- `workflow_protocol_version`
 - `reading_scope_class`
 
 Regras:
 
-- `agent_id` identifica o agent canônico e permanece estável entre base e especializado.
-- `agent_kind` distingue molde canônico de materialização especializada.
-- `agent_version` versiona o contrato canônico do agent base.
-- `contract_schema_version` versiona o shape contratual parseado e consumido pelas ferramentas.
-- `workflow_protocol_version` versiona o protocolo e a ordem de gates que o agent segue.
-- `reading_scope_class` replica a classe canônica de leitura já aprovada para o agent e deve permanecer consistente com o corpo do arquivo.
+- `agent_version` indica a versão do Sentinel Protocol ou base canônica usada por aquele agent.
+- `reading_scope_class` é uma classificação parseável de alto nível da política de leitura do agent.
+- `reading_scope_class` serve como hint estável para tooling, validação rápida e guardrails.
+- `reading_scope_class` não substitui o `Reading contract`.
+- `reading_scope_class` não substitui `Reading order`, `Source of truth hierarchy` ou `Do not scan broadly unless`.
+- `reading_scope_class` não autoriza scan amplo sozinho.
+- Se houver conflito, o source of truth continua sendo o corpo contratual do agent e as docs canônicas.
+- Só `orchestrator` e `planner` podem usar `broad-controlled`.
+- Se `name` e `description` já fizerem parte do padrão do arquivo, podem permanecer.
+- A metadata mínima não é source of truth comportamental.
+- O comportamento do agent continua sendo definido pelo corpo contratual do arquivo e pelas docs canônicas.
 
 Exemplo conceitual de metadata de agent base:
 
@@ -32,11 +33,7 @@ Exemplo conceitual de metadata de agent base:
 ---
 name: Orchestrator
 description: ...
-agent_id: orchestrator
-agent_kind: base
-agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
+agent_version: 2026.4
 reading_scope_class: broad-controlled
 ---
 ```
@@ -115,26 +112,18 @@ Mesmo sem materializar agora, o shape esperado do arquivo especializado em `./.g
 
 Campos canônicos esperados no frontmatter do agent especializado:
 
-- `agent_id`
-- `agent_kind: specialized`
 - `base_agent_version`
-- `contract_schema_version`
-- `workflow_protocol_version`
-- `reading_scope_class`
 - `specialization_revision`
-- `generated_by`
-- `generated_from`
 - `managed_artifact`
 
 Regras:
 
-- o agent especializado não redefine `agent_version` do base
 - o agent especializado referencia o base via `base_agent_version`
 - `specialization_revision` versiona apenas a materialização especializada daquele projeto
-- `generated_by` identifica a futura skill ou pipeline gerador
-- `generated_from` referencia o agent base canônico de origem
-- `managed_artifact` distingue artifact gerenciado de customização manual fora do contrato
-- `contract_schema_version`, `workflow_protocol_version` e `reading_scope_class` devem permanecer compatíveis com o base correspondente
+- `specialization_revision` começa em `1`
+- `managed_artifact: true` identifica artifact gerenciado pela futura skill
+- a metadata mínima do specialized também não é source of truth comportamental
+- o comportamento do specialized continua sendo definido pelo corpo contratual materializado, derivado do base e das docs canônicas
 
 Exemplo conceitual de metadata de agent especializado:
 
@@ -142,40 +131,20 @@ Exemplo conceitual de metadata de agent especializado:
 ---
 name: Orchestrator
 description: ...
-agent_id: orchestrator
-agent_kind: specialized
-base_agent_version: 1.0.0
-contract_schema_version: 1.0.0
-workflow_protocol_version: 1.0.0
-reading_scope_class: broad-controlled
+base_agent_version: 2026.4
 specialization_revision: 1
-generated_by: sentinel-agent-specializer
-generated_from: templates/agents/orchestrator.agent.md
 managed_artifact: true
 ---
 ```
 
-## Política de versionamento
-### `agent_version` do agent base
-- `major`: quebra de compatibilidade do contrato canônico do agent, incluindo papel, ownership, status, workflow position, leitura, completion contract, invariantes ou slots de especialização de forma incompatível
-- `minor`: evolução compatível do contrato canônico, incluindo novos refinamentos compatíveis em leitura, completion, checklist, slots, heurísticas contratuais ou instruções sem quebrar consumidores válidos
-- `patch`: clarificação de wording, exemplos, organização textual ou ajustes editoriais sem mudança real de comportamento contratual
-
-### `specialization_revision` do agent especializado
-- começa em `1`
-- só incrementa quando o conteúdo materializado mudar de fato
-- não incrementa quando a regeneração não produzir diff real
-- não substitui nem renomeia a versão do base; apenas registra a revisão local da materialização
-
 ## Finalidade auditável desses metadados
 Esses metadados existem para permitir futuramente, sem aumentar o peso do protocolo:
 
-- detectar drift entre agent base e agent especializado
-- validar compatibilidade antes de overwrite de artifact gerenciado
-- auditar a origem e a versão base de um agent materializado
-- diferenciar artifact gerenciado de custom manual
+- saber de qual base o specialized nasceu
+- controlar overwrite seguro de artifacts gerenciados
+- manter uma revisão local simples do materializado
 
-Não são um sistema global de versionamento cego. São parte mínima, estável e parseável do contrato para materialização, auditoria e overwrite seguro.
+Não são source of truth comportamental e não substituem o corpo contratual dos agents ou as docs canônicas. São apenas metadata mínima, estável e parseável para versionamento base, revisão local do materializado e overwrite seguro.
 
 ## Regras de preservação
 - A especialização por projeto muda conteúdo, não muda o nome físico do arquivo.
