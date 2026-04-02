@@ -1,11 +1,11 @@
 # DONE Template
 
 ## Objetivo
-Registrar a entrega consolidada de uma rodada que gerou marco real. `DONE` é memória durável e só deve existir quando houver uma entrega verificável que valha ser preservada.
+Registrar um marco verificável da feature. `DONE` é memória durável e só deve existir quando houver uma entrega real que valha ser preservada.
 
 ## Convenção de arquivo
 - Nome real futuro: `DONE-YYYYMMDD-<entrega-real>.md`
-- O slug deve representar a entrega real, nunca numeração operacional da rodada.
+- O slug deve representar a entrega real, nunca referência operacional interna.
 
 ## Template
 ```md
@@ -16,8 +16,8 @@ ENTREGA CONSOLIDADA: <entrega-real>
 STATUS DO MARCO: confirmado | parcial
 DATA: YYYYMMDD
 
-## Objetivo do corte executado
-- O que este corte entregou de forma concreta.
+## Objetivo da entrega
+- O que esta entrega alterou de forma concreta.
 
 ## Status do marco
 - Registrar se o marco está confirmado ou parcial, com uma frase objetiva de justificativa.
@@ -25,13 +25,13 @@ DATA: YYYYMMDD
 ## Evidência principal
 - Artefato, diff, validação ou referência factual que comprova o marco.
 
-## Validação / eval executada
-- Check principal executado e respectivo resultado.
+## Validação principal
+- Check, evidência ou roteiro principal que sustenta o marco.
 
-## Desvios / TBDs / observações
+## Limites conhecidos
 - Limite conhecido, desvio assumido ou pendência remanescente.
 
-## Impacto documental
+## Referências atualizadas
 - Docs duráveis atualizadas, criadas ou confirmadas.
 
 ## Próximo passo lógico
@@ -39,8 +39,8 @@ DATA: YYYYMMDD
 ```
 
 ## Regras de uso
-- Abrir `DONE` apenas quando houver marco real.
+- Criar `DONE` apenas quando houver marco real.
 - `DONE` normalmente deve registrar marco confirmado; status parcial só cabe quando a entrega principal estiver comprovada e a pendência remanescente for claramente secundária.
-- Não abrir `DONE` para tentativa sem entrega verificável.
+- Não criar `DONE` para tentativa sem entrega verificável.
 - Manter o texto curto, verificável e durável.
 - `DONE` não substitui `Feature CONTEXT`.

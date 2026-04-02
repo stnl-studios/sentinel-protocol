@@ -26,6 +26,7 @@ const IGNORED_ENTRY_NAMES = new Set([
 
 const SKILL_BUNDLE_MANIFESTS = {
     stnl_project_context: [
+        "INDEX.md",
         "core/CONTEXT.md",
         "core/CONTRACTS.md",
         "core/RULES.md",
@@ -39,6 +40,13 @@ const SKILL_BUNDLE_MANIFESTS = {
         "units/_unit-template/UI_KIT.md",
         "features/_feature-template/CONTEXT.md",
         "features/_feature-template/done/DONE-TEMPLATE.md",
+    ],
+};
+
+const SKILL_INSTALL_MANIFESTS = {
+    stnl_project_context: [
+        "SKILL.md",
+        "openai.yaml",
     ],
 };
 
@@ -89,6 +97,20 @@ function copyDirectory(srcDir, destDir) {
     }
 }
 
+function copyManifestEntries(srcRoot, destRoot, relativePaths) {
+    for (const relativePath of relativePaths) {
+        const sourcePath = path.join(srcRoot, relativePath);
+
+        if (!exists(sourcePath)) {
+            throw new Error(`Path do manifest não encontrado: ${sourcePath}`);
+        }
+
+        const destPath = path.join(destRoot, relativePath);
+        ensureDir(path.dirname(destPath));
+        fs.copyFileSync(sourcePath, destPath);
+    }
+}
+
 function resetInstalledSkillDir(skillDir) {
     fs.rmSync(skillDir, { recursive: true, force: true });
 }
@@ -97,12 +119,8 @@ function getBundleManifest(skillName) {
     return SKILL_BUNDLE_MANIFESTS[skillName] ?? [];
 }
 
-function getSkillBundleSourcePath(skillName, relativePath) {
-    if (skillName !== "stnl_project_context") {
-        throw new Error(`Bundle não suportado para a skill: ${skillName}`);
-    }
-
-    return path.join(ROOT, "templates", "docs", relativePath);
+function getSkillInstallManifest(skillName) {
+    return SKILL_INSTALL_MANIFESTS[skillName] ?? null;
 }
 
 function getSkillBundleTargetRoot(installedSkillDir) {
@@ -120,17 +138,11 @@ function prepareSkillBundle(skillName, installedSkillDir) {
     fs.rmSync(bundleRoot, { recursive: true, force: true });
     ensureDir(bundleRoot);
 
-    for (const relativePath of manifest) {
-        const sourcePath = getSkillBundleSourcePath(skillName, relativePath);
-
-        if (!exists(sourcePath)) {
-            throw new Error(`Path do bundle não encontrado: ${sourcePath}`);
-        }
-
-        const destPath = path.join(bundleRoot, relativePath);
-        ensureDir(path.dirname(destPath));
-        fs.copyFileSync(sourcePath, destPath);
-    }
+    copyManifestEntries(
+        path.join(ROOT, "templates", "docs"),
+        bundleRoot,
+        manifest
+    );
 
     return manifest;
 }
@@ -157,10 +169,17 @@ function installSkills() {
         for (const skill of skills) {
             const sourceSkillDir = path.join(SOURCE_DIR, skill);
             const targetSkillDir = path.join(target, skill);
+            const installManifest = getSkillInstallManifest(skill);
 
             resetInstalledSkillDir(targetSkillDir);
-            copyDirectory(sourceSkillDir, targetSkillDir);
-            console.log(`  skill: ${skill} OK`);
+            if (installManifest) {
+                ensureDir(targetSkillDir);
+                copyManifestEntries(sourceSkillDir, targetSkillDir, installManifest);
+                console.log(`  skill: ${skill} OK (${installManifest.length} arquivos canônicos)`);
+            } else {
+                copyDirectory(sourceSkillDir, targetSkillDir);
+                console.log(`  skill: ${skill} OK`);
+            }
 
             const manifest = prepareSkillBundle(skill, targetSkillDir);
 
@@ -187,9 +206,20 @@ function inspectTarget(target, skills) {
     for (const skill of skills) {
         const installedSkillDir = path.join(target, skill);
         const skillExists = exists(installedSkillDir);
+        const installManifest = getSkillInstallManifest(skill);
         const bundleManifest = getBundleManifest(skill);
         const bundleRoot = getSkillBundleTargetRoot(installedSkillDir);
+        const missingInstallFiles = [];
         const missingBundleFiles = [];
+
+        if (skillExists && installManifest) {
+            for (const relativePath of installManifest) {
+                const installedPath = path.join(installedSkillDir, relativePath);
+                if (!exists(installedPath)) {
+                    missingInstallFiles.push(relativePath);
+                }
+            }
+        }
 
         if (skillExists && bundleManifest.length > 0) {
             for (const relativePath of bundleManifest) {
@@ -204,6 +234,9 @@ function inspectTarget(target, skills) {
             name: skill,
             exists: skillExists,
             status: skillExists ? "OK" : "MISSING",
+            installExpected: installManifest ?? [],
+            installPrepared: !installManifest || (skillExists && missingInstallFiles.length === 0),
+            missingInstallFiles,
             bundleRoot,
             bundleExpected: bundleManifest,
             bundlePrepared: skillExists && bundleManifest.length > 0 && missingBundleFiles.length === 0,
@@ -244,6 +277,18 @@ function runDoctor() {
             if (!skillReport.exists) {
                 hasIssue = true;
                 continue;
+            }
+
+            if (skillReport.installExpected.length > 0) {
+                console.log(
+                    `  package: ${skillReport.installPrepared ? "OK" : "MISSING"}`
+                );
+                console.log(`  package paths: ${skillReport.installExpected.join(", ")}`);
+
+                if (skillReport.missingInstallFiles.length > 0) {
+                    hasIssue = true;
+                    console.log(`  missing package files: ${skillReport.missingInstallFiles.join(", ")}`);
+                }
             }
 
             if (skillReport.bundleExpected.length > 0) {
