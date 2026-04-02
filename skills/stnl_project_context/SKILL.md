@@ -6,7 +6,7 @@ description: Levanta contexto factual do projeto e materializa ou ressincroniza 
 # STNL Project Context
 
 ## Missão
-Levantar contexto factual profundo e honesto do projeto e materializar memória durável reutilizável em `docs/INDEX.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`.
+Levantar contexto factual profundo e honesto do projeto e materializar memória durável reutilizável em `docs/INDEX.md`, `docs/TBDS.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`.
 
 Esta skill é um utilitário global. Ela não é um agent de workflow e deve continuar útil fora dele.
 
@@ -29,26 +29,27 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - `MODE=RESYNC`
 
 ## Escopo operacional
-- materializar documentação factual e operacional profunda apenas em `docs/INDEX.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`
-- seguir a ordem `core -> units -> features`
+- materializar documentação factual e operacional profunda apenas em `docs/INDEX.md`, `docs/TBDS.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`
+- seguir a ordem `core -> TBDS -> units -> features`
 - usar o kit documental canônico disponível no ambiente apenas como apoio de materialização
 - ignorar `docs/workflow/*`
 
 ## Modelo documental alvo
 - `CONTEXT`: base factual do projeto ou recorte; domínio, superfícies, integrações relevantes, linguagem e lacunas observáveis
-- `RULES`: invariantes, proibições arquiteturais, boundaries obrigatórias e stop rules reais; seeds por stack só como base ajustável por evidência
+- `RULES`: regras ativas do projeto em estrutura simples; separar regras confirmadas de seeds e priorizar bullets operacionais por camada ou superfície
 - `STATE`: mapa factual do que existe; entrypoints, paths, módulos, jobs, pipelines, testes e superfícies
 - `CONTRACTS`: padrões, convenções e localização dos contratos importantes; nunca dump massivo de DTOs, endpoints ou interfaces
 - `TESTING`: estratégia de validação, níveis de teste, mínimos por tipo de mudança e limites de prova; nunca catálogo exaustivo de harness
+- `TBDS`: consolidado canônico das lacunas arquiteturais, contratuais ou de boundary relevantes; docs locais ainda podem registrar `TBDs`, mas a consolidação fica aqui
 - `docs/features/*/CONTEXT.md`: snapshot factual e operacional da feature; deve conter estado atual, escopo ativo, hot paths, dependências imediatas, referências úteis e lacunas reais sem substituir `RULES`, `STATE`, `CONTRACTS` ou `TESTING`
 
 ## Saídas esperadas
 - navegação simples e útil em `docs/INDEX.md`, organizada para leitura operacional
 - base factual profunda em `docs/core/*`, com separação clara entre contexto, regras, estado, contratos e testing
+- `docs/TBDS.md` como consolidado canônico das lacunas relevantes
 - `docs/units/*` apenas quando houver especialização útil de `unit` além do que cabe em `core`
 - `docs/features/*` apenas quando houver alvo explícito ou feature canônica descoberta com evidência forte
 - classificação de `repo shape`: `single-unit`, `multi-unit` ou `TBD`
-- registro explícito de lacunas reais como `TBD` quando faltarem fatos
 - atualização localizada no `RESYNC`, com alta densidade factual no delta tocado
 
 ## Princípios
@@ -58,25 +59,48 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - blast radius mínimo
 - memória durável factual, operacional e reutilizável para agents
 - bootstrap para criar o que falta; resync para atualizar localmente o que já existe
+- regra operacional concreta vale mais que princípio abstrato
+- seed só entra como seed; não promover sem base observável
 
 ## Regras de profundidade honesta e anti-alucinação
 - profundidade não autoriza inventar
 - quando houver evidência parcial, marcar isso explicitamente no texto
 - não simular completude, inventário total ou cobertura total sem base observável
-- quando a leitura vier de amostragem forte, preferir `principais pontos observados`, `paths principais` ou formulação equivalente
+- quando a leitura vier de amostragem forte, preferir `principais padrões observados`, `paths principais` ou formulação equivalente
 - quando uma área não sustentar profundidade factual suficiente, registrar a lacuna em vez de preencher com abstração vaga
 - não promover hipótese fraca, convenção presumida ou naming provável a memória durável
+- não inventar regra específica do projeto sem evidência
+- se houver conflito entre padrões observados, registrar a tensão em `docs/TBDS.md`
 - exaustividade só pode ser sugerida quando a evidência realmente sustentar isso
+
+## Regras para materializar `RULES`
+- usar a estrutura simples: `Objetivo`, `Regras invioláveis`, `Stop rules`, `Regras de mudança estrutural`, `Regras de arquitetura`, `Convenções globais`, `Seeds por stack ou superfície`, `Relação com TBDs`, `Referências`
+- em `Regras invioláveis`, `Regras de arquitetura`, `Convenções globais` e `Exceções aprovadas`, registrar só regras confirmadas pela codebase ou por decisão explícita
+- em `Seeds por stack ou superfície`, registrar apenas seeds genéricos, operacionais e ajustáveis por evidência
+- não usar seed abstrato demais, slogan vago ou guideline genérica como `SOLID`, `Clean Code` ou `boa separação`
+- preferir bullets acionáveis como `controller não concentra regra de negócio`, `UI não chama repository diretamente`, `integração externa passa por boundary canônica`
+- preencher `Regras por superfície detectada` somente para superfícies que realmente existirem no projeto ou na unit
+- registrar `Exceções aprovadas` apenas quando a exceção estiver observada e sustentada por evidência clara
+- `RULES.md` não vira governança documental, workflow nem backlog de pendências
+
+## Regras para materializar `docs/TBDS.md`
+- tratar `docs/TBDS.md` como consolidado canônico das lacunas relevantes do projeto
+- docs locais podem continuar marcando `TBDs`, mas a consolidação precisa apontar para `docs/TBDS.md`
+- abrir ou atualizar item em `docs/TBDS.md` quando a lacuna bloquear decisão arquitetural, contratual, de boundary, compatibilidade ou integração crítica
+- quando a lacuna afetar regra ativa, referenciar o item de `docs/TBDS.md` em `RULES.md`
+- não usar `docs/TBDS.md` como backlog genérico de melhorias
+- `docs/TBDS.md` não é leitura obrigatória em toda demanda normal; ele serve para discovery, bootstrap, resync e ambiguidades relevantes
 
 ## Heurísticas de `core`
 - `docs/core/*` é a base global profunda do projeto e sempre vem primeiro
 - materializar a maior densidade factual útil que a evidência sustentar para entendimento global
 - distribuir o conteúdo conforme o papel correto de cada doc:
   - `CONTEXT`: visão factual, escopo, superfícies, integrações, linguagem e lacunas
-  - `RULES`: invariantes, boundaries, proibições e stop rules
+  - `RULES`: regras confirmadas, boundaries, stop rules, mudança estrutural e seeds separados
   - `STATE`: mapa do que existe e onde fica
   - `CONTRACTS`: padrões estruturais, convenções e localização dos contratos
   - `TESTING`: estratégia, mínimos de validação e limites de prova
+  - `TBDS`: lacunas relevantes consolidadas em um único ponto canônico
 - quando faltar fato global relevante, registrar `TBD`, parcialidade ou limite de exaustividade em vez de inferir
 
 ## Heurísticas de `units`
@@ -85,7 +109,7 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - classificar `repo shape` e materializar `docs/units/*` são decisões separadas
 - `single-unit` significa apenas zero ou uma `unit` canônica possível; não obriga abrir `docs/units/*`
 - materializar `docs/units/*` exige evidência adicional de especialização factual útil que não caiba adequadamente em `docs/core/*`
-- em `repo shape = single-unit`, preferir por padrão apenas `docs/INDEX.md` e `docs/core/*`
+- em `repo shape = single-unit`, preferir por padrão apenas `docs/INDEX.md`, `docs/TBDS.md` e `docs/core/*`
 - se a única `unit` candidata coincidir essencialmente com o nome do app, serviço, API principal ou entrypoint, isso por si só não basta para abrir `unit`
 - monorepo não implica `multi-unit`
 - não confundir `unit` com projeto técnico, assembly, camada interna ou particionamento arquitetural
@@ -146,108 +170,71 @@ Discovery de feature no `BOOTSTRAP`:
 - não inventar agrupamentos nem promover hipótese fraca a feature materializada
 - se houver candidatas de confiança média ou baixa, não abrir automaticamente; só registrar no output se isso ajudar sem poluir
 
-## Critérios para `repo shape`
-- `single-unit`: zero ou uma `unit` canônica possível
-- `multi-unit`: duas ou mais `units` canônicas
-- `TBD`: quando não for possível decidir honestamente com a evidência disponível
+## Heurísticas para materializar `RULES` por superfície
+Aplicar somente com evidência. Se os sinais forem conflitantes ou insuficientes, registrar `TBD` ou `principais padrões observados`.
 
-A classificação de `repo shape` não materializa `docs/units/*` sozinha; ela apenas limita quantas `units` canônicas podem existir.
+Superfícies que podem preencher `Regras por superfície detectada`:
+- `API / controller / endpoint`
+- `application / service / use case`
+- `domain`
+- `data / repository / infra`
+- `UI / design system`
+- `jobs / workers / schedulers`
+- `adapters / integrations`
 
-## `MODE=BOOTSTRAP`
-`BOOTSTRAP` é create-only absoluto.
-
-Contrato:
-- criar somente docs ausentes
-- produzir documentação robusta, factual e operacionalmente útil nos arquivos novos
-- buscar profundidade máxima sustentada por evidência dentro do escopo da skill
-- limitar o blast radius pelo escopo documental, nunca por superficialização artificial
-- poder abrir de 0 a 3 features canônicas quando houver evidência forte
-
-Regras obrigatórias:
-- antes de criar qualquer doc alvo, verificar se ele já existe
-- se existir, não editar e registrar `SKIPPED`
-- não usar `BOOTSTRAP` para refresh de docs existentes
-- usar `RESYNC` quando a necessidade for atualização localizada
-- não gerar docs vazios só para completar estrutura
-- tratar `docs/INDEX.md` como índice simples da documentação operacional criada, não como expansão de escopo
-
-Matriz do que pode ser criado:
-- sempre que faltar: `docs/INDEX.md`
-- sempre que faltar: `docs/core/CONTEXT.md`, `docs/core/RULES.md`, `docs/core/STATE.md`, `docs/core/CONTRACTS.md`, `docs/core/TESTING.md`
-- somente com especialização útil de `unit` evidenciada além do que cabe em `core`: `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md`, `TESTING.md`
-- somente com evidência clara de superfície visual própria: `docs/units/<unit-slug>/UI_KIT.md`
-- somente com feature alvo explícita ou feature inicial canônica com evidência forte: `docs/features/<feature-path>/CONTEXT.md`
-- quando a feature for criada: `docs/features/<feature-path>/done/.gitkeep`
-
-Regras de decisão para `BOOTSTRAP`:
-- a ausência de `docs/units/*` é resultado válido e frequentemente preferível em `repo shape = single-unit`
-- em `single-unit`, preferir criar apenas `docs/INDEX.md` e `docs/core/*`
-- abrir `docs/units/*` apenas quando houver especialização factual útil fora de `core`
-- se a única `unit` identificada coincidir essencialmente com o app, serviço, API principal ou entrypoint, manter em `core` salvo evidência adicional forte
-- depois de materializar a base global profunda e decidir `units`, tentar semear de 0 a 3 features canônicas iniciais
-- esse feature seeding vale para qualquer stack, inclusive frontend, backend, fullstack, `single-unit`, `multi-unit` e monorepo
-- não usar `features` para compensar ausência de `unit`
-- não abrir mais que 3 features no total durante o `BOOTSTRAP`
-- não abrir feature a partir de camada técnica, assembly, projeto interno ou nome genérico sem recorte funcional forte
-
-Ordem operacional:
-1. ler a raiz do projeto e o `docs/` já existente
-2. classificar stack, superfícies e `repo shape`
-3. materializar primeiro `docs/core/*`
-4. materializar `docs/INDEX.md` como navegação simples da base documental criada
-5. decidir se existe evidência suficiente para materializar `units` além do `core`
-6. se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `units`
-7. abrir `units` apenas quando houver especialização factual útil evidenciada
-8. fazer feature discovery inicial por evidência, com até 3 tentativas internas de discovery
-9. abrir até 3 features canônicas de alta confiança
-10. encerrar com saída verificável de criados, `SKIPPED`, `TBD` e candidatas não abertas quando isso for útil
-
-## Regras de propagação controlada no `RESYNC`
-`RESYNC` é o modo de atualização localizada.
-
-Contrato:
-- produzir a maior densidade factual honesta possível sobre a feature alvo e seu delta
-- manter superfície mínima de edição: poucos arquivos e poucos trechos, quando isso bastar
-- aprofundar factual e operacionalmente tudo o que tocar
-- não reescrever tudo, não fazer refresh amplo e não responder com conteúdo raso só por ser localizado
-
-Regras operacionais:
-- começar e terminar na feature alvo
-- por padrão, tocar apenas a camada da feature
-- subir para `unit` só se a mudança alterar regra, contrato, state ou testing útil daquela `unit`
-- subir para `core` só se a mudança alterar regra global, contrato global, convenção global ou shape do projeto
-- limite padrão: no máximo 1 camada acima da feature, salvo justificativa explícita
-- nunca aproveitar `RESYNC` para refresh amplo
-- nunca reescrever documentação inteira se uma edição localizada resolver
+Ao preencher `Regras por superfície detectada`:
+- incluir só as superfícies realmente presentes
+- usar bullets operacionais e curtos
+- evitar repetir seed genérico como se fosse regra confirmada
+- registrar exceção real em `Exceções aprovadas`, não diluir no meio das regras
 
 ## Heurísticas práticas por stack
 Aplicar somente com evidência. Se os sinais forem conflitantes ou insuficientes, registrar `TBD`.
 
-### Angular
-- detectar por `angular.json` e/ou dependências `@angular/*`
-- buscar evidências em `src/app`, `modules`, `pages`, `shared`, `core`, `services`, `facades`, `repositories`, `validators` e `*.spec.ts`
-- registrar apenas padrões, contratos e regras realmente observáveis
+### .NET / API / BFF
+- detectar por `.sln`, `.csproj`, `Program.cs`, `Controllers/`, minimal APIs, `Application`, `Domain`, `Repository`, `DbContext`, `IoC`, `Migrations`, `Filters`, `Middlewares`, `ProblemDetails` e `Auth`
+- procurar evidência de camada de borda, orquestração, domínio, persistência e autorização nos paths reais
+- regras candidatas:
+  - controller, endpoint handler ou minimal API não concentra regra de negócio
+  - service ou use case orquestra o fluxo
+  - domínio não conhece infra
+  - acesso a dados passa pela boundary prevista
+  - auth, claims e permission check acontecem na borda apropriada
 
-### React
-- detectar por `react` e `react-dom`
-- buscar evidências em `components`, `pages`, `screens`, `routes`, `features`, hooks `use*`, stores, schemas e testes
-- registrar organização, termos canônicos e estratégia de validação sem inventar convenções
+### Angular / React / Next / UI
+- detectar por `angular.json`, dependências `@angular/*`, `react`, `react-dom`, `next` e `next.config*`
+- procurar evidência em componentes, telas, routes, pages, screens, hooks, stores, services, facades, adapters, clients, tokens, theme, design system, api layer, repository layer e data layer
+- em Next, diferenciar `app router`, `pages router`, `app/api`, `pages/api` e server actions por evidência
+- regras candidatas:
+  - UI não chama repository diretamente
+  - componente, page, screen ou route não concentra regra de negócio crítica
+  - efeitos colaterais não ficam espalhados na camada visual
+  - design system, tokens e primitives seguem o kit local
 
-### Next.js
-- detectar por dependência `next` e/ou `next.config*`
-- diferenciar `app router` e `pages router` por evidência
-- verificar `app/api`, `pages/api` e server actions para distinguir FE de FS
-- se coexistirem padrões concorrentes, registrar `TBD`
+### Node / Nest / Express
+- detectar por `package.json` com backend evidenciado, `nestjs`, `express`, `fastify` ou estrutura equivalente
+- procurar evidência em controllers, routes, handlers, services, use-cases, repositories, DTOs, schemas, validators, adapters e clients
+- regras candidatas:
+  - rota ou controller fica fino
+  - regra crítica fica em service ou use case
+  - integração externa fica encapsulada
+  - validação acontece na borda apropriada
 
-### Node TypeScript
-- detectar por `package.json` com `typescript` e runtime/backend evidenciado
-- buscar evidências em `controllers`, `routes`, `handlers`, `services`, `use-cases`, validação, `db`, migrations, scripts e testes
-- registrar contratos, camadas e testing apenas quando existirem com path real
+### Jobs / workers / schedulers
+- detectar por `jobs`, `workers`, `queues`, `consumers`, `schedulers`, `cron`, `Hangfire`, `Bull`, `Celery` ou infraestrutura equivalente
+- procurar evidência de orquestração, payload, retry, idempotência e boundary de side effects
+- regras candidatas:
+  - job orquestra fluxo, não vira depósito de regra crítica
+  - payload sensível não muda silenciosamente
+  - retry e idempotência respeitam a boundary prevista
 
-### C#/.NET
-- detectar por `.sln` ou `.csproj`
-- buscar evidências em `Program.cs`, `controllers`, minimal APIs, `services`, `dtos`, `validators`, handlers, migrations e projetos de teste
-- registrar arquitetura e testing com base no que a codebase realmente expõe
+### Persistência / ORM / banco
+- detectar por entities, models, migrations, mappings, configurations, repositories, conventions, helpers de schema, `DbContext`, `Prisma`, `TypeORM`, `Sequelize`, `EF Core` ou equivalentes
+- procurar evidência de boundary de persistência, schema compatível, mapping e convenções recorrentes
+- regras candidatas:
+  - persistência segue a boundary definida
+  - repository não concentra regra de negócio
+  - convenções de schema e mapping que impactam compatibilidade precisam ser preservadas
 
 ## Entrevista guiada mínima
 Perguntar só depois do discovery e apenas para fechar lacunas relevantes que bloqueiem a materialização factual honesta.
@@ -281,35 +268,114 @@ Limites:
 - o pedido deriva para `docs/workflow/*` ou refresh amplo fora do escopo
 - a única saída possível seria inferir fatos não sustentados pela codebase
 
+## Critérios para `repo shape`
+- `single-unit`: zero ou uma `unit` canônica possível
+- `multi-unit`: duas ou mais `units` canônicas
+- `TBD`: quando não for possível decidir honestamente com a evidência disponível
+
+A classificação de `repo shape` não materializa `docs/units/*` sozinha; ela apenas limita quantas `units` canônicas podem existir.
+
+## `MODE=BOOTSTRAP`
+`BOOTSTRAP` é create-only absoluto.
+
+Contrato:
+- criar somente docs ausentes
+- produzir documentação robusta, factual e operacionalmente útil nos arquivos novos
+- buscar profundidade máxima sustentada por evidência dentro do escopo da skill
+- limitar o blast radius pelo escopo documental, nunca por superficialização artificial
+- poder abrir de 0 a 3 features canônicas quando houver evidência forte
+
+Regras obrigatórias:
+- antes de criar qualquer doc alvo, verificar se ele já existe
+- se existir, não editar e registrar `SKIPPED`
+- não usar `BOOTSTRAP` para refresh de docs existentes
+- usar `RESYNC` quando a necessidade for atualização localizada
+- não gerar docs vazios só para completar estrutura
+- tratar `docs/INDEX.md` como índice simples da documentação operacional criada, não como expansão de escopo
+- tratar `docs/TBDS.md` como consolidado canônico das lacunas relevantes, mesmo quando houver poucos itens ou nenhum item aberto ainda
+
+Matriz do que pode ser criado:
+- sempre que faltar: `docs/INDEX.md`
+- sempre que faltar: `docs/TBDS.md`
+- sempre que faltar: `docs/core/CONTEXT.md`, `docs/core/RULES.md`, `docs/core/STATE.md`, `docs/core/CONTRACTS.md`, `docs/core/TESTING.md`
+- somente com especialização útil de `unit` evidenciada além do que cabe em `core`: `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md`, `TESTING.md`
+- somente com evidência clara de superfície visual própria: `docs/units/<unit-slug>/UI_KIT.md`
+- somente com feature alvo explícita ou feature inicial canônica com evidência forte: `docs/features/<feature-path>/CONTEXT.md`
+- quando a feature for criada: `docs/features/<feature-path>/done/.gitkeep`
+
+Regras de decisão para `BOOTSTRAP`:
+- a ausência de `docs/units/*` é resultado válido e frequentemente preferível em `repo shape = single-unit`
+- em `single-unit`, preferir criar apenas `docs/INDEX.md`, `docs/TBDS.md` e `docs/core/*`
+- abrir `docs/units/*` apenas quando houver especialização factual útil fora de `core`
+- se a única `unit` identificada coincidir essencialmente com o app, serviço, API principal ou entrypoint, manter em `core` salvo evidência adicional forte
+- depois de materializar a base global profunda e decidir `units`, tentar semear de 0 a 3 features canônicas iniciais
+- esse feature seeding vale para qualquer stack, inclusive frontend, backend, fullstack, `single-unit`, `multi-unit` e monorepo
+- não usar `features` para compensar ausência de `unit`
+- não abrir mais que 3 features no total durante o `BOOTSTRAP`
+- não abrir feature a partir de camada técnica, assembly, projeto interno ou nome genérico sem recorte funcional forte
+
+Ordem operacional:
+1. ler a raiz do projeto e o `docs/` já existente
+2. classificar stack, superfícies e `repo shape`
+3. materializar primeiro `docs/core/*`
+4. materializar `docs/TBDS.md` como consolidado canônico das lacunas relevantes
+5. materializar `docs/INDEX.md` como navegação simples da base documental criada
+6. decidir se existe evidência suficiente para materializar `units` além do `core`
+7. se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `units`
+8. abrir `units` apenas quando houver especialização factual útil evidenciada
+9. fazer feature discovery inicial por evidência, com até 3 tentativas internas de discovery
+10. abrir até 3 features canônicas de alta confiança
+11. encerrar com saída verificável de criados, `SKIPPED`, `TBD` e candidatas não abertas quando isso for útil
+
+## Regras de propagação controlada no `RESYNC`
+`RESYNC` é o modo de atualização localizada.
+
+Contrato:
+- produzir a maior densidade factual honesta possível sobre a feature alvo e seu delta
+- manter superfície mínima de edição: poucos arquivos e poucos trechos, quando isso bastar
+- aprofundar factual e operacionalmente tudo o que tocar
+- não reescrever tudo, não fazer refresh amplo e não responder com conteúdo raso só por ser localizado
+
+Regras operacionais:
+- começar e terminar na feature alvo
+- por padrão, tocar apenas a camada da feature
+- subir para `unit` só se a mudança alterar regra, contrato, state ou testing útil daquela `unit`
+- subir para `core` só se a mudança alterar regra global, contrato global, convenção global, shape do projeto ou `docs/TBDS.md`
+- limite padrão: no máximo 1 camada acima da feature, salvo justificativa explícita
+- nunca aproveitar `RESYNC` para refresh amplo
+- nunca reescrever documentação inteira se uma edição localizada resolver
+
 ## Procedimento operacional
 ### `MODE=BOOTSTRAP`
 1. Ler a raiz factual do projeto-alvo e o que já existir em `docs/`.
 2. Fazer discovery guiado por evidência para classificar stack, superfícies e `repo shape`.
 3. Antes de cada criação, verificar existência; se existir, registrar `SKIPPED`.
 4. Criar primeiro `docs/core/*`.
-5. Criar `docs/INDEX.md` quando faltar.
-6. Decidir se há ou não evidência suficiente para materializar `docs/units/*` além do `core`.
-7. Se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `docs/units/*`; isso não é incompletude.
-8. Criar `docs/units/*` somente para `units` com especialização útil evidenciada.
-9. Fazer feature discovery inicial por evidência da codebase e `docs/` existentes, com até 3 tentativas internas de discovery.
-10. Criar `docs/features/*` somente para feature alvo explícita ou para até 3 features canônicas de alta confiança.
-11. Se as candidatas forem fracas, conflitantes ou genéricas, não materializar.
-12. Registrar `TBD` apenas onde a lacuna afeta entendimento durável.
+5. Criar `docs/TBDS.md` quando faltar.
+6. Criar `docs/INDEX.md` quando faltar.
+7. Decidir se há ou não evidência suficiente para materializar `docs/units/*` além do `core`.
+8. Se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `docs/units/*`; isso não é incompletude.
+9. Criar `docs/units/*` somente para `units` com especialização útil evidenciada.
+10. Fazer feature discovery inicial por evidência da codebase e `docs/` existentes, com até 3 tentativas internas de discovery.
+11. Criar `docs/features/*` somente para feature alvo explícita ou para até 3 features canônicas de alta confiança.
+12. Se as candidatas forem fracas, conflitantes ou genéricas, não materializar.
+13. Registrar ou atualizar `docs/TBDS.md` apenas onde a lacuna afeta entendimento durável.
 
 ### `MODE=RESYNC`
 1. Confirmar a feature alvo explícita.
 2. Ler a feature alvo e apenas o entorno necessário para sustentar profundidade factual honesta sobre o delta.
 3. Corrigir o drift factual nos trechos certos da feature, sem refresh amplo.
-4. Propagar no máximo uma camada acima apenas se a mudança afetar `unit` ou `core`.
-5. Encerrar com edição localizada e profundidade máxima sustentada no que foi tocado.
+4. Atualizar `docs/TBDS.md` quando o delta revelar ou resolver lacuna arquitetural, contratual ou de boundary relevante.
+5. Propagar no máximo uma camada acima apenas se a mudança afetar `unit` ou `core`.
+6. Encerrar com edição localizada e profundidade máxima sustentada no que foi tocado.
 
 ## Formato de saída operacional da skill
 Use saída curta, verificável e factual.
 
 Regra obrigatória de auditabilidade:
 - em `docs criadas`, `docs alteradas` e `docs SKIPPED`, listar sempre paths completos relativos ao repo
-- nunca retornar apenas nomes soltos como `INDEX.md`, `CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md` ou `TESTING.md`
-- usar formatos como `docs/INDEX.md`, `docs/core/CONTEXT.md` ou `docs/features/<feature-path>/CONTEXT.md`
+- nunca retornar apenas nomes soltos como `INDEX.md`, `TBDS.md`, `CONTEXT.md`, `RULES.md`, `STATE.md`, `CONTRACTS.md` ou `TESTING.md`
+- usar formatos como `docs/INDEX.md`, `docs/TBDS.md`, `docs/core/CONTEXT.md` ou `docs/features/<feature-path>/CONTEXT.md`
 - o fechamento final deve ser o último bloco da resposta; não acrescentar observações, perguntas ou log depois dele
 - não misturar output final com log intermediário, raciocínio, checklist operacional ou narrativa de execução
 - nunca terminar com perguntas de continuação como `Continue to iterate?`
@@ -339,6 +405,7 @@ MODE: BOOTSTRAP
 REPO SHAPE: <single-unit | multi-unit | TBD>
 DOCS CRIADAS:
 - docs/INDEX.md
+- docs/TBDS.md
 - docs/core/CONTEXT.md
 DOCS SKIPPED:
 - none
@@ -350,7 +417,7 @@ FEATURES ABERTAS:
 FEATURES CANDIDATAS NAO ABERTAS:
 - none
 TBDS RELEVANTES:
-- none
+- TBD-001 - <titulo curto>
 ```
 
 ### Para `RESYNC`
@@ -366,7 +433,7 @@ Template canônico de `RESYNC`:
 MODE: RESYNC
 FEATURE ALVO: <feature-path>
 DOCS ALTERADAS:
-- docs/core/CONTRACTS.md
+- docs/TBDS.md
 - docs/features/<feature-path>/CONTEXT.md
 CAMADA ADICIONAL TOCADA: <core | unit:<unit-slug> | none>
 DELTA FACTUAL SINCRONIZADO:

@@ -27,6 +27,7 @@ const IGNORED_ENTRY_NAMES = new Set([
 const SKILL_BUNDLE_MANIFESTS = {
     stnl_project_context: [
         "INDEX.md",
+        "TBDS.md",
         "core/CONTEXT.md",
         "core/CONTRACTS.md",
         "core/RULES.md",

@@ -5,10 +5,11 @@ Organizar a leitura da documentação do projeto e indicar a ordem prática de n
 
 ## Papel de cada documento
 - `CONTEXT.md` explica o que o projeto ou recorte é, qual domínio cobre, quais superfícies existem e quais lacunas factuais ainda permanecem.
-- `RULES.md` registra invariantes, proibições arquiteturais, boundaries obrigatórias e stop rules reais.
+- `RULES.md` registra regras ativas do projeto: invariantes reais, stop rules, mudança estrutural, dependência entre camadas, fronteiras e seeds separados das regras confirmadas.
 - `STATE.md` mapeia o que existe hoje: entrypoints, paths, módulos, jobs, pipelines, testes e superfícies observáveis.
 - `CONTRACTS.md` registra padrões, convenções e localização dos contratos relevantes sem virar catálogo massivo.
 - `TESTING.md` define estratégia de validação, níveis de teste, mínimos por tipo de mudança e política de regressão.
+- `TBDS.md` consolida lacunas arquiteturais, contratuais ou de boundary que ainda pedem decisão explícita. Ele é o consolidado canônico, mas não precisa ser leitura obrigatória em toda demanda normal.
 
 `docs/INDEX.md` não substitui nenhum desses documentos; ele só organiza a leitura.
 
@@ -51,5 +52,6 @@ Quando existir feature documentada, priorize a leitura de `docs/features/<featur
 - usar `docs/core/STATE.md` para localizar paths, entrypoints e testes existentes
 - consultar `docs/core/CONTRACTS.md` para padrões e localizações de contrato
 - usar `docs/core/TESTING.md` para decidir como validar a mudança
+- consultar [`docs/TBDS.md`](./TBDS.md) em discovery, bootstrap, resync ou quando houver ambiguidade arquitetural, conflito de padrão, lacuna contratual ou dúvida de boundary
 - descer para `docs/units/*` quando houver fronteira local clara
 - usar `docs/features/*` para fluxos funcionais específicos
