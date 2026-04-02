@@ -7,7 +7,7 @@ LAST UPDATED: YYYYMMDD
 > Template opcional. Criar apenas para units visuais (`app`, `admin`, `web`, `mobile` ou equivalentes).
 
 ## Objetivo
-Manter um mapa curto e operacional das superfícies e padrões visuais locais da unit, útil como insumo para `designer.agent.md` e `coder-frontend.agent.md`.
+Manter um mapa curto e operacional das superfícies e padrões visuais locais da unit, útil para orientar manutenção visual, implementação consistente e reuso local.
 
 ## Relação com o design system
 - existe design system de referência? `<sim | não>`

@@ -1,7 +1,7 @@
 # Índice de Documentação
 
 ## Objetivo
-Organizar a leitura da documentação operacional criada e indicar a ordem prática de navegação do projeto sem substituir os docs factuais.
+Organizar a leitura da documentação do projeto e indicar a ordem prática de navegação sem substituir os docs factuais.
 
 ## Precedência documental
 Use esta ordem quando houver dúvida sobre onde ler primeiro:
@@ -11,11 +11,11 @@ Use esta ordem quando houver dúvida sobre onde ler primeiro:
 2. [`docs/units/*`](./units/_unit-template/CONTEXT.md) especializa a unit sem contrariar `core`.
    Em `repo shape = single-unit`, a ausência de `docs/units/*` pode ser a forma correta do projeto e não indica incompletude.
 3. `docs/features/*` contextualiza recortes ativos sem substituir `core` ou `units`.
-   Features abertas funcionam como pontos de entrada funcionais priorizados para execução.
+   Features abertas funcionam como pontos de entrada funcionais priorizados para manutenção e evolução.
 4. `docs/decisions/*`, quando existir, registra decisões duráveis já formalizadas.
 5. `docs/reference/*`, quando existir, funciona como apoio factual sob gatilho.
 
-`docs/INDEX.md` não substitui os docs de `core`, `units` ou `features`; ele só organiza a leitura da documentação operacional criada.
+`docs/INDEX.md` não substitui os docs de `core`, `units` ou `features`; ele só organiza a leitura da documentação do projeto.
 
 ## Navegação sugerida
 

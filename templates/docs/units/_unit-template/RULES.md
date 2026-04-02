@@ -23,10 +23,10 @@ Registrar limites, invariantes e restrições locais da unit sem contrariar `doc
 - mudança estrutural, normativa, arquitetural ou de contrato local relevante exige tratamento explícito
 - não normalizar breaking change silenciosa
 
-## Artefato efêmero vs memória durável
-- `EXECUTION BRIEF` e `VALIDATION PACK` são efêmeros
-- memória durável local vive em `Feature CONTEXT`, `DONE` e docs factuais atualizadas quando houver `Resync`
-- não usar artefato efêmero como fonte de verdade durável da unit
+## Documentação durável local
+- memória durável local vive nos docs canônicos da unit, nas features relacionadas e nas ADRs aplicáveis
+- notas transitórias ou alinhamentos informais não devem ser tratados como fonte de verdade durável da unit
+- toda mudança local relevante precisa ser refletida no documento factual correspondente
 
 ## Stop rules locais
 - `<stop rule local 1>`

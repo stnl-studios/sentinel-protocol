@@ -5,7 +5,7 @@ LAST UPDATED: YYYYMMDD
 # Unit State
 
 ## Objetivo
-Ser a fotografia factual curta da estrutura e das superfícies da unit para localização rápida, seleção de agents e especialização local.
+Ser a fotografia factual curta da estrutura e das superfícies da unit para localização rápida e entendimento operacional local.
 
 ## Snapshot da unit
 - path raiz: `<path>`

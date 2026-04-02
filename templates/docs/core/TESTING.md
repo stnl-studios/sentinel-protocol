@@ -5,14 +5,14 @@ LAST UPDATED: YYYYMMDD
 # Core Testing
 
 ## Objetivo
-Registrar a estratégia global de validação em modelo eval-first com base em evidência operacional: o que pode ser provado com checks determinísticos, o que precisa de evals comportamentais, onde existe harness e quando o fluxo deve parar em `NEEDS_DEV_DECISION_HARNESS`.
+Registrar a estratégia global de validação em modelo eval-first com base em evidência operacional: o que pode ser provado com checks determinísticos, o que precisa de evals comportamentais, onde existe harness e quais limitações impedem prova reprodutível.
 
 ## Princípios do projeto
 - nem toda validação será automação clássica
 - partes determinísticas pedem checks determinísticos
-- partes agentic, IA ou altamente comportamentais podem exigir evals comportamentais
+- partes com IA, comportamento emergente ou forte dependência contextual podem exigir evals comportamentais
 - estratégia manual bem definida continua válida quando for a melhor forma honesta de prova
-- ausência de harness viável precisa aparecer cedo no fluxo
+- ausência de harness viável precisa aparecer cedo na documentação de testes
 
 ## Estado do harness
 | Superfície | Harness disponível | Path principal | Forma de prova principal | Observação |
@@ -25,9 +25,9 @@ Registrar a estratégia global de validação em modelo eval-first com base em e
 | --- | --- | --- | --- | --- | --- |
 | `<superfície>` | `<quais checks>` | `<quais evals>` | `<fluxo manual ou n/a>` | `sim | não | TBD` | `<obs>` |
 
-## Gate de harness
-- se a rodada pedir automação ou prova reprodutível e não houver harness viável, sinalizar `NEEDS_DEV_DECISION_HARNESS`
-- se existir apenas prova parcial, explicitar a limitação no `VALIDATION PACK`
+## Quando faltar harness
+- se a superfície pedir automação ou prova reprodutível e não houver harness viável, registrar a limitação e o impacto prático
+- se existir apenas prova parcial, explicitar a limitação na evidência operacional e nas lacunas de prova
 - quando fizer sentido automatizar mas a base ainda não existir, isso pode virar marco separado de implantação inicial da base de testes
 
 ## Base de prova quando faltar harness

@@ -1,12 +1,12 @@
 # Feature CONTEXT
 
-## Snapshot de recycle
-- LAST DONE: `./done/DONE-YYYYMMDD-<entrega-real>.md` | `TBD`
-- LAST DECISION: `CLOSED | PARTIAL | BLOCKED | TBD`
-- LAST MILESTONE: `<frase-curta-ou-TBD>`
+## Snapshot da feature
+- LATEST MILESTONE NOTE: `./done/DONE-YYYYMMDD-<entrega-real>.md` | `TBD`
+- CURRENT STATUS: `active | in-progress | paused | TBD`
+- CURRENT FOCUS: `<frase-curta-ou-TBD>`
 - OPEN THREADS:
   - `<item-curto-ou-TBD>`
-- NEXT RECYCLE BASIS: `<frase-curta-ou-TBD>`
+- NEXT CHECKPOINT: `<frase-curta-ou-TBD>`
 
 SCOPE: feature
 FEATURE: <feature-path>
@@ -14,7 +14,7 @@ STATUS: active | in-progress
 LAST UPDATED: YYYYMMDD
 
 ## Objetivo
-Mapa durável e operacional da feature. Este documento orienta estado atual, paths principais, contratos locais, testes relevantes e riscos sem virar log detalhado, mini-`PLAN.md` ou mini-`DONE`.
+Mapa durável e operacional da feature. Este documento orienta estado atual, paths principais, contratos locais, testes relevantes e riscos sem virar log detalhado ou duplicar notas de entrega.
 
 ## Estado atual
 - Resumo factual do foco atual da feature.
@@ -37,7 +37,7 @@ Mapa durável e operacional da feature. Este documento orienta estado atual, pat
 - `<suite, comando, roteiro manual ou limite de harness>`
 - `<suite, comando, roteiro manual ou limite de harness>`
 
-## DONEs relevantes
+## Marcos relevantes
 - `YYYYMMDD` - [`DONE-YYYYMMDD-<entrega-real>.md`](./done/DONE-YYYYMMDD-<entrega-real>.md) - marco entregue relacionado ao estado atual.
 
 ## Riscos, TBDs e limites de exaustividade
@@ -50,7 +50,7 @@ Mapa durável e operacional da feature. Este documento orienta estado atual, pat
 - `YYYYMMDD` - entrega consolidada resumida em uma linha. Ver [`DONE-YYYYMMDD-<entrega-real>.md`](./done/DONE-YYYYMMDD-<entrega-real>.md).
 
 ## Regras de uso
-- manter o snapshot curto, estável e útil para recycle
+- manter o snapshot curto, estável e útil para entendimento rápido da feature
 - não usar `SCOPE: subfeature`
 - a hierarquia fica no path de `FEATURE`, não no valor de `SCOPE`
 - não duplicar histórico detalhado do `DONE`

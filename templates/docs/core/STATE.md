@@ -5,7 +5,7 @@ LAST UPDATED: YYYYMMDD
 # Core State
 
 ## Objetivo
-Manter uma fotografia factual e operacional do repo para localização rápida, seleção de agents e execução sobre paths e entrypoints observáveis.
+Manter uma fotografia factual e operacional do repo para localização rápida e análise sobre paths e entrypoints observáveis.
 
 ## Snapshot do repo
 - formato: `single-unit | multi-unit | TBD`

@@ -5,7 +5,7 @@ LAST UPDATED: YYYYMMDD
 # Unit Testing
 
 ## Objetivo
-Registrar como validar esta unit em modelo eval-first: que harness existe, quais checks determinísticos são possíveis, quando usar evals comportamentais, como a estratégia manual funciona e quando o fluxo precisa subir `NEEDS_DEV_DECISION_HARNESS`.
+Registrar como validar esta unit em modelo eval-first: que harness existe, quais checks determinísticos são possíveis, quando usar evals comportamentais, como a estratégia manual funciona e quais limitações impedem prova reprodutível.
 
 ## Estado do harness local
 | Superfície | Harness disponível | Forma principal de prova | Observação |
@@ -18,9 +18,9 @@ Registrar como validar esta unit em modelo eval-first: que harness existe, quais
 | --- | --- | --- | --- | --- | --- |
 | `<superfície>` | `<checks>` | `<evals>` | `<fluxo manual ou n/a>` | `sim | não | TBD` | `<obs>` |
 
-## Gate de harness
-- se a rodada pedir automação ou prova reprodutível e a unit não tiver harness viável, sinalizar `NEEDS_DEV_DECISION_HARNESS`
-- se a prova for apenas parcial, isso precisa aparecer cedo no `VALIDATION PACK`
+## Quando faltar harness
+- se a unit pedir automação ou prova reprodutível e não houver harness viável, registrar a limitação e o impacto no recorte local
+- se a prova for apenas parcial, isso precisa aparecer cedo na evidência operacional e nas lacunas da unit
 - quando fizer sentido automatizar, mas a base ainda não existir, pode haver marco separado de implantação mínima da base de testes
 
 ## Base mínima quando faltar harness
@@ -39,6 +39,9 @@ Registrar apenas comandos, pipelines, rotinas ou roteiros que existam por evidê
 
 ### Manual
 - `<roteiro manual mínimo>`
+
+## Lacunas e limites de prova
+- `<lacuna local de harness, cobertura ou repetibilidade>`
 
 ## Referências
 - `docs/core/TESTING.md`

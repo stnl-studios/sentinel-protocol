@@ -16,12 +16,7 @@
 
 ### Audience
 This document is intended for:
-- Planner / PM
-- Designer
-- Front-End Engineer
-- Back-End Engineer
-- QA Engineer
-- Reviewer / CTO
+- Product, design, engineering, QA, operations, and stakeholders impacted by the feature
 
 ### Source of Truth Rule
 This document is the primary implementation reference for this feature.
@@ -32,7 +27,7 @@ If tickets, chats, or informal notes conflict with this spec, this spec wins unl
 ## 2. Context
 
 ### Product Context
-[Explain where this feature fits in the product, workflow, or business process.]
+[Explain where this feature fits in the product, user journey, or business process.]
 
 ### Technical / Architectural Context
 [Summarize the relevant system context, current architecture, constraints, patterns, and conventions this feature must follow.]
@@ -411,7 +406,7 @@ Define critical business meanings explicitly:
 - [Dependency 1]
 - [Dependency 2]
 
-### Cross-Team / Cross-Agent Dependencies
+### Cross-Team / Cross-Function Dependencies
 - [Example: backend must expose contract before frontend integration]
 - [Example: design must define empty and error states]
 - [Example: QA depends on staging fixtures or mocks]
@@ -557,29 +552,7 @@ Define critical business meanings explicitly:
 
 ---
 
-## 24. Agent Execution Guidance
-
-### Planner
-[What the planner should extract, sequence, or watch for.]
-
-### Designer
-[What UX/UI details require explicit definition.]
-
-### Front-End Engineer
-[What UI / state / contract behavior must be preserved.]
-
-### Back-End Engineer
-[What service, contract, data, and non-functional behavior must be respected.]
-
-### QA Engineer
-[What must be validated before calling this done.]
-
-### Reviewer / CTO
-[What should be inspected most critically in implementation and rollout.]
-
----
-
-## 25. Definition of Done
+## 24. Definition of Done
 
 This feature is considered done when:
 
@@ -594,11 +567,11 @@ This feature is considered done when:
 - [ ] Documentation updated
 - [ ] Rollout and rollback defined
 - [ ] Open questions resolved or explicitly accepted
-- [ ] Reviewer approval completed
+- [ ] Required review completed
 
 ---
 
-## 26. Usage Notes for This Template
+## 25. Usage Notes for This Template
 
 ### What belongs here
 Use this document for information that is specific to a single feature:

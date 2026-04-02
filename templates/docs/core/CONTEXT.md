@@ -6,7 +6,7 @@ LAST UPDATED: YYYYMMDD
 # Core Context
 
 ## Objetivo
-Registrar a base factual global do projeto com a maior densidade honesta que a evidência sustentar. Este documento orienta entendimento global, delimita escopo e serve como insumo direto para execução e especialização futura dos agents por projeto.
+Registrar a base factual global do projeto com a maior densidade honesta que a evidência sustentar. Este documento orienta entendimento global, delimita escopo e apoia navegação rápida, manutenção consistente e tomada de decisão técnica.
 
 ## Visão factual do projeto
 Descreva o que o projeto é, qual problema cobre e qual papel esta codebase sustenta. Se a visão vier de evidência parcial, marcar isso explicitamente.
@@ -34,10 +34,10 @@ Descreva o que o projeto é, qual problema cobre e qual papel esta codebase sust
 - `<path, entrypoint ou área que costuma concentrar mudança relevante>`
 - `<path, entrypoint ou área que costuma concentrar mudança relevante>`
 
-## Base para agents
+## Base para navegação e alinhamento técnico
 - forma da codebase: `single-unit | multi-unit | TBD`
 - fronteiras principais entre superfícies
-- termos e áreas que qualquer agent precisa reconhecer cedo
+- termos e áreas que qualquer pessoa do time precisa reconhecer cedo
 - pontos de entrada úteis para descoberta rápida
 
 ## Lacunas e limites de exaustividade

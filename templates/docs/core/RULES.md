@@ -11,31 +11,29 @@ Registrar regras globais do projeto e limites operacionais relevantes com densid
 - sem evidência, não inventar; registrar `TBD` no contexto correto
 - evidência parcial precisa ser marcada como parcial; profundidade não autoriza inferência
 - usar `principais pontos observados` quando a amostragem for forte, mas não exaustiva
-- memória durável não vive em artefato efêmero
-- `EXECUTION BRIEF` e `VALIDATION PACK` são artefatos efêmeros
-- `Feature CONTEXT`, `DONE`, docs factuais atualizadas por `Resync` e ADR são memória durável
-- `PLAN.md` não é memória durável do workflow novo
+- documentação durável precisa viver nos docs canônicos do projeto e nas ADRs aplicáveis
+- mudanças de comportamento, estrutura, contrato ou restrição real precisam ser refletidas na documentação correspondente
+- toda lacuna relevante precisa ser registrada explicitamente, sem ser mascarada por abstração vaga
 
-## Gates humanos relevantes
-- usar `NEEDS_DEV_DECISION_BASE` quando faltar decisão de base, escopo ou direção
-- usar `NEEDS_DEV_DECISION_HARNESS` quando faltar decisão sobre harness ou estratégia viável de validação
-- usar `NEEDS_DEV_APPROVAL_EXECUTION` quando a execução exigir aprovação explícita
+## Registro de lacunas e decisões
+- quando faltar decisão de produto, arquitetura, integração ou operação, explicitar a pendência no documento correto
+- quando uma mudança exigir decisão formal, apontar a dependência sem assumir conclusão implícita
+- diferenciar fato observado, hipótese de trabalho e decisão já tomada
 
-## Limites de atuação dos agents
-- agents executores não fecham memória durável sozinhos
-- `orchestrator` coordena gates e handoffs, não implementa
-- `planner` gera `EXECUTION BRIEF`, não vira backlog manager
-- `finalizer` e `resync` concentram fechamento objetivo e sincronização factual localizada
+## Consistência documental
+- `docs/core/*` define o contexto global e não deve ser contradito por docs locais
+- `docs/units/*` e `docs/features/*` especializam o recorte local sem reescrever regras globais
+- notas transitórias, alinhamentos informais ou rascunhos não devem virar fonte de verdade durável
 
 ## Mudança estrutural ou normativa
 - mudança estrutural, normativa, arquitetural, de fronteira relevante ou de contrato externo relevante exige tratamento explícito
 - quando aplicável, registrar ADR
 - não normalizar breaking change silenciosa
 
-## Restrições de execução
+## Restrições de manutenção
 - não ampliar escopo por conveniência
-- não usar artefato efêmero como fonte de verdade durável
-- não reescrever docs factuais fora da feature sem necessidade real de `Resync`
+- não usar documento transitório ou nota informal como fonte de verdade durável
+- não reescrever docs factuais fora da área impactada sem necessidade real
 - quando faltar profundidade sustentável numa área, registrar a lacuna em vez de preencher com abstração vaga
 
 ## Referências

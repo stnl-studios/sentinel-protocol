@@ -6,7 +6,7 @@ LAST UPDATED: YYYYMMDD
 # Unit Context
 
 ## Objetivo
-Ser o mapa factual curto da unit. Este documento especializa o recorte local sem contrariar `docs/core/*` e serve como base mínima para especialização futura dos agents por projeto.
+Ser o mapa factual curto da unit. Este documento especializa o recorte local sem contrariar `docs/core/*` e apoia entendimento local, manutenção consistente e decisões técnicas na área.
 
 ## Papel da unit no projeto
 Descreva em poucas linhas o que esta unit entrega, para quem ela existe e como se conecta ao restante do projeto.
@@ -25,10 +25,10 @@ Descreva em poucas linhas o que esta unit entrega, para quem ela existe e como s
 | `<área ou módulo>` | `<path>` | `<papel>` |
 | `<área ou módulo>` | `<path>` | `<papel>` |
 
-## Base útil para especialização dos agents
+## Base útil para entendimento local
 - fronteiras locais relevantes
 - dependências ou integrações principais
-- termos e áreas que um agent precisa reconhecer cedo
+- termos e áreas que o time precisa reconhecer cedo
 
 ## Riscos e TBDs locais
 - `<risco ou limitação local>`
