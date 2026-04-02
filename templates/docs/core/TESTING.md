@@ -5,7 +5,7 @@ LAST UPDATED: YYYYMMDD
 # Core Testing
 
 ## Objetivo
-Registrar a estratégia global de validação em modelo eval-first: o que pode ser provado com checks determinísticos, o que precisa de evals comportamentais, onde existe harness e quando o fluxo deve parar em `NEEDS_DEV_DECISION_HARNESS`.
+Registrar a estratégia global de validação em modelo eval-first com base em evidência operacional: o que pode ser provado com checks determinísticos, o que precisa de evals comportamentais, onde existe harness e quando o fluxo deve parar em `NEEDS_DEV_DECISION_HARNESS`.
 
 ## Princípios do projeto
 - nem toda validação será automação clássica
@@ -15,12 +15,12 @@ Registrar a estratégia global de validação em modelo eval-first: o que pode s
 - ausência de harness viável precisa aparecer cedo no fluxo
 
 ## Estado do harness
-| Superfície | Harness disponível | Forma de prova principal | Observação |
-| --- | --- | --- | --- |
-| `<superfície>` | `sim | não | parcial | TBD` | `check | eval | manual | misto` | `<obs>` |
-| `<superfície>` | `sim | não | parcial | TBD` | `check | eval | manual | misto` | `<obs>` |
+| Superfície | Harness disponível | Path principal | Forma de prova principal | Observação |
+| --- | --- | --- | --- | --- |
+| `<superfície>` | `sim | não | parcial | TBD` | `<path>` | `check | eval | manual | misto` | `<obs>` |
+| `<superfície>` | `sim | não | parcial | TBD` | `<path>` | `check | eval | manual | misto` | `<obs>` |
 
-## Estratégia mínima por superfície
+## Estratégia principal por superfície
 | Superfície | Checks determinísticos | Evals comportamentais | Estratégia manual | Múltiplos trials | Observação |
 | --- | --- | --- | --- | --- | --- |
 | `<superfície>` | `<quais checks>` | `<quais evals>` | `<fluxo manual ou n/a>` | `sim | não | TBD` | `<obs>` |
@@ -28,9 +28,9 @@ Registrar a estratégia global de validação em modelo eval-first: o que pode s
 ## Gate de harness
 - se a rodada pedir automação ou prova reprodutível e não houver harness viável, sinalizar `NEEDS_DEV_DECISION_HARNESS`
 - se existir apenas prova parcial, explicitar a limitação no `VALIDATION PACK`
-- quando fizer sentido automatizar mas a base ainda não existir, isso pode virar marco separado de implantação mínima da base de testes
+- quando fizer sentido automatizar mas a base ainda não existir, isso pode virar marco separado de implantação inicial da base de testes
 
-## Base mínima quando faltar harness
+## Base de prova quando faltar harness
 - definir ao menos checks simples, smoke manual ou roteiro verificável por evidência
 - separar claramente falha real de impossibilidade de prova
 - não fingir cobertura que o projeto não possui
@@ -45,7 +45,10 @@ Registrar apenas comandos, pipelines, rotinas manuais ou entrypoints realmente e
 - `<harness, rotina ou fluxo>`
 
 ### Manual
-- `<roteiro manual mínimo>`
+- `<roteiro manual verificável>`
+
+## Lacunas e limites de prova
+- `<lacuna real de harness, cobertura ou repetibilidade>`
 
 ## Referências
 - `docs/INDEX.md`

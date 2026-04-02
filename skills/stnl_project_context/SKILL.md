@@ -6,13 +6,13 @@ description: Levanta contexto factual do projeto e materializa ou ressincroniza 
 # STNL Project Context
 
 ## Missão
-Levantar contexto factual mínimo do projeto e materializar memória durável reutilizável em `docs/INDEX.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`.
+Levantar contexto factual profundo e honesto do projeto e materializar memória durável reutilizável em `docs/INDEX.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`.
 
 Esta skill é um utilitário global. Ela não é um agent de workflow e deve continuar útil fora dele.
 
 ## Quando usar
-- quando for preciso bootstrapar a base documental factual mínima de um projeto
-- quando for preciso ressincronizar uma feature explícita com delta documental mínimo
+- quando for preciso bootstrapar uma base documental operacional profunda a partir de evidência real
+- quando for preciso ressincronizar uma feature explícita com delta factual denso e edição localizada
 - quando prompts ou agents precisarem de contexto reutilizável em `docs/`
 - quando a releitura ampla da codebase estiver custosa e a base documental ainda estiver ausente, incompleta ou em drift
 
@@ -29,32 +29,42 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - `MODE=RESYNC`
 
 ## Escopo operacional
-- materializar apenas o kit factual mínimo em `docs/INDEX.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`
+- materializar documentação factual e operacional profunda apenas em `docs/INDEX.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`
 - seguir a ordem `core -> units -> features`
 - usar o kit documental canônico disponível no ambiente apenas como apoio de materialização
 - ignorar `docs/workflow/*`
 
 ## Saídas esperadas
-- navegação mínima factual em `docs/INDEX.md`
-- base factual útil em `docs/core/*`
+- navegação simples e útil em `docs/INDEX.md`, organizada para leitura operacional
+- base factual profunda em `docs/core/*`, com paths, entrypoints, contratos observáveis, testing, hot paths e lacunas reais quando houver evidência suficiente
 - `docs/units/*` apenas quando houver especialização útil de `unit` além do que cabe em `core`
 - `docs/features/*` apenas quando houver alvo explícito ou feature canônica descoberta com evidência forte
 - classificação de `repo shape`: `single-unit`, `multi-unit` ou `TBD`
 - registro explícito de lacunas reais como `TBD` quando faltarem fatos
-- atualização mínima e localizada no `RESYNC`
+- atualização localizada no `RESYNC`, com alta densidade factual no delta tocado
 
 ## Princípios
 - discovery guiado por evidência da codebase, docs existentes e paths reais
-- `TBD` no lugar de inferência
+- profundidade máxima sustentável sob evidência, sem superficializar por contrato
+- `TBD` ou marcação explícita de parcialidade no lugar de inferência
 - blast radius mínimo
-- memória durável curta, factual e reutilizável
-- bootstrap para criar o que falta; resync para atualizar o que já existe
+- memória durável factual, operacional e reutilizável para agents
+- bootstrap para criar o que falta; resync para atualizar localmente o que já existe
+
+## Regras de profundidade honesta e anti-alucinação
+- profundidade não autoriza inventar
+- quando houver evidência parcial, marcar isso explicitamente no texto
+- não simular completude, inventário total ou cobertura total sem base observável
+- quando a leitura vier de amostragem forte, preferir `principais pontos observados`, `paths principais` ou formulação equivalente
+- quando uma área não sustentar profundidade factual suficiente, registrar a lacuna em vez de preencher com abstração vaga
+- não promover hipótese fraca, convenção presumida ou naming provável a memória durável
+- exaustividade só pode ser sugerida quando a evidência realmente sustentar isso
 
 ## Heurísticas de `core`
-- `docs/core/*` é a base global do projeto e sempre vem primeiro
-- materialize apenas o mínimo útil para entendimento global
-- registre objetivo, escopo, superfícies, contratos, testing e estado global apenas por evidência
-- quando faltar fato global relevante, registre `TBD` em vez de inferir
+- `docs/core/*` é a base global profunda do projeto e sempre vem primeiro
+- materializar a maior densidade factual útil que a evidência sustentar para entendimento global
+- registrar objetivo, escopo, superfícies, paths principais, entrypoints, contratos observáveis, testing, estado global, hot paths e lacunas reais apenas por evidência
+- quando faltar fato global relevante, registrar `TBD`, parcialidade ou limite de exaustividade em vez de inferir
 
 ## Heurísticas de `units`
 - `units` é camada condicional
@@ -95,6 +105,7 @@ Se não houver essa especialização útil, trate como superfície, área ou arq
 - se não houver feature forte o suficiente, abrir 0 é o comportamento correto
 - feature candidata deve representar comportamento funcional, superfície útil ou recorte documental reconhecível; não apenas uma camada técnica
 - só criar ou atualizar feature quando houver alvo explícito, evidência clara ou necessidade prática real
+- a feature tocada deve concentrar paths principais, contratos observáveis, testing local, hot paths e gaps reais sem virar mini-inventário total
 - não abrir features arbitrariamente
 
 Sinais que podem sustentar feature:
@@ -130,13 +141,20 @@ A classificação de `repo shape` não materializa `docs/units/*` sozinha; ela a
 ## `MODE=BOOTSTRAP`
 `BOOTSTRAP` é create-only absoluto.
 
+Contrato:
+- criar somente docs ausentes
+- produzir documentação robusta, factual e operacionalmente útil nos arquivos novos
+- buscar profundidade máxima sustentada por evidência dentro do escopo da skill
+- limitar o blast radius pelo escopo documental, nunca por superficialização artificial
+- poder abrir de 0 a 3 features canônicas quando houver evidência forte
+
 Regras obrigatórias:
 - antes de criar qualquer doc alvo, verificar se ele já existe
 - se existir, não editar e registrar `SKIPPED`
 - não usar `BOOTSTRAP` para refresh de docs existentes
-- usar `RESYNC` quando a necessidade for atualização mínima localizada
+- usar `RESYNC` quando a necessidade for atualização localizada
 - não gerar docs vazios só para completar estrutura
-- tratar `docs/INDEX.md` como navegação mínima do kit base, não como expansão de escopo
+- tratar `docs/INDEX.md` como índice simples da documentação operacional criada, não como expansão de escopo
 
 Matriz do que pode ser criado:
 - sempre que faltar: `docs/INDEX.md`
@@ -151,7 +169,7 @@ Regras de decisão para `BOOTSTRAP`:
 - em `single-unit`, preferir criar apenas `docs/INDEX.md` e `docs/core/*`
 - abrir `docs/units/*` apenas quando houver especialização factual útil fora de `core`
 - se a única `unit` identificada coincidir essencialmente com o app, serviço, API principal ou entrypoint, manter em `core` salvo evidência adicional forte
-- depois de materializar o kit mínimo base e decidir `units`, tentar semear de 0 a 3 features canônicas iniciais
+- depois de materializar a base global profunda e decidir `units`, tentar semear de 0 a 3 features canônicas iniciais
 - esse feature seeding vale para qualquer stack, inclusive frontend, backend, fullstack, `single-unit`, `multi-unit` e monorepo
 - não usar `features` para compensar ausência de `unit`
 - não abrir mais que 3 features no total durante o `BOOTSTRAP`
@@ -161,7 +179,7 @@ Ordem operacional:
 1. ler a raiz do projeto e o `docs/` já existente
 2. classificar stack, superfícies e `repo shape`
 3. materializar primeiro `docs/core/*`
-4. materializar `docs/INDEX.md` como navegação mínima do kit base
+4. materializar `docs/INDEX.md` como navegação simples da base documental criada
 5. decidir se existe evidência suficiente para materializar `units` além do `core`
 6. se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `units`
 7. abrir `units` apenas quando houver especialização factual útil evidenciada
@@ -169,9 +187,16 @@ Ordem operacional:
 9. abrir até 3 features canônicas de alta confiança
 10. encerrar com saída verificável de criados, `SKIPPED`, `TBD` e candidatas não abertas quando isso for útil
 
-## Regras de propagação mínima no `RESYNC`
-`RESYNC` é o modo de atualização mínima localizada.
+## Regras de propagação controlada no `RESYNC`
+`RESYNC` é o modo de atualização localizada.
 
+Contrato:
+- produzir a maior densidade factual honesta possível sobre a feature alvo e seu delta
+- manter superfície mínima de edição: poucos arquivos e poucos trechos, quando isso bastar
+- aprofundar factual e operacionalmente tudo o que tocar
+- não reescrever tudo, não fazer refresh amplo e não responder com conteúdo raso só por ser localizado
+
+Regras operacionais:
 - começar e terminar na feature alvo
 - por padrão, tocar apenas a camada da feature
 - subir para `unit` só se a mudança alterar regra, contrato, state ou testing útil daquela `unit`
@@ -210,7 +235,7 @@ Aplicar somente com evidência. Se os sinais forem conflitantes ou insuficientes
 - registrar arquitetura e testing com base no que a codebase realmente expõe
 
 ## Entrevista guiada mínima
-Perguntar só depois do discovery e apenas para fechar lacunas relevantes que bloqueiem a materialização factual mínima.
+Perguntar só depois do discovery e apenas para fechar lacunas relevantes que bloqueiem a materialização factual honesta.
 
 Limites:
 - no máximo 2 rodadas curtas por execução
@@ -237,7 +262,7 @@ Limites:
 ## Stop conditions
 - falta informação estrutural sem a qual qualquer decisão viraria chute
 - a feature alvo do `RESYNC` não foi explicitada
-- o delta factual do `RESYNC` está amplo demais para atualização mínima
+- o delta factual do `RESYNC` está amplo demais para atualização localizada
 - o pedido deriva para `docs/workflow/*` ou refresh amplo fora do escopo
 - a única saída possível seria inferir fatos não sustentados pela codebase
 
@@ -258,10 +283,10 @@ Limites:
 
 ### `MODE=RESYNC`
 1. Confirmar a feature alvo explícita.
-2. Ler apenas a feature alvo e o mínimo necessário ao redor dela.
-3. Corrigir o drift factual na feature.
+2. Ler a feature alvo e apenas o entorno necessário para sustentar profundidade factual honesta sobre o delta.
+3. Corrigir o drift factual nos trechos certos da feature, sem refresh amplo.
 4. Propagar no máximo uma camada acima apenas se a mudança afetar `unit` ou `core`.
-5. Encerrar sem refresh amplo.
+5. Encerrar com edição localizada e profundidade máxima sustentada no que foi tocado.
 
 ## Formato de saída operacional da skill
 Use saída curta, verificável e factual.
@@ -271,7 +296,7 @@ Use saída curta, verificável e factual.
 - `repo shape`
 - `docs criadas`
 - `docs SKIPPED`
-- `navegação mínima criada`, se houver
+- `índice criado`, se houver
 - `units abertas` ou `none`, quando não houver especialização útil suficiente; isso é especialmente normal em `single-unit`
 - `features abertas` ou `none`, quando não houver candidatas fortes o suficiente
 - `features candidatas não abertas`, se houver e se isso ajudar sem poluir
