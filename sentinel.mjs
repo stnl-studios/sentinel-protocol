@@ -26,26 +26,61 @@ const IGNORED_ENTRY_NAMES = new Set([
 
 const SKILL_BUNDLE_MANIFESTS = {
     stnl_project_context: [
-        "INDEX.md",
-        "TBDS.md",
-        "core/CONTEXT.md",
-        "core/CONTRACTS.md",
-        "core/RULES.md",
-        "core/STATE.md",
-        "core/TESTING.md",
-        "units/_unit-template/CONTEXT.md",
-        "units/_unit-template/CONTRACTS.md",
-        "units/_unit-template/RULES.md",
-        "units/_unit-template/STATE.md",
-        "units/_unit-template/TESTING.md",
-        "units/_unit-template/UI_KIT.md",
-        "features/_feature-template/CONTEXT.md",
-        "features/_feature-template/done/DONE-TEMPLATE.md",
+        {
+            sourceRoot: path.join("templates", "docs"),
+            targetRoot: path.join("reference", "docs"),
+            files: [
+                "INDEX.md",
+                "TBDS.md",
+                "core/CONTEXT.md",
+                "core/CONTRACTS.md",
+                "core/RULES.md",
+                "core/STATE.md",
+                "core/TESTING.md",
+                "units/_unit-template/CONTEXT.md",
+                "units/_unit-template/CONTRACTS.md",
+                "units/_unit-template/RULES.md",
+                "units/_unit-template/STATE.md",
+                "units/_unit-template/TESTING.md",
+                "units/_unit-template/UI_KIT.md",
+                "features/_feature-template/CONTEXT.md",
+                "features/_feature-template/done/DONE-TEMPLATE.md",
+            ],
+        },
+    ],
+    stnl_project_agent_specializer: [
+        {
+            sourceRoot: path.join("templates", "agents"),
+            targetRoot: path.join("reference", "agents"),
+            files: [
+                "coder-backend.agent.md",
+                "coder-frontend.agent.md",
+                "designer.agent.md",
+                "finalizer.agent.md",
+                "orchestrator.agent.md",
+                "planner.agent.md",
+                "resync.agent.md",
+                "validation-eval-designer.agent.md",
+                "validation-runner.agent.md",
+            ],
+        },
+        {
+            sourceRoot: path.join("templates", "docs"),
+            targetRoot: path.join("reference", "docs"),
+            files: [
+                "agents/AGENT-CONTRACT-SHAPE.md",
+                "workflow/STATUS-GATES.md",
+            ],
+        },
     ],
 };
 
 const SKILL_INSTALL_MANIFESTS = {
     stnl_project_context: [
+        "SKILL.md",
+        "openai.yaml",
+    ],
+    stnl_project_agent_specializer: [
         "SKILL.md",
         "openai.yaml",
     ],
@@ -116,7 +151,7 @@ function resetInstalledSkillDir(skillDir) {
     fs.rmSync(skillDir, { recursive: true, force: true });
 }
 
-function getBundleManifest(skillName) {
+function getSkillBundles(skillName) {
     return SKILL_BUNDLE_MANIFESTS[skillName] ?? [];
 }
 
@@ -124,28 +159,25 @@ function getSkillInstallManifest(skillName) {
     return SKILL_INSTALL_MANIFESTS[skillName] ?? null;
 }
 
-function getSkillBundleTargetRoot(installedSkillDir) {
-    return path.join(installedSkillDir, "reference", "docs");
-}
+function prepareSkillBundles(skillName, installedSkillDir) {
+    const bundles = getSkillBundles(skillName);
 
-function prepareSkillBundle(skillName, installedSkillDir) {
-    const manifest = getBundleManifest(skillName);
+    for (const bundle of bundles) {
+        const bundleRoot = path.join(installedSkillDir, bundle.targetRoot);
+        fs.rmSync(bundleRoot, { recursive: true, force: true });
+        ensureDir(bundleRoot);
 
-    if (manifest.length === 0) {
-        return [];
+        copyManifestEntries(
+            path.join(ROOT, bundle.sourceRoot),
+            bundleRoot,
+            bundle.files
+        );
     }
 
-    const bundleRoot = getSkillBundleTargetRoot(installedSkillDir);
-    fs.rmSync(bundleRoot, { recursive: true, force: true });
-    ensureDir(bundleRoot);
-
-    copyManifestEntries(
-        path.join(ROOT, "templates", "docs"),
-        bundleRoot,
-        manifest
-    );
-
-    return manifest;
+    return bundles.map((bundle) => ({
+        ...bundle,
+        bundleRoot: path.join(installedSkillDir, bundle.targetRoot),
+    }));
 }
 
 function installSkills() {
@@ -182,10 +214,12 @@ function installSkills() {
                 console.log(`  skill: ${skill} OK`);
             }
 
-            const manifest = prepareSkillBundle(skill, targetSkillDir);
+            const bundles = prepareSkillBundles(skill, targetSkillDir);
 
-            if (manifest.length > 0) {
-                console.log(`  bundle: ${skill}/reference/docs OK (${manifest.length} arquivos)`);
+            for (const bundle of bundles) {
+                console.log(
+                    `  bundle: ${skill}/${path.relative(targetSkillDir, bundle.bundleRoot)} OK (${bundle.files.length} arquivos)`
+                );
             }
         }
     }
@@ -208,10 +242,9 @@ function inspectTarget(target, skills) {
         const installedSkillDir = path.join(target, skill);
         const skillExists = exists(installedSkillDir);
         const installManifest = getSkillInstallManifest(skill);
-        const bundleManifest = getBundleManifest(skill);
-        const bundleRoot = getSkillBundleTargetRoot(installedSkillDir);
+        const bundleSpecs = getSkillBundles(skill);
         const missingInstallFiles = [];
-        const missingBundleFiles = [];
+        const bundleReports = [];
 
         if (skillExists && installManifest) {
             for (const relativePath of installManifest) {
@@ -222,12 +255,25 @@ function inspectTarget(target, skills) {
             }
         }
 
-        if (skillExists && bundleManifest.length > 0) {
-            for (const relativePath of bundleManifest) {
-                const installedPath = path.join(bundleRoot, relativePath);
-                if (!exists(installedPath)) {
-                    missingBundleFiles.push(relativePath);
+        if (skillExists && bundleSpecs.length > 0) {
+            for (const bundle of bundleSpecs) {
+                const bundleRoot = path.join(installedSkillDir, bundle.targetRoot);
+                const missingBundleFiles = [];
+
+                for (const relativePath of bundle.files) {
+                    const installedPath = path.join(bundleRoot, relativePath);
+                    if (!exists(installedPath)) {
+                        missingBundleFiles.push(relativePath);
+                    }
                 }
+
+                bundleReports.push({
+                    targetRoot: bundle.targetRoot,
+                    bundleRoot,
+                    expected: bundle.files,
+                    prepared: missingBundleFiles.length === 0,
+                    missingFiles: missingBundleFiles,
+                });
             }
         }
 
@@ -238,10 +284,7 @@ function inspectTarget(target, skills) {
             installExpected: installManifest ?? [],
             installPrepared: !installManifest || (skillExists && missingInstallFiles.length === 0),
             missingInstallFiles,
-            bundleRoot,
-            bundleExpected: bundleManifest,
-            bundlePrepared: skillExists && bundleManifest.length > 0 && missingBundleFiles.length === 0,
-            missingBundleFiles,
+            bundleReports,
         });
     }
 
@@ -292,15 +335,15 @@ function runDoctor() {
                 }
             }
 
-            if (skillReport.bundleExpected.length > 0) {
+            for (const bundleReport of skillReport.bundleReports) {
                 console.log(
-                    `  bundle: ${path.relative(report.target, skillReport.bundleRoot)} ${skillReport.bundlePrepared ? "OK" : "MISSING"}`
+                    `  bundle: ${path.relative(report.target, bundleReport.bundleRoot)} ${bundleReport.prepared ? "OK" : "MISSING"}`
                 );
-                console.log(`  bundle paths: ${skillReport.bundleExpected.join(", ")}`);
+                console.log(`  bundle paths: ${bundleReport.expected.join(", ")}`);
 
-                if (skillReport.missingBundleFiles.length > 0) {
+                if (bundleReport.missingFiles.length > 0) {
                     hasIssue = true;
-                    console.log(`  missing: ${skillReport.missingBundleFiles.join(", ")}`);
+                    console.log(`  missing: ${bundleReport.missingFiles.join(", ")}`);
                 }
             }
         }
