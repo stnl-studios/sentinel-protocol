@@ -5,7 +5,7 @@
 - slug: <spec-slug>
 - state: Draft | Structured | Execution Ready | Blocked
 - readiness_score: <0-100>
-- ready_for_orchestrator: yes | no
+- readiness_label: not_ready | ready_for_consumption | blocked
 - split_required: yes | no
 - scope_kind: transversal | feature
 - canonical_location: <docs/SPEC/<spec-slug>/ | docs/features/<feature>/SPEC/>
@@ -26,6 +26,10 @@
 
 ## Expected Outcome
 [Describe the concrete product or operational outcome expected after implementation.]
+
+## Classification Notes
+- factual_confidence: confirmed | mixed | preliminary | conditional
+- classification_notice: [Use this field to state when the current classification is preliminary, conditional, or requires external validation.]
 
 ## Actors and Access
 ### Affected Actors
@@ -170,6 +174,9 @@
 ## Critical Pending Items
 - [Critical item 1]
 - [Critical item 2]
+
+## External Validation and Decisions Pending
+- [Dependency, validation, infra, DBA, index, volume, or operational-policy item still required before strong completion claims.]
 
 ## Related Artifacts
 > Do not inline assumptions, open questions, or decisions here beyond a brief pointer. Keep their canonical content in the dedicated artifacts below.

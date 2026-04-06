@@ -20,6 +20,9 @@
 - critical_open_items_remaining:
   - [Item 1]
   - [Item 2]
+- blocking_questions_for_user:
+  - [Question 1]
+  - [Question 2]
 - assumptions_added_or_updated: [A-001, A-002]
 - decisions_added_or_updated: [D-001]
 - questions_added_or_resolved: [Q-001, Q-002]
@@ -30,6 +33,7 @@
 - next_recommended_questions:
   - [Question 1]
   - [Question 2]
+- operational_output_status: [Draft | Structured | Execution Ready | Blocked]
 - notes: [Optional notes.]
 
 ## Session 2
@@ -47,6 +51,8 @@
   - [Item 1]
 - critical_open_items_remaining:
   - [Item 1]
+- blocking_questions_for_user:
+  - [Question 1]
 - assumptions_added_or_updated: [A-003]
 - decisions_added_or_updated: [D-002]
 - questions_added_or_resolved: [Q-003]
@@ -56,4 +62,5 @@
   - `readiness_report.md`
 - next_recommended_questions:
   - [Question 1]
+- operational_output_status: [Draft | Structured | Execution Ready | Blocked]
 - notes: [Optional notes.]

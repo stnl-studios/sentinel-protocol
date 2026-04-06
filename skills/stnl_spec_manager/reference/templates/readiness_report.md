@@ -3,11 +3,12 @@
 ## Current Status
 - state: Draft | Structured | Execution Ready | Blocked
 - readiness_score: <0-100>
-- ready_for_orchestrator: yes | no
+- readiness_label: not_ready | ready_for_consumption | blocked
 - split_required: yes | no
 - last_assessed_in_session: <1>
-- recommendation: [Continue discovery | resolve blockers | split spec | prepare handoff | ready to orchestrate]
-- rationale: [Explain why this recommendation is honest.]
+- classification_strength: preliminary | conditional | strong
+- recommendation: [Continue discovery | resolve blockers | refine open questions | split spec | ready for consumption]
+- rationale: [Explain why this recommendation is honest without routing another agent.]
 
 ## Coverage Summary
 - coverage_summary: [Short synthesis of what is already well specified and what still lacks confidence.]
@@ -48,6 +49,8 @@
 - minimum_technical_impact_described: yes | no
 - critical_dependencies_visible: yes | no
 - critical_pending_items_resolved_or_consciously_accepted: yes | no
+- external_validation_closed_or_explicitly_conditional: yes | no
+- external_decisions_closed_or_explicitly_conditional: yes | no
 
 ### Blocked Trigger Check
 - contradictory_objective: yes | no
@@ -63,6 +66,12 @@
 ## Blockers
 - [Blocker 1]
 - [Blocker 2]
+
+## Questions Requiring User Answer
+- [Repeat each blocking or critical pending question briefly here.]
+
+## External Validation Notes
+- [State clearly what is observed fact, what is hypothesis, and what remains conditional on external validation.]
 
 ## Residual Risks
 - [Risk 1]
@@ -80,24 +89,21 @@
 ## Split Assessment
 - should_split: yes | no
 - why: [Explain why splitting is or is not needed.]
-- split_guidance: [Describe the best vertical handoff cuts when applicable.]
+- split_guidance: [Describe the best vertical functional cuts when applicable.]
 
 ## Slice Readiness
 > Fill only when `spec_slices.md` exists.
 
 ### S-001
 - state: Draft | Structured | Execution Ready | Blocked
-- ready_for_orchestrator: yes | no
+- readiness_label: not_ready | ready_for_consumption | blocked
 - covers_spec_dod: [SDOD-001]
 - blockers: [List blockers or `none`]
 - notes: [Optional notes.]
 
-## Orchestrator Handoff Recommendation
-- handoff_scope: [Full spec | slice S-001 | not ready]
-- why_now: [Explain why this handoff is valid or premature.]
-- preconditions_before_handoff:
-  - [Precondition 1]
-  - [Precondition 2]
+## Optional Manual Handoff Prompt
+- use: include only when the SPEC is materially consumable and a short manual prompt would help the user invoke another agent by choice
+- prompt: [Optional short prompt for the user to copy manually. Never phrase this section as automatic routing.]
 
 ## Next Recommended Questions
 - [Question candidate 1]

@@ -3,7 +3,7 @@
 ## Split Rationale
 - parent_spec: <SPEC-001>
 - split_required: yes
-- reason: [Explain why the full spec should not be handed off in a single orchestration cycle.]
+- reason: [Explain why the full spec should not be consumed as a single slice.]
 - split_principle: [Describe the vertical cut logic used to preserve meaningful end-to-end execution.]
 
 ## Parent Spec Summary
@@ -29,9 +29,10 @@
   - [Flow 2]
 - dependencies: []
 - state: Draft | Structured | Execution Ready | Blocked
-- ready_for_orchestrator: yes | no
+- readiness_label: not_ready | ready_for_consumption | blocked
 - spec_dod_items_covered: [SDOD-001, SDOD-002]
-- why_this_is_a_good_handoff_cut: [Explain why this slice is coherent and does not over-fragment execution.]
+- classification_strength: preliminary | conditional | strong
+- why_this_is_a_good_consumption_cut: [Explain why this slice is coherent and does not over-fragment execution.]
 - open_questions: [Q-001]
 - assumptions: [A-001]
 - decisions: [D-001]
@@ -47,9 +48,10 @@
   - [Flow 1]
 - dependencies: [S-001]
 - state: Draft | Structured | Execution Ready | Blocked
-- ready_for_orchestrator: yes | no
+- readiness_label: not_ready | ready_for_consumption | blocked
 - spec_dod_items_covered: [SDOD-003]
-- why_this_is_a_good_handoff_cut: [Rationale]
+- classification_strength: preliminary | conditional | strong
+- why_this_is_a_good_consumption_cut: [Rationale]
 - open_questions: [Q-002]
 - assumptions: [A-002]
 - decisions: [D-002]
