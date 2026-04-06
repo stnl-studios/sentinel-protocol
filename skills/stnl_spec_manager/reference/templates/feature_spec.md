@@ -15,14 +15,19 @@
 - last_updated: <YYYY-MM-DD>
 - last_session: <1>
 
+> This is the primary implementation artifact. Keep it decision-oriented and directly consumable. Put detailed investigation, expanded evidence, long alternative analysis, assumptions, open questions, and decision history in the dedicated companion artifacts.
+
 ## Executive Summary
-[Describe in 3 to 6 lines what this spec is about, why it exists, and what outcome it is trying to enable.]
+[Describe in 3 to 6 lines what must be implemented, why it must exist, and what final outcome this spec authorizes.]
 
 ## Problem
 [Describe the current pain, risk, gap, or opportunity. Explain why the current behavior is not sufficient.]
 
 ## Objective
 [Describe the intended end state. Focus on what must be true when this work is done.]
+
+## Consolidated Decision
+[State the final implementable decision in concise terms. This section should let another agent understand the chosen direction without reading the full investigation trail.]
 
 ## Expected Outcome
 [Describe the concrete product or operational outcome expected after implementation.]
@@ -45,7 +50,7 @@
 - `<related core / unit / feature docs>`
 
 ### Factual Context Summary
-[Summarize only the context that materially affects this spec. Prefer referencing existing docs instead of copying project-wide knowledge.]
+[Summarize only the context that materially affects implementation. Prefer referencing existing docs instead of copying project-wide knowledge or investigation notes.]
 
 ## Scope
 ### In Scope
@@ -76,6 +81,14 @@
 ### Error / Exception Flows
 - [Error case 1]: [Expected behavior]
 - [Error case 2]: [Expected behavior]
+
+## Implementation Shape
+> Use this section to consolidate the chosen implementation-facing shape. Keep rationale short per item. Move expanded tradeoff analysis to `decision_log.md`.
+
+### Work Items / Contracts
+- [Item 1]: [What will exist or change.] Rationale: [Optional short rationale.]
+- [Item 2]: [What will exist or change.] Rationale: [Optional short rationale.]
+- [Item 3]: [What will exist or change.] Rationale: [Optional short rationale.]
 
 ## Rules and Constraints
 ### Functional Requirements
@@ -120,7 +133,7 @@
 - [External service, contract, retry, fallback, or compatibility impact]
 
 ## Minimum Technical Impact
-[Describe the minimum technical impact required to implement this spec without turning this document into an execution plan.]
+[Describe the minimum technical impact required to implement this spec without turning this document into an execution plan or long investigation report.]
 
 ## Edge Cases and Exceptions
 - [Edge case 1]
@@ -179,7 +192,7 @@
 - [Dependency, validation, infra, DBA, index, volume, or operational-policy item still required before strong completion claims.]
 
 ## Related Artifacts
-> Do not inline assumptions, open questions, or decisions here beyond a brief pointer. Keep their canonical content in the dedicated artifacts below.
+> Do not inline assumptions, open questions, decision history, or expanded evidence here beyond a brief pointer. Keep their canonical content in the dedicated artifacts below.
 
 - `open_questions.md`
 - `assumptions.md`

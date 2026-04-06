@@ -7,11 +7,12 @@
 - split_required: yes | no
 - last_assessed_in_session: <1>
 - classification_strength: preliminary | conditional | strong
-- recommendation: [Continue discovery | resolve blockers | refine open questions | split spec | ready for consumption]
-- rationale: [Explain why this recommendation is honest without routing another agent.]
+- implementation_readiness: structured_but_not_executable | executable_with_main_decisions_closed | blocked_by_critical_gaps
+- recommendation: [Continue structuring | resolve blockers | close critical decisions | split spec | ready for implementation consumption]
+- rationale: [Explain why this recommendation is honest in terms of implementation consumption, without routing another agent.]
 
 ## Coverage Summary
-- coverage_summary: [Short synthesis of what is already well specified and what still lacks confidence.]
+- coverage_summary: [Short synthesis of what is already implementation-consumable and what still lacks confidence.]
 - problem_clarity: <0-10>
 - objective_clarity: <0-10>
 - scope_clarity: <0-10>
@@ -44,6 +45,7 @@
 - out_of_scope_defined: yes | no
 - acceptance_criteria_testable: yes | no
 - primary_decisions_recorded: yes | no
+- consolidated_decision_implementable: yes | no
 - assumptions_explicit: yes | no
 - relevant_edge_cases_mapped: yes | no
 - minimum_technical_impact_described: yes | no
@@ -66,6 +68,10 @@
 ## Blockers
 - [Blocker 1]
 - [Blocker 2]
+
+## Implementation Consumption Assessment
+- current_consumability: [Explain whether another agent could implement from the current `feature_spec.md` without needing the investigation trail as the primary document.]
+- missing_for_execution: [List only the remaining gaps that still prevent honest implementation consumption.]
 
 ## Questions Requiring User Answer
 - [Repeat each blocking or critical pending question briefly here.]

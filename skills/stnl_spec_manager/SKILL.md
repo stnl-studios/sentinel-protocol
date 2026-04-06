@@ -36,6 +36,8 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 ## Papel canônico e inviolável
 - amadurecer e materializar uma SPEC
 - produzir artefatos consumíveis por leitura posterior
+- fazer de `feature_spec.md` o artefato principal de decisão e implementação consumível
+- absorver na skill o shape padrão de saída para que o prompt do usuário carregue mais objetivo, escopo e contexto do que instruções repetitivas de formato
 - não conduzir o fluxo
 - não chamar nenhum outro agente
 - não promover automaticamente para `orchestrator`, `planner`, `executor`, `closure` ou equivalente
@@ -108,11 +110,11 @@ Regras:
 
 ## Artefatos canônicos gerenciados
 Arquivos base:
-- `feature_spec.md`: documento principal consolidado da mudança e único lugar do `Spec Definition of Done`
+- `feature_spec.md`: artefato principal de implementação; consolida o que precisa ser feito, por que existe, qual decisão final será implementada, qual o escopo e quais critérios definem conclusão honesta
 - `open_questions.md`: backlog rastreável de perguntas abertas e resolvidas
 - `assumptions.md`: hipóteses temporárias visíveis, sem fingir que são fatos
-- `decision_log.md`: decisões conscientes, rationale e impactos
-- `readiness_report.md`: gate operacional de maturidade e prontidão para consumo, sem roteamento
+- `decision_log.md`: trilha de decisão, alternativas avaliadas, rationale e impactos fora do corpo principal da SPEC
+- `readiness_report.md`: gate operacional de maturidade e prontidão para consumo por implementação, sem roteamento
 - `session_summary.md`: memória append-only por sessão para pausa e retomada
 
 Arquivos condicionais:
@@ -121,7 +123,10 @@ Arquivos condicionais:
 
 Regras:
 - manter `Assumptions`, `Open Questions` e `Decisions` fora de `feature_spec.md`
-- usar `feature_spec.md` para consolidar a mudança; usar os demais artefatos para rastreabilidade e governança anti-alucinação
+- `feature_spec.md` não é relatório investigativo; é a consolidação final implementável da mudança
+- análise detalhada, evidência expandida, comparação longa entre alternativas e rationale extenso devem ficar em artefatos auxiliares, principalmente `decision_log.md`, `open_questions.md`, `assumptions.md` e `readiness_report.md`
+- permitir no `feature_spec.md` apenas contexto factual material e rationale curto por item quando isso aumentar clareza de implementação sem transformar a SPEC em dump analítico
+- usar `feature_spec.md` para consolidar a mudança; usar os demais artefatos para rastreabilidade, sustentação e governança anti-alucinação
 - não transformar nenhum artefato em dump solto de contexto do projeto
 
 ## Estados de maturidade
@@ -213,6 +218,7 @@ Perguntas ruins:
 Regras:
 - sempre reler os artefatos existentes antes de continuar
 - toda rodada precisa deixar artefatos em estado consistente entre si
+- a saída principal deve continuar curta e orientada ao objetivo; o shape estrutural padrão vive na skill e nos templates, não depende de o usuário repetir instruções de formatação
 - se uma resposta mudar escopo, aceite, risco, decisão ou hipótese, refletir isso imediatamente nos arquivos canônicos
 
 ## MODE=RESUME
