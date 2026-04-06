@@ -1,6 +1,6 @@
 ---
 name: stnl_spec_manager
-description: Amadurece uma ideia, bug, pedido ou recorte parcial em uma SPEC confiavel, rastreavel e consumivel por outros agentes, sem conduzir o fluxo. Use quando for preciso consolidar problema, objetivo, escopo, fluxos, criterios de aceite, decisoes, assumptions e open questions sem inventar requisitos, inclusive com retomada explicita via MODE=RESUME.
+description: Amadurece uma ideia, bug, pedido ou recorte parcial em uma SPEC confiavel, rastreavel e consumivel por outros agentes, sem conduzir o fluxo. Use quando for preciso consolidar problema, objetivo, escopo, fluxos, criterios de aceite, riscos, assumptions, open questions e decisoes legitimas sem inventar requisitos, inclusive com retomada explicita via MODE=RESUME.
 ---
 
 # STNL Spec Manager
@@ -36,7 +36,8 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 ## Papel canônico e inviolável
 - amadurecer e materializar uma SPEC
 - produzir artefatos consumíveis por leitura posterior
-- fazer de `feature_spec.md` o artefato principal de decisão e implementação consumível
+- fazer de `feature_spec.md` o artefato principal de SPEC consumível para desenvolvimento posterior, sem virar pré-plano técnico
+- tratar `reference/templates/*` como shape canônico obrigatório da saída persistida
 - absorver na skill o shape padrão de saída para que o prompt do usuário carregue mais objetivo, escopo e contexto do que instruções repetitivas de formato
 - não conduzir o fluxo
 - não chamar nenhum outro agente
@@ -110,11 +111,11 @@ Regras:
 
 ## Artefatos canônicos gerenciados
 Arquivos base:
-- `feature_spec.md`: artefato principal de implementação; consolida o que precisa ser feito, por que existe, qual decisão final será implementada, qual o escopo e quais critérios definem conclusão honesta
-- `open_questions.md`: backlog rastreável de perguntas abertas e resolvidas
+- `feature_spec.md`: artefato principal da SPEC; consolida problema, objetivo, escopo, fluxos, regras, aceite, riscos, impacto mínimo, dependências e a direção consolidada realmente necessária para consumo posterior
+- `open_questions.md`: registro canônico e rastreável de perguntas abertas e resolvidas, com governança explícita de status, prioridade, bloqueio, categoria, impacto e follow-up
 - `assumptions.md`: hipóteses temporárias visíveis, sem fingir que são fatos
-- `decision_log.md`: trilha de decisão, alternativas avaliadas, rationale e impactos fora do corpo principal da SPEC
-- `readiness_report.md`: gate operacional de maturidade e prontidão para consumo por implementação, sem roteamento
+- `decision_log.md`: trilha de decisões legítimas já tomadas, com alternativas avaliadas, rationale e impactos fora do corpo principal da SPEC
+- `readiness_report.md`: gate operacional canônico de maturidade e prontidão para consumo por implementação, com `classification_strength` e condicionalidades explícitas, sem roteamento
 - `session_summary.md`: memória append-only por sessão para pausa e retomada
 
 Arquivos condicionais:
@@ -122,12 +123,30 @@ Arquivos condicionais:
 - `qa_checklist.md`: apenas quando a SPEC ou um slice estiverem próximos de execução
 
 Regras:
-- manter `Assumptions`, `Open Questions` e `Decisions` fora de `feature_spec.md`
-- `feature_spec.md` não é relatório investigativo; é a consolidação final implementável da mudança
+- manter `Assumptions`, `Open Questions` e histórico de `Decisions` fora de `feature_spec.md`
+- `feature_spec.md` não é relatório investigativo nem pré-plano técnico; é a consolidação consumível da mudança no nível de problema, objetivo, escopo, fluxos, regras, aceite, riscos, impacto mínimo e dependências
 - análise detalhada, evidência expandida, comparação longa entre alternativas e rationale extenso devem ficar em artefatos auxiliares, principalmente `decision_log.md`, `open_questions.md`, `assumptions.md` e `readiness_report.md`
-- permitir no `feature_spec.md` apenas contexto factual material e rationale curto por item quando isso aumentar clareza de implementação sem transformar a SPEC em dump analítico
+- permitir no `feature_spec.md` apenas direção consolidada, contexto factual material e rationale curto por item quando isso for necessário para clareza de consumo sem transformar a SPEC em dump analítico
+- não transformar hipótese técnica, preferência de implementação, estratégia interna, sequência de execução ou solução ainda especulativa em contrato forte dentro de `feature_spec.md`
+- quando uma direção ainda não estiver sustentada, preferir `assumptions.md` ou `open_questions.md`; usar `decision_log.md` somente quando houver decisão legítima, consciente e sustentada
+- solução específica de implementação só entra como direção consolidada no corpo principal quando já for source of truth explícita ou constraint realmente necessária para definir escopo, aceite ou limite operacional de forma honesta
 - usar `feature_spec.md` para consolidar a mudança; usar os demais artefatos para rastreabilidade, sustentação e governança anti-alucinação
 - não transformar nenhum artefato em dump solto de contexto do projeto
+
+Exemplos curtos de fronteira:
+- pertence em `feature_spec.md`: "Usuário precisa conseguir concluir o fluxo X com confirmação visível e regra Y respeitada."
+- fica em `assumptions.md`: "Assumimos provisoriamente que a confirmação atual continua válida até validação externa."
+- vira `open_questions.md`: "Quem pode aprovar a exceção Z e isso bloqueia a prontidão forte?"
+- só entra em `decision_log.md` quando já for decisão legítima: "Foi confirmado que o comportamento seguirá a política W já aprovada."
+- anti-pattern: registrar em `feature_spec.md` algo como "implementar pela abordagem K" quando K ainda é só direção especulativa
+
+## Templates canônicos e aderência obrigatória
+- os arquivos em `reference/templates/*` definem o shape canônico real da saída persistida
+- não tratar template como sugestão frouxa e não produzir versões simplificadas, ad hoc ou colapsadas dos artefatos canônicos
+- preservar headings, campos e blocos de governança dos templates mesmo quando o conteúdo ainda estiver parcial
+- quando algo ainda não estiver confirmado, registrar `none`, `pending`, condição explícita ou nota curta de lacuna; não remover a seção nem inventar certeza
+- `feature_spec.md`, `readiness_report.md` e `open_questions.md` não podem perder governança estrutural por economia de texto
+- a saída operacional pode ser curta; os artefatos persistidos devem seguir o shape canônico
 
 ## Estados de maturidade
 Estados obrigatórios:
@@ -157,13 +176,15 @@ Exigir ao menos:
 ### Virar `Execution Ready`
 Exigir ao menos:
 - critérios de aceite testáveis
-- decisões principais registradas
+- direção consolidada consumível sem depender do trilho investigativo como documento principal
+- decisões principais legítimas registradas quando realmente já existirem
 - hipóteses explicitadas
 - edge cases relevantes mapeados
 - impacto técnico mínimo descrito
-- pendências críticas zeradas ou conscientemente assumidas
+- pendências críticas zeradas ou conscientemente assumidas com condicionalidade explícita
 - nenhuma dependência externa crítica sem validação
 - nenhuma decisão externa obrigatória ainda pendente
+- nenhuma pergunta bloqueante ainda aberta
 
 ### Virar `Blocked`
 Gatilhos típicos:
@@ -176,8 +197,11 @@ Gatilhos típicos:
 Regras:
 - `readiness_score` é secundário; blockers, gaps críticos e honestidade de coverage pesam mais que o score
 - nunca marcar prontidão forte apenas porque o score ficou alto
+- presença de uma decisão registrada nunca basta para justificar `Execution Ready`
 - se houver dependência externa crítica, validação externa faltante, decisão de infra ou DBA pendente, volume, índice ou política operacional não confirmados, usar linguagem preliminar ou condicional
 - é proibido usar classificação final forte quando houver blocker real ainda aberto
+- `classification_strength` e `classification_notice` são parte obrigatória do contrato canônico e devem refletir a força real da classificação, não ornamento
+- quando a SPEC estiver consumível mas ainda depender de validação, decisão externa, hipótese material ou restrição operacional não confirmada, manter linguagem condicional explícita em vez de promover certeza teatral
 - categorias fora da taxonomia principal não viram classe primária ad hoc; viram observação, dependência ou nota explicativa
 
 ## Regras de perguntas
@@ -192,6 +216,7 @@ Regras:
 - perguntas bloqueantes não podem ficar apenas em `open_questions.md`
 - a saída operacional deve repetir de forma curta as perguntas pendentes bloqueantes ou críticas
 - nunca declarar maturidade forte quando houver pergunta bloqueante ainda aberta
+- `open_questions.md` deve manter o shape canônico completo por pergunta; não reduzir para resumos soltos do tipo `open/resolved: none`
 
 Prioridade das perguntas:
 1. problema e objetivo
@@ -211,7 +236,7 @@ Perguntas ruins:
 1. reconstruir o estado atual a partir de `docs/**` e dos artefatos existentes
 2. decidir a localização canônica da SPEC sem chutar ownership de feature
 3. atualizar `feature_spec.md` e os registros auxiliares com classificação factual explícita
-4. recalcular maturidade em `readiness_report.md`
+4. recalcular maturidade em `readiness_report.md` com aderência ao gate canônico, peso real de `classification_strength` e condicionalidades explícitas
 5. registrar delta append-only em `session_summary.md`
 6. perguntar apenas o mínimo necessário, até 5 perguntas, ou parar com status operacional honesto e blockers explícitos
 
@@ -220,6 +245,7 @@ Regras:
 - toda rodada precisa deixar artefatos em estado consistente entre si
 - a saída principal deve continuar curta e orientada ao objetivo; o shape estrutural padrão vive na skill e nos templates, não depende de o usuário repetir instruções de formatação
 - se uma resposta mudar escopo, aceite, risco, decisão ou hipótese, refletir isso imediatamente nos arquivos canônicos
+- se uma solução ou direção ainda estiver especulativa, registrar como hipótese, pergunta ou decisão condicional sustentada; não endurecer isso silenciosamente no corpo da SPEC
 
 ## MODE=RESUME
 Quando `MODE=RESUME` estiver presente:
@@ -296,6 +322,7 @@ Regras:
 - se não houver blocker, declarar `BLOCKERS: none`
 - se não houver pergunta pendente relevante, declarar `QUESTIONS FOR USER: none`
 - se houver blocker crítico, refletir o blocker também em `QUESTIONS FOR USER` quando depender de resposta humana
+- `CURRENT MATURITY` deve refletir estado, força da classificação e qualquer condicionalidade material
 
 ## Relação com o restante do Sentinel
 - produzir SPEC consumível sem conduzir o fluxo

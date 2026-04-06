@@ -4,7 +4,7 @@
 - parent_spec: <SPEC-001>
 - split_required: yes
 - reason: [Explain why the full spec should not be consumed as a single slice.]
-- split_principle: [Describe the vertical cut logic used to preserve meaningful end-to-end execution.]
+- split_principle: [Describe the vertical cut logic used to preserve meaningful end-to-end delivery without turning slices into a technical plan.]
 
 ## Parent Spec Summary
 [Summarize the overall initiative in 3 to 6 lines.]
@@ -32,7 +32,7 @@
 - readiness_label: not_ready | ready_for_consumption | blocked
 - spec_dod_items_covered: [SDOD-001, SDOD-002]
 - classification_strength: preliminary | conditional | strong
-- why_this_is_a_good_consumption_cut: [Explain why this slice is coherent and does not over-fragment execution.]
+- why_this_is_a_good_consumption_cut: [Explain why this slice is coherent and does not over-fragment downstream consumption.]
 - open_questions: [Q-001]
 - assumptions: [A-001]
 - decisions: [D-001]

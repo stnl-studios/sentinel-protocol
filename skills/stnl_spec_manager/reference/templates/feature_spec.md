@@ -15,7 +15,9 @@
 - last_updated: <YYYY-MM-DD>
 - last_session: <1>
 
-> This is the primary implementation artifact. Keep it decision-oriented and directly consumable. Put detailed investigation, expanded evidence, long alternative analysis, assumptions, open questions, and decision history in the dedicated companion artifacts.
+> This is the canonical persisted shape for the primary SPEC artifact. Keep every section in place even when the content is partial. If something is unknown, mark it as pending, conditional, or `none` instead of collapsing the document or inventing certainty.
+>
+> Keep this file directly consumable, but do not turn it into an execution plan or an early implementation prescription. Put detailed investigation, expanded evidence, speculative direction, assumptions, open questions, and decision history in the dedicated companion artifacts.
 
 ## Executive Summary
 [Describe in 3 to 6 lines what must be implemented, why it must exist, and what final outcome this spec authorizes.]
@@ -26,15 +28,15 @@
 ## Objective
 [Describe the intended end state. Focus on what must be true when this work is done.]
 
-## Consolidated Decision
-[State the final implementable decision in concise terms. This section should let another agent understand the chosen direction without reading the full investigation trail.]
+## Consolidated Direction
+[State the currently authorized direction at the level needed to preserve scope, acceptance, constraints, and honest implementation consumption. Do not freeze internal strategy, sequencing, or technology choices here unless they are already confirmed as source of truth or materially required.]
 
 ## Expected Outcome
 [Describe the concrete product or operational outcome expected after implementation.]
 
 ## Classification Notes
 - factual_confidence: confirmed | mixed | preliminary | conditional
-- classification_notice: [Use this field to state when the current classification is preliminary, conditional, or requires external validation.]
+- classification_notice: [Use this field to state when the current classification is preliminary, conditional, depends on external validation, or should not be read as a strong completion claim.]
 
 ## Actors and Access
 ### Affected Actors
@@ -82,13 +84,13 @@
 - [Error case 1]: [Expected behavior]
 - [Error case 2]: [Expected behavior]
 
-## Implementation Shape
-> Use this section to consolidate the chosen implementation-facing shape. Keep rationale short per item. Move expanded tradeoff analysis to `decision_log.md`.
+## Implementation-Relevant Shape
+> Use this section only for the minimum contracts, surfaces, or constraints that must be clear for honest implementation consumption. Do not turn this into a technical plan or lock speculative solution details. Move expanded tradeoff analysis to `decision_log.md` and provisional direction to `assumptions.md` or `open_questions.md`.
 
-### Work Items / Contracts
-- [Item 1]: [What will exist or change.] Rationale: [Optional short rationale.]
-- [Item 2]: [What will exist or change.] Rationale: [Optional short rationale.]
-- [Item 3]: [What will exist or change.] Rationale: [Optional short rationale.]
+### Behavior / Contracts / Surfaces
+- [Item 1]: [What must exist, change, or be respected.] Rationale: [Optional short rationale only when it improves clarity.]
+- [Item 2]: [What must exist, change, or be respected.] Rationale: [Optional short rationale only when it improves clarity.]
+- [Item 3]: [What must exist, change, or be respected.] Rationale: [Optional short rationale only when it improves clarity.]
 
 ## Rules and Constraints
 ### Functional Requirements
@@ -133,7 +135,7 @@
 - [External service, contract, retry, fallback, or compatibility impact]
 
 ## Minimum Technical Impact
-[Describe the minimum technical impact required to implement this spec without turning this document into an execution plan or long investigation report.]
+[Describe the minimum implementation impact required to realize this spec without turning this document into an execution plan, sequencing guide, or long investigation report.]
 
 ## Edge Cases and Exceptions
 - [Edge case 1]
@@ -192,7 +194,7 @@
 - [Dependency, validation, infra, DBA, index, volume, or operational-policy item still required before strong completion claims.]
 
 ## Related Artifacts
-> Do not inline assumptions, open questions, decision history, or expanded evidence here beyond a brief pointer. Keep their canonical content in the dedicated artifacts below.
+> Do not inline assumptions, open questions, decision history, expanded evidence, or speculative technical direction here beyond a brief pointer. Keep their canonical content in the dedicated artifacts below.
 
 - `open_questions.md`
 - `assumptions.md`

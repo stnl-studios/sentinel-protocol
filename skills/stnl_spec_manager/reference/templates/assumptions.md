@@ -1,5 +1,7 @@
 # Assumptions
 
+> Use this file for provisional direction and temporary hypotheses that are useful for honest scope or acceptance framing but are not confirmed enough to become fact or decision. Do not promote them into `feature_spec.md` or `decision_log.md` prematurely.
+
 ## Summary
 - active_assumptions: <0>
 - assumptions_requiring_confirmation: <0>

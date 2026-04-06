@@ -1,5 +1,7 @@
 # Open Questions
 
+> This is the canonical question register. Do not replace it with a reduced summary. Keep one full question block per material item, and preserve answered, deferred, or invalidated entries when they matter for traceability.
+
 ## Summary
 - total_open: <0>
 - blocking_open: <0>
@@ -18,9 +20,13 @@
 - use `blocking: yes` only when the question prevents honest strong maturity or full consumption of the SPEC
 - treat `blocking: no` as an informative question by default
 - blocking questions must also be repeated in the skill's operational output under `QUESTIONS FOR USER`
+- blocking or critical questions must also appear in `readiness_report.md` under `Questions Requiring User Answer`
 - a critical open question may still be non-blocking if it does not prevent honest current maturity classification
+- if a blocking question remains open, strong `Execution Ready` classification is not honest
 
 ## Questions
+Use one full block per question. Do not collapse material open items into shorthand like `open: none` or `resolved: none`.
+
 ### Q-001
 - status: OPEN | ANSWERED | DEFERRED | INVALIDATED
 - priority: critical | high | medium | low

@@ -1,5 +1,7 @@
 # Readiness Report
 
+> This is the canonical readiness gate. Preserve every section even when the content is partial. Do not let `readiness_score` override blockers, critical gaps, unresolved validation, or explicit conditionality.
+
 ## Current Status
 - state: Draft | Structured | Execution Ready | Blocked
 - readiness_score: <0-100>
@@ -7,12 +9,15 @@
 - split_required: yes | no
 - last_assessed_in_session: <1>
 - classification_strength: preliminary | conditional | strong
-- implementation_readiness: structured_but_not_executable | executable_with_main_decisions_closed | blocked_by_critical_gaps
-- recommendation: [Continue structuring | resolve blockers | close critical decisions | split spec | ready for implementation consumption]
-- rationale: [Explain why this recommendation is honest in terms of implementation consumption, without routing another agent.]
+- classification_notice: [State why this classification is preliminary, conditional, or strong, and what still limits confidence.]
+- strong_ready_claim_supported: yes | no
+- spec_consumability: structured_but_not_yet_consumable | consumable_with_explicit_conditions | blocked_by_critical_gaps
+- recommendation: [Continue structuring | resolve blockers | close critical gaps | split spec | ready for downstream consumption]
+- rationale: [Explain why this recommendation is honest in terms of downstream SPEC consumption, without routing another agent.]
 
 ## Coverage Summary
-- coverage_summary: [Short synthesis of what is already implementation-consumable and what still lacks confidence.]
+- coverage_summary: [Short synthesis of what is already SPEC-consumable and what still lacks confidence.]
+- conditionality_summary: [State exactly what keeps the current classification preliminary or conditional, or why a strong classification is justified.]
 - problem_clarity: <0-10>
 - objective_clarity: <0-10>
 - scope_clarity: <0-10>
@@ -45,12 +50,14 @@
 - out_of_scope_defined: yes | no
 - acceptance_criteria_testable: yes | no
 - primary_decisions_recorded: yes | no
-- consolidated_decision_implementable: yes | no
+- consolidated_direction_consumable: yes | no
+- decision_basis_sustained: yes | no
 - assumptions_explicit: yes | no
 - relevant_edge_cases_mapped: yes | no
 - minimum_technical_impact_described: yes | no
 - critical_dependencies_visible: yes | no
 - critical_pending_items_resolved_or_consciously_accepted: yes | no
+- blocking_or_critical_questions_closed_or_explicitly_conditional: yes | no
 - external_validation_closed_or_explicitly_conditional: yes | no
 - external_decisions_closed_or_explicitly_conditional: yes | no
 
@@ -69,15 +76,16 @@
 - [Blocker 1]
 - [Blocker 2]
 
-## Implementation Consumption Assessment
-- current_consumability: [Explain whether another agent could implement from the current `feature_spec.md` without needing the investigation trail as the primary document.]
-- missing_for_execution: [List only the remaining gaps that still prevent honest implementation consumption.]
+## SPEC Consumption Assessment
+- current_consumability: [Explain whether another agent could consume the current `feature_spec.md` as the primary SPEC artifact without depending on the investigation trail as the main document.]
+- missing_for_consumption: [List only the remaining gaps that still prevent honest downstream consumption of the SPEC.]
+- why_not_strong_yet: [If `classification_strength` is not `strong`, explain exactly why. If it is `strong`, explain why that claim is fully supported.]
 
 ## Questions Requiring User Answer
-- [Repeat each blocking or critical pending question briefly here.]
+- [Repeat each blocking or critical pending question briefly here. Do not omit them from this section when they materially affect classification.]
 
 ## External Validation Notes
-- [State clearly what is observed fact, what is hypothesis, and what remains conditional on external validation.]
+- [State clearly what is observed fact, what is hypothesis, what depends on external validation, and whether that still prevents a strong readiness claim.]
 
 ## Residual Risks
 - [Risk 1]
