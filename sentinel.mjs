@@ -73,6 +73,22 @@ const SKILL_BUNDLE_MANIFESTS = {
             ],
         },
     ],
+    stnl_spec_manager: [
+        {
+            sourceRoot: path.join("skills", "stnl_spec_manager", "reference", "templates"),
+            targetRoot: path.join("reference", "templates"),
+            files: [
+                "assumptions.md",
+                "decision_log.md",
+                "feature_spec.md",
+                "open_questions.md",
+                "qa_checklist.md",
+                "readiness_report.md",
+                "session_summary.md",
+                "spec_slices.md",
+            ],
+        },
+    ],
 };
 
 const SKILL_INSTALL_MANIFESTS = {
@@ -81,6 +97,10 @@ const SKILL_INSTALL_MANIFESTS = {
         "openai.yaml",
     ],
     stnl_project_agent_specializer: [
+        "SKILL.md",
+        "openai.yaml",
+    ],
+    stnl_spec_manager: [
         "SKILL.md",
         "openai.yaml",
     ],
