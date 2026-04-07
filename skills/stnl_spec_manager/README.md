@@ -24,6 +24,10 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter blockers e perguntas críticas também na saída operacional, não só em artefatos
 - manter `readiness_report.md` como gate honesto de prontidão, com `classification_strength`, `classification_notice`, cobertura, validações externas, riscos residuais e condicionalidades explícitas
 - manter `readiness_score` como sinal secundário; blockers, gaps críticos e validações pendentes têm precedência
+- quando houver recorte composto por itens concretos do projeto, exigir discovery factual mínimo por item antes de abrir pergunta bloqueante ampla sobre direção técnica, dependência, estratégia ou classe de solução
+- usar essa rodada mínima para reduzir a pergunta, não para fechar arquitetura automaticamente nem para transformar a skill em planner ou coder
+- registrar, quando aplicável, uma matriz factual curta por item em `readiness_report.md` com item, evidência observada, direção preliminar, confiança e lacuna restante
+- manter a classificação preliminar genérica e não prescritiva, por exemplo `local_optimization_candidate`, `structural_support_candidate` e `inconclusive`
 - manter `open_questions.md` com governança completa por item; não aceitar formas reduzidas do tipo `open/resolved: none` quando houver rastreabilidade a preservar
 - manter qualquer handoff apenas como `Optional Manual Handoff Prompt`, nunca como roteamento automático
 - evitar overlap com `planner`, `orchestrator`, `phase_closure` ou bootstrap de `docs/**`

@@ -98,6 +98,41 @@ Regras:
 - registrar como `DERIVED` tudo o que vier de leitura parcial ou confirmação indireta da codebase
 - se o conflito entre docs e codebase afetar escopo, aceite, boundary ou risco, bloquear ou perguntar; não arbitrar silenciosamente
 
+## Discovery factual mínimo antes de perguntas bloqueantes
+Quando a dúvida depender de classificar itens concretos do projeto, fazer uma rodada factual mínima antes de abrir pergunta bloqueante ampla ao usuário.
+
+Aplica quando houver recortes compostos por itens como:
+- endpoints
+- telas
+- jobs
+- integrações
+- exporters
+- relatórios
+- workflows
+- outras superfícies concretas equivalentes
+
+Objetivo:
+- reduzir perguntas abstratas cedo demais
+- estreitar a pergunta bloqueante com base em evidência local
+- produzir classificação preliminar honesta sem fechar arquitetura automaticamente
+
+Rodada mínima obrigatória por item, quando aplicável:
+- identificar o padrão atual observado por item
+- localizar o custo dominante, complexidade dominante ou risco dominante
+- verificar se o problema parece localmente resolvível por ajuste, refactor, query shaping ou equivalente genérico
+- verificar se existe indício forte de dependência estrutural adicional
+- marcar explicitamente quando o item continuar inconclusivo
+
+Regras:
+- usar primeiro `docs/**` e SPECs correlatas; só recorrer à codebase por fallback controlado e item a item
+- não fazer discovery amplo do repo; limitar a leitura aos itens concretos relevantes para reduzir a pergunta
+- registrar a síntese dessa rodada em uma matriz factual curta antes de escalar pergunta bloqueante ampla
+- a matriz factual curta deve conter ao menos: item analisado, evidência observada, direção preliminar, confiança e lacuna restante
+- usar taxonomia preliminar genérica como `local_optimization_candidate`, `structural_support_candidate` e `inconclusive`, ou equivalente igualmente genérico
+- essa taxonomia é apenas classificatória e preliminar; não é decisão final, não congela arquitetura e não autoriza prescrição técnica automática
+- se a evidência continuar insuficiente após a rodada mínima, manter `Structured` ou `Blocked` conforme o caso e escalar de forma honesta
+- não ampliar escopo nem prolongar a investigação além do mínimo necessário para reduzir a pergunta
+
 ## Heurística de materialização da SPEC
 Escolher o local canônico assim:
 - quando a SPEC for transversal, ampla, ou ainda não pertencer claramente a uma feature existente: `docs/SPEC/<spec-slug>/`
@@ -210,6 +245,9 @@ Regras:
 - fazer no máximo 5 perguntas por rodada
 - manter perguntas curtas, diretas e orientadas a fechar consumo honesto da SPEC
 - não puxar arquitetura cedo demais
+- se a dúvida for sobre classificar itens concretos do recorte, fazer primeiro a rodada factual mínima por item e só então escalar
+- pergunta bloqueante ampla sobre direção técnica, dependência, estratégia ou classe de solução deve vir já estreitada pela evidência observada e pelos itens realmente candidatos
+- evitar perguntas no formato "algum item pode precisar da classe X?" quando ainda não houve leitura factual mínima item a item
 - não abrir questionário longo
 - na retomada, não repetir perguntas já respondidas
 - se houver pergunta aberta crítica para fechamento honesto da SPEC, perguntar ao usuário e parar, ou sair com status `Blocked`
@@ -230,15 +268,17 @@ Perguntas ruins:
 - não fecham gap real
 - já estão respondidas em docs
 - são técnicas cedo demais
+- escalam classe de solução sem rodada factual mínima quando o recorte ainda pode ser reduzido por item
 - não alteram nenhum artefato
 
 ## Ritmo operacional por rodada
 1. reconstruir o estado atual a partir de `docs/**` e dos artefatos existentes
-2. decidir a localização canônica da SPEC sem chutar ownership de feature
-3. atualizar `feature_spec.md` e os registros auxiliares com classificação factual explícita
-4. recalcular maturidade em `readiness_report.md` com aderência ao gate canônico, peso real de `classification_strength` e condicionalidades explícitas
-5. registrar delta append-only em `session_summary.md`
-6. perguntar apenas o mínimo necessário, até 5 perguntas, ou parar com status operacional honesto e blockers explícitos
+2. quando houver recorte com itens concretos, fazer discovery factual mínimo item a item para reduzir perguntas abstratas e registrar a matriz factual curta
+3. decidir a localização canônica da SPEC sem chutar ownership de feature
+4. atualizar `feature_spec.md` e os registros auxiliares com classificação factual explícita
+5. recalcular maturidade em `readiness_report.md` com aderência ao gate canônico, peso real de `classification_strength` e condicionalidades explícitas
+6. registrar delta append-only em `session_summary.md`
+7. perguntar apenas o mínimo necessário, até 5 perguntas, ou parar com status operacional honesto e blockers explícitos
 
 Regras:
 - sempre reler os artefatos existentes antes de continuar
@@ -246,6 +286,7 @@ Regras:
 - a saída principal deve continuar curta e orientada ao objetivo; o shape estrutural padrão vive na skill e nos templates, não depende de o usuário repetir instruções de formatação
 - se uma resposta mudar escopo, aceite, risco, decisão ou hipótese, refletir isso imediatamente nos arquivos canônicos
 - se uma solução ou direção ainda estiver especulativa, registrar como hipótese, pergunta ou decisão condicional sustentada; não endurecer isso silenciosamente no corpo da SPEC
+- quando houver matriz factual curta por item, usá-la para estreitar a pergunta humana seguinte em vez de pular direto para uma pergunta ampla de classe de solução
 
 ## MODE=RESUME
 Quando `MODE=RESUME` estiver presente:

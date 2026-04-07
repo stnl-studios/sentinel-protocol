@@ -31,6 +31,27 @@
 - decision_traceability: <0-10>
 - assumption_visibility: <0-10>
 
+## Concrete Item Discovery Snapshot
+> Fill this section when the current uncertainty depends on classifying concrete project items such as endpoints, screens, jobs, integrations, exporters, reports, workflows, or equivalent surfaces. Use it to reduce and narrow later user questions, not to force a final architecture or implementation decision. If it does not apply, mark the section as `not_applicable`.
+
+- snapshot_status: not_applicable | pending_scan | recorded
+
+### Item-001
+- item: [Concrete item name or `none`]
+- evidence_observed: [Short factual evidence observed in docs or controlled codebase fallback.]
+- dominant_factor: [Main cost, complexity, or risk observed, or `none`]
+- preliminary_direction: local_optimization_candidate | structural_support_candidate | inconclusive
+- confidence: low | medium | high
+- remaining_gap: [What still prevents a legitimate final decision or stronger readiness claim.]
+
+### Item-002
+- item: [Concrete item name or `none`]
+- evidence_observed: [Evidence]
+- dominant_factor: [Factor]
+- preliminary_direction: local_optimization_candidate | structural_support_candidate | inconclusive
+- confidence: low | medium | high
+- remaining_gap: [Remaining gap]
+
 ## State Gate Check
 ### Draft Exit Check
 - problem_defined: yes | no
