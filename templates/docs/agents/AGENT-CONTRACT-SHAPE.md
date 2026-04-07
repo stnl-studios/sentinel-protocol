@@ -60,12 +60,33 @@ Todo agent base precisa explicitar:
 - mandatory completion gate
 - evidence required before claiming completion
 - area-specific senior risk checklist
+- output surface contract
+- chat budget quando aplicável
 - specialization slots
 - non-overridable protocol invariants
 - parte fixa do protocolo
 - parte especializável por projeto
 
 Além do corpo contratual, o frontmatter parseável acima também é obrigatório e integra o contrato consumível.
+
+## Disciplina canônica de superfície
+Todo contrato base deve tratar explicitamente a superfície de saída quando o agent puder poluir o chat principal, repassar artifacts ricos ou narrar execução.
+
+Isso faz parte auditável do corpo contratual, não do frontmatter mínimo.
+
+O contrato pode e deve carregar, quando aplicável:
+- `output surface contract`
+- `chat budget`
+- política anti-narração operacional
+- política `delegate-first`
+- política de paralelização segura
+
+Regras:
+- artifacts ricos podem existir como handoff interno sem serem republicados integralmente no chat principal
+- o contrato deve distinguir artefato rico interno de superfície curta externa quando o papel possuir ambos
+- `delegate-first` é política de comportamento do agent, não capability garantida do runtime
+- política de paralelização deve ser escrita como política de orquestração ou coordenação, nunca como promessa de runtime
+- quando o papel não conversar de forma relevante com o chat principal, o contrato pode omitir `chat budget`, mas ainda deve proibir ruído operacional se isso for risco real
 
 ## Parte fixa do protocolo
 É a parte canônica que define o contrato do agent base no ecossistema Sentinel. Inclui seu papel, seus limites, os status que pode emitir, seus gatilhos de entrada e saída, sua classe de leitura, suas condições de escalonamento, seu ownership de artefatos e sua posição no workflow.
@@ -88,6 +109,8 @@ Os slots de especialização podem preencher, quando fizer sentido:
 - heurísticas e exemplos do projeto
 - comandos, scripts e ferramentas locais
 - convenções, riscos recorrentes e critérios de evidência do projeto
+- refinamentos locais do `output surface contract`, do `chat budget` e da política anti-narração
+- política local de paralelização segura para workers quando o projeto precisar disso
 - refinamentos locais de reading order e source of truth, desde que não ampliem a classe canônica de leitura
 
 ## Invariantes de protocolo não sobrescrevíveis
@@ -100,6 +123,7 @@ A especialização por projeto nunca pode alterar:
 - ordem canônica dos gates do workflow
 - ownership de artefatos, memória durável e handoffs do protocolo
 - classe canônica de leitura do agent
+- a distinção entre artefato rico interno e superfície curta externa quando ela fizer parte do contrato base
 
 ## Regras de especialização por projeto
 - A futura especialização sempre roda já dentro do projeto atual.

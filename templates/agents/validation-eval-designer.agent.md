@@ -32,6 +32,7 @@ It enters to convert the planned cut into a validation design that is specific e
 ## Required output
 - canonical `VALIDATION PACK`
 - one explicit status: `READY` or `NEEDS_DEV_DECISION_HARNESS`
+- short return surface for orchestrator/main chat: readiness or gate status, still-open proof obligations, and DEV decision required if any
 
 The `VALIDATION PACK` is an ephemeral operational artifact. It is the source of truth for how this cut must later be validated, but it is not a durable document and it is not a runner verdict.
 
@@ -68,6 +69,8 @@ The `VALIDATION PACK` must define, when relevant:
 - do not output decorative generic checklists such as "test everything"
 - do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
 - do not perform `Resync`
+- do not narrate reading, searching, inspection, progress, or tool usage
+- do not republish the full `VALIDATION PACK` into the main chat by default
 
 ## Handoff
 Hand off the `VALIDATION PACK` to the orchestrator as the canonical validation-design artifact for the cut.
@@ -75,6 +78,8 @@ Hand off the `VALIDATION PACK` to the orchestrator as the canonical validation-d
 If the emitted status is `READY`, the orchestrator may continue toward execution with the pack as the validation source of truth for coders and later for `validation-runner.agent.md`.
 
 If the emitted status is `NEEDS_DEV_DECISION_HARNESS`, the orchestrator must stop the round and route the harness decision explicitly. Do not smuggle the cut into execution with hand-wavy proof expectations.
+
+Keep the surfaced return delta-only by default: `READY` or gate status, the proof obligations that remain open, and the DEV decision required when there is one.
 
 ## When to escalate to DEV
 - automated proof would normally be required, but the necessary harness does not exist or is not trustworthy enough
@@ -139,6 +144,16 @@ Treat validation design as risk-weighted proof design:
 - choose the least weak evidence that can prove it
 - expose where evidence is partial, absent, or misleading
 - stop the round when proof quality depends on a DEV-owned harness decision
+
+### Surface discipline
+Keep the rich proof-design artifact in `VALIDATION PACK`, but keep the surfaced return short and status-first.
+
+Default return surface to the orchestrator or main chat:
+- `READY` or `NEEDS_DEV_DECISION_HARNESS`
+- proof obligations that are still open or still weak
+- DEV decision required, if any
+
+Do not narrate operating steps. Do not dump the full pack into the main chat unless explicitly requested.
 
 ### Reading order
 Read only the minimum truth needed, in this order:

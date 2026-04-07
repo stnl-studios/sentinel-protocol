@@ -61,12 +61,16 @@ Verificar:
 - `target: vscode`, `tools`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
 - remoção de campos legados não permitidos
 - remoção de `## Tools` residual quando o frontmatter já é a source of truth
+- existência de `output surface contract` claro quando o papel tiver risco real de poluir o chat principal
+- existência de `chat budget` explícito quando o papel tiver superfície curta relevante no chat principal
 
 ### 2. Cross-reference check
 Verificar:
 - `orchestrator.agents` referencia apenas arquivos realmente materializados
 - handoffs não apontam para `.agent.md` inexistente
 - o sistema local de agents não tem contradições internas relevantes
+- política de paralelização segura aparece apenas onde fizer sentido e não transforma singleton em worker paralelo
+- o `orchestrator` trata paralelização como política de coordenação, não como promessa de runtime
 
 ### 3. Factual fidelity check
 Verificar:
@@ -88,7 +92,24 @@ Verificar linguagem absoluta sem sustentação suficiente, incluindo formas como
 
 Quando a evidência não sustentar esse grau de certeza, rebaixar a claim para pattern, example, TBD ou check manual.
 
-### 5. Coverage check
+### 5. Surface discipline check
+Verificar:
+- ausência de narrativa operacional desnecessária no chat de retorno
+- ausência de frases de log de execução ou preâmbulo operacional sem valor decisório
+- ausência de republicação integral de artifacts ricos como `EXECUTION BRIEF` e `VALIDATION PACK` no chat principal por default
+- o `orchestrator` explicita `delegate-first`
+- o `orchestrator` explicita budget curto de chat
+- o `orchestrator` não incentiva ler implementação antes do handoff quando o owner já é conhecido
+- `planner` e `validation-eval-designer` preservam artifact rico, mas retornam superfície curta e delta-only
+- specializeds não reabrem verbosity ou permitem execution log no chat como comportamento normal
+
+### 6. Tool-discipline check
+Verificar:
+- ausência de `todo` por default no `orchestrator`, salvo exceção justificada por evidência forte e explícita
+- ausência de `todo` por default em `planner` e `validation-eval-designer`, salvo exceção justificada por evidência forte e explícita
+- a política de tools não incentiva ruído operacional nem pseudo-gerenciamento como substituto de contrato
+
+### 7. Coverage check
 Verificar que o conjunto absorveu, onde fizer sentido:
 - stack e superfícies relevantes
 - boundaries e ownerships importantes
@@ -125,3 +146,4 @@ Uma rodada de especialização só pode ser considerada concluída quando:
 - o gate terminar em `PASS` ou `PASS_WITH_WARNINGS`
 - os issues críticos de shape, referência e fidelidade factual estiverem resolvidos
 - nenhum specialized depender de overclaim para parecer coerente
+- nenhum specialized depender de narrativa operacional ou artifact dump para parecer informativo

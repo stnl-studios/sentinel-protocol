@@ -100,6 +100,8 @@ Quando disponíveis no ambiente instalado da skill, preferir estas referências 
 - preservar o contrato canônico dos base agents
 - tratar o frontmatter operacional como source of truth do artifact especializado
 - aplicar least privilege em tools, leitura e execução
+- materializar disciplina de superfície curta por default, não narrativa operacional
+- preservar artifacts ricos no fluxo interno sem despejá-los no chat principal
 - revisar o sistema de agents como um conjunto coerente, não como arquivos isolados
 - preferir atualização de agent existente válido a recriação cega
 - deletar stale artifacts gerenciados quando eles deixarem o sistema incoerente
@@ -197,6 +199,7 @@ Regras operacionais:
 - a entrega esperada é um artifact final normalizado, limpo, operacional e auditável
 - não preservar resíduos legados só por inércia, compatibilidade aparente ou herança do base agent
 - update também é cleanup: além de corrigir drift factual, a skill deve remover seções redundantes e campos legados fora do contrato vigente
+- a normalização também deve preservar `surface discipline`, `delta-only communication`, `no operational narration`, `no artifact dump into main chat`, e `delegate-first` quando o papel exigir isso
 - o frontmatter especializado final normalizado contém apenas:
   - `name`
   - `description`
@@ -354,11 +357,60 @@ Regras:
 - se `agents` estiver presente no `orchestrator`, `agent` deve estar presente em `tools`
 - o conjunto em `agents` deve bater exatamente com o conjunto real de subagents materializados que o `orchestrator` coordena
 - o `orchestrator` não pode declarar subagent ausente, stale ou ainda não materializado
+- o `orchestrator` materializado deve operar como `status router only`, com `delegate-first`, `chat budget` explícito, e sem narrativa operacional
+- o `orchestrator` só pode publicar delta mínimo suficiente no chat principal; artifacts ricos e evidência completa ficam no handoff interno por default
 - não assumir `coder-frontend`, `designer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
 - se `designer` não existir, remover referências normais a `designer.agent.md` e reescrever a lógica local para não pressupor sua entrada
 - se um coder não existir, o `orchestrator` não pode rotear trabalho para ele
 - se os agents de validação não existirem, o `orchestrator` não pode fingir o workflow completo; bloquear ou ajustar o fluxo local sem inventar um agent substituto
 - preservar a ordem canônica dos gates e o ownership definido em `status-gates`
+
+## Política canônica de superfície e retorno
+Todo specialized gerado por esta skill deve herdar o contrato do base agent e preservar disciplina de superfície auditável.
+
+Checks obrigatórios de materialização:
+- `surface discipline`
+- `delta-only communication`
+- `no operational narration`
+- `no artifact dump into main chat`
+- `delegate-first` para `orchestrator`
+- `chat budget` explícito quando o papel tiver superfície curta relevante no chat principal
+
+Aplicação por papel:
+- `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, e delta novo realmente relevante
+- `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
+- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir
+- `coder-backend` e `coder-frontend`: devolver só status, paths alterados, checks rodados, risco residual e blocker se houver
+
+Se o specialized reabrir verbosity, execution log ou narrativa operacional como comportamento default, a materialização falhou.
+
+## Política canônica de paralelização controlada
+Tratar paralelização como política de orquestração e coordenação, nunca como promessa de runtime.
+
+Singletons obrigatórios:
+- `orchestrator`
+- `planner`
+- `validation-eval-designer`
+- `validation-runner`
+- `finalizer`
+- `resync`
+
+Papéis paralelizáveis:
+- `coder-backend`
+- `coder-frontend`
+- `designer` quando aplicável
+
+Limite:
+- no máximo 3 instâncias ativas por papel paralelizável
+
+Só permitir paralelização quando existir pacote de trabalho com:
+- boundaries claros
+- ownership de paths
+- dependências mapeadas
+- shared-contract risks explícitos
+- merge order ou coordenação mínima
+
+Se houver arquivo compartilhado ou contrato compartilhado sem owner claro, não paralelizar.
 
 ## Como escolher `tools`
 `tools` no frontmatter é obrigatório nos agents especializados do repo alvo.
@@ -371,17 +423,18 @@ Regras:
 - `edit` só entra quando o agent precisa materializar, modificar ou sincronizar artifacts locais
 - `read` e `search` são a base da maioria dos agents; `read/readFile` só deve entrar quando o runtime diferenciar isso de forma útil
 - `vscode` e `vscode/memory` só entram quando houver base factual para o runtime local depender disso
-- `todo` entra quando ajudar o agent a controlar trabalho multi-etapa real
+- `todo` não entra por default; só incluir quando houver justificativa factual forte e explícita de que a missão do agent depende de controlar trabalho multi-etapa real
+- no `orchestrator`, `planner` e `validation-eval-designer`, ausência de justificativa forte para `todo` deve ser tratada como sinal de ruído operacional
 
 Perfis mínimos sugeridos por papel, sempre ajustáveis por evidência:
-- `orchestrator`: `read`, `search`, `todo`, `agent`
-- `planner`: `read`, `search`, `todo`
+- `orchestrator`: `read`, `search`, `agent`
+- `planner`: `read`, `search`
 - `finalizer`: `read`, `search`, `edit`, `todo`
 - `resync`: `read`, `search`, `edit`, `todo`
 - `coder-backend`: `read`, `search`, `edit`, `execute`, `todo`
 - `coder-frontend`: `read`, `search`, `edit`, `execute`, `todo`
 - `designer`: `read`, `search`, `todo`
-- `validation-eval-designer`: `read`, `search`, `todo`
+- `validation-eval-designer`: `read`, `search`
 - `validation-runner`: `read`, `search`, `execute`, `todo`
 
 Incluir `web` apenas quando o contexto do projeto indicar dependência real de conhecimento externo atual para aquele papel, e nunca como substituto para `docs/**`.
@@ -416,6 +469,8 @@ Verificar:
 - `target: vscode`, `tools`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
 - remoção de campos legados não permitidos, incluindo `agent_version`
 - ausência de `## Tools` residual por default quando `tools` já existe no frontmatter
+- presença de contrato explícito de surface discipline quando o papel tiver risco real de poluir o chat principal
+- presença de `chat budget` explícito quando o papel tiver superfície curta relevante no chat principal
 
 ### Cross-reference check
 Verificar:
@@ -423,6 +478,7 @@ Verificar:
 - handoffs não apontam para `.agent.md` inexistente
 - agents ausentes não continuam implícitos no workflow local
 - não há contradição interna entre agents sobre boundaries, roteamento, harness ou fluxo
+- política de paralelização segura aparece apenas onde fizer sentido e mantém singletons como singletons
 
 ### Factual fidelity check
 Verificar:
@@ -442,6 +498,23 @@ Verificar:
 - desaparecimento de `documented_exception`
 
 Quando falhar, rebaixar a linguagem para `scoped_pattern`, `project_example`, `open_tbd` ou `manual_check`, ou bloquear se o ponto for central demais para a honestidade do artifact.
+
+### Surface discipline check
+Verificar:
+- ausência de narrativa operacional desnecessária
+- ausência de frases de log de execução ou preâmbulo operacional como comportamento default
+- ausência de republicação integral de `EXECUTION BRIEF`, `VALIDATION PACK` ou saída longa de subagent no chat principal
+- existência de retorno delta-only quando o papel possui artifact rico ou handoff rico
+- `delegate-first` explícito no `orchestrator`
+- `chat budget` explícito no `orchestrator`
+- `orchestrator` não incentiva leitura de implementação antes da delegação quando o owner já está claro
+- `planner` e `validation-eval-designer` devolvem superfície curta em vez de relatório gigante no chat
+
+### Tool-discipline check
+Verificar:
+- ausência de `todo` por default no `orchestrator`, salvo exceção justificada
+- ausência de `todo` por default em `planner` e `validation-eval-designer`, salvo exceção justificada
+- perfis de tools não favorecem ruído operacional
 
 ### Coverage check
 Verificar que o conjunto de specializeds absorveu, onde fizer sentido:
@@ -492,7 +565,6 @@ target: vscode
 tools:
   - read
   - search
-  - todo
   - agent
 agents:
   - planner
@@ -561,6 +633,11 @@ Notas para os exemplos:
 - ausência de `## Tools` no corpo quando `tools` já existir no frontmatter, salvo exceção explicitamente justificada
 - ausência de campos legados fora do contrato atual, incluindo `agent_version` por default
 - ausência de duplicação entre source of truth operacional e texto legado residual
+- surface discipline explícita e coerente com o papel
+- ausência de narrativa operacional e artifact dump no chat principal como comportamento default
+- `chat budget` explícito quando aplicável
+- `delegate-first` explícito no `orchestrator`
+- política de paralelização segura restrita aos workers paralelizáveis e limitada a 3 instâncias por papel
 - handoffs coerentes com o conjunto final realmente materializado
 - ausência de referências ativas a `.agent.md` inexistente
 - TBDs, exceções, scoped patterns, exemplos e checks manuais preservados com a força factual correta onde forem relevantes
@@ -582,6 +659,7 @@ Notas para os exemplos:
 - não perpetuar `## Tools` no corpo por inércia quando `tools` já estiver no frontmatter
 - não introduzir `metadata:` aninhado como base central do runtime
 - não reintroduzir `agent_version` como campo canônico do specialized
+- não reabrir execution log, narrativa operacional ou artifact dump no chat principal
 - não transformar exemplo local em regra global
 - não transformar pattern scoped em convenção global sem evidência forte
 - não resumir `open_tbd` de modo genérico que apague seu conteúdo factual
