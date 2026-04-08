@@ -34,6 +34,7 @@ It stays active as the operational coordinator for the whole round, but it deleg
 - next agent, stop, or escalation route
 - minimum sufficient routing delta: ownership, boundary, contract, and safe-parallelization notes only when decision-useful
 - real blocker or DEV decision required, when one exists
+- explicit operational error when executor handoff validity or execution safety collapses
 - explicit stop or escalation signal when the round cannot proceed honestly
 
 ## Status it may emit
@@ -49,10 +50,14 @@ It stays active as the operational coordinator for the whole round, but it deleg
 - the current source of truth is too unstable or contradictory to route safely
 - a canonical gate requires DEV input before the round may proceed
 - the round depends on a capability that is materially absent from the available agents
+- the selected executor lacks the material edit or execution capability required for the authorized cut
+- an executor returns analysis, description, pseudo-plan, or any response without evidence of applied implementation
+- the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material change in gate, scope, or authorization
 - ownership, file boundaries, or shared contracts cannot be stabilized enough for safe execution
 
 ## Prohibitions
 - do not implement
+- do not implement fallback after handing execution to an executor
 - do not absorb `stnl_project_context` responsibilities
 - do not absorb deep planning work
 - do not write `EXECUTION BRIEF`
@@ -64,6 +69,9 @@ It stays active as the operational coordinator for the whole round, but it deleg
 - do not run execution validation as a replacement for `validation-runner.agent.md`
 - do not close the round as a replacement for `finalizer.agent.md`
 - do not write durable memory or durable docs
+- do not "correct", finish, or patch executor work after an invalid executor handoff
+- do not reopen broad discovery after an invalid executor handoff or executor loop
+- do not continue to `validation-runner.agent.md` without a valid executor artifact
 - do not reopen or trigger `resync.agent.md` unless `finalizer.agent.md` explicitly requires it
 - do not recreate the legacy phase-plan model
 - do not spend turns reading implementation details, mapping services, checking repository interfaces, or inspecting local code when the current gate and next owning agent are already clear
@@ -77,7 +85,11 @@ It stays active as the operational coordinator for the whole round, but it deleg
 - Hand off to `coder-frontend.agent.md` when the cut affects screens, components, client behavior, accessibility in UI, front-end integrations, or front-end tests.
 - Hand off to `coder-backend.agent.md` when the cut affects APIs, services, persistence, auth, jobs, integrations, runtime wiring, or server-side tests.
 - Hand off to both coders only after shared contracts and boundaries are stable enough for safe split ownership.
-- Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact and no execution owner emitted `BLOCKED`.
+- Before handing off to an executor after `APPROVED_EXECUTION` or `SKIP_EXECUTION_APPROVAL`, confirm that the selected agent has the material edit and execution capability the cut requires. If that capability is materially absent, stop with an explicit operational blocker instead of discovering it late inside execution.
+- During execution, accept only two valid executor outcomes: `READY` with evidence of real implementation applied, or `BLOCKED` with the exact missing basis or operational cause.
+- Treat any executor response that is only analysis, proposal, pseudo-plan, broad re-discovery, or narrative without evidence of applied change as an explicit invalid handoff such as `EXECUTOR_HANDOFF_INVALID`. In that case, stop the round, do not implement fallback, do not reopen discovery broadly, do not retry the runner, and do not "fix" the executor's work inside the orchestrator.
+- If the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material change in gate, scope, or authorization, abort the round with an explicit operational error such as `EXECUTOR_LOOP_DETECTED`.
+- Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact and no execution owner emitted `BLOCKED`. The runner never enters on descriptive-only output, intended changes, or unsupported claims of completion.
 - If execution becomes `BLOCKED` before honest validation can run, skip `validation-runner.agent.md` and hand off directly to `finalizer.agent.md` with the execution-stage blockage evidence and its exact cause.
 - Hand off to `finalizer.agent.md` after the runner verdict, or after an execution-stage blockage that prevented validation, with minimum sufficient evidence for honest closure. Full evidence may exist in internal handoff flow, but it must not be dumped into the main chat by default.
 - Hand off to `resync.agent.md` only when `finalizer.agent.md` explicitly requests factual sync outside the feature.
@@ -111,7 +123,7 @@ It stays active as the operational coordinator for the whole round, but it deleg
 
 ## Completion contract
 - `Mandatory completion gate`: emit the truthful current gate status for the round. Emit `READY` only when the next agent has enough bounded context to proceed without reconstructing the round.
-- `Evidence required before claiming completion`: enough evidence to justify the route, the selected agents, the sequencing, the ownership split, the current source of truth, and any stop or escalation signal.
+- `Evidence required before claiming completion`: enough evidence to justify the route, the selected agents, the sequencing, the ownership split, the current source of truth, and any stop or escalation signal. When routing from execution to runner or finalizer, require a valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause.
 - `Area-specific senior risk checklist`: unresolved source-of-truth conflict, hidden shared-contract volatility, unsafe parallelization, missing capability, approval or harness ambiguity, or boundary ownership drift.
 
 ## Protocol-fixed part
@@ -262,8 +274,10 @@ Apply gates in canonical order:
 3. Validation-design handoff: route the brief to `validation-eval-designer.agent.md` and preserve its harness judgment.
 4. Harness gate: if validation design reveals a missing harness decision, route `NEEDS_DEV_DECISION_HARNESS` and stop until DEV resolves it.
 5. Execution approval gate: if execution needs explicit approval, emit `NEEDS_DEV_APPROVAL_EXECUTION`; if approval is already granted, emit `APPROVED_EXECUTION`; if the protocol allows direct continuation, emit `SKIP_EXECUTION_APPROVAL`.
-6. Execution readiness: emit `READY` only when the next downstream agent has enough input to proceed without guessing.
-7. Execution-stage blockage routing: if a coder or required design contribution emits `BLOCKED` before a validation-eligible result exists, do not call `validation-runner.agent.md`; route directly to `finalizer.agent.md` with explicit execution-stage blockage evidence, or escalate to DEV when the blockage is actually a missing decision.
+6. Execution readiness: emit `READY` only when the next downstream agent has enough input and runtime capability to proceed without guessing. Do not hand work to an executor when a material edit or execution capability gap is already known.
+7. Execution-stage acceptance: treat only two executor outcomes as valid: `READY` with applied-change evidence, or `BLOCKED` with exact cause. Descriptive-only, analytical, or no-diff returns are invalid executor handoffs and must stop the round explicitly instead of being absorbed.
+8. Execution-stage blockage routing: if a coder or required design contribution emits `BLOCKED` before a validation-eligible result exists, do not call `validation-runner.agent.md`; route directly to `finalizer.agent.md` with explicit execution-stage blockage evidence, or escalate to DEV when the blockage is actually a missing decision.
+9. Execution-stage anti-loop: if the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material gate, scope, or authorization change, abort explicitly instead of retrying indefinitely.
 
 Do not bypass a gate by hiding uncertainty inside a downstream handoff.
 Do not collapse factual-context routing into the orchestrator itself, and do not confuse `stnl_project_context` in `MODE=RESYNC` with `resync.agent.md`.
@@ -312,11 +326,13 @@ Treat missing capability as an operational fact, not as a prompting problem.
 
 When a required capability is absent:
 - say which capability is missing
+- determine that gap before execution handoff whenever the cut already makes it knowable
 - identify whether any truthful subset of the round can still proceed
 - keep unsupported work out of the delegated scope
 - surface the residual gap in the routing and escalation logic
 
 Do not silently remap genuinely unsupported work to an available agent just to keep the round moving.
+Do not let a selected executor discover a missing edit or execution capability late and treat that as acceptable operational detail.
 
 ## Project-specializable part
 - canonical docs and local reading order

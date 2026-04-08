@@ -72,7 +72,18 @@ Verificar:
 - política de paralelização segura aparece apenas onde fizer sentido e não transforma singleton em worker paralelo
 - o `orchestrator` trata paralelização como política de coordenação, não como promessa de runtime
 
-### 3. Factual fidelity check
+### 3. Execution protocol hardening check
+Verificar:
+- o `orchestrator` explicita que nunca implementa fallback depois de handoff para executor
+- o `orchestrator` nunca absorve execução após `APPROVED_EXECUTION`
+- o `orchestrator` só aceita do executor dois formatos válidos: `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
+- ausência material de capacidade de editar ou executar aparece como blocker pré-execução, não como descoberta tardia aceitável
+- resposta apenas descritiva, analítica, pseudo-plano, leitura adicional ampla, ou sem diff/evidência de alteração aplicada é tratada como handoff inválido do executor
+- reentrada do mesmo executor na mesma rodada sem diff aplicado, `BLOCKED` formal, ou mudança real de gate, escopo ou autorização vira erro operacional explícito
+- executors `READY` exigem changed paths ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual
+- `validation-runner` só entra com artifact validável do executor; promessa de mudança, narrativa ou análise não bastam
+
+### 4. Factual fidelity check
 Verificar:
 - TBDs relevantes continuam semanticamente preservados
 - exceções documentadas continuam visíveis quando relevantes
@@ -81,7 +92,7 @@ Verificar:
 - exemplos continuam exemplos
 - checks manuais continuam claramente marcados como checagem
 
-### 4. Overclaim / certainty check
+### 5. Overclaim / certainty check
 Verificar linguagem absoluta sem sustentação suficiente, incluindo formas como:
 - `all`
 - `always`
@@ -92,7 +103,7 @@ Verificar linguagem absoluta sem sustentação suficiente, incluindo formas como
 
 Quando a evidência não sustentar esse grau de certeza, rebaixar a claim para pattern, example, TBD ou check manual.
 
-### 5. Surface discipline check
+### 6. Surface discipline check
 Verificar:
 - ausência de narrativa operacional desnecessária no chat de retorno
 - ausência de frases de log de execução ou preâmbulo operacional sem valor decisório
@@ -103,13 +114,13 @@ Verificar:
 - `planner` e `validation-eval-designer` preservam artifact rico, mas retornam superfície curta e delta-only
 - specializeds não reabrem verbosity ou permitem execution log no chat como comportamento normal
 
-### 6. Tool-discipline check
+### 7. Tool-discipline check
 Verificar:
 - ausência de `todo` por default no `orchestrator`, salvo exceção justificada por evidência forte e explícita
 - ausência de `todo` por default em `planner` e `validation-eval-designer`, salvo exceção justificada por evidência forte e explícita
 - a política de tools não incentiva ruído operacional nem pseudo-gerenciamento como substituto de contrato
 
-### 7. Coverage check
+### 8. Coverage check
 Verificar que o conjunto absorveu, onde fizer sentido:
 - stack e superfícies relevantes
 - boundaries e ownerships importantes
@@ -147,3 +158,4 @@ Uma rodada de especialização só pode ser considerada concluída quando:
 - os issues críticos de shape, referência e fidelidade factual estiverem resolvidos
 - nenhum specialized depender de overclaim para parecer coerente
 - nenhum specialized depender de narrativa operacional ou artifact dump para parecer informativo
+- nenhum specialized aceitar executor descritivo como se fosse execução válida

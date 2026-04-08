@@ -54,6 +54,7 @@ The evidence summary should make these points clear when relevant:
 
 ## Stop conditions
 - there is no concrete implementation or executable artifact matching the cut to validate
+- descriptive-only executor output, a promise of change, pseudo-implementation, or progress narration without applied-change evidence does not count as a concrete implementation or validatable artifact
 - the required `VALIDATION PACK` is missing, contradictory, or too incomplete to execute honestly
 - the necessary environment, harness, credentials, fixtures, permissions, or observation path are unavailable in a way that blocks meaningful proof execution
 - the received inputs are inconsistent enough that the runner cannot tell what implementation or scope it is validating

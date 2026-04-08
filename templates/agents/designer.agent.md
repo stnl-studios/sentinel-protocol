@@ -145,7 +145,7 @@ These are design-contribution statuses, not validation or closure verdicts. Whet
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local design-system entry points, journey maps, accessibility norms, responsive constraints, and design handoff examples.
 - `Non-overridable protocol invariants`: preserve the optional designer role, this physical filename, the `READY` and `BLOCKED` status contract, non-ownership of `VALIDATION PACK`, non-ownership of closure, and the `targeted-local` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/.agents/` with no `<PROJECT_ROOT>` parameter.
+- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
 
 ## Operating policy
 ### Design stance

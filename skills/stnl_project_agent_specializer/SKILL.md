@@ -359,6 +359,12 @@ Regras:
 - o `orchestrator` não pode declarar subagent ausente, stale ou ainda não materializado
 - o `orchestrator` materializado deve operar como `status router only`, com `delegate-first`, `chat budget` explícito, e sem narrativa operacional
 - o `orchestrator` só pode publicar delta mínimo suficiente no chat principal; artifacts ricos e evidência completa ficam no handoff interno por default
+- depois de `APPROVED_EXECUTION` ou `SKIP_EXECUTION_APPROVAL`, o `orchestrator` nunca pode absorver implementação ou fallback de execução
+- antes de rotear um executor, o `orchestrator` deve tornar explícito se o agent materializado tem capacidade real de editar e executar o cut; gap material vira blocker operacional antes da execução
+- o `orchestrator` só pode aceitar do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
+- resposta narrativa, descritiva, analítica, pseudo-plano ou sem diff aplicado deve ser tratada como handoff inválido do executor, com parada explícita da rodada
+- reentrada do mesmo executor na mesma rodada sem diff aplicado, `BLOCKED` formal, ou mudança real de gate, escopo ou autorização deve virar erro operacional explícito
+- o `validation-runner` só pode entrar quando existir artifact validável do executor; promessa de mudança não basta
 - não assumir `coder-frontend`, `designer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
 - se `designer` não existir, remover referências normais a `designer.agent.md` e reescrever a lógica local para não pressupor sua entrada
 - se um coder não existir, o `orchestrator` não pode rotear trabalho para ele
@@ -377,10 +383,10 @@ Checks obrigatórios de materialização:
 - `chat budget` explícito quando o papel tiver superfície curta relevante no chat principal
 
 Aplicação por papel:
-- `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, e delta novo realmente relevante
+- `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, e delta novo realmente relevante; nunca absorver implementação, rejeitar handoff descritivo do executor, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
 - `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir
-- `coder-backend` e `coder-frontend`: devolver só status, paths alterados, checks rodados, risco residual e blocker se houver
+- `coder-backend` e `coder-frontend`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata
 
 Se o specialized reabrir verbosity, execution log ou narrativa operacional como comportamento default, a materialização falhou.
 
@@ -479,6 +485,17 @@ Verificar:
 - agents ausentes não continuam implícitos no workflow local
 - não há contradição interna entre agents sobre boundaries, roteamento, harness ou fluxo
 - política de paralelização segura aparece apenas onde fizer sentido e mantém singletons como singletons
+
+### Execution protocol hardening check
+Verificar:
+- o `orchestrator` explicita que nunca implementa fallback depois de handoff para executor
+- o `orchestrator` nunca absorve execução após `APPROVED_EXECUTION`
+- o `orchestrator` só aceita do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
+- gap material de capability de editar ou executar aparece como blocker pré-execução
+- resposta narrativa, descritiva, pseudo-plano, leitura ampla adicional, ou sem diff aplicado é tratada como handoff inválido
+- reentrada do mesmo executor sem diff aplicado, `BLOCKED` formal, ou mudança real de gate, escopo ou autorização é rejeitada como erro operacional
+- executors `READY` exigem changed paths ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual
+- `validation-runner` só entra com artifact validável do executor
 
 ### Factual fidelity check
 Verificar:
@@ -608,6 +625,7 @@ Notas para os exemplos:
 - quando `model_policy` existir, ele governa a preferência de escolha por papel
 - se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` e deixar o runtime usar o model picker atual
 - os exemplos representam o artifact final normalizado, sem `## Tools` no corpo e sem campos legados como `agent_version`
+- os exemplos de frontmatter não substituem o contrato endurecido do corpo; `orchestrator` e executors continuam obrigados a explicitar capability gate, validade do handoff e regra de runner só com artifact validável
 - não inventar campos extras fora do necessário
 
 ## EXECUTE OUTPUT esperado
@@ -637,6 +655,12 @@ Notas para os exemplos:
 - ausência de narrativa operacional e artifact dump no chat principal como comportamento default
 - `chat budget` explícito quando aplicável
 - `delegate-first` explícito no `orchestrator`
+- o `orchestrator` explicita que nunca implementa fallback nem absorve execução após handoff
+- gaps materiais de capability aparecem como blockers pré-execução
+- executors materializados restringem a saída a `READY` real ou `BLOCKED` real
+- resposta descritiva do executor sem alteração aplicada é rejeitada como handoff inválido
+- reentrada do mesmo executor sem diff, `BLOCKED`, ou mudança real de gate, escopo ou autorização é tratada como erro operacional
+- `validation-runner` só é habilitado com artifact validável do executor
 - política de paralelização segura restrita aos workers paralelizáveis e limitada a 3 instâncias por papel
 - handoffs coerentes com o conjunto final realmente materializado
 - ausência de referências ativas a `.agent.md` inexistente

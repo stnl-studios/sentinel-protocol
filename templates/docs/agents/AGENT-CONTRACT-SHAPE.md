@@ -128,11 +128,11 @@ A especialização por projeto nunca pode alterar:
 ## Regras de especialização por projeto
 - A futura especialização sempre roda já dentro do projeto atual.
 - A especialização não recebe parâmetro `<PROJECT_ROOT>`.
-- A materialização especializada acontece em `./.github/.agents/` do projeto atual.
+- A materialização especializada acontece em `./.github/agents/` do projeto atual.
 - A especialização só pode preencher os slots explícitos do contrato.
 
 ## Shape esperado para agent especializado
-Mesmo sem materializar agora, o shape esperado do arquivo especializado em `./.github/.agents/*.agent.md` já fica definido.
+Mesmo sem materializar agora, o shape esperado do arquivo especializado em `./.github/agents/*.agent.md` já fica definido.
 
 Campos canônicos esperados no frontmatter do agent especializado:
 
