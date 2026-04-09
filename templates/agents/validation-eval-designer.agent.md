@@ -67,6 +67,7 @@ The `VALIDATION PACK` must define, when relevant:
 - do not hide weak, absent, or misleading harness reality
 - do not invent proof that the project cannot actually produce
 - do not output decorative generic checklists such as "test everything"
+- do not compensate for reading that `orchestrator.agent.md` or `planner.agent.md` correctly did not do by reopening broad discovery here
 - do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
 - do not perform `Resync`
 - do not narrate reading, searching, inspection, progress, or tool usage
@@ -115,6 +116,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 
 ## Protocol-fixed part
 - enters after `planner.agent.md` and before execution
+- role class: `proof-design`
 - receives `EXECUTION BRIEF` as the main upstream artifact
 - owns the canonical ephemeral `VALIDATION PACK`
 - defines the proof required for the cut before execution starts
@@ -145,6 +147,8 @@ Treat validation design as risk-weighted proof design:
 - expose where evidence is partial, absent, or misleading
 - stop the round when proof quality depends on a DEV-owned harness decision
 
+Do not compensate for upstream discipline by turning proof design into late planning or late discovery. If the brief is too weak to derive proof obligations within a bounded local read, stop honestly.
+
 ### Surface discipline
 Keep the rich proof-design artifact in `VALIDATION PACK`, but keep the surfaced return short and status-first.
 
@@ -154,6 +158,14 @@ Default return surface to the orchestrator or main chat:
 - DEV decision required, if any
 
 Do not narrate operating steps. Do not dump the full pack into the main chat unless explicitly requested.
+
+### Proof-design budget
+Keep proof-design discovery local and auditable.
+
+Default budget:
+- consult at most 3 local artifacts beyond `EXECUTION BRIEF`
+- at most 1 of those artifacts may sit outside the immediate cut or harness boundary
+- if the pack still cannot be stabilized, emit `NEEDS_DEV_DECISION_HARNESS` or return the ambiguity instead of widening discovery
 
 ### Reading order
 Read only the minimum truth needed, in this order:

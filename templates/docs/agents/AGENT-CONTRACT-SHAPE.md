@@ -1,57 +1,66 @@
-# Shape Canônico de Contrato de Agent Base
+# Shape Canonico de Contrato de Agent Base
 
-## Propósito
-Definir o shape mínimo e canônico que todo agent base do Sentinel precisa explicitar, inclusive quando houver especialização por projeto.
+## Proposito
+Definir o shape minimo e canonico que todo agent base do Sentinel precisa explicitar, inclusive quando houver especializacao por projeto.
 
-Esse contrato inclui metadata canônica parseável no topo do arquivo. Essa metadata continua mínima e existe para indicar a versão base usada, expor uma classificação parseável de leitura para tooling e, no futuro materializado, suportar revisão local simples e overwrite seguro.
+Esse contrato inclui metadata parseavel curta e um corpo contratual auditavel. A metadata continua minima. O comportamento continua sendo governado pelo corpo contratual e pelas docs canonicas.
 
-## Metadata canônica parseável
-Todo agent base em `templates/agents/*.agent.md` deve carregar frontmatter YAML curto, estável e parseável no topo do arquivo.
+## Metadata canonica parseavel
+Todo agent base em `templates/agents/*.agent.md` deve carregar frontmatter YAML curto, estavel e parseavel no topo do arquivo.
 
-Campos canônicos do agent base:
-
+Campos canonicos do agent base:
 - `agent_version`
 - `reading_scope_class`
 
 Regras:
+- `agent_version` indica a versao canonica do Sentinel Protocol usada por aquele agent.
+- `reading_scope_class` e um hint parseavel da politica de leitura do agent.
+- `reading_scope_class` nao substitui `Reading contract`, `Reading order`, `Source of truth hierarchy` nem `Do not scan broadly unless`.
+- se houver conflito, o source of truth continua sendo o corpo contratual do agent e as docs canonicas
+- a metadata minima nao e source of truth comportamental
 
-- `agent_version` indica a versão do Sentinel Protocol ou base canônica usada por aquele agent.
-- `reading_scope_class` é uma classificação parseável de alto nível da política de leitura do agent.
-- `reading_scope_class` serve como hint estável para tooling, validação rápida e guardrails.
-- `reading_scope_class` não substitui o `Reading contract`.
-- `reading_scope_class` não substitui `Reading order`, `Source of truth hierarchy` ou `Do not scan broadly unless`.
-- `reading_scope_class` não autoriza scan amplo sozinho.
-- Se houver conflito, o source of truth continua sendo o corpo contratual do agent e as docs canônicas.
-- Só `orchestrator` e `planner` podem usar `broad-controlled`.
-- Se `name` e `description` já fizerem parte do padrão do arquivo, podem permanecer.
-- A metadata mínima não é source of truth comportamental.
-- O comportamento do agent continua sendo definido pelo corpo contratual do arquivo e pelas docs canônicas.
-
-Exemplo conceitual de metadata de agent base:
+Exemplo conceitual:
 
 ```yaml
 ---
 name: Orchestrator
 description: ...
 agent_version: 2026.4
-reading_scope_class: broad-controlled
+reading_scope_class: routing-minimal
 ---
 ```
 
-## Campos obrigatórios
-Todo agent base precisa explicitar:
+## Role classes canonicas
+O Sentinel endurece comportamento por classe de papel, nao apenas por agent individual.
 
-- missão
+Mapeamento canonico:
+- `router`: `orchestrator`
+- `planning`: `planner`
+- `proof-design`: `validation-eval-designer`
+- `executor`: `coder-backend`, `coder-frontend`, `designer`
+- `proof-execution`: `validation-runner`
+- `closure`: `finalizer`
+- `sync`: `resync`
+
+Regras:
+- a role class governa ferramentas, leitura, budget operacional, anti-role-drift e shape de output
+- a especializacao local pode restringir mais, mas nao pode relaxar os invariantes centrais da role class
+- a maior parte do custo operacional da rodada pertence a `executor`, nao a `router` nem a `planning`
+- `proof-execution`, `closure` e `sync` nao podem compensar falha upstream reabrindo discovery amplo
+
+## Campos obrigatorios
+Todo agent base precisa explicitar:
+- missao
 - quando entra
-- entrada obrigatória
+- entrada obrigatoria
 - entrada opcional
-- saída obrigatória
+- saida obrigatoria
 - status que pode emitir
 - stop conditions
-- proibições
-- handoff para o próximo agent
+- proibicoes
+- handoff para o proximo agent
 - quando escalar para o DEV
-- o que pode virar memória durável
+- o que pode virar memoria duravel
 - o que nunca pode tocar
 - reading scope
 - reading order
@@ -61,95 +70,107 @@ Todo agent base precisa explicitar:
 - evidence required before claiming completion
 - area-specific senior risk checklist
 - output surface contract
-- chat budget quando aplicável
+- chat budget quando aplicavel
+- budget operacional quando o papel puder consumir custo relevante cedo demais
 - specialization slots
 - non-overridable protocol invariants
 - parte fixa do protocolo
-- parte especializável por projeto
+- parte especializavel por projeto
 
-Além do corpo contratual, o frontmatter parseável acima também é obrigatório e integra o contrato consumível.
+## Disciplina canonica de superficie
+Todo contrato base deve tratar explicitamente a superficie de saida quando o agent puder poluir o chat principal, repassar artifacts ricos ou narrar execucao.
 
-## Disciplina canônica de superfície
-Todo contrato base deve tratar explicitamente a superfície de saída quando o agent puder poluir o chat principal, repassar artifacts ricos ou narrar execução.
-
-Isso faz parte auditável do corpo contratual, não do frontmatter mínimo.
-
-O contrato pode e deve carregar, quando aplicável:
+O contrato pode e deve carregar, quando aplicavel:
 - `output surface contract`
 - `chat budget`
-- política anti-narração operacional
-- política `delegate-first`
-- política de paralelização segura
+- politica anti-narracao operacional
+- politica `delegate-first`
+- politica de paralelizacao segura
 
 Regras:
 - artifacts ricos podem existir como handoff interno sem serem republicados integralmente no chat principal
-- o contrato deve distinguir artefato rico interno de superfície curta externa quando o papel possuir ambos
-- `delegate-first` é política de comportamento do agent, não capability garantida do runtime
-- política de paralelização deve ser escrita como política de orquestração ou coordenação, nunca como promessa de runtime
-- quando o papel não conversar de forma relevante com o chat principal, o contrato pode omitir `chat budget`, mas ainda deve proibir ruído operacional se isso for risco real
+- o contrato deve distinguir artifact rico interno de superficie curta externa quando o papel possuir ambos
+- `delegate-first` e politica de comportamento, nao capability garantida de runtime
+- politica de paralelizacao deve ser escrita como politica de coordenacao, nunca como promessa de runtime
+
+## Politica canonica de leitura
+Classes canonicas:
+- `routing-minimal`: leitura minima para entender pedido, gate ativo, owner provavel e capability gap real. So `orchestrator` pode usar.
+- `bounded-context`: leitura pequena e orientada a framing para estabilizar escopo, boundary, source of truth e dependencia real. So `planner` pode usar.
+- `targeted-local`: leitura restrita ao handoff, ao entorno imediato do alvo e aos edges locais estritamente necessarios.
+- `minimal-verification`: leitura restrita ao necessario para provar, consolidar ou sincronizar um delta ja delimitado.
+
+Regras:
+- `router` nao abre implementacao por default
+- `planning` nao abre codigo, contratos ou testes por default so para "entender melhor"
+- fora `planner`, nenhum papel pode usar leitura equivalente a framing amplo
+- `proof-execution`, `closure` e `sync` nao podem fazer rediscovery amplo por compensacao
+
+## Budgets operacionais canonicos
+Todo contrato base deve tornar explicito quem pode consumir custo e em que momento.
+
+Budgets minimos por role class:
+- `router`: budget minimo antes do primeiro handoff; deve consultar pouquissimos artifacts e abortar para blocker ou DEV em vez de continuar lendo
+- `planning`: budget pequeno e condicionado; pode expandir apenas para estabilizar escopo, boundary, source of truth ou shared contract dependency real
+- `proof-design`: budget local para desenhar prova; nao compensa leitura que `router` ou `planning` deixaram de fazer
+- `executor`: e o principal dono da leitura profunda e do custo tecnico da rodada
+- `proof-execution`, `closure` e `sync`: budgets curtos e focados no delta ja delimitado
 
 ## Parte fixa do protocolo
-É a parte canônica que define o contrato do agent base no ecossistema Sentinel. Inclui seu papel, seus limites, os status que pode emitir, seus gatilhos de entrada e saída, sua classe de leitura, suas condições de escalonamento, seu ownership de artefatos e sua posição no workflow.
+E a parte canonica que define o contrato do agent base no ecossistema Sentinel. Inclui papel, limites, statuses, gatilhos de entrada e saida, classe de leitura, budget operacional, ownership de artifacts e posicao no workflow.
 
-## Parte especializável por projeto
-É a parte que adapta contexto, heurísticas, exemplos, critérios locais, detalhes operacionais e pontos de leitura local ao projeto, sem quebrar o contrato canônico do agent base.
+## Parte especializavel por projeto
+E a parte que adapta contexto, heuristicas, exemplos, criterios locais, detalhes operacionais e pontos de leitura local ao projeto sem quebrar o contrato canonico do agent base.
 
-Ela existe para preencher slots de especialização já previstos no contrato, não para redefinir papel, status, gates, ownership ou arquivo físico.
+Ela preenche slots previstos. Ela nao redefine papel, status, gates, ownership, reading scope class ou budget canonico central.
 
-## Política canônica de leitura
-- `broad-controlled`: leitura mais ampla, mas ainda mínima e justificada. Só `orchestrator` e `planner` podem usar esta classe.
-- `targeted-local`: leitura restrita ao handoff, ao reading order e ao entorno imediato do alvo.
-- `minimal-verification`: leitura restrita ao necessário para verificar, consolidar ou sincronizar um delta já delimitado.
-- Fora `orchestrator` e `planner`, nenhum agent pode fazer scan amplo do projeto por padrão.
-
-## Slots de especialização
-Os slots de especialização podem preencher, quando fizer sentido:
-
-- docs e caminhos locais prioritários
-- heurísticas e exemplos do projeto
+## Slots de especializacao
+Os slots de especializacao podem preencher, quando fizer sentido:
+- docs e caminhos locais prioritarios
+- heuristicas e exemplos do projeto
 - comandos, scripts e ferramentas locais
-- convenções, riscos recorrentes e critérios de evidência do projeto
-- refinamentos locais do `output surface contract`, do `chat budget` e da política anti-narração
-- política local de paralelização segura para workers quando o projeto precisar disso
-- refinamentos locais de reading order e source of truth, desde que não ampliem a classe canônica de leitura
+- convencoes, riscos recorrentes e criterios de evidencia do projeto
+- refinamentos locais de `output surface contract`, `chat budget` e politica anti-narracao
+- politica local de paralelizacao segura para executors quando o projeto precisar disso
+- refinamentos locais de `Reading order` e `Source of truth hierarchy`, desde que nao ampliem a classe canonica de leitura
 
-## Invariantes de protocolo não sobrescrevíveis
-A especialização por projeto nunca pode alterar:
-
+## Invariantes de protocolo nao sobrescreviveis
+A especializacao por projeto nunca pode alterar:
 - papel central do agent base
-- nome físico do arquivo correspondente
-- status canônicos que o agent pode emitir
-- ownership canônico dos status
-- ordem canônica dos gates do workflow
-- ownership de artefatos, memória durável e handoffs do protocolo
-- classe canônica de leitura do agent
-- a distinção entre artefato rico interno e superfície curta externa quando ela fizer parte do contrato base
+- role class canonica do agent
+- nome fisico do arquivo correspondente
+- statuses canonicos que o agent pode emitir
+- ownership canonico dos statuses
+- ordem canonica dos gates do workflow
+- ownership de artifacts, memoria duravel e handoffs do protocolo
+- classe canonica de leitura do agent
+- budget operacional canonico do papel
+- a distincao entre artifact rico interno e superficie curta externa quando ela fizer parte do contrato base
 
-## Regras de especialização por projeto
-- A futura especialização sempre roda já dentro do projeto atual.
-- A especialização não recebe parâmetro `<PROJECT_ROOT>`.
-- A materialização especializada acontece em `./.github/agents/` do projeto atual.
-- A especialização só pode preencher os slots explícitos do contrato.
+## Regras de especializacao por projeto
+- a futura especializacao sempre roda ja dentro do projeto atual
+- a especializacao nao recebe parametro `<PROJECT_ROOT>`
+- a materializacao especializada acontece em `./.github/agents/` do projeto atual
+- a especializacao so pode preencher os slots explicitos do contrato
+- a especializacao nao pode usar contexto local para relaxar guardrails centrais de tool, leitura, budget ou anti-role-drift
 
 ## Shape esperado para agent especializado
-Mesmo sem materializar agora, o shape esperado do arquivo especializado em `./.github/agents/*.agent.md` já fica definido.
+Mesmo sem materializar agora, o shape esperado do arquivo especializado em `./.github/agents/*.agent.md` ja fica definido.
 
-Campos canônicos esperados no frontmatter do agent especializado:
-
+Campos canonicos esperados no frontmatter do agent especializado:
 - `base_agent_version`
 - `specialization_revision`
 - `managed_artifact`
 
 Regras:
-
 - o agent especializado referencia o base via `base_agent_version`
-- `specialization_revision` versiona apenas a materialização especializada daquele projeto
-- `specialization_revision` começa em `1`
+- `specialization_revision` versiona apenas a materializacao especializada daquele projeto
+- `specialization_revision` comeca em `1`
 - `managed_artifact: true` identifica artifact gerenciado pela futura skill
-- a metadata mínima do specialized também não é source of truth comportamental
-- o comportamento do specialized continua sendo definido pelo corpo contratual materializado, derivado do base e das docs canônicas
+- a metadata minima do specialized tambem nao e source of truth comportamental
+- o comportamento do specialized continua sendo definido pelo corpo contratual materializado, derivado do base e das docs canonicas
 
-Exemplo conceitual de metadata de agent especializado:
+Exemplo conceitual:
 
 ```yaml
 ---
@@ -161,16 +182,15 @@ managed_artifact: true
 ---
 ```
 
-## Finalidade auditável desses metadados
-Esses metadados existem para permitir futuramente, sem aumentar o peso do protocolo:
-
+## Finalidade auditavel desses metadados
+Esses metadados existem para:
 - saber de qual base o specialized nasceu
 - controlar overwrite seguro de artifacts gerenciados
-- manter uma revisão local simples do materializado
+- manter uma revisao local simples do materializado
 
-Não são source of truth comportamental e não substituem o corpo contratual dos agents ou as docs canônicas. São apenas metadata mínima, estável e parseável para versionamento base, revisão local do materializado e overwrite seguro.
+Eles nao substituem o corpo contratual dos agents ou as docs canonicas.
 
-## Regras de preservação
-- A especialização por projeto muda conteúdo, não muda o nome físico do arquivo.
-- Todo agent especializado do projeto preserva o contrato canônico do agent base correspondente.
-- Todo agent do Sentinel é um agent base que pode ser especializado por projeto sem renomeação física.
+## Regras de preservacao
+- a especializacao por projeto muda conteudo, nao muda o nome fisico do arquivo
+- todo agent especializado preserva o contrato canonico do agent base correspondente
+- todo agent do Sentinel e um agent base que pode ser especializado por projeto sem renomeacao fisica

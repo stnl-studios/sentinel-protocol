@@ -34,6 +34,7 @@ During execution, when the cut includes front-end, web, or client-side behavior 
 - `BLOCKED`
 
 ## Operating policy
+- `Execution-cost ownership`: deep local reading and the main technical cost of the round belong here once a valid executor handoff exists. Do not wait for upstream agents to pre-solve implementation detail that this role must derive from repo truth.
 - `Execution stance`: act as the front-end implementation specialist for the current cut. Own the web or client-side execution inside the round, but do not become planner, orchestrator, validator of record, finalizer, or resync agent.
 - `Decision priority`: when goals conflict, prefer user-visible correctness, accessibility, contract compatibility, operational safety, project conventions, and only then local elegance.
 - `Blast radius and scope discipline`: change only what is required to complete the front-end cut safely. Do not refactor unrelated areas, redesign adjacent flows, or introduce parallel patterns unless required for correctness, accessibility, integration safety, or maintainability of the touched path.
@@ -118,11 +119,12 @@ If execution is `BLOCKED` before a validation-eligible result exists, hand the b
 - `Area-specific senior risk checklist`: user-visible state coverage, accessibility and focus behavior, responsive behavior, routing and permission safety, feature-flag or analytics drift, and contract alignment with real data flow.
 
 ## Protocol-fixed part
+- role class: `executor`
 - receives `EXECUTION BRIEF` and `VALIDATION PACK`
 - enters during execution
 - implements only the front-end, web, or client-side portion of the cut
 - may consume inputs from `designer.agent.md` when there is real UX or UI impact
-- operates with `targeted-local` reading and expands only around the immediate front-end boundary when justified
+- operates with `targeted-local` reading and carries the primary deep local reading cost for the front-end cut
 - returns implementation plus a short execution delta: status, changed paths or equivalent implementation evidence, checks run or honestly not run, residual risk, and exact blocker only when `BLOCKED`
 - does not close the round
 - does not write durable memory
@@ -132,7 +134,7 @@ If execution is `BLOCKED` before a validation-eligible result exists, hand the b
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local UI docs, path conventions, commands, evidence norms, UX-sensitive hotspots, and boundary-specific examples.
 - `Non-overridable protocol invariants`: preserve the front-end executor role, this physical filename, the `READY` and `BLOCKED` status contract, execution-only ownership, no durable-memory ownership, and the `targeted-local` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/.agents/` with no `<PROJECT_ROOT>` parameter.
+- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
 
 ## Project-specializable part
 - front-end stack and framework conventions

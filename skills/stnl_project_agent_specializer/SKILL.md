@@ -83,6 +83,31 @@ Regras complementares:
 - `validation-eval-designer`
 - `validation-runner`
 
+## Role classes canônicas que a skill deve impor
+Antes de especializar qualquer agent, a skill deve classificá-lo em uma role class canônica:
+
+- `router`: `orchestrator`
+- `planning`: `planner`
+- `proof-design`: `validation-eval-designer`
+- `executor`: `coder-backend`, `coder-frontend`, `designer`
+- `proof-execution`: `validation-runner`
+- `closure`: `finalizer`
+- `sync`: `resync`
+
+Para cada role class, a skill deve impor no mínimo:
+- tools permitidas
+- tools proibidas
+- classe de leitura permitida
+- budget operacional padrão
+- regras anti-role-drift
+- tipos de output esperados
+
+Regras:
+- especialização local pode restringir mais, nunca relaxar os invariantes centrais da role class
+- o custo principal de leitura e execução pertence à classe `executor`
+- `router` e `planning` devem ficar deliberadamente mais fracos que os executors em leitura e ferramentas
+- `proof-execution`, `closure` e `sync` não podem compensar gaps upstream com rediscovery amplo
+
 ## Referências canônicas que esta skill usa, mas não materializa no repo alvo na v1
 - `agent-contract-shape`
 - `agent-specialization-quality-gate`
@@ -98,8 +123,10 @@ Quando disponíveis no ambiente instalado da skill, preferir estas referências 
 - especializar por evidência, não por simetria
 - materializar o conjunto mínimo útil, não o conjunto máximo possível
 - preservar o contrato canônico dos base agents
+- preservar a role class canônica de cada base agent
 - tratar o frontmatter operacional como source of truth do artifact especializado
 - aplicar least privilege em tools, leitura e execução
+- preferir disciplina operacional a flexibilidade quando houver conflito
 - materializar disciplina de superfície curta por default, não narrativa operacional
 - preservar artifacts ricos no fluxo interno sem despejá-los no chat principal
 - revisar o sistema de agents como um conjunto coerente, não como arquivos isolados
@@ -235,19 +262,20 @@ Regras operacionais:
 1. Validar as pré-condições e confirmar que o repo alvo realmente já passou por `stnl_project_context`.
 2. Fazer discovery sério de `docs/**`, com prioridade para `docs/INDEX.md`, `docs/core/*`, `docs/TBDS.md` quando existir, e os `units` ou `features` relevantes.
 3. Construir o modelo factual intermediário normalizado, classificando claims, escopo, evidência e agents impactados.
-4. Ler os templates/base agents canônicos e as referências `agent-contract-shape`, `agent-specialization-quality-gate` e `status-gates`.
-5. Revisar `.github/agents/` atual, classificando cada artifact local como:
+4. Classificar cada agent canônico em sua role class e carregar os invariantes obrigatórios dessa classe antes de gerar qualquer specialized.
+5. Ler os templates/base agents canônicos e as referências `agent-contract-shape`, `agent-specialization-quality-gate` e `status-gates`.
+6. Revisar `.github/agents/` atual, classificando cada artifact local como:
    - `managed and current`
    - `managed but drifted`
    - `managed but obsolete`
    - `unmanaged / ambiguous`
-6. Decidir o conjunto alvo mínimo e coerente de agents para o repo usando o modelo factual intermediário, não completude estética.
-7. Decidir a política de `model` para a rodada atual, aplicando `model_policy` quando existir e respeitando `allowed_models` quando essa entrada existir.
-8. Gerar ou atualizar os specializeds necessários a partir do modelo factual intermediário, com frontmatter operacional coerente e shape final normalizado.
-9. Deletar artifacts gerenciados obsoletos e qualquer referência local quebrada deixada por eles.
-10. Reescrever ou ajustar o `orchestrator` por último, para que ele reflita apenas o conjunto final realmente materializado.
-11. Executar um quality gate pós-geração separado do framing da geração.
-12. Se o gate retornar `NEEDS_FIX`, reparar somente os arquivos sinalizados, reexecutar o gate e concluir apenas quando o conjunto estiver consistentemente validado ou honestamente bloqueado.
+7. Decidir o conjunto alvo mínimo e coerente de agents para o repo usando o modelo factual intermediário, não completude estética.
+8. Decidir a política de `model` para a rodada atual, aplicando `model_policy` quando existir e respeitando `allowed_models` quando essa entrada existir.
+9. Gerar ou atualizar os specializeds necessários a partir do modelo factual intermediário e dos invariantes da role class, com frontmatter operacional coerente e shape final normalizado.
+10. Deletar artifacts gerenciados obsoletos e qualquer referência local quebrada deixada por eles.
+11. Reescrever ou ajustar o `orchestrator` por último, para que ele reflita apenas o conjunto final realmente materializado e respeite o budget de router.
+12. Executar um quality gate pós-geração separado do framing da geração.
+13. Se o gate retornar `NEEDS_FIX`, reparar somente os arquivos sinalizados, reexecutar o gate e concluir apenas quando o conjunto estiver consistentemente validado ou honestamente bloqueado.
 
 ## Discovery sério de `docs/**`
 O discovery deve ser suficiente para montar o modelo factual intermediário sem virar scan amplo por inércia.
@@ -357,7 +385,10 @@ Regras:
 - se `agents` estiver presente no `orchestrator`, `agent` deve estar presente em `tools`
 - o conjunto em `agents` deve bater exatamente com o conjunto real de subagents materializados que o `orchestrator` coordena
 - o `orchestrator` não pode declarar subagent ausente, stale ou ainda não materializado
-- o `orchestrator` materializado deve operar como `status router only`, com `delegate-first`, `chat budget` explícito, e sem narrativa operacional
+- o `orchestrator` materializado deve operar como `status router only`, com `delegate-first`, `chat budget` explícito, `reading_scope_class: routing-minimal`, e sem narrativa operacional
+- o `orchestrator` não pode carregar `vscode`, `vscode/memory`, `edit`, `execute` ou `todo` por default
+- o `orchestrator` não pode abrir implementação por default antes do primeiro handoff
+- o `orchestrator` deve ter budget operacional explícito antes do primeiro handoff
 - o `orchestrator` só pode publicar delta mínimo suficiente no chat principal; artifacts ricos e evidência completa ficam no handoff interno por default
 - depois de `APPROVED_EXECUTION` ou `SKIP_EXECUTION_APPROVAL`, o `orchestrator` nunca pode absorver implementação ou fallback de execução
 - antes de rotear um executor, o `orchestrator` deve tornar explícito se o agent materializado tem capacidade real de editar e executar o cut; gap material vira blocker operacional antes da execução
@@ -370,6 +401,7 @@ Regras:
 - se um coder não existir, o `orchestrator` não pode rotear trabalho para ele
 - se os agents de validação não existirem, o `orchestrator` não pode fingir o workflow completo; bloquear ou ajustar o fluxo local sem inventar um agent substituto
 - preservar a ordem canônica dos gates e o ownership definido em `status-gates`
+- se gate, owner, boundary ou capability continuarem incertos após o budget de router, bloquear ou escalar em vez de continuar lendo
 
 ## Política canônica de superfície e retorno
 Todo specialized gerado por esta skill deve herdar o contrato do base agent e preservar disciplina de superfície auditável.
@@ -428,9 +460,33 @@ Regras:
 - `agent` é ferramenta de coordenação; reservar para agents que realmente orquestram outros agents, e torná-la obrigatória no `orchestrator` quando `agents` for usado
 - `edit` só entra quando o agent precisa materializar, modificar ou sincronizar artifacts locais
 - `read` e `search` são a base da maioria dos agents; `read/readFile` só deve entrar quando o runtime diferenciar isso de forma útil
-- `vscode` e `vscode/memory` só entram quando houver base factual para o runtime local depender disso
+- `vscode` e `vscode/memory` são proibidas por default em specializeds gerados por esta skill; só entram com justificativa estrutural fortíssima, explícita e compatível com a role class
 - `todo` não entra por default; só incluir quando houver justificativa factual forte e explícita de que a missão do agent depende de controlar trabalho multi-etapa real
-- no `orchestrator`, `planner` e `validation-eval-designer`, ausência de justificativa forte para `todo` deve ser tratada como sinal de ruído operacional
+- no `orchestrator`, `planner` e `validation-eval-designer`, qualquer `todo` deve ser tratado como sinal de ruído operacional salvo exceção humana explícita
+
+Perfis mínimos por role class:
+- `router`
+  - permitidas: `read`, `search`, `agent`
+  - proibidas por default: `edit`, `execute`, `todo`, `vscode`, `vscode/memory`, `web`
+- `planning`
+  - permitidas: `read`, `search`
+  - proibidas por default: `agent`, `edit`, `execute`, `todo`, `vscode`, `vscode/memory`, `web`
+- `proof-design`
+  - permitidas: `read`, `search`
+  - proibidas por default: `agent`, `edit`, `execute`, `todo`, `vscode`, `vscode/memory`, `web`
+- `executor`
+  - base permitida: `read`, `search`
+  - coders normalmente adicionam `edit`, `execute`, `todo`
+  - `designer` pode omitir `edit` e `execute`, mas continua responsável por custo local do seu boundary
+- `proof-execution`
+  - permitidas: `read`, `search`, `execute`
+  - `todo` só quando houver justificativa operacional forte
+- `closure`
+  - permitidas: `read`, `search`, `edit`
+  - `todo` só quando houver justificativa operacional forte
+- `sync`
+  - permitidas: `read`, `search`, `edit`
+  - `todo` só quando houver justificativa operacional forte
 
 Perfis mínimos sugeridos por papel, sempre ajustáveis por evidência:
 - `orchestrator`: `read`, `search`, `agent`
@@ -467,6 +523,8 @@ O gate consome:
 - `status-gates`
 - apenas as refs de docs e codebase já mapeadas como evidência, salvo bloqueio por ambiguidade real
 
+Checks obrigatórios:
+
 ### Structural shape check
 Verificar:
 - frontmatter obrigatório presente e completo
@@ -478,13 +536,62 @@ Verificar:
 - presença de contrato explícito de surface discipline quando o papel tiver risco real de poluir o chat principal
 - presença de `chat budget` explícito quando o papel tiver superfície curta relevante no chat principal
 
-### Cross-reference check
+### Role-class integrity check
 Verificar:
-- `orchestrator.agents` referencia apenas arquivos realmente materializados
-- handoffs não apontam para `.agent.md` inexistente
-- agents ausentes não continuam implícitos no workflow local
-- não há contradição interna entre agents sobre boundaries, roteamento, harness ou fluxo
-- política de paralelização segura aparece apenas onde fizer sentido e mantém singletons como singletons
+- cada specialized foi classificado na role class canônica correta
+- `reading_scope_class` está compatível com a role class
+- wording de missão, proibicoes, handoff e protocol-fixed part não empurra o papel para outra classe
+- especialização local não relaxou invariantes centrais da role class
+
+Hard fails:
+- `orchestrator` fora de `routing-minimal`
+- `planner` fora de `bounded-context`
+- `validation-runner` ou `finalizer` fora de `minimal-verification`
+- `resync` com leitura mais ampla que `targeted-local`
+
+### Router cost and tool check
+Verificar no `orchestrator`:
+- ferramentas compatíveis com `router`
+- ausência de `edit`, `execute`, `todo`, `vscode`, `vscode/memory` e `web` por default
+- ausência de leitura ampla obrigatória antes do primeiro handoff
+- budget operacional explícito antes do primeiro handoff
+- regra explícita de handoff imediato quando o owner já está claro
+- regra explícita de parar para blocker ou DEV em vez de continuar lendo indefinidamente
+
+### Planner containment check
+Verificar no `planner`:
+- leitura menor que um discovery amplo
+- ausência de wording que trate `live code, contracts, tests, nearby boundaries` como checklist default
+- budget operacional explícito para framing
+- expansão permitida apenas para estabilizar in-scope versus out-of-scope, boundary, source of truth ou shared contract dependency real
+- ausência de resolução de desenho de implementação local, algoritmo, refactor shape, projection strategy ou query shape
+- safe parallelization só afirmada com evidência real
+
+### Proof-design locality check
+Verificar no `validation-eval-designer`:
+- role class `proof-design` preservada
+- ausência de tools excessivas herdadas por acidente
+- ausência de wording que compense leitura que `orchestrator` ou `planner` deixaram de fazer
+- `VALIDATION PACK` mantido como artifact local e orientado a prova
+
+### Executor ownership check
+Verificar em `coder-backend`, `coder-frontend`, `designer` e equivalentes:
+- leitura profunda e custo principal da execução pertencem a essa classe
+- `targeted-local` preservado
+- capability gate explícito
+- `read-only runtime is not execution` explícito quando houver risco
+- `READY` apenas com evidência real de mudança aplicada
+- `BLOCKED` cedo quando faltar base ou capacidade
+- wording não transforma executor em planner, router, runner ou finalizer
+
+### Proof-execution, closure, and sync containment check
+Verificar em `validation-runner`, `finalizer` e `resync`:
+- leitura curta e focada no delta já delimitado
+- ausência de rediscovery amplo
+- ausência de wording que compense erro upstream com scan novo
+- `validation-runner` permanece minimal-verification
+- `finalizer` permanece minimal-verification
+- `resync` permanece targeted-local
 
 ### Execution protocol hardening check
 Verificar:
@@ -497,51 +604,16 @@ Verificar:
 - executors `READY` exigem changed paths ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual
 - `validation-runner` só entra com artifact validável do executor
 
-### Factual fidelity check
+### Factual fidelity, certainty, and coverage check
 Verificar:
 - TBDs continuam semanticamente preservados quando relevantes
 - exceções documentadas continuam visíveis quando limitam uma regra ou guidance local
 - afirmações globais só existem quando a evidência sustenta
 - scoped patterns continuam scoped e não viram convenção global
 - exemplos do projeto continuam marcados como exemplos
-- checks manuais continuam marcados como checagem ou validação manual, não como fato já estabelecido
-
-### Overclaim / certainty check
-Verificar:
-- linguagem absoluta perigosa como `all`, `always`, `must`, `the project uses`, `the project never`, `the standard is` ou equivalentes sem sustentação suficiente
-- promoção indevida de `project_example` para regra
-- promoção indevida de `scoped_pattern` para convenção global
-- transformação de `open_tbd` em texto genérico que perde o conteúdo factual
-- desaparecimento de `documented_exception`
-
-Quando falhar, rebaixar a linguagem para `scoped_pattern`, `project_example`, `open_tbd` ou `manual_check`, ou bloquear se o ponto for central demais para a honestidade do artifact.
-
-### Surface discipline check
-Verificar:
-- ausência de narrativa operacional desnecessária
-- ausência de frases de log de execução ou preâmbulo operacional como comportamento default
-- ausência de republicação integral de `EXECUTION BRIEF`, `VALIDATION PACK` ou saída longa de subagent no chat principal
-- existência de retorno delta-only quando o papel possui artifact rico ou handoff rico
-- `delegate-first` explícito no `orchestrator`
-- `chat budget` explícito no `orchestrator`
-- `orchestrator` não incentiva leitura de implementação antes da delegação quando o owner já está claro
-- `planner` e `validation-eval-designer` devolvem superfície curta em vez de relatório gigante no chat
-
-### Tool-discipline check
-Verificar:
-- ausência de `todo` por default no `orchestrator`, salvo exceção justificada
-- ausência de `todo` por default em `planner` e `validation-eval-designer`, salvo exceção justificada
-- perfis de tools não favorecem ruído operacional
-
-### Coverage check
-Verificar que o conjunto de specializeds absorveu, onde fizer sentido:
-- stack e superfícies relevantes
-- boundaries e ownerships importantes
-- harness e expectativas de validação
-- hotspots e riscos recorrentes documentados
-- TBDs e exceções relevantes para agents afetados
-
-O coverage check não exige espalhar todo fato em todo agent. Exige que fatos relevantes apareçam onde impactam decisão, leitura, execução, handoff ou prova.
+- checks manuais continuam marcados como checagem
+- linguagem absoluta perigosa é rebaixada quando a evidência não sustenta
+- o conjunto cobre stack, superfícies, boundaries, harness, hotspots, TBDs e exceções relevantes sem espalhar tudo em todo agent
 
 ## Verdict interno do quality gate
 O verdict do gate é interno à skill e não se confunde com os verdicts do `validation-runner.agent.md`.
@@ -648,6 +720,9 @@ Notas para os exemplos:
 - `agents` do `orchestrator` bate exatamente com o conjunto real de subagents materializados
 - `agent` presente em `tools` do `orchestrator` quando `agents` for usado
 - `model` coerente com `allowed_models` e `model_policy` quando essas entradas tiverem sido fornecidas
+- role class canônica respeitada em todos os specializeds materializados
+- `orchestrator` materializado com `routing-minimal` e sem tools indevidas
+- `planner` materializado com `bounded-context` e sem wording de broad discovery por default
 - ausência de `## Tools` no corpo quando `tools` já existir no frontmatter, salvo exceção explicitamente justificada
 - ausência de campos legados fora do contrato atual, incluindo `agent_version` por default
 - ausência de duplicação entre source of truth operacional e texto legado residual
@@ -656,8 +731,10 @@ Notas para os exemplos:
 - `chat budget` explícito quando aplicável
 - `delegate-first` explícito no `orchestrator`
 - o `orchestrator` explicita que nunca implementa fallback nem absorve execução após handoff
+- o `orchestrator` tem budget operacional explícito antes do primeiro handoff
 - gaps materiais de capability aparecem como blockers pré-execução
 - executors materializados restringem a saída a `READY` real ou `BLOCKED` real
+- executors materializados carregam a maior parte do custo operacional da rodada
 - resposta descritiva do executor sem alteração aplicada é rejeitada como handoff inválido
 - reentrada do mesmo executor sem diff, `BLOCKED`, ou mudança real de gate, escopo ou autorização é tratada como erro operacional
 - `validation-runner` só é habilitado com artifact validável do executor

@@ -59,6 +59,7 @@ It enters after finalization has already determined that feature-local closure i
 - do not sync feature-local detail into shared memory
 - do not convert interpretation, rationale, or recommendation into fact
 - do not create a new canonical surface just to hold the sync unless the project specialization explicitly allows it and ownership is already clear
+- do not compensate for missing upstream discovery by reopening broad repo scans
 
 ## Handoff
 After the minimum factual sync, return `READY` with the applied target and sync notes so the caller can complete the round. If the request is ambiguous, too broad, normative, or structurally loaded, stop and return `BLOCKED` with the exact reason instead of forcing a wider rewrite.
@@ -98,6 +99,7 @@ After the minimum factual sync, return `READY` with the applied target and sync 
 
 ## Protocol-fixed part
 - enters only when called by `finalizer.agent.md`
+- role class: `sync`
 - syncs only factual impact outside the feature
 - consumes a finalizer-supplied factual delta and applies the minimum durable correction to shared memory
 - does not reopen execution, does not redefine scope, does not validate, and does not close the round

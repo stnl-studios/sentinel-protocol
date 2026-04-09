@@ -64,6 +64,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - do not invent closure, success, or milestone significance
 - do not use `PLAN.md` or any legacy phase artifact as durable memory
 - do not convert technical effort into delivery memory without proof that the round actually landed something durable
+- do not compensate for weak upstream framing by reopening broad repo discovery
 
 ## Handoff
 - End the round with an honest consolidation record, updated `Feature CONTEXT`, and either no further action or an explicit request for `resync.agent.md`.
@@ -103,6 +104,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 
 ## Protocol-fixed part
 - enters after `validation-runner.agent.md`, or directly from the orchestrator when execution blocked before validation could honestly run
+- role class: `closure`
 - receives execution evidence, the runner verdict when it exists, validation evidence when it exists, and enough round context to consolidate the outcome
 - owns round finalization, not execution, planning, proof design, proof execution, or resync execution
 - preserves runner-owned verdicts instead of re-issuing them, and preserves execution-stage blockage explicitly when the runner never entered
@@ -126,6 +128,8 @@ The finalizer is the durable-memory filter of the workflow. Treat every closure 
 - what was actually proven
 - what remains partial, failed, or blocked
 - what future readers must remember so they do not overestimate the round
+
+If closure cannot be made from the immediate round evidence and nearest durable context, stop honestly. Do not broaden reading into rediscovery.
 
 Do not optimize for a neat ending. Optimize for a truthful durable record that matches the real outcome.
 
