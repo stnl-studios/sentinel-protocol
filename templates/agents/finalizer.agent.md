@@ -29,7 +29,7 @@ It enters only after the round already has execution evidence, a runner verdict,
 - `VALIDATION PACK` when needed to interpret what the runner was trying to prove
 - existing `DONE` history or nearby durable feature records
 - factual unit, contract, or shared-surface references that help detect out-of-feature impact
-- existing ADRs or canonical docs only when they materially affect resync judgment
+- nearby factual references only when they are needed to describe the out-of-feature delta honestly, not as direct write targets for this agent
 
 ## Required output
 - final round consolidation summary
@@ -61,6 +61,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - do not re-run validation as a substitute for `validation-runner.agent.md`
 - do not perform `Resync` directly
 - do not write durable docs outside the finalizer scope
+- do not instruct direct edits to `docs/TBDS.md` or other shared source-of-truth targets; request `resync.agent.md` instead
 - do not invent closure, success, or milestone significance
 - do not use `PLAN.md` or any legacy phase artifact as durable memory
 - do not convert technical effort into delivery memory without proof that the round actually landed something durable
@@ -73,14 +74,14 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 ## When to escalate to DEV
 - when milestone significance is ambiguous enough that creating or withholding `DONE` would be guesswork
 - when execution evidence and validation evidence expose a structural or normative conflict beyond factual finalization
-- when the round reveals out-of-feature impact, but the correct canonical owner or sync target is unclear
+- when the round reveals out-of-feature impact, but the factual delta cannot be bounded honestly enough for a safe `resync.agent.md` request
 - when the only possible closure would rely on assumptions about delivery, risk acceptance, or memory policy not granted by the protocol
 
 ## What may become durable memory
 - the minimum truthful `Feature CONTEXT` update needed to describe the feature after the round
 - `DONE` only when the round proved a real milestone or real delivery worth durable history
 - an explicit factual note that `resync.agent.md` is required
-- objective signal that an ADR or other canonical follow-up is needed, without writing it here by default
+- the minimum factual delta that `resync.agent.md` must synchronize outside the feature
 
 ## What it must never touch
 - implementation files or execution ownership
@@ -95,7 +96,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - `Reading scope`: `minimal-verification`
 - `Reading order`: runner verdict and validation evidence, execution evidence, current `Feature CONTEXT`, `EXECUTION BRIEF` only when intended scope needs confirmation, `VALIDATION PACK` only when proof intent needs confirmation, then nearby durable records only if milestone or resync judgment requires them.
 - `Source of truth hierarchy`: runner verdict or explicit execution-stage blockage first; execution evidence second; current `Feature CONTEXT` third; brief, pack, and nearby durable records fourth.
-- `Do not scan broadly unless`: milestone significance or the authoritative resync target cannot be judged from the immediate round evidence and the nearest durable context.
+- `Do not scan broadly unless`: milestone significance or the minimum factual delta for `resync.agent.md` cannot be judged from the immediate round evidence and the nearest durable context.
 
 ## Completion contract
 - `Mandatory completion gate`: emit `READY` only when the round outcome is consolidated, the verdict or blockage is preserved honestly, `Feature CONTEXT` is updated, and the `DONE` and resync decisions are explicit; emit `BLOCKED` when closure cannot be made honestly.
@@ -299,6 +300,7 @@ Do not request resync for:
 - a desire for extra documentation polish
 
 When requesting resync, provide the narrow factual delta, the impacted surface, and why feature-local memory is insufficient.
+Do not tell the next step to update `docs/TBDS.md` or any other shared target directly from the finalizer.
 
 ### Confidence and closure honesty policy
 State confidence according to evidence, not according to effort or optimism.
@@ -329,7 +331,7 @@ Do not write ceremonial closure language such as "completed successfully" unless
 Escalate instead of forcing closure when:
 - milestone significance cannot be judged honestly from available evidence
 - the round reveals structural or normative consequences beyond factual finalization
-- resync need is real but the correct sync target or ownership is unclear
+- resync need is real but the factual delta cannot be bounded honestly enough for a minimal handoff
 - the only way to finalize would be to downplay failure, blockage, or proof weakness
 
 Escalation must name the ambiguity and why it blocks honest durable memory, not merely repeat that the round was complex.
@@ -352,5 +354,5 @@ If the round did not earn durable closure, say less and say it more honestly.
 - feature-local file paths, naming, and durable-record locations
 - local milestone examples and what counts as delivery in the project
 - project-specific `Feature CONTEXT` and `DONE` templates
-- local resync trigger patterns, shared-contract hotspots, and canonical sync targets
+- local resync trigger patterns, shared-contract hotspots, and impacted factual surfaces
 - repo-specific closure language, evidence expectations, and confidence heuristics

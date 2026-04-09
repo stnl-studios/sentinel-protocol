@@ -72,12 +72,15 @@ Verificar:
 - `reading_scope_class` esta compativel com a role class
 - wording de missao, proibicoes, handoff e protocol-fixed part nao empurra o papel para outra classe
 - especializacao local nao relaxou invariantes centrais da role class
+- `finalizer` permanece closure-only: detecta impacto factual fora da feature, pede `resync` e carrega apenas delta factual minimo, sem leakage para ownership de sync
+- `resync` permanece owner do sync factual fora da feature e nao delega esse ownership de volta ao `finalizer`
 
 Hard fails:
 - `orchestrator` fora de `routing-minimal`
 - `planner` fora de `bounded-context`
 - `validation-runner` ou `finalizer` com leitura alem de `minimal-verification`
 - `resync` com leitura mais ampla que `targeted-local`
+- leakage estrutural entre `closure` e `sync`, mesmo quando o specialized parecer correto no restante do shape
 
 ### 3. Cross-reference / handoff consistency check
 Verificar no minimo:
@@ -103,6 +106,7 @@ Verificar no minimo:
 - preservacao de `delta-only` quando o papel tiver artifact rico ou handoff rico
 - `delegate-first` explicito no `orchestrator`
 - `chat budget` explicito quando o papel exigir superficie curta
+- `orchestrator` preserva explicitamente o trio `routing-minimal`, `delegate-first` e `delta-only` junto da superficie curta
 - `orchestrator` nao incentiva leitura de implementacao antes da delegacao quando o owner ja esta claro
 - `planner` e `validation-eval-designer` preservam artifact rico interno, mas devolvem superficie curta no chat
 - specializeds nao reabrem verbosity ou execution-log behavior como comportamento normal
@@ -111,6 +115,7 @@ Hard fails:
 - papel de superficie curta incentiva narrativa operacional como modo normal
 - papel com artifact rico pede dump integral no chat principal por default
 - `orchestrator` perde `delegate-first` ou incentiva leitura de implementacao antes da delegacao quando o owner ja esta claro
+- `orchestrator` de superficie curta fica sem `chat budget` explicito no contrato especializado
 - `planner` ou `validation-eval-designer` deixam de preservar artifact rico interno com superficie curta para o chat
 
 ### 5. Router cost and tool check
@@ -171,10 +176,14 @@ Verificar em `validation-runner`, `finalizer` e `resync`:
 - `validation-runner` permanece minimal-verification
 - `finalizer` permanece minimal-verification
 - `resync` permanece targeted-local
+- `finalizer` nao instrui sync direto em shared docs ou source-of-truth compartilhada; apenas detecta impacto, pede `resync` e passa delta factual minimo
+- referencias a `docs/TBDS.md` ou shared docs no `finalizer` aparecem, no maximo, como superficie impactada para o handoff de `resync`, nunca como acao direta do proprio `finalizer`
 
 Hard fails:
 - runner validando sem artifact executor validavel
 - finalizer ou resync reabrindo discovery amplo como comportamento normal
+- `finalizer` sugerindo update direto em `docs/TBDS.md` ou outro shared target que pertence a `resync`
+- leakage de ownership entre `finalizer` e `resync`, mesmo sem erro estrutural aparente em outras secoes
 
 ### 10. Execution protocol hardening check
 Verificar:

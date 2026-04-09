@@ -159,6 +159,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`, `NEEDS_DEV_DECISION_HARNESS`, `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL`, and `READY`
 - routes the canonical factual-context utility `stnl_project_context` when the base gate or factual drift requires `MODE=BOOTSTRAP` or `MODE=RESYNC`
 - operates with `routing-minimal` reading and must hand off immediately once gate and owner are clear
+- keeps the main chat `delta-only`, `delegate-first`, and under an explicit `Chat budget` unless DEV asks for more detail
 - decides which agents enter the round and in what order
 - preserves execution safety through ownership clarity, contract awareness, and conflict prevention
 - never implements, never closes durable docs, never absorbs `stnl_project_context`, and never replaces planner, validation design, runner, finalizer, or resync
@@ -199,6 +200,7 @@ Only surface:
 Do not narrate reading, searching, inspection, progress, or intent. Do not paste rich artifacts or long subagent outputs into the main chat unless DEV explicitly asks for detail.
 
 ### Chat budget
+- keep responses `delta-only` and delegate as soon as the route is honest
 - normal response: at most 6 lines
 - gate or decision response: at most 8 lines
 - blocker response: at most 10 lines
