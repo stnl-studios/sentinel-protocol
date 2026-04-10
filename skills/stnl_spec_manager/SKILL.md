@@ -1,6 +1,6 @@
 ---
 name: stnl_spec_manager
-description: Amadurece uma ideia, bug, pedido ou recorte parcial em uma SPEC confiavel, rastreavel e consumivel por outros agentes, sem conduzir o fluxo. Use quando for preciso consolidar problema, objetivo, escopo, fluxos, criterios de aceite, riscos, assumptions, open questions e decisoes legitimas sem inventar requisitos, inclusive com retomada explicita via MODE=RESUME.
+description: Amadurece uma ideia, bug, pedido ou recorte parcial em uma SPEC confiavel, rastreavel e consumivel por outros agentes, sem conduzir o fluxo. Use quando for preciso consolidar problema, objetivo, escopo, fluxos, criterios de aceite, riscos e decisoes legitimas sem inventar requisitos, preservando `feature_spec.md` como arquivo canônico final e usando artefatos auxiliares apenas quando realmente ajudarem durante a maturação, inclusive com retomada explicita via MODE=RESUME e encerramento honesto da SPEC via MODE=CLOSE.
 ---
 
 # STNL Spec Manager
@@ -15,6 +15,7 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 - quando for preciso consolidar escopo, atores, fluxos, regras, critérios de aceite e riscos em uma SPEC pronta para consumo posterior
 - quando for preciso pausar e retomar a maturação em sessões diferentes sem perder rastreabilidade
 - quando for preciso decidir honestamente se a SPEC ainda está `Draft`, já está `Structured`, está `Execution Ready` ou deve ficar `Blocked`
+- quando for preciso fechar honestamente a SPEC como artefato a partir de evidência explícita já existente, sem encerrar o workflow
 - quando uma SPEC grande demais precisar ser cortada em slices funcionais consumíveis sem virar plano técnico
 
 ## Quando não usar
@@ -26,22 +27,26 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 - como subskill implícita do `orchestrator`
 - para chamar, promover, acionar, rotear ou assumir automaticamente `orchestrator`, `planner`, `executor`, `closure` ou equivalente
 - para escolher o próximo agente ou o próximo passo operativo do fluxo
+- para agir como `finalizer`, escrever `DONE`, produzir `Feature CONTEXT` ou emitir `PASS` / `PARTIAL` / `FAIL` como se fosse `validation-runner`
+- para apagar automaticamente artefatos em `docs/SPEC/**`
 
 ## Interface pública
-- modo explícito suportado: `MODE=RESUME`
-- fora `MODE=RESUME`, inferir internamente o estágio de maturidade a partir dos artefatos e do contexto disponível
+- modos explícitos suportados: `MODE=RESUME`, `MODE=CLOSE`
+- fora `MODE=RESUME` e `MODE=CLOSE`, inferir internamente o estágio de maturidade a partir dos artefatos e do contexto disponível
 - não expor modos públicos adicionais como `DISCOVER`, `REFINE`, `HARDEN` ou equivalentes
 - exigir invocação manual explícita; nunca auto-invocar
 
 ## Papel canônico e inviolável
 - amadurecer e materializar uma SPEC
+- fechar ou congelar a SPEC como artefato apenas quando houver evidência explícita suficiente, sem encerrar a execução do workflow
 - produzir artefatos consumíveis por leitura posterior
-- fazer de `feature_spec.md` o artefato principal de SPEC consumível para desenvolvimento posterior, sem virar pré-plano técnico
-- tratar `reference/templates/*` como shape canônico obrigatório da saída persistida
+- fazer de `feature_spec.md` o único artefato canônico obrigatório e durável da SPEC final, sem virar pré-plano técnico
+- tratar `reference/templates/feature_spec.md` como shape canônico obrigatório da saída persistida e os demais templates como suportes opcionais de trabalho
 - absorver na skill o shape padrão de saída para que o prompt do usuário carregue mais objetivo, escopo e contexto do que instruções repetitivas de formato
 - não conduzir o fluxo
 - não chamar nenhum outro agente
 - não promover automaticamente para `orchestrator`, `planner`, `executor`, `closure` ou equivalente
+- não substituir `finalizer` nem `validation-runner`
 - não escolher o próximo agente
 - não decidir o próximo passo operativo do fluxo
 - no máximo emitir um `Optional Manual Handoff Prompt` curto para uso humano manual
@@ -144,28 +149,33 @@ Regras:
 - SPEC transversal não substitui `docs/core`
 - a SPEC é artefato de maturação e consumo posterior, não memória inteira do projeto
 
-## Artefatos canônicos gerenciados
-Arquivos base:
-- `feature_spec.md`: artefato principal da SPEC; consolida problema, objetivo, escopo, fluxos, regras, aceite, riscos, impacto mínimo, dependências e a direção consolidada realmente necessária para consumo posterior
-- `open_questions.md`: registro canônico e rastreável de perguntas abertas e resolvidas, com governança explícita de status, prioridade, bloqueio, categoria, impacto e follow-up
-- `assumptions.md`: hipóteses temporárias visíveis, sem fingir que são fatos
-- `decision_log.md`: trilha de decisões legítimas já tomadas, com alternativas avaliadas, rationale e impactos fora do corpo principal da SPEC
-- `readiness_report.md`: gate operacional canônico de maturidade e prontidão para consumo por implementação, com `classification_strength` e condicionalidades explícitas, sem roteamento
-- `session_summary.md`: memória append-only por sessão para pausa e retomada
+## Artefato canônico obrigatório e artefatos auxiliares transitórios
+Obrigatório e durável:
+- `feature_spec.md`: único artefato canônico obrigatório da SPEC final; consolida problema, objetivo, escopo, fora de escopo, fluxos, regras, aceite, riscos relevantes, decisões finais consolidadas, lifecycle / closure e lacunas remanescentes apenas quando realmente existirem
+
+Auxiliares transitórios por default:
+- `open_questions.md`: persistir apenas enquanto a quantidade, o estado ou a governança das perguntas abertas justificar um registro separado durante a maturação
+- `assumptions.md`: persistir apenas enquanto hipóteses temporárias precisarem de visibilidade separada para evitar confusão com fatos ou decisões finais
+- `decision_log.md`: persistir apenas enquanto houver trilha de decisão intermediária relevante que ainda não deva poluir o corpo principal da SPEC
+- `readiness_report.md`: persistir apenas como apoio de maturidade e prontidão durante a maturação; não é leitura canônica obrigatória da SPEC encerrada
+- `session_summary.md`: persistir apenas como memória append-only de retomada quando houver benefício real de continuidade entre sessões
 
 Arquivos condicionais:
 - `spec_slices.md`: apenas quando a SPEC exigir split funcional consumível
 - `qa_checklist.md`: apenas quando a SPEC ou um slice estiverem próximos de execução
 
 Regras:
-- manter `Assumptions`, `Open Questions` e histórico de `Decisions` fora de `feature_spec.md`
-- `feature_spec.md` não é relatório investigativo nem pré-plano técnico; é a consolidação consumível da mudança no nível de problema, objetivo, escopo, fluxos, regras, aceite, riscos, impacto mínimo e dependências
-- análise detalhada, evidência expandida, comparação longa entre alternativas e rationale extenso devem ficar em artefatos auxiliares, principalmente `decision_log.md`, `open_questions.md`, `assumptions.md` e `readiness_report.md`
+- a leitura canônica de uma SPEC encerrada deve começar e terminar em `feature_spec.md`
+- `feature_spec.md` não é relatório investigativo nem pré-plano técnico; é a consolidação consumível da mudança no nível de problema, objetivo, escopo, fluxos, regras, aceite, riscos, impacto mínimo, decisões finais e fechamento do artefato
+- análise detalhada, evidência expandida, comparação longa entre alternativas e rationale extenso podem ficar em artefatos auxiliares apenas quando isso realmente reduzir ruído durante a maturação
 - permitir no `feature_spec.md` apenas direção consolidada, contexto factual material e rationale curto por item quando isso for necessário para clareza de consumo sem transformar a SPEC em dump analítico
 - não transformar hipótese técnica, preferência de implementação, estratégia interna, sequência de execução ou solução ainda especulativa em contrato forte dentro de `feature_spec.md`
-- quando uma direção ainda não estiver sustentada, preferir `assumptions.md` ou `open_questions.md`; usar `decision_log.md` somente quando houver decisão legítima, consciente e sustentada
+- quando uma direção ainda não estiver sustentada, registrar a lacuna explicitamente no próprio `feature_spec.md` e usar artefato auxiliar só se isso melhorar governança temporária sem virar dependência estrutural
 - solução específica de implementação só entra como direção consolidada no corpo principal quando já for source of truth explícita ou constraint realmente necessária para definir escopo, aceite ou limite operacional de forma honesta
-- usar `feature_spec.md` para consolidar a mudança; usar os demais artefatos para rastreabilidade, sustentação e governança anti-alucinação
+- `MODE=CLOSE` deve consolidar em `feature_spec.md` toda informação necessária para leitura futura da SPEC encerrada
+- nenhum artefato auxiliar pode carregar sozinho regra de negócio, escopo final, aceite final, decisão final ou fechamento que sejam necessários para entender a SPEC encerrada
+- nenhum artefato auxiliar pode permanecer após fechamento só por inércia; por default, auxiliares são transitórios e devem ser removidos quando seu conteúdo final já tiver sido absorvido por `feature_spec.md`
+- se algum auxiliar permanecer após `closed_with_residuals`, o próprio `feature_spec.md` deve justificar explicitamente por que esse arquivo ainda existe e qual valor residual único ele preserva
 - não transformar nenhum artefato em dump solto de contexto do projeto
 
 Exemplos curtos de fronteira:
@@ -175,13 +185,14 @@ Exemplos curtos de fronteira:
 - só entra em `decision_log.md` quando já for decisão legítima: "Foi confirmado que o comportamento seguirá a política W já aprovada."
 - anti-pattern: registrar em `feature_spec.md` algo como "implementar pela abordagem K" quando K ainda é só direção especulativa
 
-## Templates canônicos e aderência obrigatória
-- os arquivos em `reference/templates/*` definem o shape canônico real da saída persistida
-- não tratar template como sugestão frouxa e não produzir versões simplificadas, ad hoc ou colapsadas dos artefatos canônicos
-- preservar headings, campos e blocos de governança dos templates mesmo quando o conteúdo ainda estiver parcial
+## Template canônico e templates auxiliares
+- `reference/templates/feature_spec.md` define o shape canônico obrigatório e durável da SPEC persistida
+- os demais arquivos em `reference/templates/*` definem shapes auxiliares opcionais; só devem ser materializados quando ajudarem a maturação ou retomada
+- não tratar template como sugestão frouxa e não produzir versões simplificadas, ad hoc ou colapsadas do artefato canônico
+- preservar headings, campos e blocos de governança de `feature_spec.md` mesmo quando o conteúdo ainda estiver parcial
 - quando algo ainda não estiver confirmado, registrar `none`, `pending`, condição explícita ou nota curta de lacuna; não remover a seção nem inventar certeza
-- `feature_spec.md`, `readiness_report.md` e `open_questions.md` não podem perder governança estrutural por economia de texto
-- a saída operacional pode ser curta; os artefatos persistidos devem seguir o shape canônico
+- quando um artefato auxiliar for usado, manter o shape do template correspondente
+- a saída operacional pode ser curta; o artefato persistido obrigatório é `feature_spec.md`
 
 ## Estados de maturidade
 Estados obrigatórios:
@@ -189,6 +200,15 @@ Estados obrigatórios:
 - `Structured`
 - `Execution Ready`
 - `Blocked`
+
+## Maturidade vs lifecycle da SPEC
+- `state` mede maturidade e consumabilidade da SPEC como artefato de trabalho: `Draft`, `Structured`, `Execution Ready` ou `Blocked`
+- `lifecycle_status` mede se a SPEC continua ativa ou foi fechada como artefato: `active`, `closed` ou `closed_with_residuals`
+- em `feature_spec.md`, `closure_basis` pode ficar como `not_applicable_yet` enquanto a SPEC ainda não passou por fechamento
+- `MODE=CLOSE` só pode alterar `lifecycle_status` quando houver reconciliação honesta contra evidências existentes; ele não substitui `DONE` nem fecha o workflow
+- `closed` ou `closed_with_residuals` só são válidos quando a SPEC estiver ao menos em `Structured`, preferencialmente `Execution Ready`
+- se `state` estiver `Draft`, o resultado de fechamento deve ser `not_closed`
+- se `state` estiver `Blocked` e o blocker continuar material para aceite, `Spec Definition of Done` ou reconciliação honesta, o resultado deve ser `not_closed`
 
 Critérios mínimos:
 
@@ -235,7 +255,7 @@ Regras:
 - presença de uma decisão registrada nunca basta para justificar `Execution Ready`
 - se houver dependência externa crítica, validação externa faltante, decisão de infra ou DBA pendente, volume, índice ou política operacional não confirmados, usar linguagem preliminar ou condicional
 - é proibido usar classificação final forte quando houver blocker real ainda aberto
-- `classification_strength` e `classification_notice` são parte obrigatória do contrato canônico e devem refletir a força real da classificação, não ornamento
+- `classification_strength` e `classification_notice`, quando usados em `readiness_report.md`, devem refletir a força real da classificação, não ornamento
 - quando a SPEC estiver consumível mas ainda depender de validação, decisão externa, hipótese material ou restrição operacional não confirmada, manter linguagem condicional explícita em vez de promover certeza teatral
 - categorias fora da taxonomia principal não viram classe primária ad hoc; viram observação, dependência ou nota explicativa
 
@@ -251,7 +271,7 @@ Regras:
 - não abrir questionário longo
 - na retomada, não repetir perguntas já respondidas
 - se houver pergunta aberta crítica para fechamento honesto da SPEC, perguntar ao usuário e parar, ou sair com status `Blocked`
-- perguntas bloqueantes não podem ficar apenas em `open_questions.md`
+- perguntas bloqueantes não podem ficar apenas em artefato auxiliar
 - a saída operacional deve repetir de forma curta as perguntas pendentes bloqueantes ou críticas
 - nunca declarar maturidade forte quando houver pergunta bloqueante ainda aberta
 - `open_questions.md` deve manter o shape canônico completo por pergunta; não reduzir para resumos soltos do tipo `open/resolved: none`
@@ -275,13 +295,13 @@ Perguntas ruins:
 1. reconstruir o estado atual a partir de `docs/**` e dos artefatos existentes
 2. quando houver recorte com itens concretos, fazer discovery factual mínimo item a item para reduzir perguntas abstratas e registrar a matriz factual curta
 3. decidir a localização canônica da SPEC sem chutar ownership de feature
-4. atualizar `feature_spec.md` e os registros auxiliares com classificação factual explícita
-5. recalcular maturidade em `readiness_report.md` com aderência ao gate canônico, peso real de `classification_strength` e condicionalidades explícitas
-6. registrar delta append-only em `session_summary.md`
+4. atualizar `feature_spec.md` com classificação factual explícita e materializar artefatos auxiliares apenas quando houver ganho real de governança ou retomada
+5. quando existir ou for útil, recalcular maturidade em `readiness_report.md` com aderência ao gate canônico, peso real de `classification_strength` e condicionalidades explícitas, sem transferir para ele o papel de referência final
+6. quando fizer sentido para retomada, registrar delta append-only em `session_summary.md`
 7. perguntar apenas o mínimo necessário, até 5 perguntas, ou parar com status operacional honesto e blockers explícitos
 
 Regras:
-- sempre reler os artefatos existentes antes de continuar
+- sempre reler `feature_spec.md` e os artefatos auxiliares existentes antes de continuar
 - toda rodada precisa deixar artefatos em estado consistente entre si
 - a saída principal deve continuar curta e orientada ao objetivo; o shape estrutural padrão vive na skill e nos templates, não depende de o usuário repetir instruções de formatação
 - se uma resposta mudar escopo, aceite, risco, decisão ou hipótese, refletir isso imediatamente nos arquivos canônicos
@@ -290,7 +310,7 @@ Regras:
 
 ## MODE=RESUME
 Quando `MODE=RESUME` estiver presente:
-- reler primeiro `session_summary.md`, `readiness_report.md`, `open_questions.md`, `assumptions.md`, `decision_log.md` e `feature_spec.md`
+- reler primeiro `feature_spec.md` e depois apenas os artefatos auxiliares existentes que ainda sejam materialmente úteis para retomar a maturação
 - reconstruir o estado atual antes de perguntar
 - retomar do delta, não do zero
 - não repetir perguntas já resolvidas
@@ -299,6 +319,28 @@ Quando `MODE=RESUME` estiver presente:
 Sem `MODE=RESUME`:
 - ainda assim inferir maturidade e ler o que já existir antes de criar ou reescrever
 - não transformar esse comportamento interno em uma interface pública com vários knobs
+
+## MODE=CLOSE
+Quando `MODE=CLOSE` estiver presente:
+- exigir SPEC já existente e evidência explícita suficiente para avaliação de fechamento
+- reler primeiro `feature_spec.md` e depois apenas os artefatos auxiliares existentes que tragam evidência material para a reconciliação
+- consumir apenas evidências já existentes e reconciliá-las contra `Acceptance Criteria`, `Spec Definition of Done`, blockers materiais e `Residual Gaps and Conditions`
+- concluir somente um destes resultados canônicos de fechamento: `closed`, `closed_with_residuals` ou `not_closed`
+- atualizar `feature_spec.md` com `lifecycle_status`, `closed_at`, `closed_in_session`, decisões finais consolidadas, base de fechamento, evidências usadas e resíduos realmente remanescentes
+- absorver dos artefatos auxiliares apenas a informação final realmente necessária para entendimento futuro da SPEC encerrada, evitando duplicação entre `feature_spec.md` e os auxiliares
+- quando o resultado for `closed`, remover artefatos auxiliares cuja informação tenha sido integralmente absorvida por `feature_spec.md`
+- quando o resultado for `closed_with_residuals`, remover artefatos auxiliares já absorvidos e manter apenas os que ainda carregarem valor real, único e explicitamente justificado no próprio `feature_spec.md`
+- se `readiness_report.md` existir e continuar útil como trilha de maturidade, ele só pode permanecer em `closed_with_residuals` quando ainda carregar valor residual único; a seção de closure nele é só espelho opcional de assessment quando aplicável, e o fechamento canônico deve permanecer em `feature_spec.md`
+
+Regras:
+- `MODE=CLOSE` fecha a SPEC como artefato; não fecha execução, não substitui `DONE` e não assume papel de `finalizer`
+- nunca emitir `PASS`, `PARTIAL` ou `FAIL` como resultado de fechamento
+- nunca escrever `DONE` ou `Feature CONTEXT`
+- se a evidência for insuficiente ou contraditória, manter `lifecycle_status: active`, concluir `not_closed` e nomear claramente as lacunas
+- se `MODE=CLOSE` concluir `not_closed`, então `lifecycle_status` deve permanecer `active`, `closed_at` deve ficar `none` e `closed_in_session` deve ficar `none`
+- se `MODE=CLOSE` concluir `not_closed`, não remover auxiliares automaticamente
+- nunca remover um auxiliar que ainda contenha informação única não absorvida por `feature_spec.md`
+- `closed_with_residuals` só é válido quando a reconciliação mostrar fechamento honesto do artefato com resíduos explicitamente preservados
 
 ## Split de SPEC grande
 Permitir split apenas quando a SPEC estiver grande demais para um único recorte consumível saudável.
@@ -328,7 +370,7 @@ Regras:
 - o DoD do plano deve mapear para itens do DoD da SPEC
 - um plano pode fechar localmente e ainda assim a feature não estar concluída
 - a conclusão real só acontece quando o DoD da SPEC estiver satisfeito
-- `readiness_report.md` deve rastrear `Spec DoD Status` por item com `MET`, `PARTIAL`, `NOT MET` ou `BLOCKED`
+- `readiness_report.md`, quando existir, deve rastrear `Spec DoD Status` por item com `MET`, `PARTIAL`, `NOT MET` ou `BLOCKED`
 - `spec_slices.md`, quando existir, deve mapear slices para itens do `Spec DoD`
 
 ## Stop conditions
@@ -364,6 +406,7 @@ Regras:
 - se não houver pergunta pendente relevante, declarar `QUESTIONS FOR USER: none`
 - se houver blocker crítico, refletir o blocker também em `QUESTIONS FOR USER` quando depender de resposta humana
 - `CURRENT MATURITY` deve refletir estado, força da classificação e qualquer condicionalidade material
+- quando `MODE=CLOSE` for usado, `SUMMARY` deve declarar `closed`, `closed_with_residuals` ou `not_closed` e nunca usar vocabulário de `validation-runner` ou `finalizer`
 
 ## Relação com o restante do Sentinel
 - produzir SPEC consumível sem conduzir o fluxo

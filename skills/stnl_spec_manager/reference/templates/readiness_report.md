@@ -1,6 +1,8 @@
 # Readiness Report
 
-> This is the canonical readiness gate. Preserve every section even when the content is partial. Do not let `readiness_score` override blockers, critical gaps, unresolved validation, or explicit conditionality.
+> This is an optional working artifact for maturity assessment while the SPEC is still being structured or validated. Preserve every section when this file is used, but do not make future readers depend on it to understand a closed SPEC.
+>
+> Do not let `readiness_score` override blockers, critical gaps, unresolved validation, or explicit conditionality. Any final closure outcome or final decision needed for future understanding must be consolidated into `feature_spec.md`.
 
 ## Current Status
 - state: Draft | Structured | Execution Ready | Blocked
@@ -120,6 +122,19 @@
 ### SDOD-002
 - status: MET | PARTIAL | NOT MET | BLOCKED
 - notes: [Why this item has this status.]
+
+## Spec Closure
+> This section is only a working mirror for closure assessment when this file exists. It does not declare workflow `DONE`, does not replace `finalizer`, and must be based on explicit evidence already available. The canonical closure record must live in `feature_spec.md`.
+
+- closure_status: not_closed | closed | closed_with_residuals
+- closure_basis: validation_evidence | manual_verification | combined_evidence
+- closure_summary: [State whether the existing evidence is sufficient to close the SPEC artifact and why.]
+- evidence_used:
+  - [Evidence artifact or observation 1]
+  - [Evidence artifact or observation 2]
+- unresolved_items_after_closure:
+  - [Residual item or gap, or `none`]
+- freeze_recommendation: keep_open | close_and_freeze
 
 ## Split Assessment
 - should_split: yes | no

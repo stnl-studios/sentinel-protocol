@@ -4,6 +4,9 @@
 - spec_id: <SPEC-001>
 - slug: <spec-slug>
 - state: Draft | Structured | Execution Ready | Blocked
+- lifecycle_status: active | closed | closed_with_residuals
+- closed_at: <YYYY-MM-DD-or-none>
+- closed_in_session: <n-or-none>
 - readiness_score: <0-100>
 - readiness_label: not_ready | ready_for_consumption | blocked
 - split_required: yes | no
@@ -15,9 +18,11 @@
 - last_updated: <YYYY-MM-DD>
 - last_session: <1>
 
-> This is the canonical persisted shape for the primary SPEC artifact. Keep every section in place even when the content is partial. If something is unknown, mark it as pending, conditional, or `none` instead of collapsing the document or inventing certainty.
+> This is the canonical persisted shape for the final SPEC artifact. A closed SPEC must be readable, understandable, and reusable starting and ending in this file. Keep every section in place even when the content is partial. If something is unknown, mark it as pending, conditional, or `none` instead of collapsing the document or inventing certainty.
 >
-> Keep this file directly consumable, but do not turn it into an execution plan or an early implementation prescription. Put detailed investigation, expanded evidence, speculative direction, assumptions, open questions, and decision history in the dedicated companion artifacts.
+> Keep this file directly consumable, but do not turn it into an execution plan or an early implementation prescription. Detailed investigation or temporary working notes may live elsewhere while the SPEC matures, but no auxiliary artifact should be required to understand the final business scope, rules, acceptance, decisions, or closure captured here.
+>
+> `state` tracks maturity and consumability. `lifecycle_status` tracks whether this SPEC artifact remains active or has been closed after explicit reconciliation against existing evidence.
 
 ## Executive Summary
 [Describe in 3 to 6 lines what must be implemented, why it must exist, and what final outcome this spec authorizes.]
@@ -85,7 +90,7 @@
 - [Error case 2]: [Expected behavior]
 
 ## Implementation-Relevant Shape
-> Use this section only for the minimum contracts, surfaces, or constraints that must be clear for honest implementation consumption. Do not turn this into a technical plan or lock speculative solution details. Move expanded tradeoff analysis to `decision_log.md` and provisional direction to `assumptions.md` or `open_questions.md`.
+> Use this section only for the minimum contracts, surfaces, or constraints that must be clear for honest implementation consumption. Do not turn this into a technical plan or lock speculative solution details. Move expanded tradeoff analysis or provisional direction to optional working artifacts only when they are actually in use.
 
 ### Behavior / Contracts / Surfaces
 - [Item 1]: [What must exist, change, or be respected.] Rationale: [Optional short rationale only when it improves clarity.]
@@ -163,6 +168,10 @@
 **When** [action]
 **Then** [expected result]
 
+## Final Decisions
+- [Decision 1]: [Only keep decisions that are final and materially necessary to understand scope, rules, acceptance, constraints, or closure. Otherwise use `none`.]
+- [Decision 2]
+
 ## Spec Definition of Done
 > This is the canonical completion target for the feature or fix. Execution plans may define smaller local DoDs, but they must map to these items and cannot contradict them.
 
@@ -186,20 +195,26 @@
 - [Risk 2]
 - [Risk 3]
 
-## Critical Pending Items
-- [Critical item 1]
-- [Critical item 2]
+## Residual Gaps and Conditions
+- [Residual gap, pending validation, or condition that still matters for honest reading of this SPEC. Use `none` when there are no material residuals.]
 
-## External Validation and Decisions Pending
-- [Dependency, validation, infra, DBA, index, volume, or operational-policy item still required before strong completion claims.]
+## Spec Closure
+- closure_status: not_closed | closed | closed_with_residuals
+- closure_basis: not_applicable_yet | validation_evidence | manual_verification | combined_evidence
+- closure_summary: [State whether this SPEC artifact remains active or what explicitly justified closure.]
+- evidence_used:
+  - [Evidence artifact or observation 1]
+  - [Evidence artifact or observation 2]
+- residuals_after_closure:
+  - [Residual item or `none`]
 
-## Related Artifacts
-> Do not inline assumptions, open questions, decision history, expanded evidence, or speculative technical direction here beyond a brief pointer. Keep their canonical content in the dedicated artifacts below.
+## Optional Working Artifacts
+> List only supporting artifacts that materially helped maturation or may help resume context. They are optional and must never be required to understand the final SPEC captured above.
 
-- `open_questions.md`
-- `assumptions.md`
-- `decision_log.md`
-- `readiness_report.md`
-- `session_summary.md`
+- `open_questions.md` (optional)
+- `assumptions.md` (optional)
+- `decision_log.md` (optional)
+- `readiness_report.md` (optional)
+- `session_summary.md` (optional)
 - `spec_slices.md` (only when split is needed)
 - `qa_checklist.md` (only when approaching execution readiness)
