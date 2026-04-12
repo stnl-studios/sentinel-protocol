@@ -46,7 +46,8 @@ O gate deve primeiro classificar cada specialized em uma role class canonica:
 - `router`: `orchestrator`
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
-- `executor`: `coder-backend`, `coder-frontend`, `designer`
+- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
+- `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
 - `closure`: `finalizer`
 - `sync`: `resync`
@@ -78,6 +79,7 @@ Verificar:
 Hard fails:
 - `orchestrator` fora de `routing-minimal`
 - `planner` fora de `bounded-context`
+- `reviewer` fora de `review-minimal`
 - `validation-runner` ou `finalizer` com leitura alem de `minimal-verification`
 - `resync` com leitura mais ampla que `targeted-local`
 - leakage estrutural entre `closure` e `sync`, mesmo quando o specialized parecer correto no restante do shape
@@ -152,15 +154,21 @@ Verificar no `validation-eval-designer`:
 - ausencia de wording que compense leitura que `orchestrator` ou `planner` deixaram de fazer
 - `VALIDATION PACK` mantido como artifact local e orientado a prova
 - budget operacional local e curto
+- consumo explicito de `docs/core/TESTING.md` como base factual de comandos canonicos, paths manuais aceitos, pre-requisitos e limites de harness quando esse doc existir
+- a matriz local informa o pack sem ser copiada inteira nem virar checklist universal
+- ausencia ou fraqueza da matriz local aparece explicitamente no harness judgment quando relevante
+- trilhas condicionais ativas viram obrigacoes cut-scoped de prova para `security`, `performance`, `migration/schema` e `observability/release safety` quando houver risco material
+- ausencia de checklist burocratico universal de trilhas de risco quando o cut nao pedir
 
 ### 8. Executor ownership check
-Verificar em `coder-backend`, `coder-frontend`, `designer` e equivalentes:
+Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
 - leitura profunda e custo principal da execucao pertencem a essa classe
 - `targeted-local` preservado
 - capability gate explicito
 - `read-only runtime is not execution` explicito quando houver risco
 - `READY` apenas com evidencia real de mudanca aplicada
 - `BLOCKED` cedo quando faltar base ou capacidade
+- em `coder-ios`, o wording mantém foco default em Swift + SwiftUI e nao deriva para executor UIKit-heavy sem evidencia do repo ou necessidade real do cut
 - wording nao transforma executor em planner, router, runner ou finalizer
 
 Hard fails:
@@ -174,7 +182,14 @@ Verificar em `validation-runner`, `finalizer` e `resync`:
 - ausencia de rediscovery amplo
 - ausencia de wording que compense erro upstream com scan novo
 - `validation-runner` permanece minimal-verification
+- `validation-runner` executa e julga os checks determinísticos exigidos no `VALIDATION PACK`, sem virar smoke runner repo-wide
+- `validation-runner` usa `VALIDATION PACK` para o que provar e `docs/core/TESTING.md` para quais comandos, manual paths e limites de harness são canônicos quando esse doc existir
+- `validation-runner` distingue comando canônico indisponível no ambiente, harness inexistente, harness fraco e path manual aceito
+- a existência da matriz local não expande a run para além do cut
+- check obrigatório ausente, falho ou bloqueado por harness afeta verdict e confidence de forma explícita
 - `finalizer` permanece minimal-verification
+- `finalizer` permanece closure-only e não absorve review técnico, rerun ou re-julgamento do runner
+- `finalizer` preserva o sinal do `reviewer` quando ele existir sem absorver seu ownership, e não ignora `reviewer required` pendente nem risco estrutural material explicitado
 - `resync` permanece targeted-local
 - `finalizer` nao instrui sync direto em shared docs ou source-of-truth compartilhada; apenas detecta impacto, pede `resync` e passa delta factual minimo
 - referencias a `docs/TBDS.md` ou shared docs no `finalizer` aparecem, no maximo, como superficie impactada para o handoff de `resync`, nunca como acao direta do proprio `finalizer`
@@ -185,7 +200,16 @@ Hard fails:
 - `finalizer` sugerindo update direto em `docs/TBDS.md` ou outro shared target que pertence a `resync`
 - leakage de ownership entre `finalizer` e `resync`, mesmo sem erro estrutural aparente em outras secoes
 
-### 10. Execution protocol hardening check
+### 10. Semantic-review containment check
+Verificar em `reviewer`:
+- `reviewer` permanece `review-minimal`
+- a leitura continua cut-scoped e nao vira rediscovery amplo
+- o wording nao transforma `reviewer` em executor, `validation-runner` ou `finalizer`
+- o output separa risco estrutural material, melhoria recomendada e observacao cosmetica ou irrelevante
+- o `reviewer` nao reimplementa, nao reroda proof e nao assume closure
+- o `reviewer` reconhece quando risco estrutural material de `security`, `performance`, `migration/schema` ou `observability/release safety` foi ignorado, sem virar especialista dedicado
+
+### 11. Execution protocol hardening check
 Verificar:
 - o `orchestrator` explicita que nunca implementa fallback depois de handoff para executor
 - o `orchestrator` nunca absorve execucao apos `APPROVED_EXECUTION`
@@ -195,22 +219,24 @@ Verificar:
 - reentrada do mesmo executor sem diff aplicado, `BLOCKED` formal, ou mudanca real de gate, escopo ou autorizacao e rejeitada como erro operacional
 - executors `READY` exigem changed paths ou evidencia equivalente, checks rodados ou explicitamente nao rodados, e risco residual
 - `validation-runner` so entra com artifact validavel do executor
+- `reviewer` so entra com artifact implementado real e classificacao explicita `required` ou `advisory`
+- ausencia de review `required` ou risco estrutural material nao resolvido impede closure limpa
 
-### 11. Early-discovery wording check
+### 12. Early-discovery wording check
 Verificar:
 - ausencia de listas amplas de leitura obrigatoria incompatíveis com o papel
 - ausencia de wording que convide discovery precoce sem condicao forte
 - ausencia de "check before routing" amplo no router
 - ausencia de "understand better" como licenca para abrir codigo, contratos ou testes cedo demais
 
-### 12. Tool-discipline check
+### 13. Tool-discipline check
 Verificar:
 - ferramentas condizem com a role class
 - perfis de tool nao favorecem ruido operacional
 - `todo` nao entra por default em `orchestrator`, `planner` ou `validation-eval-designer`
 - tools proibidas pela role class nao aparecem sem justificativa explicita e auditavel
 
-### 13. Factual fidelity check
+### 14. Factual fidelity check
 Verificar:
 - TBDs relevantes continuam semanticamente preservados
 - excecoes documentadas continuam visiveis quando relevantes
@@ -218,8 +244,9 @@ Verificar:
 - scoped patterns continuam scoped
 - exemplos continuam exemplos
 - checks manuais continuam marcados como checagem
+- `validation-eval-designer` e `validation-runner` nao ignoram nem contradizem `docs/core/TESTING.md` sem justificativa factual, qualificacao de escopo ou conflito explicitado
 
-### 14. Overclaim and certainty check
+### 15. Overclaim and certainty check
 Verificar linguagem absoluta sem sustentacao suficiente, incluindo:
 - `all`
 - `always`
@@ -230,7 +257,7 @@ Verificar linguagem absoluta sem sustentacao suficiente, incluindo:
 
 Quando a evidencia nao sustentar esse grau de certeza, rebaixar a claim para pattern, example, TBD ou check manual.
 
-### 15. Coverage check
+### 16. Coverage check
 Verificar que o conjunto absorveu, onde fizer sentido:
 - stack e superficies relevantes
 - boundaries e ownerships importantes

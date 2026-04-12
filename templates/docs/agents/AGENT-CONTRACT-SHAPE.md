@@ -37,7 +37,8 @@ Mapeamento canonico:
 - `router`: `orchestrator`
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
-- `executor`: `coder-backend`, `coder-frontend`, `designer`
+- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
+- `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
 - `closure`: `finalizer`
 - `sync`: `resync`
@@ -46,7 +47,7 @@ Regras:
 - a role class governa ferramentas, leitura, budget operacional, anti-role-drift e shape de output
 - a especializacao local pode restringir mais, mas nao pode relaxar os invariantes centrais da role class
 - a maior parte do custo operacional da rodada pertence a `executor`, nao a `router` nem a `planning`
-- `proof-execution`, `closure` e `sync` nao podem compensar falha upstream reabrindo discovery amplo
+- `proof-execution`, `semantic-review`, `closure` e `sync` nao podem compensar falha upstream reabrindo discovery amplo
 
 ## Campos obrigatorios
 Todo agent base precisa explicitar:
@@ -98,13 +99,14 @@ Classes canonicas:
 - `routing-minimal`: leitura minima para entender pedido, gate ativo, owner provavel e capability gap real. So `orchestrator` pode usar.
 - `bounded-context`: leitura pequena e orientada a framing para estabilizar escopo, boundary, source of truth e dependencia real. So `planner` pode usar.
 - `targeted-local`: leitura restrita ao handoff, ao entorno imediato do alvo e aos edges locais estritamente necessarios.
+- `review-minimal`: leitura curta e estrutural para review tecnico cut-scoped do artifact implementado, sem rediscovery amplo. So `reviewer` pode usar.
 - `minimal-verification`: leitura restrita ao necessario para provar, consolidar ou sincronizar um delta ja delimitado.
 
 Regras:
 - `router` nao abre implementacao por default
 - `planning` nao abre codigo, contratos ou testes por default so para "entender melhor"
 - fora `planner`, nenhum papel pode usar leitura equivalente a framing amplo
-- `proof-execution`, `closure` e `sync` nao podem fazer rediscovery amplo por compensacao
+- `proof-execution`, `semantic-review`, `closure` e `sync` nao podem fazer rediscovery amplo por compensacao
 
 ## Budgets operacionais canonicos
 Todo contrato base deve tornar explicito quem pode consumir custo e em que momento.
@@ -114,6 +116,7 @@ Budgets minimos por role class:
 - `planning`: budget pequeno e condicionado; pode expandir apenas para estabilizar escopo, boundary, source of truth ou shared contract dependency real
 - `proof-design`: budget local para desenhar prova; nao compensa leitura que `router` ou `planning` deixaram de fazer
 - `executor`: e o principal dono da leitura profunda e do custo tecnico da rodada
+- `semantic-review`: budget curto, estrutural e cut-scoped; nao substitui proof nem closure
 - `proof-execution`, `closure` e `sync`: budgets curtos e focados no delta ja delimitado
 
 ## Parte fixa do protocolo

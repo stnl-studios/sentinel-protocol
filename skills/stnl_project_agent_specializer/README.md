@@ -18,7 +18,7 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - tratar o specialized final como shape normalizado e remover legado residual por default durante create e update
 - não perpetuar `## Tools` no corpo nem `agent_version` no frontmatter sem ordem humana explícita
 - manter a governança de `model` explícita por `model_policy` e subordinada a `allowed_models` quando existir
-- manter o bundle de referências alinhado aos base agents canônicos e às docs `AGENT-CONTRACT-SHAPE`, `AGENT-SPECIALIZATION-QUALITY-GATE` e `STATUS-GATES`
+- manter o bundle de referências alinhado aos base agents canônicos e às docs `AGENT-CONTRACT-SHAPE`, `AGENT-SPECIALIZATION-QUALITY-GATE`, `EXECUTION-LIFECYCLE` e `STATUS-GATES`
 - evitar que este README ou detalhes internos do repo virem parte do contrato final da skill
 
 ## Relação com as referências canônicas
