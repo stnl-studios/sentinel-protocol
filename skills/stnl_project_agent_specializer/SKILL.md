@@ -36,6 +36,7 @@ Esta skill é um utilitário global. Ela não é um agent do workflow do projeto
 
 ## Inputs esperados no repo alvo
 - `docs/**` como source of truth factual principal, com prioridade especial para o material consolidado por `stnl_project_context`
+- `docs/core/TESTING.md`, quando existir, como source of truth factual da matriz local de harness/checks para `validation-eval-designer` e `validation-runner`
 - `.github/agents/*.agent.md` quando já existirem, para revisão de drift, coerência de frontmatter operacional, metadata e stale artifacts
 - a codebase do repo alvo apenas quando os docs precisarem de confirmação, complemento ou desempate factual
 - manifests de stack, scripts, testes, configs e entrypoints reais quando forem necessários para especializar comandos, provas, boundaries ou superfícies
@@ -56,6 +57,7 @@ Usar esta ordem de precedência no repo alvo:
 
 Regras complementares:
 - `docs/**` descreve a verdade factual do projeto alvo; `.github/agents/` descreve a materialização operacional local e não substitui essa verdade factual
+- `docs/core/TESTING.md`, quando existir, é a referência factual primária para comandos canônicos, paths manuais aceitos, pré-requisitos e limites reais de harness dos agents de validação
 - se docs e codebase conflitarem de modo material, não escolher por preferência; nomear o conflito e bloquear se ele impedir uma especialização honesta
 - usar `web` só depois da leitura séria do projeto e apenas quando contexto externo atual realmente mudar a qualidade da especialização
 - o quality gate pós-geração valida contra o modelo factual intermediário e as referências já mapeadas; ele não é licença para um scan amplo novo por inércia
@@ -293,6 +295,7 @@ Leitura mínima esperada:
 
 Durante o discovery:
 - mapear fatos confirmados, padrões locais, exemplos, TBDs, exceções e checks manuais
+- quando `validation-eval-designer` ou `validation-runner` entrarem no conjunto, ler `docs/core/TESTING.md` se ele existir e mapear comandos canônicos, suites, manual paths aceitos, confiança do harness, gaps e pré-requisitos para o modelo factual intermediário
 - preservar path e contexto de cada evidência importante
 - não diluir um TBD específico em resumo genérico
 - não apagar exceção documentada que qualifica uma regra
@@ -358,6 +361,7 @@ Antes de remover um agent canônico do conjunto local:
   - stack ou frameworks reais
   - boundaries e superfícies do projeto
   - comandos, scripts ou harness local
+  - matriz factual de harness/checks registrada em `docs/core/TESTING.md`
   - expectativas de validação
   - TBDs, exceções, padrões locais e escopo factual
   - `target`, `tools`, `agents` e `model` no frontmatter operacional
@@ -606,6 +610,9 @@ Verificar no `validation-eval-designer`:
 - ausência de tools excessivas herdadas por acidente
 - ausência de wording que compense leitura que `orchestrator` ou `planner` deixaram de fazer
 - `VALIDATION PACK` mantido como artifact local e orientado a prova
+- consumo explícito de `docs/core/TESTING.md` como base factual de comandos canônicos, paths manuais aceitos, pré-requisitos e limites de harness quando esse doc existir
+- a matriz local informa o pack sem ser copiada inteira nem virar checklist universal
+- ausência ou fraqueza da matriz local aparece explicitamente no harness judgment quando relevante
 
 ### Executor ownership check
 Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
@@ -625,6 +632,9 @@ Verificar em `validation-runner`, `finalizer` e `resync`:
 - ausência de wording que compense erro upstream com scan novo
 - `validation-runner` permanece minimal-verification
 - `validation-runner` executa e julga os checks determinísticos exigidos no `VALIDATION PACK`, sem virar smoke runner repo-wide
+- `validation-runner` usa `VALIDATION PACK` para o que provar e `docs/core/TESTING.md` para quais comandos, manual paths e limites de harness são canônicos quando esse doc existir
+- `validation-runner` distingue comando canônico indisponível no ambiente, harness inexistente, harness fraco e path manual aceito
+- a existência da matriz local não expande a run para além do cut
 - check obrigatório ausente, falho ou bloqueado por harness afeta verdict e confidence de forma explícita
 - `finalizer` permanece minimal-verification
 - `finalizer` permanece closure-only e não absorve review técnico, rerun ou re-julgamento do runner
@@ -659,6 +669,7 @@ Verificar:
 - scoped patterns continuam scoped e não viram convenção global
 - exemplos do projeto continuam marcados como exemplos
 - checks manuais continuam marcados como checagem
+- `validation-eval-designer` e `validation-runner` não ignoram nem contradizem `docs/core/TESTING.md` sem justificativa factual, qualificação de escopo ou conflito explicitado
 - linguagem absoluta perigosa é rebaixada quando a evidência não sustenta
 - o conjunto cobre stack, superfícies, boundaries, harness, hotspots, TBDs e exceções relevantes sem espalhar tudo em todo agent
 
@@ -787,6 +798,7 @@ Notas para os exemplos:
 - resposta descritiva do executor sem alteração aplicada é rejeitada como handoff inválido
 - reentrada do mesmo executor sem diff, `BLOCKED`, ou mudança real de gate, escopo ou autorização é tratada como erro operacional
 - `validation-runner` só é habilitado com artifact validável do executor
+- `validation-eval-designer` e `validation-runner` permanecem coerentes com `docs/core/TESTING.md` quando esse doc existir, sem substituir o `VALIDATION PACK`
 - `reviewer` só é habilitado com artifact implementado real e classificação explícita `required` ou `advisory`
 - `reviewer` distingue risco estrutural material de melhoria recomendada e observação cosmética sem drift para executor, runner ou finalizer
 - política de paralelização segura restrita aos workers paralelizáveis e limitada a 3 instâncias por papel

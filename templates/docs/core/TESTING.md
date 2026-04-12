@@ -5,7 +5,7 @@ LAST UPDATED: YYYYMMDD
 # Core Testing
 
 ## Objetivo
-Registrar a política e a estratégia global de validação do projeto: quais níveis de teste existem, quando usar cada um, quais mínimos seguir por tipo de mudança, quando smoke ou teste manual bastam e como a CI participa da prova. Este documento não deve virar catálogo exaustivo de suites ou harness.
+Registrar a política e a estratégia global de validação do projeto: quais níveis de teste existem, quando usar cada um, quais mínimos seguir por tipo de mudança, quando smoke ou teste manual bastam e como a CI participa da prova. Este documento não deve virar tutorial nem catálogo exaustivo por inércia, mas deve registrar a matriz factual canônica mínima de harness e checks que o workflow pode usar.
 
 ## Política de validação
 - a prova deve ser proporcional ao risco da mudança
@@ -65,11 +65,29 @@ Registrar a política e a estratégia global de validação do projeto: quais n�
 - explicitar o que ficou sem cobertura e qual risco residual permanece
 - quando a ausência de harness bloquear validação recorrente importante, registrar isso como dívida ou marco separado
 
-## Suites, comandos e paths principais
-Registrar apenas comandos, pipelines e paths realmente existentes.
+## Matriz factual de harness e checks
+Registrar aqui a matriz canônica mínima do projeto para o workflow de validação. Ela documenta o que existe e como normalmente validar neste projeto; não substitui o `VALIDATION PACK` cut-scoped e não vira checklist rígido.
 
-- `<comando, script, pipeline ou suite principal>`
-- `<comando, script, pipeline ou suite principal>`
+Regras:
+- organizar por superfície, camada ou boundary real do projeto, por exemplo `backend`, `web frontend`, `ios`, `shared libs`, `e2e / integration` e `manual observation paths`
+- registrar apenas comandos, suites, smoke paths, pré-requisitos e gaps com evidência real
+- quando a ausência for confirmada, dizer `none`; quando a evidência ainda for insuficiente, usar `TBD`
+- não inventar harness, comando oficial, fixture, credencial ou roteiro manual só para completar a matriz
+
+### Template por superfície
+#### `<surface-name>`
+- objetivos de prova típicos: `<o que essa superfície normalmente precisa provar>`
+- comandos canônicos:
+  - lint: `<comando | none | TBD>`
+  - formatter/prettier: `<comando | none | TBD>`
+  - typecheck: `<comando | none | TBD>`
+  - build: `<comando | none | TBD>`
+- suites de teste relevantes: `<suite, path, comando ou none | TBD>`
+- smoke ou manual validation paths aceitos: `<roteiro, URL, tela, fluxo, log, none | TBD>`
+- nível de confiança do harness: `<forte | parcial | fraco | manual-only | TBD>`
+- gaps conhecidos: `<limites reais, flake, cobertura ausente, none | TBD>`
+- pré-requisitos, env, fixtures ou credenciais: `<requisitos reais, none | TBD>`
+- observações sobre custo ou sinal: `<quando um check é caro, lento, parcial ou especialmente confiável>`
 
 ## CI e validação reprodutível
 - pipeline principal: `<path, job ou comando>`

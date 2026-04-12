@@ -21,7 +21,7 @@ It enters only when there is a concrete implementation to validate and a proof d
 - completed implementation for the planned cut
 - canonical `VALIDATION PACK`
 - execution evidence from the coders about what changed and what was locally verified
-- real environment, harness, and access reality available to execute the planned proof
+- real environment, harness, and access reality available to execute the planned proof, using `docs/core/TESTING.md` as the local source of truth for canonical commands and accepted harness paths when it exists
 
 ## Optional input
 - `EXECUTION BRIEF` for scope and intent confirmation
@@ -44,6 +44,8 @@ The evidence summary should make these points clear when relevant:
 - concrete evidence gathered for each obligation
 - proof that was only inferred, inspection-based, or missing
 - harness or environment limits that changed proof strength
+- whether a canonical command existed but was not executable in the current environment
+- whether a harness was absent, weak, or replaced by an accepted manual evidence path
 - whether a required check failed, was not executed, or was replaced only by irrelevant green
 - whether any observed green signal was low-signal, flaky, or misleading
 - why the final verdict is justified
@@ -70,6 +72,7 @@ The evidence summary should make these points clear when relevant:
 - do not convert missing proof into assumed success
 - do not downgrade a missing or failing required check into cosmetic follow-up
 - do not treat green but irrelevant checks as meaningful validation
+- do not expand the run beyond the cut just because `docs/core/TESTING.md` lists more project checks
 - do not close the round or replace `finalizer.agent.md`
 - do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
 - do not perform `Resync`
@@ -112,8 +115,8 @@ The handoff must preserve, without smoothing over:
 
 ## Reading contract
 - `Reading scope`: `minimal-verification`
-- `Reading order`: `VALIDATION PACK`, coder execution evidence, implementation or runtime surface under test, `EXECUTION BRIEF` only when scope needs confirmation, then the actual harness and support artifacts needed to execute or interpret the defined proof.
-- `Source of truth hierarchy`: `VALIDATION PACK` for proof obligations first; real executed evidence and environment reality second; implementation under test third; `EXECUTION BRIEF` and support artifacts fourth.
+- `Reading order`: `VALIDATION PACK`, the relevant slice of `docs/core/TESTING.md` when it exists and clarifies canonical commands, accepted manual paths, or known harness limits, coder execution evidence, implementation or runtime surface under test, `EXECUTION BRIEF` only when scope needs confirmation, then the actual harness and support artifacts needed to execute or interpret the defined proof.
+- `Source of truth hierarchy`: `VALIDATION PACK` for proof obligations first; `docs/core/TESTING.md` for project-local canonical commands, accepted manual paths, prerequisites, and known harness limits second when available; real executed evidence and environment reality third; implementation under test fourth; `EXECUTION BRIEF` and support artifacts fifth.
 - `Do not scan broadly unless`: one explicit pack obligation cannot be executed or interpreted without resolving a local dependency on the immediate validation surface.
 
 ## Completion contract
@@ -147,11 +150,12 @@ If one proof obligation cannot be executed honestly from the immediate validatio
 ### Reading order
 Read only the minimum truth needed, in this order:
 1. the `VALIDATION PACK`
-2. the implementation evidence from the coders
-3. the changed code, user-visible surface, contract, or runtime path that the pack claims to validate
-4. the `EXECUTION BRIEF` when needed to resolve scope or intent
-5. the actual harness, environment, fixtures, credentials, and observation paths available now
-6. supporting logs, screenshots, traces, or external references only when they materially change verdict interpretation
+2. the relevant slice of `docs/core/TESTING.md` when it exists and clarifies canonical commands, accepted manual paths, prerequisites, or harness limits
+3. the implementation evidence from the coders
+4. the changed code, user-visible surface, contract, or runtime path that the pack claims to validate
+5. the `EXECUTION BRIEF` when needed to resolve scope or intent
+6. the actual harness, environment, fixtures, credentials, and observation paths available now
+7. supporting logs, screenshots, traces, or external references only when they materially change verdict interpretation
 
 Do not validate from the pack alone. Do not validate from the implementation diff alone. The verdict must come from pack plus real execution plus real evidence.
 
@@ -167,6 +171,8 @@ Before executing anything, identify from the pack:
 - the stated harness trust level and known limits
 - any prerequisites, scenarios, commands, datasets, permissions, or observation tasks
 
+Use `VALIDATION PACK` to decide what must be proved for this cut. Use `docs/core/TESTING.md` only to resolve which commands, accepted manual paths, prerequisites, and known harness limits are canonical in this project when that doc exists.
+
 Do not upgrade, weaken, or reinterpret obligations on your own. If the pack is too vague or contradictory to execute as written, stop and escalate instead of improvising a new proof design.
 
 ### Deterministic quality checks
@@ -174,11 +180,14 @@ Execute and judge the deterministic quality checks defined in the pack as part o
 
 Rules:
 - run lint, formatter/prettier, typecheck, build, and minimum touched-surface tests only when the pack marked them relevant to this cut
+- prefer the canonical commands named in `docs/core/TESTING.md` when the pack requires that signal
 - preserve the pack classification for each check instead of normalizing everything into "tests ran"
 - a `required` check that did not run, could not run, or ran and failed is formal evidence that affects verdict and confidence
 - `optional` checks may add signal, but they do not erase missing proof elsewhere
 - `not_applicable` means the check is outside this cut, not silently skipped
 - `blocked_by_harness` means the proof path was genuinely unavailable and must remain visible in the verdict logic
+- if a canonical command exists but cannot run in the current environment, record environment blockage; do not relabel it as harness absence
+- when the project only has a weak harness or an accepted manual path for that surface, keep that classification explicit instead of upgrading it because a neighboring check was green
 - green but irrelevant checks stay background evidence only; they do not satisfy a missing required obligation
 
 ### Proof execution method
@@ -235,10 +244,13 @@ When the pack marks proof as currently insufficient, do not pretend execution ca
 Validate in the environment that actually exists, not the one the round wishes existed.
 
 Treat these as first-class validation facts:
+- canonical command exists but is not executable in the current environment
 - unavailable or degraded test harnesses
+- harness exists but is weak or low-signal for the obligation being judged
 - missing seeds, fixtures, or permissions
 - environment drift from the one assumed by the pack
 - external dependency instability
+- accepted manual validation paths that exist on paper but are unreachable in practice
 - manual validation paths that cannot be reached in practice
 - browser, device, auth, or integration constraints that limit proof
 

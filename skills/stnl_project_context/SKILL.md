@@ -39,7 +39,7 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - `RULES`: regras ativas do projeto em estrutura simples; separar regras confirmadas de seeds e priorizar bullets operacionais por camada ou superfície
 - `STATE`: mapa factual do que existe; entrypoints, paths, módulos, jobs, pipelines, testes e superfícies
 - `CONTRACTS`: padrões, convenções e localização dos contratos importantes; nunca dump massivo de DTOs, endpoints ou interfaces
-- `TESTING`: estratégia de validação, níveis de teste, mínimos por tipo de mudança e limites de prova; nunca catálogo exaustivo de harness
+- `TESTING`: estratégia de validação, níveis de teste, mínimos por tipo de mudança, limites de prova e matriz factual canônica mínima de harness/checks; nunca catálogo exaustivo por inércia
 - `TBDS`: consolidado canônico das lacunas arquiteturais, contratuais ou de boundary relevantes; docs locais ainda podem registrar `TBDs`, mas a consolidação fica aqui
 - `docs/features/*/CONTEXT.md`: snapshot factual e operacional da feature; deve conter estado atual, escopo ativo, hot paths, dependências imediatas, referências úteis e lacunas reais sem substituir `RULES`, `STATE`, `CONTRACTS` ou `TESTING`
 
@@ -91,6 +91,13 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - não usar `docs/TBDS.md` como backlog genérico de melhorias
 - `docs/TBDS.md` não é leitura obrigatória em toda demanda normal; ele serve para discovery, bootstrap, resync e ambiguidades relevantes
 
+## Regras para materializar `TESTING`
+- tratar `docs/core/TESTING.md` como memória factual de validação e como matriz canônica mínima de harness/checks do projeto
+- registrar por superfície, camada ou boundary real quando houver evidência suficiente: objetivos de prova típicos, comandos canônicos de lint, formatter/prettier, typecheck e build, suites relevantes, smoke ou manual paths aceitos, confiança do harness, gaps, pré-requisitos, env, fixtures, credenciais e observações de custo/sinal
+- consolidar apenas comandos, suites, paths, requisitos e gaps sustentados pela codebase, CI, scripts, docs operacionais ou outra evidência forte equivalente
+- usar `none` quando a ausência for confirmada e `TBD` quando a evidência for insuficiente; não inventar harness, comando, fixture, credencial ou roteiro manual
+- a matriz informa validação local, mas não substitui artifact cut-scoped nem vira tutorial genérico ou checklist cego
+
 ## Heurísticas de `core`
 - `docs/core/*` é a base global profunda do projeto e sempre vem primeiro
 - materializar a maior densidade factual útil que a evidência sustentar para entendimento global
@@ -99,7 +106,7 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
   - `RULES`: regras confirmadas, boundaries, stop rules, mudança estrutural e seeds separados
   - `STATE`: mapa do que existe e onde fica
   - `CONTRACTS`: padrões estruturais, convenções e localização dos contratos
-  - `TESTING`: estratégia, mínimos de validação e limites de prova
+  - `TESTING`: estratégia, mínimos de validação, limites de prova e matriz factual mínima de harness/checks
   - `TBDS`: lacunas relevantes consolidadas em um único ponto canônico
 - quando faltar fato global relevante, registrar `TBD`, parcialidade ou limite de exaustividade em vez de inferir
 

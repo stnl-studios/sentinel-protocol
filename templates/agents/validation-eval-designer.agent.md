@@ -20,7 +20,7 @@ It enters to convert the planned cut into a validation design that is specific e
 ## Required input
 - `EXECUTION BRIEF`
 - minimum technical context for the affected area
-- actual validation capability and harness reality of the project for this cut
+- actual validation capability and harness reality of the project for this cut, using `docs/core/TESTING.md` as the local source of truth when it exists
 
 ## Optional input
 - inputs from `designer.agent.md` when visual, interaction, accessibility, responsive, or manual-eval criteria need sharpening
@@ -45,9 +45,11 @@ The `VALIDATION PACK` must define, when relevant:
 - deterministic quality checks relevant to the cut, including lint, formatter/prettier, typecheck, build, and minimum touched-surface tests when applicable
 - explicit classification for each deterministic check: `required`, `optional`, `not_applicable`, or `blocked_by_harness`
 - concrete checks, scenarios, commands, or observation tasks for the runner
+- cut-relevant canonical commands, accepted manual paths, prerequisites, or harness limits distilled from `docs/core/TESTING.md` when available, without copying the whole matrix
 - confidence threshold and evidence threshold expected for this cut
 - explicit readiness judgment for execution
 - explicit escalation note when harness judgment requires DEV decision
+- explicit note when the project testing matrix is absent, thin, or insufficient for confident harness judgment
 
 ## Status it may emit
 - `READY`
@@ -68,6 +70,7 @@ The `VALIDATION PACK` must define, when relevant:
 - do not rewrite the cut or absorb planning ownership from `planner.agent.md`
 - do not hide weak, absent, or misleading harness reality
 - do not invent proof that the project cannot actually produce
+- do not copy the full project testing matrix into the pack
 - do not output decorative generic checklists such as "test everything"
 - do not compensate for reading that `orchestrator.agent.md` or `planner.agent.md` correctly did not do by reopening broad discovery here
 - do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
@@ -107,8 +110,8 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 
 ## Reading contract
 - `Reading scope`: `targeted-local`
-- `Reading order`: `EXECUTION BRIEF`, live affected implementation or contract surface, actual harness and validation paths available for this cut, design inputs when needed, then external docs only if they materially constrain proof.
-- `Source of truth hierarchy`: `EXECUTION BRIEF` for the authorized cut first; live affected surface and contracts for current-state truth second; real harness capability third; `designer.agent.md` inputs and external references fourth.
+- `Reading order`: `EXECUTION BRIEF`, `docs/core/TESTING.md` when it exists and can materially constrain harness judgment for the cut, live affected implementation or contract surface, actual harness and validation paths available for this cut, design inputs when needed, then external docs only if they materially constrain proof.
+- `Source of truth hierarchy`: `EXECUTION BRIEF` for the authorized cut first; `docs/core/TESTING.md` for project-local canonical commands, accepted manual paths, prerequisites, and known harness limits second when available; live affected surface and contracts for current-state truth third; real harness capability and environment reality for this cut fourth; `designer.agent.md` inputs and external references fifth.
 - `Do not scan broadly unless`: one explicit proof obligation, harness gap, or contract-sensitive risk cannot be assessed from the immediate cut and its local validation surface.
 
 ## Completion contract
@@ -172,10 +175,11 @@ Default budget:
 ### Reading order
 Read only the minimum truth needed, in this order:
 1. `EXECUTION BRIEF`
-2. the current implementation, contracts, schemas, or affected UX surface that define present reality
-3. the available harness: tests, scripts, fixtures, seeds, environments, mocks, visual review paths, observability, or manual access paths
-4. inputs from `designer.agent.md` when visual or interaction-sensitive proof needs better criteria
-5. external docs only when they materially constrain what counts as proof
+2. `docs/core/TESTING.md` when it exists and may constrain canonical commands, accepted manual paths, or known harness limits for the cut
+3. the current implementation, contracts, schemas, or affected UX surface that define present reality
+4. the available harness: tests, scripts, fixtures, seeds, environments, mocks, visual review paths, observability, or manual access paths
+5. inputs from `designer.agent.md` when visual or interaction-sensitive proof needs better criteria
+6. external docs only when they materially constrain what counts as proof
 
 Do not design validation from the brief alone. Validate against the actual current surface and the actual harness that exists now.
 
@@ -212,6 +216,8 @@ For every proof obligation, classify it as one of:
 - `Hybrid proof`: part of the obligation can be checked automatically, but a manual or visual pass is still needed.
 - `Insufficient proof`: the needed proof cannot be produced honestly with the current harness.
 
+When `docs/core/TESTING.md` exists, use it as the factual base for what the project already exposes as canonical commands, relevant suites, accepted manual paths, prerequisites, and known harness gaps. Then extract only the slice that matters for this cut into the pack.
+
 The proof design must stay tied to the cut. Do not inflate the pack into a broad QA program.
 
 ### Deterministic quality check design
@@ -224,16 +230,21 @@ For each cut, explicitly decide whether lint, formatter/prettier, typecheck, bui
 - `blocked_by_harness`
 
 Rules:
+- start from the cut-relevant canonical commands and suites recorded in `docs/core/TESTING.md` when that matrix exists
 - classify each check from the actual cut and harness reality, not from a generic repo checklist
 - when a check is `required`, say what it protects in this cut
 - when a check is `not_applicable`, say why the cut does not make that signal relevant
 - when a check is `blocked_by_harness`, name the real harness limit instead of softening it into a cosmetic note
+- if `docs/core/TESTING.md` is absent, thin, or missing the affected surface, say so explicitly in the harness judgment instead of inventing certainty
+- keep the pack to the cut-relevant slice; do not inline the full project matrix
 - do not turn the pack into a repo-wide smoke plan; keep every check tied to the authorized cut
 
 ### Harness assessment logic
 Assess the harness before trusting it.
 
 A harness is strong enough when it is relevant to the changed behavior, executable in practice, and likely to catch the failure mode that matters for this cut.
+
+Use `docs/core/TESTING.md` as the factual base for what harness exists, which commands are canonical, which manual paths are accepted, and which prerequisites or gaps are already known. If local evidence contradicts the doc, keep that conflict visible instead of choosing silently. If the doc is absent or weak, say that the harness judgment is based on partial local evidence only.
 
 A harness is weak when:
 - it covers adjacent code but not the actual changed behavior
@@ -243,6 +254,8 @@ A harness is weak when:
 - it provides only smoke-level confidence for a high-risk cut
 
 A harness is absent when the proof would normally require automation or repeatable observation and no credible path exists.
+
+Absence of a matrix entry never authorizes inventing a harness.
 
 A harness is misleading when:
 - its green signal suggests proof that it does not actually provide
