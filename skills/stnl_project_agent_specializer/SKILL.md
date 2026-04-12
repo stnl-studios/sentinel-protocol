@@ -75,6 +75,7 @@ Regras complementares:
 ## Agents canônicos que esta skill sabe gerir
 - `coder-backend`
 - `coder-frontend`
+- `coder-ios`
 - `designer`
 - `finalizer`
 - `orchestrator`
@@ -90,7 +91,7 @@ Antes de especializar qualquer agent, a skill deve classificá-lo em uma role cl
 - `router`: `orchestrator`
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
-- `executor`: `coder-backend`, `coder-frontend`, `designer`
+- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
 - `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
 - `closure`: `finalizer`
@@ -311,8 +312,10 @@ Adicionar `resync` quando o projeto mantém memória factual fora da feature e e
 ### Agents por superfície real
 - materializar `coder-backend` quando houver APIs, serviços, domínio, persistência, jobs, integrações, auth, runtime server-side ou equivalentes
 - não materializar `coder-backend` quando o projeto for genuinamente sem camada server-side relevante
-- materializar `coder-frontend` apenas quando houver front-end, web app, client UI, pages, screens, design system, ou outra superfície client-side real
+- materializar `coder-frontend` apenas quando houver front-end web, web app, browser client UI, pages, screens, design system, ou outra superfície client-side tradicional real
 - não materializar `coder-frontend` em projetos sem front-end
+- materializar `coder-ios` apenas quando houver boundary nativo iOS real no workflow local, com superfície materializada em Swift, SwiftUI, navegação do app, state/view models, networking, persistência local, integrações do app, ou testes iOS
+- não materializar `coder-ios` em projetos sem app iOS nativo real, e não presumir que todo mobile pertence a `coder-frontend`
 - materializar `designer` apenas quando houver sinais reais de UI, interação, acessibilidade, responsividade, design system, jornadas ou risco UX
 - não materializar `designer` em projetos sem UI real ou quando a camada visual não for parte relevante do boundary do repo
 
@@ -409,8 +412,9 @@ Regras:
 - o `reviewer` só pode entrar com artifact implementado real e classificação explícita `required` ou `advisory`
 - o `reviewer` não substitui a verdade de proof do `validation-runner`; ele agrega review semântico/arquitetural antes do fechamento
 - ausência de `reviewer` `required` ou risco estrutural material não resolvido impede closure limpa
-- não assumir `coder-frontend`, `designer`, `reviewer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
+- não assumir `coder-frontend`, `coder-ios`, `designer`, `reviewer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
 - se `designer` não existir, remover referências normais a `designer.agent.md` e reescrever a lógica local para não pressupor sua entrada
+- se `coder-ios` não existir, remover referências normais a `coder-ios.agent.md` e reescrever a lógica local para não presumir executor nativo iOS
 - se `reviewer` não existir, remover referências normais a `reviewer.agent.md` e reescrever a lógica local para não pressupor review semântico dedicado
 - se um coder não existir, o `orchestrator` não pode rotear trabalho para ele
 - se os agents de validação não existirem, o `orchestrator` não pode fingir o workflow completo; bloquear ou ajustar o fluxo local sem inventar um agent substituto
@@ -432,7 +436,7 @@ Aplicação por papel:
 - `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, e delta novo realmente relevante; nunca absorver implementação, rejeitar handoff descritivo do executor, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
 - `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`
-- `coder-backend` e `coder-frontend`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata
+- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
 - `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`
@@ -456,6 +460,7 @@ Singleton condicional:
 Papéis paralelizáveis:
 - `coder-backend`
 - `coder-frontend`
+- `coder-ios`
 - `designer` quando aplicável
 
 Limite:
@@ -519,6 +524,7 @@ Perfis mínimos sugeridos por papel, sempre ajustáveis por evidência:
 - `resync`: `read`, `search`, `edit`, `todo`
 - `coder-backend`: `read`, `search`, `edit`, `execute`, `todo`
 - `coder-frontend`: `read`, `search`, `edit`, `execute`, `todo`
+- `coder-ios`: `read`, `search`, `edit`, `execute`, `todo`
 - `designer`: `read`, `search`, `todo`
 - `validation-eval-designer`: `read`, `search`
 - `validation-runner`: `read`, `search`, `execute`, `todo`
@@ -601,7 +607,7 @@ Verificar no `validation-eval-designer`:
 - `VALIDATION PACK` mantido como artifact local e orientado a prova
 
 ### Executor ownership check
-Verificar em `coder-backend`, `coder-frontend`, `designer` e equivalentes:
+Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
 - leitura profunda e custo principal da execução pertencem a essa classe
 - `targeted-local` preservado
 - capability gate explícito
