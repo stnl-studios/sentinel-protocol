@@ -111,12 +111,14 @@ Regras:
 ## Referências canônicas que esta skill usa, mas não materializa no repo alvo na v1
 - `agent-contract-shape`
 - `agent-specialization-quality-gate`
+- `execution-lifecycle`
 - `status-gates`
 
 Quando disponíveis no ambiente instalado da skill, preferir estas referências locais:
 - `reference/agents/*.agent.md`
 - `reference/docs/agents/AGENT-CONTRACT-SHAPE.md`
 - `reference/docs/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`
+- `reference/docs/workflow/EXECUTION-LIFECYCLE.md`
 - `reference/docs/workflow/STATUS-GATES.md`
 
 ## Princípios
@@ -263,7 +265,7 @@ Regras operacionais:
 2. Fazer discovery sério de `docs/**`, com prioridade para `docs/INDEX.md`, `docs/core/*`, `docs/TBDS.md` quando existir, e os `units` ou `features` relevantes.
 3. Construir o modelo factual intermediário normalizado, classificando claims, escopo, evidência e agents impactados.
 4. Classificar cada agent canônico em sua role class e carregar os invariantes obrigatórios dessa classe antes de gerar qualquer specialized.
-5. Ler os templates/base agents canônicos e as referências `agent-contract-shape`, `agent-specialization-quality-gate` e `status-gates`.
+5. Ler os templates/base agents canônicos e as referências `agent-contract-shape`, `agent-specialization-quality-gate`, `execution-lifecycle` e `status-gates`.
 6. Revisar `.github/agents/` atual, classificando cada artifact local como:
    - `managed and current`
    - `managed but drifted`
@@ -395,6 +397,7 @@ Regras:
 - o `orchestrator` só pode aceitar do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
 - resposta narrativa, descritiva, analítica, pseudo-plano ou sem diff aplicado deve ser tratada como handoff inválido do executor, com parada explícita da rodada
 - reentrada do mesmo executor na mesma rodada sem diff aplicado, `BLOCKED` formal, ou mudança real de gate, escopo ou autorização deve virar erro operacional explícito
+- após execução, o próximo gate canônico é `validation-runner`, com prova do artifact implementado e quality proof definido no `VALIDATION PACK`
 - o `validation-runner` só pode entrar quando existir artifact validável do executor; promessa de mudança não basta
 - não assumir `coder-frontend`, `designer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
 - se `designer` não existir, remover referências normais a `designer.agent.md` e reescrever a lógica local para não pressupor sua entrada
@@ -417,8 +420,10 @@ Checks obrigatórios de materialização:
 Aplicação por papel:
 - `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, e delta novo realmente relevante; nunca absorver implementação, rejeitar handoff descritivo do executor, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
-- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir
+- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`
 - `coder-backend` e `coder-frontend`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata
+- `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
+- `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`
 
 Se o specialized reabrir verbosity, execution log ou narrativa operacional como comportamento default, a materialização falhou.
 
@@ -520,6 +525,7 @@ O gate consome:
 - o modelo factual intermediário
 - os base agents canônicos e o contrato `agent-contract-shape`
 - a referência `agent-specialization-quality-gate`
+- `execution-lifecycle`
 - `status-gates`
 - apenas as refs de docs e codebase já mapeadas como evidência, salvo bloqueio por ambiguidade real
 
@@ -590,7 +596,10 @@ Verificar em `validation-runner`, `finalizer` e `resync`:
 - ausência de rediscovery amplo
 - ausência de wording que compense erro upstream com scan novo
 - `validation-runner` permanece minimal-verification
+- `validation-runner` executa e julga os checks determinísticos exigidos no `VALIDATION PACK`, sem virar smoke runner repo-wide
+- check obrigatório ausente, falho ou bloqueado por harness afeta verdict e confidence de forma explícita
 - `finalizer` permanece minimal-verification
+- `finalizer` permanece closure-only e não absorve review técnico, rerun ou re-julgamento do runner
 - `resync` permanece targeted-local
 
 ### Execution protocol hardening check

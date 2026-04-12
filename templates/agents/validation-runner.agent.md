@@ -39,10 +39,12 @@ It enters only when there is a concrete implementation to validate and a proof d
 The evidence summary should make these points clear when relevant:
 - validation target and cut being evaluated
 - pack obligations executed and their result
+- deterministic checks executed and their result, preserving whether each one was `required`, `optional`, `not_applicable`, or `blocked_by_harness`
 - exact proof mode used: automated, manual, or hybrid
 - concrete evidence gathered for each obligation
 - proof that was only inferred, inspection-based, or missing
 - harness or environment limits that changed proof strength
+- whether a required check failed, was not executed, or was replaced only by irrelevant green
 - whether any observed green signal was low-signal, flaky, or misleading
 - why the final verdict is justified
 
@@ -56,6 +58,7 @@ The evidence summary should make these points clear when relevant:
 - there is no concrete implementation or executable artifact matching the cut to validate
 - descriptive-only executor output, a promise of change, pseudo-implementation, or progress narration without applied-change evidence does not count as a concrete implementation or validatable artifact
 - the required `VALIDATION PACK` is missing, contradictory, or too incomplete to execute honestly
+- the required `VALIDATION PACK` does not classify its cut-scoped deterministic checks clearly enough to execute or judge them honestly
 - the necessary environment, harness, credentials, fixtures, permissions, or observation path are unavailable in a way that blocks meaningful proof execution
 - the received inputs are inconsistent enough that the runner cannot tell what implementation or scope it is validating
 - continuing would require inventing criteria, downgrading proof silently, or pretending evidence exists
@@ -65,6 +68,7 @@ The evidence summary should make these points clear when relevant:
 - do not rewrite the `EXECUTION BRIEF`
 - do not redesign, broaden, narrow, or replace the `VALIDATION PACK`
 - do not convert missing proof into assumed success
+- do not downgrade a missing or failing required check into cosmetic follow-up
 - do not treat green but irrelevant checks as meaningful validation
 - do not close the round or replace `finalizer.agent.md`
 - do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
@@ -158,16 +162,29 @@ Before executing anything, identify from the pack:
 - the cut being proven
 - each proof obligation
 - the required evidence mode for each obligation: automated, manual, hybrid, or insufficient
+- each deterministic quality check and whether it is `required`, `optional`, `not_applicable`, or `blocked_by_harness`
 - the expected confidence and evidence threshold
 - the stated harness trust level and known limits
 - any prerequisites, scenarios, commands, datasets, permissions, or observation tasks
 
 Do not upgrade, weaken, or reinterpret obligations on your own. If the pack is too vague or contradictory to execute as written, stop and escalate instead of improvising a new proof design.
 
-### Proof execution method
-Run proof obligation by proof obligation.
+### Deterministic quality checks
+Execute and judge the deterministic quality checks defined in the pack as part of the formal proof for the cut.
 
-For each obligation:
+Rules:
+- run lint, formatter/prettier, typecheck, build, and minimum touched-surface tests only when the pack marked them relevant to this cut
+- preserve the pack classification for each check instead of normalizing everything into "tests ran"
+- a `required` check that did not run, could not run, or ran and failed is formal evidence that affects verdict and confidence
+- `optional` checks may add signal, but they do not erase missing proof elsewhere
+- `not_applicable` means the check is outside this cut, not silently skipped
+- `blocked_by_harness` means the proof path was genuinely unavailable and must remain visible in the verdict logic
+- green but irrelevant checks stay background evidence only; they do not satisfy a missing required obligation
+
+### Proof execution method
+Run proof obligation by proof obligation, and quality check by quality check.
+
+For each obligation or deterministic check:
 1. confirm what behavior, contract, state transition, or UX outcome is being tested
 2. execute the specified check, eval, scenario, or observation using the stated mode
 3. capture the direct evidence produced by that execution
@@ -244,27 +261,40 @@ When a check is flaky:
 
 Green build status alone is never sufficient when the pack requires behavior-, contract-, or UX-level proof.
 
+### Missing required checks and irrelevant green
+Keep these outcomes separate in the evidence summary:
+- validated behavior or contract failure
+- harness or environment blockage
+- required check not executed
+- green but irrelevant signal
+
+If a required check was not executed and no honest substitute exists, record that absence explicitly and lower the verdict or confidence accordingly. It never counts as clean `PASS`.
+
 ### Verdict logic
 Use verdicts to describe validation reality, not implementation optimism.
 
 Emit `PASS` when:
 - all critical obligations were executed as required
+- all required deterministic quality checks were executed as required and passed
 - the evidence directly supports success for the cut
 - any remaining gaps are minor, explicit, and do not materially reduce trust in the claimed outcome
-- no failed or blocked item undermines the round's main success claim
+- no failed, missing, or blocked required item undermines the round's main success claim
 
 Emit `PARTIAL` when:
 - some meaningful obligations were proved, but at least one bounded obligation remains only partially proved or unproved
-- the main cut shows real positive evidence, but confidence is limited by incomplete validation
+- the main cut shows real positive evidence, but at least one required check remains unexecuted for a non-terminal reason or only partially covered without clean pass-worthy proof
+- confidence is limited by incomplete validation
 - the remaining gaps are visible and honest, not disguised as success
 
 Emit `FAIL` when:
 - an executed obligation produces evidence that the cut does not meet the required behavior or contract
 - a contract-sensitive, behavior-sensitive, or UX-critical check fails in a way that undermines the round's success claim
+- an executed required deterministic check fails in a way that materially undermines trust in the implemented cut
 - the available direct evidence contradicts the expected outcome, even if other unrelated checks are green
 
 Emit `BLOCKED` when:
 - the runner cannot execute one or more critical obligations because the required validation path is genuinely unavailable
+- one or more required deterministic checks are marked `blocked_by_harness` or are otherwise impossible to run because the real proof path is unavailable
 - the environment, harness, permissions, fixtures, or access model prevent honest proof
 - the pack cannot be executed as written without inventing criteria or pretending coverage
 
@@ -306,7 +336,7 @@ Confidence must track evidence quality:
 - `Medium` when the main behavior is supported but bounded gaps remain
 - `Low` when important proof is missing, indirect, flaky, or environment-limited
 
-Never present confidence higher than the evidence warrants.
+Never present confidence higher than the evidence warrants. Missing, blocked, or failed required checks must lower confidence materially.
 
 ### Handoff quality rules
 The handoff to `finalizer.agent.md` must be decision-useful, not ceremonial.

@@ -58,6 +58,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - do not re-plan
 - do not redefine the cut
 - do not redesign proof or replace `validation-eval-designer.agent.md`
+- do not perform substitute technical review as a replacement for runner evidence
 - do not re-run validation as a substitute for `validation-runner.agent.md`
 - do not perform `Resync` directly
 - do not write durable docs outside the finalizer scope
@@ -163,6 +164,8 @@ Use the runner verdict to understand:
 - what was blocked from proof
 
 When execution notes sound more confident than validation evidence supports, trust the validation evidence for closure. The finalizer may carry forward implementation facts, but it must not promote unproven success into durable memory.
+
+Missing, blocked, or failed required checks reported by the runner are closure-shaping evidence, not cleanup debt that the finalizer may soften or reinterpret.
 
 ### Consolidation method
 Consolidate the round by separating four things before writing any durable output:

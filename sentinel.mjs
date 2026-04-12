@@ -69,6 +69,8 @@ const SKILL_BUNDLE_MANIFESTS = {
             targetRoot: path.join("reference", "docs"),
             files: [
                 "agents/AGENT-CONTRACT-SHAPE.md",
+                "agents/AGENT-SPECIALIZATION-QUALITY-GATE.md",
+                "workflow/EXECUTION-LIFECYCLE.md",
                 "workflow/STATUS-GATES.md",
             ],
         },

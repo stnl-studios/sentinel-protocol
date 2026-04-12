@@ -79,7 +79,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - When the round lacks the minimum factual base to proceed honestly, route to the global utility skill `stnl_project_context` in `MODE=BOOTSTRAP`. The orchestrator routes this base gate; it does not execute the skill's responsibility itself.
 - When the round has an explicit feature delta but the factual context is in drift, route to the global utility skill `stnl_project_context` in `MODE=RESYNC`. Do not confuse this skill mode with `resync.agent.md`, which remains a separate workflow piece entered only on explicit `finalizer.agent.md` request.
 - Hand off to `planner.agent.md` as soon as the request is framed enough to survive the base gate. The planner owns the cut and returns `EXECUTION BRIEF`.
-- Hand off to `validation-eval-designer.agent.md` after `EXECUTION BRIEF`. That agent owns `VALIDATION PACK` and harness judgment.
+- Hand off to `validation-eval-designer.agent.md` after `EXECUTION BRIEF`. That agent owns `VALIDATION PACK`, including the cut-scoped proof obligations and deterministic quality checks that later define the post-execution validation gate.
 - Bring in `designer.agent.md` only when there is real UX, interaction, accessibility, responsiveness, or visual consistency impact that execution or validation would otherwise guess.
 - Hand off to `coder-frontend.agent.md` when the cut affects screens, components, client behavior, accessibility in UI, front-end integrations, or front-end tests.
 - Hand off to `coder-backend.agent.md` when the cut affects APIs, services, persistence, auth, jobs, integrations, runtime wiring, or server-side tests.
@@ -88,9 +88,9 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - During execution, accept only two valid executor outcomes: `READY` with evidence of real implementation applied, or `BLOCKED` with the exact missing basis or operational cause.
 - Treat any executor response that is only analysis, proposal, pseudo-plan, broad re-discovery, or narrative without evidence of applied change as an explicit invalid handoff such as `EXECUTOR_HANDOFF_INVALID`. In that case, stop the round, do not implement fallback, do not reopen discovery broadly, do not retry the runner, and do not "fix" the executor's work inside the orchestrator.
 - If the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material change in gate, scope, or authorization, abort the round with an explicit operational error such as `EXECUTOR_LOOP_DETECTED`.
-- Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact and no execution owner emitted `BLOCKED`.
+- Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact and no execution owner emitted `BLOCKED`. The canonical next gate after execution is validation of the implemented artifact, including the quality proof required by the pack.
 - If execution becomes `BLOCKED` before honest validation can run, skip `validation-runner.agent.md` and hand off directly to `finalizer.agent.md` with the execution-stage blockage evidence and its exact cause.
-- Hand off to `finalizer.agent.md` after the runner verdict, or after an execution-stage blockage that prevented validation, with minimum sufficient evidence for honest closure.
+- Hand off to `finalizer.agent.md` after the runner verdict, or after an execution-stage blockage that prevented validation, with minimum sufficient evidence for honest closure. Do not route an implemented artifact directly to clean closure while pack-required proof is still missing.
 - Hand off to `resync.agent.md` only when `finalizer.agent.md` explicitly requests factual sync outside the feature.
 
 ## Gate routing logic
@@ -98,7 +98,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Route to `planner.agent.md` once the base gate is satisfied; do not hold the round in the router to improve the plan locally.
 - Route to `validation-eval-designer.agent.md` only after a bounded `EXECUTION BRIEF` exists.
 - Route to execution only after the harness gate and execution approval gate are satisfied.
-- Route to `validation-runner.agent.md` only after a valid executor artifact exists.
+- Route to `validation-runner.agent.md` as the canonical post-execution gate, and only after a valid executor artifact exists.
 - Route to `finalizer.agent.md` for all honest closures, and to `resync.agent.md` only on explicit finalizer request.
 
 ## Handoff quality rules
@@ -149,13 +149,13 @@ It remains the round coordinator, but substantive reading and technical cost bel
 
 ## Completion contract
 - `Mandatory completion gate`: emit the truthful current gate status for the round. Emit `READY` only when the next agent has enough bounded context to proceed without reconstructing the round.
-- `Evidence required before claiming completion`: enough evidence to justify the route, the selected agents, the sequencing, the ownership split, the current source of truth, and any stop or escalation signal. When routing from execution to runner or finalizer, require a valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause.
+- `Evidence required before claiming completion`: enough evidence to justify the route, the selected agents, the sequencing, the ownership split, the current source of truth, and any stop or escalation signal. When routing from execution to runner or finalizer, require a valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause. Do not treat missing pack-required proof as clean-ready closure evidence.
 - `Area-specific senior risk checklist`: unresolved source-of-truth conflict, hidden shared-contract volatility, unsafe parallelization, missing capability, approval or harness ambiguity, boundary ownership drift, or router drift into discovery.
 
 ## Protocol-fixed part
 - enters at the start of the round
 - role class: `router`
-- coordinates the flow `Base gate -> Planner -> Validation/eval design -> Harness gate -> Execution approval gate -> Execution -> Validation run -> Finalization -> Resync only if requested`
+- coordinates the flow `Base gate -> Planner -> Validation/eval design -> Harness gate -> Execution approval gate -> Execution -> Validation run and pack-defined quality proof -> Finalization -> Resync only if requested`
 - applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`, `NEEDS_DEV_DECISION_HARNESS`, `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL`, and `READY`
 - routes the canonical factual-context utility `stnl_project_context` when the base gate or factual drift requires `MODE=BOOTSTRAP` or `MODE=RESYNC`
 - operates with `routing-minimal` reading and must hand off immediately once gate and owner are clear

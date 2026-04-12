@@ -42,6 +42,8 @@ The `VALIDATION PACK` must define, when relevant:
 - risk-weighted validation strategy
 - evidence mode for each obligation: automated, manual, hybrid, or currently insufficient
 - harness diagnosis, including strength, gaps, and trust level
+- deterministic quality checks relevant to the cut, including lint, formatter/prettier, typecheck, build, and minimum touched-surface tests when applicable
+- explicit classification for each deterministic check: `required`, `optional`, `not_applicable`, or `blocked_by_harness`
 - concrete checks, scenarios, commands, or observation tasks for the runner
 - confidence threshold and evidence threshold expected for this cut
 - explicit readiness judgment for execution
@@ -111,7 +113,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 
 ## Completion contract
 - `Mandatory completion gate`: emit `READY` only when the `VALIDATION PACK` is executable enough for honest execution readiness; emit `NEEDS_DEV_DECISION_HARNESS` when proof strength still depends on a DEV-owned harness decision.
-- `Evidence required before claiming completion`: concrete proof obligations, named evidence mode per obligation, explicit harness trust level, concrete commands or observation paths, and a clear readiness judgment.
+- `Evidence required before claiming completion`: concrete proof obligations, named evidence mode per obligation, explicit harness trust level, cut-scoped deterministic quality checks with classification, concrete commands or observation paths, and a clear readiness judgment.
 - `Area-specific senior risk checklist`: proof obligation drift from the cut, misleading or shallow harnesses, hidden regression risk, manual versus automated evidence mismatch, and silent proof gaps.
 
 ## Protocol-fixed part
@@ -211,6 +213,22 @@ For every proof obligation, classify it as one of:
 - `Insufficient proof`: the needed proof cannot be produced honestly with the current harness.
 
 The proof design must stay tied to the cut. Do not inflate the pack into a broad QA program.
+
+### Deterministic quality check design
+Design deterministic quality proof as part of the pack, not as an afterthought.
+
+For each cut, explicitly decide whether lint, formatter/prettier, typecheck, build, and minimum touched-surface tests are:
+- `required`
+- `optional`
+- `not_applicable`
+- `blocked_by_harness`
+
+Rules:
+- classify each check from the actual cut and harness reality, not from a generic repo checklist
+- when a check is `required`, say what it protects in this cut
+- when a check is `not_applicable`, say why the cut does not make that signal relevant
+- when a check is `blocked_by_harness`, name the real harness limit instead of softening it into a cosmetic note
+- do not turn the pack into a repo-wide smoke plan; keep every check tied to the authorized cut
 
 ### Harness assessment logic
 Assess the harness before trusting it.
@@ -323,6 +341,7 @@ A cut is `READY` for execution only when all of the following are true:
 - the pack identifies the right evidence mode for each obligation
 - the harness judgment is honest and specific
 - the required proof is strong enough for the cut's risk profile
+- the relevant deterministic quality checks are classified explicitly and tied to the cut
 - the future runner can execute the pack without inventing criteria
 - the coders can understand what must be provable before they implement
 
@@ -339,6 +358,7 @@ A strong handoff:
 - states the cut being proven
 - enumerates proof obligations instead of generic tests
 - tells the runner which evidence is required for each obligation
+- tells the runner which deterministic checks are `required`, `optional`, `not_applicable`, or `blocked_by_harness`
 - identifies commands, scenarios, manual observations, or environment prerequisites when known
 - marks which parts are deterministic, which are manual, and which remain partial
 - makes harness limits and trust level explicit
