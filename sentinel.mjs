@@ -3,6 +3,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,17 +13,19 @@ const HOME = os.homedir();
 const SOURCE_DIR = path.join(ROOT, "skills");
 const COMMAND = process.argv[2];
 
-const TARGETS = [
-    path.join(HOME, ".agents", "skills"),
-    path.join(HOME, ".github", "skills"),
-    path.join(HOME, ".gemini", "antigravity", "skills"),
-];
-
 const IGNORED_ENTRY_NAMES = new Set([
     ".DS_Store",
     ".gitkeep",
     "__MACOSX",
 ]);
+
+function getTargets(homeDir = HOME) {
+    return [
+        path.join(homeDir, ".agents", "skills"),
+        path.join(homeDir, ".github", "skills"),
+        path.join(homeDir, ".gemini", "antigravity", "skills"),
+    ];
+}
 
 const SKILL_BUNDLE_MANIFESTS = {
     stnl_project_context: [
@@ -219,7 +222,7 @@ function installSkills() {
         console.log(`- ${skill}`);
     }
 
-    for (const target of TARGETS) {
+    for (const target of getTargets()) {
         console.log(`\nTarget: ${target}`);
         ensureDir(target);
 
@@ -330,7 +333,7 @@ function runDoctor() {
 
     console.log("");
 
-    for (const target of TARGETS) {
+    for (const target of getTargets()) {
         const report = inspectTarget(target, skills);
         console.log(`Target: ${report.target} ${report.status}`);
 
@@ -389,10 +392,26 @@ function printUsage() {
     console.log("  node sentinel.mjs init");
     console.log("  node sentinel.mjs update");
     console.log("  node sentinel.mjs doctor");
+    console.log("  node sentinel.mjs smoke");
 }
 
-try {
-    switch (COMMAND) {
+function isDirectRun() {
+    return process.argv[1] && path.resolve(process.argv[1]) === __filename;
+}
+
+function runSmokeCommand() {
+    const result = spawnSync(process.execPath, [path.join(ROOT, "scripts", "sentinel-smoke.mjs")], {
+        cwd: ROOT,
+        stdio: "inherit",
+    });
+
+    if (result.status !== 0) {
+        throw new Error("Smoke do Sentinel falhou.");
+    }
+}
+
+async function main(command = COMMAND) {
+    switch (command) {
         case "init":
         case "update":
             installSkills();
@@ -400,11 +419,36 @@ try {
         case "doctor":
             runDoctor();
             break;
+        case "smoke":
+            runSmokeCommand();
+            break;
         default:
             printUsage();
             process.exitCode = 1;
     }
-} catch (error) {
-    console.error(error.message);
-    process.exitCode = 1;
 }
+
+if (isDirectRun()) {
+    main().catch((error) => {
+        console.error(error.message);
+        process.exitCode = 1;
+    });
+}
+
+export {
+    HOME,
+    ROOT,
+    SOURCE_DIR,
+    SKILL_BUNDLE_MANIFESTS,
+    SKILL_INSTALL_MANIFESTS,
+    exists,
+    getSkillBundles,
+    getSkillInstallManifest,
+    getTargets,
+    inspectTarget,
+    isIgnoredEntry,
+    listSkillFolders,
+    main,
+    runDoctor,
+    installSkills,
+};
