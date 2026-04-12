@@ -85,7 +85,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Bring in `designer.agent.md` only when there is real UX, interaction, accessibility, responsiveness, or visual consistency impact that execution or validation would otherwise guess.
 - Bring in `reviewer.agent.md` only when the cut carries real semantic or architectural risk worth a dedicated post-execution review. Do not invent reviewer by reflex on every trivial cut.
 - Hand off to `coder-frontend.agent.md` when the cut affects traditional web or browser front-end surfaces such as screens, components, client behavior, accessibility in UI, front-end integrations, or front-end tests.
-- Hand off to `coder-ios.agent.md` when the cut clearly affects a real native iOS app surface such as Swift or SwiftUI code, app structure, navigation, view models, state containers, async flows, networking clients, local persistence, dependency wiring, UIKit interop, or iOS-focused tests. Do not invent this route when the repo does not contain a materialized iOS surface.
+- Hand off to `coder-ios.agent.md` when the cut clearly affects a real native iOS app surface in Swift with UI primarily in SwiftUI, such as app structure, navigation, view models, state containers, async flows, networking clients, local persistence, dependency wiring, or iOS-focused tests. UIKit interop enters this route only when it is evidenced in the repo or materially required by the cut. Do not invent this route when the repo does not contain a materialized iOS surface.
 - Hand off to `coder-backend.agent.md` when the cut affects APIs, services, persistence, auth, jobs, integrations, runtime wiring, or server-side tests.
 - Hand off to multiple coders only after shared contracts and boundaries are stable enough for safe split ownership. A common split is `coder-ios.agent.md` with `coder-backend.agent.md` when the native app and server interface are already stable enough; do not route `coder-ios.agent.md` as a substitute for `coder-frontend.agent.md`.
 - Before handing off to an executor after `APPROVED_EXECUTION` or `SKIP_EXECUTION_APPROVAL`, confirm that the selected agent has the material edit and execution capability the cut requires. If that capability is materially absent, stop with an explicit operational blocker instead of discovering it late inside execution.
@@ -256,7 +256,7 @@ Select agents by real ownership, not by convenience:
 - include `reviewer.agent.md` only for real semantic or architectural risk, not as a decorative default
 - when `reviewer.agent.md` enters, classify it as `required` or `advisory` for this round
 - use `coder-frontend.agent.md` for traditional web, browser, or front-end client-owned work
-- use `coder-ios.agent.md` for native iOS app work in Swift, SwiftUI, UIKit interop, navigation, state, app integrations, persistence, and iOS tests
+- use `coder-ios.agent.md` for native iOS app work in Swift with UI primarily in SwiftUI, plus navigation, state, app integrations, persistence, and iOS tests; treat UIKit interop as secondary and route it only when evidenced or required
 - use `coder-backend.agent.md` for API, service, persistence, integration, and runtime-owned work
 - use multiple coders only when the cut truly spans multiple owned surfaces and the interface between them is stable enough
 - do not assume every mobile cut belongs to `coder-frontend.agent.md`; native iOS routes to `coder-ios.agent.md` only when a real iOS surface exists in the repo

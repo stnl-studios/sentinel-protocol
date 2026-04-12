@@ -314,7 +314,8 @@ Adicionar `resync` quando o projeto mantém memória factual fora da feature e e
 - não materializar `coder-backend` quando o projeto for genuinamente sem camada server-side relevante
 - materializar `coder-frontend` apenas quando houver front-end web, web app, browser client UI, pages, screens, design system, ou outra superfície client-side tradicional real
 - não materializar `coder-frontend` em projetos sem front-end
-- materializar `coder-ios` apenas quando houver boundary nativo iOS real no workflow local, com superfície materializada em Swift, SwiftUI, navegação do app, state/view models, networking, persistência local, integrações do app, ou testes iOS
+- materializar `coder-ios` apenas quando houver boundary nativo iOS real no workflow local, centrado em Swift e SwiftUI, com superfície materializada em navegação do app, state/view models, async/await, networking, persistência local, integrações do app, ou testes iOS
+- tratar `UIKit interop` como evidência complementar para `coder-ios`, não como centro default do papel; ele só entra quando o repo já o materializa ou quando o cut exigir compatibilidade real
 - não materializar `coder-ios` em projetos sem app iOS nativo real, e não presumir que todo mobile pertence a `coder-frontend`
 - materializar `designer` apenas quando houver sinais reais de UI, interação, acessibilidade, responsividade, design system, jornadas ou risco UX
 - não materializar `designer` em projetos sem UI real ou quando a camada visual não for parte relevante do boundary do repo
@@ -436,7 +437,7 @@ Aplicação por papel:
 - `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, e delta novo realmente relevante; nunca absorver implementação, rejeitar handoff descritivo do executor, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
 - `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`
-- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata
+- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
 - `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`
@@ -614,6 +615,7 @@ Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equiva
 - `read-only runtime is not execution` explícito quando houver risco
 - `READY` apenas com evidência real de mudança aplicada
 - `BLOCKED` cedo quando faltar base ou capacidade
+- em `coder-ios`, o wording mantém foco default em Swift + SwiftUI e não deriva para executor UIKit-heavy sem evidência do repo ou necessidade real do cut
 - wording não transforma executor em planner, router, runner ou finalizer
 
 ### Proof-execution, closure, and sync containment check
