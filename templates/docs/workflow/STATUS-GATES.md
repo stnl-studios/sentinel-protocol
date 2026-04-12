@@ -40,6 +40,10 @@ Fluxo alvo:
 - Quando o `reviewer` for `required`, ausência de review ou risco estrutural material não resolvido impede closure limpa.
 - Quando o `reviewer` for `advisory`, o review informa o fechamento, mas não bloqueia por default.
 
+## Nota sobre trilhas condicionais de risco
+- Certos cuts podem carregar obrigações adicionais de `security`, `performance`, `migration/schema` ou `observability/release safety` dentro do `VALIDATION PACK` e do review aplicável.
+- Essas obrigações não criam novos status e não alteram o conjunto canônico acima.
+
 ## Notas de ownership
 - `PASS`, `PARTIAL`, `FAIL` e o `BLOCKED` de validação pertencem ao `validation-runner` como vereditos de validação.
 - O `reviewer` é owner do review semântico/arquitetural pós-execução quando ele entra na rodada; esse sinal não substitui o ownership de proof do runner.

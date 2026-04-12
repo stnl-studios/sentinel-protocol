@@ -32,6 +32,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - current gate status for the round
 - next agent, stop, or escalation route
 - minimum sufficient routing delta: owner, boundary, contract note, blocker, or invalid-handoff signal only when decision-useful
+- active conditional risk tracks when materially relevant to the cut
 - explicit operational error when executor handoff validity or execution safety collapses
 
 ## Status it may emit
@@ -82,6 +83,8 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - When the round has an explicit feature delta but the factual context is in drift, route to the global utility skill `stnl_project_context` in `MODE=RESYNC`. Do not confuse this skill mode with `resync.agent.md`, which remains a separate workflow piece entered only on explicit `finalizer.agent.md` request.
 - Hand off to `planner.agent.md` as soon as the request is framed enough to survive the base gate. The planner owns the cut and returns `EXECUTION BRIEF`.
 - Hand off to `validation-eval-designer.agent.md` after `EXECUTION BRIEF`. That agent owns `VALIDATION PACK`, including the cut-scoped proof obligations and deterministic quality checks that later define the post-execution validation gate.
+- Recognize conditional risk tracks only when the cut carries material risk in `security`, `performance`, `migration/schema`, or `observability/release safety`.
+- When a conditional risk track is active, surface it explicitly in the round design and handoff so downstream agents can add the relevant proof or review obligations. Do not execute those analyses inside the orchestrator.
 - Bring in `designer.agent.md` only when there is real UX, interaction, accessibility, responsiveness, or visual consistency impact that execution or validation would otherwise guess.
 - Bring in `reviewer.agent.md` only when the cut carries real semantic or architectural risk worth a dedicated post-execution review. Do not invent reviewer by reflex on every trivial cut.
 - Hand off to `coder-frontend.agent.md` when the cut affects traditional web or browser front-end surfaces such as screens, components, client behavior, accessibility in UI, front-end integrations, or front-end tests.
@@ -111,9 +114,11 @@ It remains the round coordinator, but substantive reading and technical cost bel
 
 ## Handoff quality rules
 - Every handoff must name the next owner, the active boundary, and the minimum contract note or blocker needed to proceed honestly.
+- Every handoff must also name any materially active conditional risk track, or explicitly leave it absent when no such track is evidenced.
 - Pass rich artifacts through the handoff itself; keep the main chat delta-only unless DEV explicitly asks for the full artifact.
 - Do not hand off to an absent owner, a nonexistent `.agent.md`, or a route whose required artifact is missing or invalid.
 - If the boundary, contract, or owner is still too unstable for a truthful handoff, stop or escalate instead of guessing.
+- Missing a materially relevant conditional risk track is a routing defect, but do not universalize these tracks by reflex or label every cut as high risk by default.
 
 ## Capability gap handling
 - Before any executor handoff, confirm that the selected runtime has the material edit and execution capability required for the authorized cut.
@@ -243,6 +248,7 @@ At round entry, determine:
 - what is actually being requested
 - what type of work this is: bug fix, feature, refactor, integration, migration, design-sensitive change, or investigation
 - what surfaces, layers, or contracts are likely involved, including whether the cut is web front-end, native iOS, back-end, or cross-surface
+- whether the cut materially activates `security`, `performance`, `migration/schema`, or `observability/release safety`
 - whether the request is single-surface, cross-surface, or blocked on an upstream decision
 - whether the request can be framed truthfully with the available context
 
@@ -255,6 +261,7 @@ Select agents by real ownership, not by convenience:
 - when `designer.agent.md` enters, classify it as `required` or `advisory` for this round
 - include `reviewer.agent.md` only for real semantic or architectural risk, not as a decorative default
 - when `reviewer.agent.md` enters, classify it as `required` or `advisory` for this round
+- activate conditional risk tracks only when the cut has real evidence of that risk class; do not route generic `security` or `performance` concern by ritual
 - use `coder-frontend.agent.md` for traditional web, browser, or front-end client-owned work
 - use `coder-ios.agent.md` for native iOS app work in Swift with UI primarily in SwiftUI, plus navigation, state, app integrations, persistence, and iOS tests; treat UIKit interop as secondary and route it only when evidenced or required
 - use `coder-backend.agent.md` for API, service, persistence, integration, and runtime-owned work

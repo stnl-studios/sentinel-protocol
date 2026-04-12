@@ -296,6 +296,7 @@ Leitura mínima esperada:
 Durante o discovery:
 - mapear fatos confirmados, padrões locais, exemplos, TBDs, exceções e checks manuais
 - quando `validation-eval-designer` ou `validation-runner` entrarem no conjunto, ler `docs/core/TESTING.md` se ele existir e mapear comandos canônicos, suites, manual paths aceitos, confiança do harness, gaps e pré-requisitos para o modelo factual intermediário
+- mapear, quando houver evidência suficiente, quais surfaces ou change classes do projeto costumam ativar trilhas condicionais de `security`, `performance`, `migration/schema` ou `observability/release safety`
 - preservar path e contexto de cada evidência importante
 - não diluir um TBD específico em resumo genérico
 - não apagar exceção documentada que qualifica uma regra
@@ -340,6 +341,17 @@ Se o projeto for tão simples que a separação de design de validação e run d
 Materializar `reviewer` quando o workflow local se beneficia de review técnico cut-scoped além da proof do runner, especialmente em mudanças estruturais, boundary-sensitive, refactors relevantes, impacto transversal ou alteração importante de contratos internos.
 
 O `reviewer` não substitui `validation-runner`, não substitui `finalizer` e não deve ser inventado como ornamento para cuts triviais.
+
+## Trilhas condicionais de risco
+A skill deve preservar, nos specializeds materializados, o suporte a trilhas condicionais de `security`, `performance`, `migration/schema` e `observability/release safety` sem criar novos agents obrigatórios nem novos status.
+
+Regras:
+- reconhecer e propagar uma trilha apenas quando o cut ou o contexto local evidenciar risco material correspondente
+- não universalizar essas trilhas para todo cut e não inflar o workflow com review ou proof decorativos
+- fazer o `orchestrator` explicitar a trilha ativa no handoff e no desenho da rodada, sem transformar o router em analista pesado ou executor dessa trilha
+- fazer o `validation-eval-designer` converter a trilha ativa em obrigações cut-scoped de prova dentro do `VALIDATION PACK`, sem virar registry genérico de risco
+- fazer o `reviewer` verificar se risco estrutural material dessas trilhas foi ignorado, sem transformá-lo em especialista dedicado nem em substituto do runner
+- preservar o ownership atual de `VALIDATION PACK`, `validation-runner` e `reviewer`
 
 ### Regra de coerência sistêmica
 Não omitir um agent se essa omissão deixar outros agents com referências quebradas ou exigir distorção do contrato canônico para compensar.
@@ -414,6 +426,8 @@ Regras:
 - reentrada do mesmo executor na mesma rodada sem diff aplicado, `BLOCKED` formal, ou mudança real de gate, escopo ou autorização deve virar erro operacional explícito
 - após execução, o próximo gate canônico é `validation-runner`, com prova do artifact implementado e quality proof definido no `VALIDATION PACK`
 - o `validation-runner` só pode entrar quando existir artifact validável do executor; promessa de mudança não basta
+- o `orchestrator` deve reconhecer quando o cut ativa trilha material de `security`, `performance`, `migration/schema` ou `observability/release safety` e explicitá-la no handoff
+- o `orchestrator` não pode inventar trilha por reflexo nem transformar todo cut em `high risk` por default
 - o `reviewer` só pode entrar com artifact implementado real e classificação explícita `required` ou `advisory`
 - o `reviewer` não substitui a verdade de proof do `validation-runner`; ele agrega review semântico/arquitetural antes do fechamento
 - ausência de `reviewer` `required` ou risco estrutural material não resolvido impede closure limpa
@@ -438,11 +452,11 @@ Checks obrigatórios de materialização:
 - `chat budget` explícito quando o papel tiver superfície curta relevante no chat principal
 
 Aplicação por papel:
-- `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, e delta novo realmente relevante; nunca absorver implementação, rejeitar handoff descritivo do executor, e só liberar runner com artifact validável
+- `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, delta novo realmente relevante, e trilhas condicionais de risco quando materialmente ativas; nunca absorver implementação, rejeitar handoff descritivo do executor, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
-- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`
+- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, além de converter trilhas condicionais materialmente ativas em prova cut-scoped
 - `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
-- `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
+- `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; reconhecer quando trilha material de risco foi ignorada, sem virar especialista dedicado; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
 - `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`
 
@@ -594,6 +608,8 @@ Verificar no `orchestrator`:
 - budget operacional explícito antes do primeiro handoff
 - regra explícita de handoff imediato quando o owner já está claro
 - regra explícita de parar para blocker ou DEV em vez de continuar lendo indefinidamente
+- reconhecimento explícito de trilhas condicionais de `security`, `performance`, `migration/schema` e `observability/release safety` apenas quando houver risco material
+- trilha material ausente no handoff é tratada como defeito de roteamento, sem universalizar `high risk` por default
 
 ### Planner containment check
 Verificar no `planner`:
@@ -613,6 +629,8 @@ Verificar no `validation-eval-designer`:
 - consumo explícito de `docs/core/TESTING.md` como base factual de comandos canônicos, paths manuais aceitos, pré-requisitos e limites de harness quando esse doc existir
 - a matriz local informa o pack sem ser copiada inteira nem virar checklist universal
 - ausência ou fraqueza da matriz local aparece explicitamente no harness judgment quando relevante
+- trilhas condicionais ativas viram obrigações cut-scoped de prova para `security`, `performance`, `migration/schema` e `observability/release safety` quando houver risco material
+- ausência de checklist burocrático universal de trilhas de risco quando o cut não pedir
 
 ### Executor ownership check
 Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
@@ -647,6 +665,7 @@ Verificar em `reviewer`:
 - o wording nao transforma `reviewer` em executor, `validation-runner` ou `finalizer`
 - o output separa risco estrutural material, melhoria recomendada e observacao cosmetica ou irrelevante
 - o `reviewer` nao reimplementa, nao reroda proof e nao assume closure
+- o `reviewer` reconhece quando risco estrutural material de `security`, `performance`, `migration/schema` ou `observability/release safety` foi ignorado, sem virar especialista dedicado
 
 ### Execution protocol hardening check
 Verificar:
@@ -801,6 +820,7 @@ Notas para os exemplos:
 - `validation-eval-designer` e `validation-runner` permanecem coerentes com `docs/core/TESTING.md` quando esse doc existir, sem substituir o `VALIDATION PACK`
 - `reviewer` só é habilitado com artifact implementado real e classificação explícita `required` ou `advisory`
 - `reviewer` distingue risco estrutural material de melhoria recomendada e observação cosmética sem drift para executor, runner ou finalizer
+- trilhas condicionais de `security`, `performance`, `migration/schema` e `observability/release safety` entram apenas quando há risco material e permanecem amarradas a handoff, proof e review sem checklist universal
 - política de paralelização segura restrita aos workers paralelizáveis e limitada a 3 instâncias por papel
 - handoffs coerentes com o conjunto final realmente materializado
 - ausência de referências ativas a `.agent.md` inexistente

@@ -26,6 +26,12 @@ Descrever a ordem operacional canônica do Sentinel com mais precisão que `STAT
 - `required` deve ser usado para mudanças estruturais, boundary-sensitive, refactors relevantes, impacto transversal ou alteração importante de contratos internos.
 - `advisory` deve ser usado quando o review agrega sinal técnico real, mas não precisa bloquear o fechamento por default.
 
+## Trilhas condicionais de risco
+- Além da proof normal do `VALIDATION PACK` e do review semântico quando aplicável, alguns cuts exigem trilhas adicionais de análise e prova por risco real do recorte.
+- As trilhas condicionais reconhecidas neste protocolo são `security`, `performance`, `migration/schema` e `observability/release safety`.
+- Essas trilhas são ativadas apenas quando o cut carrega risco material correspondente; elas não criam um stage fixo novo para toda rodada.
+- Quando uma trilha estiver ativa, ela adiciona obrigações cut-scoped ao `VALIDATION PACK` e pode elevar a necessidade de review semântico, mas não substitui o `VALIDATION PACK`, não substitui o `validation-runner` e não substitui o `reviewer`.
+
 ## Regra de closure
 - Sem proof funcional ou sem check mínimo relevante definido no pack e executado honestamente, não existe closure otimista.
 - `PASS` limpo exige artifact implementado mais prova suficiente do runner para as obrigações e checks obrigatórios relevantes.

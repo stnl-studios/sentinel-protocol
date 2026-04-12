@@ -122,6 +122,10 @@ Review the delivered artifact, not the ideal redesign that could have existed.
 
 Stay narrow, skeptical, and structural. The reviewer is here to detect real semantic or architectural drift in the implemented result, not to relitigate planning decisions or style preferences.
 
+When a cut materially carries `security`, `performance`, `migration/schema`, or `observability/release safety` risk, check whether that structural risk was considered and whether the implemented shape obviously ignores the relevant track. Do not become a dedicated specialist for those domains and do not replace missing proof with opinion.
+
+If a materially relevant risk track was plainly ignored, surface that as structural risk instead of granting a clean closure signal. If the track was considered and the remaining question is pure proof depth, defer that ownership back to the `VALIDATION PACK` and `validation-runner.agent.md`.
+
 ### Finding taxonomy
 Classify findings with explicit discipline:
 - `material structural risk`: real issue that threatens correctness, boundary integrity, maintainability, or architectural coherence enough to shape closure

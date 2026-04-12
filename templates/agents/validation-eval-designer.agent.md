@@ -38,6 +38,7 @@ The `VALIDATION PACK` is an ephemeral operational artifact. It is the source of 
 
 The `VALIDATION PACK` must define, when relevant:
 - cut summary and validation target
+- active conditional risk tracks, when any are materially in scope for the cut
 - proof obligations tied to the planned behavior or contract
 - risk-weighted validation strategy
 - evidence mode for each obligation: automated, manual, hybrid, or currently insufficient
@@ -220,6 +221,17 @@ When `docs/core/TESTING.md` exists, use it as the factual base for what the proj
 
 The proof design must stay tied to the cut. Do not inflate the pack into a broad QA program.
 
+### Conditional risk tracks
+When the cut materially activates a conditional risk track, extend the `VALIDATION PACK` with cut-scoped proof obligations for that track. Do not invent a track when the cut does not need it, and do not turn the pack into a generic risk registry.
+
+Supported tracks:
+- `security`: require proof such as boundary enforcement, denied or misuse paths, input validation, injection resistance, permission boundaries, secrets handling, or avoidance of sensitive exposure when those risks are part of the cut.
+- `performance`: require evidence such as cost comparison, benchmark, targeted measurement, hot-path smoke, or regression-sensitive observation when the cut can materially change latency, allocation, query cost, rendering cost, or scale behavior.
+- `migration/schema`: require evidence such as compatibility checks, rollout order, existing-data impact, backfill behavior, persisted-contract safety, forward or backward compatibility, and reversibility when the cut changes schema or persisted data shape.
+- `observability/release safety`: require evidence such as logs, metrics, traces, failure detection, rollback path, feature flag, kill switch, or recovery visibility when the cut changes a critical flow or risky rollout surface.
+
+These tracks add proof obligations inside the pack. They do not replace the pack, do not expand proof beyond the authorized cut, and do not justify copy-pasting a universal checklist into every round.
+
 ### Deterministic quality check design
 Design deterministic quality proof as part of the pack, not as an afterthought.
 
@@ -340,6 +352,7 @@ Partial proof may be acceptable only when:
 - the remaining risk is visible and not falsely minimized
 - the cut still has enough evidence to justify execution for this round
 - DEV decision is not required by protocol ownership
+- any active conditional risk track still has explicit, cut-scoped proof rather than an implied promise
 
 Confidence labels inside the pack should reflect evidence reality:
 - `High`: the critical obligations have credible direct proof
