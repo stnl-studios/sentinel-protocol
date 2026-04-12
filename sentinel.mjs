@@ -59,6 +59,7 @@ const SKILL_BUNDLE_MANIFESTS = {
                 "finalizer.agent.md",
                 "orchestrator.agent.md",
                 "planner.agent.md",
+                "reviewer.agent.md",
                 "resync.agent.md",
                 "validation-eval-designer.agent.md",
                 "validation-runner.agent.md",

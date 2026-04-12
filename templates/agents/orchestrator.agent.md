@@ -66,11 +66,13 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - do not republish rich artifacts such as `EXECUTION BRIEF` or `VALIDATION PACK` into the main chat by default
 - do not reprint subagent output verbatim or near-verbatim into the main chat
 - do not run execution validation as a replacement for `validation-runner.agent.md`
+- do not run semantic or architectural review as a replacement for `reviewer.agent.md`
 - do not close the round as a replacement for `finalizer.agent.md`
 - do not write durable memory or durable docs
 - do not "correct", finish, or patch executor work after an invalid executor handoff
 - do not reopen broad discovery after an invalid executor handoff or executor loop
 - do not continue to `validation-runner.agent.md` without a valid executor artifact
+- do not route `reviewer.agent.md` without a real implemented artifact and an explicit `required` or `advisory` classification
 - do not reopen or trigger `resync.agent.md` unless `finalizer.agent.md` explicitly requires it
 - do not recreate the legacy phase-plan model
 - do not keep reading once the next honest state is handoff, blocker, or DEV escalation
@@ -81,6 +83,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Hand off to `planner.agent.md` as soon as the request is framed enough to survive the base gate. The planner owns the cut and returns `EXECUTION BRIEF`.
 - Hand off to `validation-eval-designer.agent.md` after `EXECUTION BRIEF`. That agent owns `VALIDATION PACK`, including the cut-scoped proof obligations and deterministic quality checks that later define the post-execution validation gate.
 - Bring in `designer.agent.md` only when there is real UX, interaction, accessibility, responsiveness, or visual consistency impact that execution or validation would otherwise guess.
+- Bring in `reviewer.agent.md` only when the cut carries real semantic or architectural risk worth a dedicated post-execution review. Do not invent reviewer by reflex on every trivial cut.
 - Hand off to `coder-frontend.agent.md` when the cut affects screens, components, client behavior, accessibility in UI, front-end integrations, or front-end tests.
 - Hand off to `coder-backend.agent.md` when the cut affects APIs, services, persistence, auth, jobs, integrations, runtime wiring, or server-side tests.
 - Hand off to both coders only after shared contracts and boundaries are stable enough for safe split ownership.
@@ -89,8 +92,11 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Treat any executor response that is only analysis, proposal, pseudo-plan, broad re-discovery, or narrative without evidence of applied change as an explicit invalid handoff such as `EXECUTOR_HANDOFF_INVALID`. In that case, stop the round, do not implement fallback, do not reopen discovery broadly, do not retry the runner, and do not "fix" the executor's work inside the orchestrator.
 - If the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material change in gate, scope, or authorization, abort the round with an explicit operational error such as `EXECUTOR_LOOP_DETECTED`.
 - Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact and no execution owner emitted `BLOCKED`. The canonical next gate after execution is validation of the implemented artifact, including the quality proof required by the pack.
-- If execution becomes `BLOCKED` before honest validation can run, skip `validation-runner.agent.md` and hand off directly to `finalizer.agent.md` with the execution-stage blockage evidence and its exact cause.
-- Hand off to `finalizer.agent.md` after the runner verdict, or after an execution-stage blockage that prevented validation, with minimum sufficient evidence for honest closure. Do not route an implemented artifact directly to clean closure while pack-required proof is still missing.
+- Hand off to `reviewer.agent.md` after implementation when the cut carries structural change, boundary-sensitive logic, relevant refactor shape, cross-surface impact, or important internal contract movement that merits semantic review. Classify that review explicitly as `required` or `advisory` before the handoff.
+- Mark `reviewer.agent.md` as `required` for changes with real structural or architectural risk. Mark it as `advisory` for smaller cuts where review adds signal but should not block closure by default.
+- `reviewer.agent.md` reviews semantic and architectural fit of the implemented artifact. It does not replace runner proof, does not rerun proof as a substitute, and does not own closure.
+- If execution becomes `BLOCKED` before honest validation can run, skip both `validation-runner.agent.md` and `reviewer.agent.md` and hand off directly to `finalizer.agent.md` with the execution-stage blockage evidence and its exact cause.
+- Hand off to `finalizer.agent.md` after the runner verdict and, when routed, after the reviewer output, or after an execution-stage blockage that prevented validation. Do not route an implemented artifact directly to clean closure while pack-required proof is still missing, while a `required` reviewer output is still missing, or while a required review reports unresolved material structural risk.
 - Hand off to `resync.agent.md` only when `finalizer.agent.md` explicitly requests factual sync outside the feature.
 
 ## Gate routing logic
@@ -99,7 +105,8 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Route to `validation-eval-designer.agent.md` only after a bounded `EXECUTION BRIEF` exists.
 - Route to execution only after the harness gate and execution approval gate are satisfied.
 - Route to `validation-runner.agent.md` as the canonical post-execution gate, and only after a valid executor artifact exists.
-- Route to `finalizer.agent.md` for all honest closures, and to `resync.agent.md` only on explicit finalizer request.
+- Route to `reviewer.agent.md` only when the cut risk justifies semantic review, the artifact is real, and the review is explicitly classified as `required` or `advisory`.
+- Route to `finalizer.agent.md` only after runner proof exists and any routed `required` review has completed without unresolved material structural risk, or after an execution-stage blockage that prevented validation honestly; route to `resync.agent.md` only on explicit finalizer request.
 
 ## Handoff quality rules
 - Every handoff must name the next owner, the active boundary, and the minimum contract note or blocker needed to proceed honestly.
@@ -149,20 +156,20 @@ It remains the round coordinator, but substantive reading and technical cost bel
 
 ## Completion contract
 - `Mandatory completion gate`: emit the truthful current gate status for the round. Emit `READY` only when the next agent has enough bounded context to proceed without reconstructing the round.
-- `Evidence required before claiming completion`: enough evidence to justify the route, the selected agents, the sequencing, the ownership split, the current source of truth, and any stop or escalation signal. When routing from execution to runner or finalizer, require a valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause. Do not treat missing pack-required proof as clean-ready closure evidence.
+- `Evidence required before claiming completion`: enough evidence to justify the route, the selected agents, the sequencing, the ownership split, the current source of truth, and any stop or escalation signal. When routing from execution to runner, reviewer, or finalizer, require a valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause. Do not treat missing pack-required proof, missing required review, or unresolved required-review structural risk as clean-ready closure evidence.
 - `Area-specific senior risk checklist`: unresolved source-of-truth conflict, hidden shared-contract volatility, unsafe parallelization, missing capability, approval or harness ambiguity, boundary ownership drift, or router drift into discovery.
 
 ## Protocol-fixed part
 - enters at the start of the round
 - role class: `router`
-- coordinates the flow `Base gate -> Planner -> Validation/eval design -> Harness gate -> Execution approval gate -> Execution -> Validation run and pack-defined quality proof -> Finalization -> Resync only if requested`
+- coordinates the flow `Base gate -> Planner -> Validation/eval design -> Harness gate -> Execution approval gate -> Execution -> Validation run and pack-defined quality proof -> Reviewer when applicable -> Finalization -> Resync only if requested`
 - applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`, `NEEDS_DEV_DECISION_HARNESS`, `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL`, and `READY`
 - routes the canonical factual-context utility `stnl_project_context` when the base gate or factual drift requires `MODE=BOOTSTRAP` or `MODE=RESYNC`
 - operates with `routing-minimal` reading and must hand off immediately once gate and owner are clear
 - keeps the main chat `delta-only`, `delegate-first`, and under an explicit `Chat budget` unless DEV asks for more detail
 - decides which agents enter the round and in what order
 - preserves execution safety through ownership clarity, contract awareness, and conflict prevention
-- never implements, never closes durable docs, never absorbs `stnl_project_context`, and never replaces planner, validation design, runner, finalizer, or resync
+- never implements, never closes durable docs, never absorbs `stnl_project_context`, and never replaces planner, validation design, runner, reviewer, finalizer, or resync
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local docs, path maps, heuristics, capability notes, examples, and narrow read-expansion triggers for this role.
@@ -178,7 +185,7 @@ It may add:
 
 It must not:
 - expand the role beyond `routing-minimal`
-- turn the orchestrator into a planner, executor, runner, or finalizer
+- turn the orchestrator into a planner, executor, runner, reviewer, or finalizer
 - reintroduce broad discovery, implementation reading by default, or artifact dumping into the main chat
 
 ## Operating policy
@@ -245,11 +252,15 @@ Select agents by real ownership, not by convenience:
 - always start with `planner.agent.md` once the base gate is satisfied
 - include `designer.agent.md` only for real interface impact, not as a decorative default
 - when `designer.agent.md` enters, classify it as `required` or `advisory` for this round
+- include `reviewer.agent.md` only for real semantic or architectural risk, not as a decorative default
+- when `reviewer.agent.md` enters, classify it as `required` or `advisory` for this round
 - use `coder-frontend.agent.md` for UI and client-owned work
 - use `coder-backend.agent.md` for API, service, persistence, integration, and runtime-owned work
 - use both coders only when the cut truly spans both layers and the interface between them is stable enough
 - if `designer.agent.md` is `required`, a design `BLOCKED` stops the round; if it is `advisory`, the round may continue only when execution and validation can still proceed honestly without design guessing
+- if `reviewer.agent.md` is `required`, missing reviewer output or unresolved material structural risk stops clean closure; if it is `advisory`, the review informs closure but does not block by default
 - send only validation-eligible completed execution to `validation-runner.agent.md`
+- send only real implemented artifacts with explicit review classification to `reviewer.agent.md`
 - always route closure through `finalizer.agent.md`
 - call `resync.agent.md` only on explicit finalizer request
 
@@ -260,13 +271,16 @@ Sequence by dependency, contract volatility, and file overlap.
 
 Parallelization here is orchestration policy, not a runtime guarantee.
 
-Singleton roles for a round:
+Always-singleton roles for a round:
 - `orchestrator`
 - `planner`
 - `validation-eval-designer`
 - `validation-runner`
 - `finalizer`
 - `resync`
+
+Conditional singleton role:
+- `reviewer` when the orchestrator routes semantic review for a real implemented artifact with explicit `required` or `advisory` classification
 
 Parallelizable roles:
 - `coder-backend`

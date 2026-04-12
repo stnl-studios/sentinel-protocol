@@ -1,10 +1,10 @@
 # Status e Gates Canônicos
 
 ## Objetivo
-Registrar os status e gates canônicos do workflow do Sentinel, o momento em que cada um aparece no fluxo, e deixar explícito que o fluxo já contempla proof pós-execução do artifact implementado.
+Registrar os status e gates canônicos do workflow do Sentinel, o momento em que cada um aparece no fluxo, e deixar explícito que o fluxo já contempla proof pós-execução do artifact implementado e pode incluir review técnico semântico adicional do mesmo artifact.
 
 Fluxo alvo:
-`Gate de base → Planner → Design de validação/eval → Gate de harness → Gate de aprovação da execução → Execução → Run de validação/eval + quality proof do pack → Finalização → Resync se necessário`
+`Gate de base → Planner → Design de validação/eval → Gate de harness → Gate de aprovação da execução → Execução → Run de validação/eval + quality proof do pack → Reviewer semântico quando aplicável → Finalização → Resync se necessário`
 
 ## Status de decisão e gates
 | Status | Significado | Momento do fluxo |
@@ -33,9 +33,18 @@ Fluxo alvo:
 - Quando relevante ao cut, esses checks incluem lint, formatter/prettier, typecheck, build e testes mínimos da superfície tocada.
 - Sem proof/check mínimo relevante executado com resultado honesto, a rodada não fecha como "done limpo"; a lacuna, falha ou bloqueio precisa aparecer no verdict e no fechamento.
 
+## Nota de review técnico pós-execução
+- O workflow pode incluir `reviewer` como camada adicional de review semântico/arquitetural do artifact implementado e do diff resultante.
+- Esse review não substitui o verdict do `validation-runner` nem redefine o `VALIDATION PACK`.
+- O `orchestrator` pode classificar o `reviewer` como `required` ou `advisory`.
+- Quando o `reviewer` for `required`, ausência de review ou risco estrutural material não resolvido impede closure limpa.
+- Quando o `reviewer` for `advisory`, o review informa o fechamento, mas não bloqueia por default.
+
 ## Notas de ownership
 - `PASS`, `PARTIAL`, `FAIL` e o `BLOCKED` de validação pertencem ao `validation-runner` como vereditos de validação.
+- O `reviewer` é owner do review semântico/arquitetural pós-execução quando ele entra na rodada; esse sinal não substitui o ownership de proof do runner.
 - O `finalizer` consome esses vereditos para consolidar memória durável, mas não os reemite como seus próprios status.
+- O `finalizer` também pode consumir o sinal do `reviewer` quando ele existir, sem absorver review técnico substituto.
 - Quando a execução bloqueia antes do runner, o `orchestrator` roteia o caso direto ao `finalizer` como bloqueio pré-validação, sem inventar veredito do runner nem closure otimista.
 - Quando `designer` entra, o `orchestrator` deve classificá-lo como `required` ou `advisory`; só o caso `required` bloqueia a rodada por padrão.
 

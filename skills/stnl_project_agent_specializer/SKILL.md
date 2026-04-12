@@ -79,6 +79,7 @@ Regras complementares:
 - `finalizer`
 - `orchestrator`
 - `planner`
+- `reviewer`
 - `resync`
 - `validation-eval-designer`
 - `validation-runner`
@@ -90,6 +91,7 @@ Antes de especializar qualquer agent, a skill deve classificá-lo em uma role cl
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
 - `executor`: `coder-backend`, `coder-frontend`, `designer`
+- `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
 - `closure`: `finalizer`
 - `sync`: `resync`
@@ -327,6 +329,11 @@ Evitar materializar só um deles sem justificativa forte e explicitada.
 
 Se o projeto for tão simples que a separação de design de validação e run de validação não se sustente por evidência, não inventar versões cosméticas desses agents. Nesses casos, bloquear ou reduzir o conjunto com justificativa factual clara, sem deixar handoffs quebrados.
 
+### Agent de review semântico
+Materializar `reviewer` quando o workflow local se beneficia de review técnico cut-scoped além da proof do runner, especialmente em mudanças estruturais, boundary-sensitive, refactors relevantes, impacto transversal ou alteração importante de contratos internos.
+
+O `reviewer` não substitui `validation-runner`, não substitui `finalizer` e não deve ser inventado como ornamento para cuts triviais.
+
 ### Regra de coerência sistêmica
 Não omitir um agent se essa omissão deixar outros agents com referências quebradas ou exigir distorção do contrato canônico para compensar.
 
@@ -399,8 +406,12 @@ Regras:
 - reentrada do mesmo executor na mesma rodada sem diff aplicado, `BLOCKED` formal, ou mudança real de gate, escopo ou autorização deve virar erro operacional explícito
 - após execução, o próximo gate canônico é `validation-runner`, com prova do artifact implementado e quality proof definido no `VALIDATION PACK`
 - o `validation-runner` só pode entrar quando existir artifact validável do executor; promessa de mudança não basta
-- não assumir `coder-frontend`, `designer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
+- o `reviewer` só pode entrar com artifact implementado real e classificação explícita `required` ou `advisory`
+- o `reviewer` não substitui a verdade de proof do `validation-runner`; ele agrega review semântico/arquitetural antes do fechamento
+- ausência de `reviewer` `required` ou risco estrutural material não resolvido impede closure limpa
+- não assumir `coder-frontend`, `designer`, `reviewer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
 - se `designer` não existir, remover referências normais a `designer.agent.md` e reescrever a lógica local para não pressupor sua entrada
+- se `reviewer` não existir, remover referências normais a `reviewer.agent.md` e reescrever a lógica local para não pressupor review semântico dedicado
 - se um coder não existir, o `orchestrator` não pode rotear trabalho para ele
 - se os agents de validação não existirem, o `orchestrator` não pode fingir o workflow completo; bloquear ou ajustar o fluxo local sem inventar um agent substituto
 - preservar a ordem canônica dos gates e o ownership definido em `status-gates`
@@ -422,6 +433,7 @@ Aplicação por papel:
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
 - `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`
 - `coder-backend` e `coder-frontend`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata
+- `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
 - `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`
 
@@ -437,6 +449,9 @@ Singletons obrigatórios:
 - `validation-runner`
 - `finalizer`
 - `resync`
+
+Singleton condicional:
+- `reviewer` quando materializado e usado no workflow local para review semântico/arquitetural real; ele permanece singleton quando entra, mas não deve ser materializado ou roteado como ornamento para cuts triviais
 
 Papéis paralelizáveis:
 - `coder-backend`
@@ -479,6 +494,9 @@ Perfis mínimos por role class:
 - `proof-design`
   - permitidas: `read`, `search`
   - proibidas por default: `agent`, `edit`, `execute`, `todo`, `vscode`, `vscode/memory`, `web`
+- `semantic-review`
+  - permitidas: `read`, `search`
+  - proibidas por default: `agent`, `edit`, `execute`, `todo`, `vscode`, `vscode/memory`, `web`
 - `executor`
   - base permitida: `read`, `search`
   - coders normalmente adicionam `edit`, `execute`, `todo`
@@ -496,6 +514,7 @@ Perfis mínimos por role class:
 Perfis mínimos sugeridos por papel, sempre ajustáveis por evidência:
 - `orchestrator`: `read`, `search`, `agent`
 - `planner`: `read`, `search`
+- `reviewer`: `read`, `search`
 - `finalizer`: `read`, `search`, `edit`, `todo`
 - `resync`: `read`, `search`, `edit`, `todo`
 - `coder-backend`: `read`, `search`, `edit`, `execute`, `todo`
@@ -552,6 +571,7 @@ Verificar:
 Hard fails:
 - `orchestrator` fora de `routing-minimal`
 - `planner` fora de `bounded-context`
+- `reviewer` fora de `review-minimal`
 - `validation-runner` ou `finalizer` fora de `minimal-verification`
 - `resync` com leitura mais ampla que `targeted-local`
 
@@ -602,6 +622,14 @@ Verificar em `validation-runner`, `finalizer` e `resync`:
 - `finalizer` permanece closure-only e não absorve review técnico, rerun ou re-julgamento do runner
 - `resync` permanece targeted-local
 
+### Semantic-review containment check
+Verificar em `reviewer`:
+- `reviewer` permanece `review-minimal`
+- a leitura continua cut-scoped e não vira rediscovery amplo
+- o wording nao transforma `reviewer` em executor, `validation-runner` ou `finalizer`
+- o output separa risco estrutural material, melhoria recomendada e observacao cosmetica ou irrelevante
+- o `reviewer` nao reimplementa, nao reroda proof e nao assume closure
+
 ### Execution protocol hardening check
 Verificar:
 - o `orchestrator` explicita que nunca implementa fallback depois de handoff para executor
@@ -612,6 +640,8 @@ Verificar:
 - reentrada do mesmo executor sem diff aplicado, `BLOCKED` formal, ou mudança real de gate, escopo ou autorização é rejeitada como erro operacional
 - executors `READY` exigem changed paths ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual
 - `validation-runner` só entra com artifact validável do executor
+- `reviewer` só entra com artifact implementado real e classificação explícita `required` ou `advisory`
+- ausência de review `required` ou risco estrutural material não resolvido impede closure limpa
 
 ### Factual fidelity, certainty, and coverage check
 Verificar:
@@ -667,6 +697,7 @@ tools:
 agents:
   - planner
   - coder-backend
+  - reviewer
   - validation-eval-designer
   - validation-runner
   - finalizer
@@ -732,6 +763,7 @@ Notas para os exemplos:
 - role class canônica respeitada em todos os specializeds materializados
 - `orchestrator` materializado com `routing-minimal` e sem tools indevidas
 - `planner` materializado com `bounded-context` e sem wording de broad discovery por default
+- `reviewer` materializado com `review-minimal` e sem drift para execução, validação ou closure
 - ausência de `## Tools` no corpo quando `tools` já existir no frontmatter, salvo exceção explicitamente justificada
 - ausência de campos legados fora do contrato atual, incluindo `agent_version` por default
 - ausência de duplicação entre source of truth operacional e texto legado residual
@@ -747,6 +779,8 @@ Notas para os exemplos:
 - resposta descritiva do executor sem alteração aplicada é rejeitada como handoff inválido
 - reentrada do mesmo executor sem diff, `BLOCKED`, ou mudança real de gate, escopo ou autorização é tratada como erro operacional
 - `validation-runner` só é habilitado com artifact validável do executor
+- `reviewer` só é habilitado com artifact implementado real e classificação explícita `required` ou `advisory`
+- `reviewer` distingue risco estrutural material de melhoria recomendada e observação cosmética sem drift para executor, runner ou finalizer
 - política de paralelização segura restrita aos workers paralelizáveis e limitada a 3 instâncias por papel
 - handoffs coerentes com o conjunto final realmente materializado
 - ausência de referências ativas a `.agent.md` inexistente
