@@ -24,10 +24,14 @@ Ele cobre hoje:
 - cobertura dos roots sensíveis para evitar agent/doc canônico fora do bundle por acidente
 - ciclo isolado de `init`, `update` e `doctor` em `HOME` temporário
 - consistência mínima entre source of truth do repo e artifacts materializados
+- materialização controlada de `stnl_project_context` em repo fixture efêmero local
+- materialização controlada de `stnl_project_agent_specializer` em `.github/agents/` da fixture
+- validação mínima de shape dos docs, references e frontmatters especializados gerados, sem snapshot textual grande
 
 Ele ainda não cobre:
 - e2e completo das skills em repositórios reais
-- semântica profunda dos templates ou qualidade de conteúdo além do wiring estrutural
+- decisão semântica completa de quais docs/features/agents um projeto real deveria materializar
+- semântica profunda dos templates ou qualidade de conteúdo além do wiring estrutural e do shape mínimo
 - integrações externas ou variações de ambiente fora do smoke local reproduzível
 
 Para manter:
