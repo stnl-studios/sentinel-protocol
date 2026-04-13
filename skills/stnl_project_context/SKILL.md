@@ -1,6 +1,6 @@
 ---
 name: stnl_project_context
-description: Levanta contexto factual do projeto e materializa ou ressincroniza docs em docs/core, docs/units e docs/features com modos BOOTSTRAP e RESYNC.
+description: Levanta contexto factual do projeto e materializa ou ressincroniza docs em docs/core, docs/units e docs/features com modos BOOTSTRAP, RESYNC e TBD_SYNC.
 ---
 
 # STNL Project Context
@@ -13,6 +13,7 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 ## Quando usar
 - quando for preciso bootstrapar uma base documental operacional profunda a partir de evidência real
 - quando for preciso ressincronizar uma feature explícita com delta factual denso e edição localizada
+- quando for preciso tratar canonicamente um ou mais TBDs já registrados em `docs/TBDS.md`
 - quando prompts ou agents precisarem de contexto reutilizável em `docs/`
 - quando a releitura ampla da codebase estiver custosa e a base documental ainda estiver ausente, incompleta ou em drift
 
@@ -27,6 +28,7 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 ## Modos suportados
 - `MODE=BOOTSTRAP`
 - `MODE=RESYNC`
+- `MODE=TBD_SYNC`
 
 ## Escopo operacional
 - materializar documentação factual e operacional profunda apenas em `docs/INDEX.md`, `docs/TBDS.md`, `docs/core/*`, `docs/units/*` e `docs/features/*`
@@ -51,6 +53,7 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - `docs/features/*` apenas quando houver alvo explícito ou feature canônica descoberta com evidência forte
 - classificação de `repo shape`: `single-unit`, `multi-unit` ou `TBD`
 - atualização localizada no `RESYNC`, com alta densidade factual no delta tocado
+- tratamento auditável de TBDs registrados no `TBD_SYNC`, sem refresh amplo do projeto
 
 ## Princípios
 - discovery guiado por evidência da codebase, docs existentes e paths reais
@@ -58,9 +61,10 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - `TBD` ou marcação explícita de parcialidade no lugar de inferência
 - blast radius mínimo
 - memória durável factual, operacional e reutilizável para agents
-- bootstrap para criar o que falta; resync para atualizar localmente o que já existe
+- bootstrap para criar o que falta; resync para sincronizar delta factual orientado por feature; `TBD_SYNC` para tratar lacuna já registrada em `docs/TBDS.md`
 - regra operacional concreta vale mais que princípio abstrato
 - seed só entra como seed; não promover sem base observável
+- não haverá skill separada para TBDs; o ownership documental de `docs/TBDS.md` e do ciclo de TBDs continua em `stnl_project_context`
 
 ## Regras de profundidade honesta e anti-alucinação
 - profundidade não autoriza inventar
@@ -85,11 +89,20 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 
 ## Regras para materializar `docs/TBDS.md`
 - tratar `docs/TBDS.md` como consolidado canônico das lacunas relevantes do projeto
+- manter `docs/TBDS.md` sob ownership documental de `stnl_project_context`; não abrir skill separada para TBDs
 - docs locais podem continuar marcando `TBDs`, mas a consolidação precisa apontar para `docs/TBDS.md`
 - abrir ou atualizar item em `docs/TBDS.md` quando a lacuna bloquear decisão arquitetural, contratual, de boundary, compatibilidade ou integração crítica
 - quando a lacuna afetar regra ativa, referenciar o item de `docs/TBDS.md` em `RULES.md`
 - não usar `docs/TBDS.md` como backlog genérico de melhorias
-- `docs/TBDS.md` não é leitura obrigatória em toda demanda normal; ele serve para discovery, bootstrap, resync e ambiguidades relevantes
+- `docs/TBDS.md` não é leitura obrigatória em toda demanda normal; ele serve para discovery, bootstrap, resync, `TBD_SYNC` e ambiguidades relevantes
+- no `MODE=TBD_SYNC`, sempre partir de um ou mais TBDs já existentes em `docs/TBDS.md`; esse modo não é refresh amplo
+- alinhar o trabalho de status ao shape canônico de `templates/docs/TBDS.md`: `open`, `investigating`, `resolved`
+- `open` registra a lacuna aberta
+- `investigating` registra trabalho analítico sem fechamento suficiente
+- `resolved` só fecha lacuna realmente sincronizada por evidência factual forte ou decisão humana explícita suficiente
+- nunca marcar `resolved` quando houver apenas refinamento textual, recorte melhor do problema ou redução do escopo da dúvida
+- quando a evidência seguir insuficiente, manter o item em `open` ou `investigating`
+- quando houver decisão humana explícita, registrar a resolução como decisão, sem fingir que ela veio da codebase
 
 ## Regras para materializar `TESTING`
 - tratar `docs/core/TESTING.md` como memória factual de validação e como matriz canônica mínima de harness/checks do projeto
@@ -272,6 +285,9 @@ Limites:
 - falta informação estrutural sem a qual qualquer decisão viraria chute
 - a feature alvo do `RESYNC` não foi explicitada
 - o delta factual do `RESYNC` está amplo demais para atualização localizada
+- o `TBD_SYNC` não recebeu ao menos um `TBD_ID` já existente
+- o `TARGET_SCOPE` do `TBD_SYNC` está ausente ou fora do shape `core`, `unit:<unit-slug>` ou `feature:<feature-path>`
+- o `SOURCE_OF_TRUTH` do `TBD_SYNC` não aponta para paths reais que sustentem a análise
 - o pedido deriva para `docs/workflow/*` ou refresh amplo fora do escopo
 - a única saída possível seria inferir fatos não sustentados pela codebase
 
@@ -339,6 +355,7 @@ Ordem operacional:
 
 Contrato:
 - produzir a maior densidade factual honesta possível sobre a feature alvo e seu delta
+- preservar `RESYNC` como modo orientado a delta factual com feature alvo; TBD registrado continua pertencendo a `TBD_SYNC`
 - manter superfície mínima de edição: poucos arquivos e poucos trechos, quando isso bastar
 - aprofundar factual e operacionalmente tudo o que tocar
 - não reescrever tudo, não fazer refresh amplo e não responder com conteúdo raso só por ser localizado
@@ -351,6 +368,47 @@ Regras operacionais:
 - limite padrão: no máximo 1 camada acima da feature, salvo justificativa explícita
 - nunca aproveitar `RESYNC` para refresh amplo
 - nunca reescrever documentação inteira se uma edição localizada resolver
+
+## `MODE=TBD_SYNC`
+`TBD_SYNC` é o modo canônico para tratar lacunas já registradas em `docs/TBDS.md`.
+
+Contrato:
+- partir sempre de um ou mais TBDs já existentes; nunca começar de refresh amplo
+- não substituir `RESYNC`; `RESYNC` continua orientado a delta factual com feature alvo explícita
+- tratar a lacuna de modo auditável, com atualização mínima e factual do consolidado canônico e da doc dona da lacuna
+- manter o ownership de `docs/TBDS.md` e do ciclo documental de TBDs dentro de `stnl_project_context`
+
+Entradas operacionais:
+- `TBD_ID`: um ou mais IDs já existentes em `docs/TBDS.md`
+- `TARGET_SCOPE`: obrigatório; usar exatamente `core`, `unit:<unit-slug>` ou `feature:<feature-path>`
+- `SOURCE_OF_TRUTH`: obrigatório; informar paths reais que sustentam a análise
+- `DECISION_INPUT`: opcional; usar quando a resolução depender de decisão humana explícita
+
+Resultados permitidos:
+- resolvido por evidência factual
+- resolvido por decisão explícita do usuário
+- não resolvido, mas refinado ou reduzido com melhor delimitação da lacuna
+
+Regra de fechamento:
+- refinamento não equivale a resolução; se a lacuna só ficou mais precisa, ela continua `open` ou `investigating`
+
+## Regras de propagação controlada no `TBD_SYNC`
+`TBD_SYNC` é o modo de sincronização localizada a partir de lacuna registrada.
+
+Regras operacionais:
+- começar sempre no item alvo em `docs/TBDS.md`
+- sempre atualizar `docs/TBDS.md`
+- atualizar a doc dona da lacuna quando aplicável
+- propagar no máximo uma camada documental além da doc dona, salvo justificativa explícita
+- para TBD de feature, tocar por padrão `docs/TBDS.md` e `docs/features/<feature-path>/CONTEXT.md`
+- para TBD de unit, tocar por padrão `docs/TBDS.md` e a doc relevante em `docs/units/<unit-slug>/*`
+- para TBD de core, tocar por padrão `docs/TBDS.md` e a doc relevante em `docs/core/*`
+- não usar `TBD_SYNC` para refresh amplo de projeto
+- não criar `features` ou `units` novas só para acomodar o fluxo
+- não reclassificar arquitetura, `repo shape` ou shape do repo sem evidência excepcional e necessidade clara
+- não inventar fatos para fechar TBD
+- não fechar TBD por inferência fraca
+- se a evidência continuar insuficiente, manter o item aberto ou em investigação
 
 ## Procedimento operacional
 ### `MODE=BOOTSTRAP`
@@ -375,6 +433,14 @@ Regras operacionais:
 4. Atualizar `docs/TBDS.md` quando o delta revelar ou resolver lacuna arquitetural, contratual ou de boundary relevante.
 5. Propagar no máximo uma camada acima apenas se a mudança afetar `unit` ou `core`.
 6. Encerrar com edição localizada e profundidade máxima sustentada no que foi tocado.
+
+### `MODE=TBD_SYNC`
+1. Confirmar um ou mais `TBD_ID` já existentes em `docs/TBDS.md`.
+2. Confirmar `TARGET_SCOPE` no shape `core`, `unit:<unit-slug>` ou `feature:<feature-path>`.
+3. Ler `docs/TBDS.md`, a doc dona da lacuna e apenas o `SOURCE_OF_TRUTH` necessário para análise honesta.
+4. Atualizar sempre o item alvo em `docs/TBDS.md`.
+5. Atualizar a doc dona da lacuna e propagar no máximo uma camada adicional só quando a evidência exigir.
+6. Encerrar classificando cada TBD como `resolved`, `investigating` ou `open`, sem promover refinamento a fechamento.
 
 ## Formato de saída operacional da skill
 Use saída curta, verificável e factual.
@@ -449,4 +515,83 @@ DELTA FACTUAL SINCRONIZADO:
 LIMITES MANTIDOS:
 - <limite mantido>
 - <limite mantido ou none>
+```
+
+### Para `TBD_SYNC`
+- `MODE: TBD_SYNC`
+- `TBDS ALVO:`
+- `TARGET SCOPE: <core | unit:<unit-slug> | feature:<feature-path>>`
+- `DOCS ALTERADAS:`
+- `STATUS FINAL DOS TBDS:`
+- `DELTA RESOLVIDO:`
+- `LIMITES MANTIDOS:`
+
+Template canônico de `TBD_SYNC`:
+```text
+MODE: TBD_SYNC
+TBDS ALVO:
+- TBD-001
+TARGET SCOPE: <core | unit:<unit-slug> | feature:<feature-path>>
+DOCS ALTERADAS:
+- docs/TBDS.md
+- docs/features/<feature-path>/CONTEXT.md
+STATUS FINAL DOS TBDS:
+- TBD-001 -> resolved
+DELTA RESOLVIDO:
+- <o que foi realmente sincronizado>
+LIMITES MANTIDOS:
+- sem refresh amplo do projeto
+- sem inferir fato não sustentado
+```
+
+## Exemplos canônicos de `TBD_SYNC`
+### TBD de feature resolvido por evidência
+```text
+MODE: TBD_SYNC
+TBDS ALVO:
+- TBD-014
+TARGET SCOPE: feature:billing/invoice-export
+DOCS ALTERADAS:
+- docs/TBDS.md
+- docs/features/billing/invoice-export/CONTEXT.md
+STATUS FINAL DOS TBDS:
+- TBD-014 -> resolved
+DELTA RESOLVIDO:
+- exportação confirmada pelos paths `src/billing/invoice-export/*` e `tests/billing/invoice-export.spec.ts`
+LIMITES MANTIDOS:
+- sem subir além da feature
+```
+
+### TBD de core refinado, mas não resolvido
+```text
+MODE: TBD_SYNC
+TBDS ALVO:
+- TBD-003
+TARGET SCOPE: core
+DOCS ALTERADAS:
+- docs/TBDS.md
+- docs/core/CONTRACTS.md
+STATUS FINAL DOS TBDS:
+- TBD-003 -> investigating
+DELTA RESOLVIDO:
+- lacuna reduzida ao boundary de autenticação entre `src/auth/http/*` e `src/auth/domain/*`, sem prova suficiente para fechar
+LIMITES MANTIDOS:
+- refinamento mantido como investigação, não como resolução
+```
+
+### TBD resolvido por decisão explícita do usuário
+```text
+MODE: TBD_SYNC
+TBDS ALVO:
+- TBD-021
+TARGET SCOPE: unit:payments
+DOCS ALTERADAS:
+- docs/TBDS.md
+- docs/units/payments/RULES.md
+STATUS FINAL DOS TBDS:
+- TBD-021 -> resolved
+DELTA RESOLVIDO:
+- ownership do retry policy registrado por decisão explícita do usuário, sem atribuir a origem à codebase
+LIMITES MANTIDOS:
+- decisão documentada como decisão, não como evidência factual da implementação
 ```
