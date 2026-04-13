@@ -384,6 +384,13 @@ Entradas operacionais:
 - `SOURCE_OF_TRUTH`: obrigatório; informar paths reais que sustentam a análise
 - `DECISION_INPUT`: opcional; usar quando a resolução depender de decisão humana explícita
 
+Forma compacta adicional:
+- aceitar uma ou mais linhas no formato `TBD-XXX: <instrução curta>`
+- nessa forma, a skill deve ler `docs/TBDS.md` obrigatoriamente, localizar cada item pelo ID e tratar cada TBD como subunidade independente de análise
+- `TARGET_SCOPE` e `SOURCE_OF_TRUTH` explícitos continuam válidos e preferenciais quando já vierem informados; a forma compacta é ergonomia adicional, não substituição do contrato explícito
+- quando a instrução curta for claramente decisória, tratá-la como `DECISION_INPUT` implícito sem fingir que a decisão veio da codebase
+- múltiplos TBDs no mesmo prompt compacto são permitidos como ergonomia de entrada, mas não autorizam fundir scopes distintos numa única análise documental
+
 Resultados permitidos:
 - resolvido por evidência factual
 - resolvido por decisão explícita do usuário
@@ -391,6 +398,23 @@ Resultados permitidos:
 
 Regra de fechamento:
 - refinamento não equivale a resolução; se a lacuna só ficou mais precisa, ela continua `open` ou `investigating`
+
+Heurística conservadora de inferência no formato compacto:
+- ler primeiro `docs/TBDS.md` e inferir o `TARGET_SCOPE` inicial a partir do próprio item apenas quando a âncora estiver clara e sustentada
+- inferir `unit:<unit-slug>` quando o TBD estiver claramente ancorado em library, módulo, pacote, pasta de unit ou boundary local bem definido
+- inferir `feature:<feature-path>` quando o TBD estiver claramente ancorado em feature específica
+- inferir `core` quando o item tratar de boundary entre projetos, segurança, CI, contrato global, arquitetura global ou quando não houver owner local claro
+- se a inferência de `TARGET_SCOPE` continuar ambígua, não chutar; registrar insuficiência de base para inferência honesta
+- derivar o `SOURCE_OF_TRUTH` inicial a partir de paths, arquivos, áreas, imports, módulos, boundaries e doc local explicitamente mencionados no próprio TBD
+- expandir a leitura apenas minimamente quando necessário para análise honesta; isso não autoriza discovery ou refresh amplo
+- se o item em `docs/TBDS.md` não trouxer base mínima para derivar leitura inicial honesta, parar e pedir ou esperar evidência melhor em vez de inventar
+
+Guardrails para instruções curtas:
+- interpretar instruções como `manter como está`, `aceitar como legado`, `resolver por decisão`, `não priorizar agora` e `continuar investigando` como direção documental auditável, não como boa prática genérica
+- não fingir que decisão humana, postergação ou aceitação de legado veio da codebase
+- não marcar `resolved` quando a instrução apenas posterga, reduz prioridade ou aceita contexto legado sem fechamento suficiente da lacuna
+- quando a decisão humana for explícita e suficiente para encerrar a lacuna, pode marcar `resolved` como decisão documentada
+- quando a instrução apenas mantiver investigação ou reduzir prioridade sem fechamento adequado, manter `open` ou `investigating`
 
 ## Regras de propagação controlada no `TBD_SYNC`
 `TBD_SYNC` é o modo de sincronização localizada a partir de lacuna registrada.
@@ -436,48 +460,54 @@ Regras operacionais:
 
 ### `MODE=TBD_SYNC`
 1. Confirmar um ou mais `TBD_ID` já existentes em `docs/TBDS.md`.
-2. Confirmar `TARGET_SCOPE` no shape `core`, `unit:<unit-slug>` ou `feature:<feature-path>`.
-3. Ler `docs/TBDS.md`, a doc dona da lacuna e apenas o `SOURCE_OF_TRUTH` necessário para análise honesta.
-4. Atualizar sempre o item alvo em `docs/TBDS.md`.
-5. Atualizar a doc dona da lacuna e propagar no máximo uma camada adicional só quando a evidência exigir.
-6. Encerrar classificando cada TBD como `resolved`, `investigating` ou `open`, sem promover refinamento a fechamento.
+2. Se a entrada vier no formato compacto `TBD-XXX: <instrução curta>`, ler `docs/TBDS.md` obrigatoriamente, localizar cada item e tratar cada TBD separadamente.
+3. Confirmar `TARGET_SCOPE` no shape `core`, `unit:<unit-slug>` ou `feature:<feature-path>`; no formato compacto, inferir esse scope apenas quando o próprio item sustentar isso de forma clara.
+4. Ler `docs/TBDS.md`, a doc dona da lacuna e apenas o `SOURCE_OF_TRUTH` necessário para análise honesta; no formato compacto, derivar o ponto de partida a partir do próprio TBD e expandir minimamente só se necessário.
+5. Atualizar sempre o item alvo em `docs/TBDS.md`.
+6. Atualizar a doc dona da lacuna e propagar no máximo uma camada adicional só quando a evidência exigir, sem colapsar TBDs de scopes distintos numa análise única.
+7. Encerrar classificando cada TBD como `resolved`, `investigating` ou `open`, sem promover refinamento, postergação ou aceitação de legado a fechamento.
 
 ## Exemplos canônicos de invocação para `MODE=TBD_SYNC`
 Os exemplos abaixo são de invocação. Eles não são template rígido obrigatório e não redefinem o contrato; os campos obrigatórios continuam sendo os já definidos acima.
 
-### Exemplo mínimo
+### Exemplo explícito com fallback completo
 ```text
 MODE=TBD_SYNC
-TBD_ID=TBD-014
-TARGET_SCOPE=feature:billing/invoice-export
-SOURCE_OF_TRUTH=docs/TBDS.md,docs/features/billing/invoice-export/CONTEXT.md,src/billing/invoice-export/*
+TBD_ID=TBD-101
+TARGET_SCOPE=feature:<feature-path>
+SOURCE_OF_TRUTH=docs/TBDS.md,docs/features/<feature-path>/CONTEXT.md,src/<feature-area>/*
 ```
-Leitura esperada: tratar apenas o `TBD-014` no escopo da feature alvo, sem refresh amplo do projeto.
+Leitura esperada: usar o contrato explícito atual como fallback completo, sem refresh amplo do projeto.
 
-### Exemplo factual
+### Exemplo compacto com decisão curta
 ```text
 MODE=TBD_SYNC
-TBD_ID=TBD-003
-TARGET_SCOPE=core
-SOURCE_OF_TRUTH=docs/TBDS.md,docs/core/CONTRACTS.md,src/auth/http/*,src/auth/domain/*
+TBD-102: resolver por decisão explícita do usuário
 ```
-Leitura esperada: tentar resolver o TBD por evidência; atualizar `docs/TBDS.md` e a doc dona da lacuna; se a evidência seguir insuficiente, manter o item como `open` ou `investigating`.
+Leitura esperada: ler `docs/TBDS.md`, localizar o item, inferir `TARGET_SCOPE` e `SOURCE_OF_TRUTH` iniciais só se o próprio TBD sustentar isso, e tratar a direção curta como `DECISION_INPUT` implícito quando aplicável.
 
-### Exemplo por decisão explícita do usuário
+### Exemplo compacto com direção investigativa
 ```text
 MODE=TBD_SYNC
-TBD_ID=TBD-021
-TARGET_SCOPE=unit:payments
-SOURCE_OF_TRUTH=docs/TBDS.md,docs/units/payments/RULES.md
-DECISION_INPUT=o ownership do retry policy da unit payments deve permanecer com a equipe de pagamentos
+TBD-103: continuar investigando com base na evidência já citada no item
 ```
-Leitura esperada: registrar a resolução como decisão explícita do usuário, usando `DECISION_INPUT` quando necessário e sem atribuir a origem da resolução à codebase.
+Leitura esperada: manter blast radius mínimo, iniciar pelos paths, arquivos, áreas ou boundaries já mencionados no TBD e manter `open` ou `investigating` se seguir sem base suficiente para fechamento.
+
+### Exemplo compacto com múltiplos TBDs
+```text
+MODE=TBD_SYNC
+TBD-104: aceitar como legado por agora
+TBD-105: continuar investigando
+```
+Leitura esperada: aceitar múltiplos TBDs no mesmo prompt curto, mas tratar cada item separadamente, com propagação mínima por TBD e sem fundir scopes distintos numa única análise.
 
 ### Erros comuns
 - usar `TBD_SYNC` sem `TBD_ID`
 - usar `TARGET_SCOPE` fora do shape aceito `core`, `unit:<unit-slug>` ou `feature:<feature-path>`
-- misturar TBDs de escopos diferentes no mesmo run
+- fundir TBDs de escopos diferentes numa única análise documental
 - usar `TBD_SYNC` como refresh amplo
+- assumir `TARGET_SCOPE` por chute quando `docs/TBDS.md` não sustenta inferência honesta
+- inventar `SOURCE_OF_TRUTH` quando o item não trouxer base mínima para iniciar a análise
 
 ## Formato de saída operacional da skill
 Use saída curta, verificável e factual.
