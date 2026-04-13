@@ -442,6 +442,43 @@ Regras operacionais:
 5. Atualizar a doc dona da lacuna e propagar no máximo uma camada adicional só quando a evidência exigir.
 6. Encerrar classificando cada TBD como `resolved`, `investigating` ou `open`, sem promover refinamento a fechamento.
 
+## Exemplos canônicos de invocação para `MODE=TBD_SYNC`
+Os exemplos abaixo são de invocação. Eles não são template rígido obrigatório e não redefinem o contrato; os campos obrigatórios continuam sendo os já definidos acima.
+
+### Exemplo mínimo
+```text
+MODE=TBD_SYNC
+TBD_ID=TBD-014
+TARGET_SCOPE=feature:billing/invoice-export
+SOURCE_OF_TRUTH=docs/TBDS.md,docs/features/billing/invoice-export/CONTEXT.md,src/billing/invoice-export/*
+```
+Leitura esperada: tratar apenas o `TBD-014` no escopo da feature alvo, sem refresh amplo do projeto.
+
+### Exemplo factual
+```text
+MODE=TBD_SYNC
+TBD_ID=TBD-003
+TARGET_SCOPE=core
+SOURCE_OF_TRUTH=docs/TBDS.md,docs/core/CONTRACTS.md,src/auth/http/*,src/auth/domain/*
+```
+Leitura esperada: tentar resolver o TBD por evidência; atualizar `docs/TBDS.md` e a doc dona da lacuna; se a evidência seguir insuficiente, manter o item como `open` ou `investigating`.
+
+### Exemplo por decisão explícita do usuário
+```text
+MODE=TBD_SYNC
+TBD_ID=TBD-021
+TARGET_SCOPE=unit:payments
+SOURCE_OF_TRUTH=docs/TBDS.md,docs/units/payments/RULES.md
+DECISION_INPUT=o ownership do retry policy da unit payments deve permanecer com a equipe de pagamentos
+```
+Leitura esperada: registrar a resolução como decisão explícita do usuário, usando `DECISION_INPUT` quando necessário e sem atribuir a origem da resolução à codebase.
+
+### Erros comuns
+- usar `TBD_SYNC` sem `TBD_ID`
+- usar `TARGET_SCOPE` fora do shape aceito `core`, `unit:<unit-slug>` ou `feature:<feature-path>`
+- misturar TBDs de escopos diferentes no mesmo run
+- usar `TBD_SYNC` como refresh amplo
+
 ## Formato de saída operacional da skill
 Use saída curta, verificável e factual.
 
