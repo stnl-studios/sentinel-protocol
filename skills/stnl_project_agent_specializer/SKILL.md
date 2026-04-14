@@ -321,8 +321,49 @@ Adicionar `resync` quando o projeto mantém memória factual fora da feature e e
 - materializar `coder-ios` apenas quando houver boundary nativo iOS real no workflow local, centrado em Swift e SwiftUI, com superfície materializada em navegação do app, state/view models, async/await, networking, persistência local, integrações do app, ou testes iOS
 - tratar `UIKit interop` como evidência complementar para `coder-ios`, não como centro default do papel; ele só entra quando o repo já o materializa ou quando o cut exigir compatibilidade real
 - não materializar `coder-ios` em projetos sem app iOS nativo real, e não presumir que todo mobile pertence a `coder-frontend`
-- materializar `designer` apenas quando houver sinais reais de UI, interação, acessibilidade, responsividade, design system, jornadas ou risco UX
-- não materializar `designer` em projetos sem UI real ou quando a camada visual não for parte relevante do boundary do repo
+
+### Política de materialização de `designer`
+Classificar `designer` em um destes níveis:
+
+- `REQUIRED`
+  - materializar obrigatoriamente quando `Tipo: APP`
+  - materializar obrigatoriamente quando houver evidência de design system próprio, UI library compartilhada, tokens, catálogo de componentes, múltiplos apps frontend, ou quando a superfície visual principal do produto fizer parte relevante do boundary do repo
+- `DEFAULT`
+  - materializar por padrão quando `Tipo: FE`
+  - materializar por padrão quando `Tipo: FS` com frontend relevante
+  - só excluir em `DEFAULT` se houver evidência explícita de que a UI é meramente utilitária, sem complexidade de fluxo, sem componentização relevante, e sem preocupação recorrente com responsividade, acessibilidade ou consistência visual
+- `ON_DEMAND`
+  - não materializar por padrão quando `Tipo: BE`
+  - não materializar por padrão quando o frontend for incidental, técnico ou residual
+  - nesses casos, `designer` só entra por gatilho explícito no cut ou no workflow local:
+    - mudança de fluxo
+    - componente novo ou reutilizável
+    - estado de tela complexo
+    - responsividade
+    - acessibilidade
+    - inconsistência visual
+    - dúvida de UX
+
+Regra de desempate:
+- em projeto `APP` ou `FE`, na ausência de evidência forte para excluir, preferir `DEFAULT => materializar`
+
+### Exemplos canônicos
+- `Tipo: APP` com navegação, componentes próprios e superfície visual principal do produto -> `REQUIRED`
+  - a UI pertence estruturalmente ao boundary do repo; materializar `designer` no projeto é obrigatório
+- `Tipo: FE` com múltiplas telas, componentes reutilizáveis e fluxo de usuário relevante -> `DEFAULT`
+  - materializar por padrão; a existência do agent no projeto não depende de gatilho excepcional
+- `Tipo: FE` administrativo simples, com UI utilitária e baixo risco de UX -> `DEFAULT`
+  - excluir só com evidência explícita de baixa complexidade visual, baixa variabilidade de estados e ausência de preocupação recorrente com acessibilidade, responsividade ou consistência visual
+- `Tipo: FS` com backend dominante, mas frontend relevante no produto -> `DEFAULT`
+  - backend forte não elimina a necessidade recorrente de direção de UI quando o frontend tem papel real no boundary
+- `Tipo: BE` sem UI real no repo -> `ON_DEMAND`
+  - não materializar por padrão quando a camada visual não pertence ao boundary do projeto
+- repo técnico com dashboard residual, tela incidental ou interface apenas operacional -> `ON_DEMAND`
+  - materializar apenas se o cut exigir fluxo, componente, estado complexo, acessibilidade, responsividade, inconsistência visual ou dúvida real de UX
+
+Nota operacional:
+- materializar `designer` no projeto não implica acioná-lo em todo round
+- em classificações `DEFAULT`, ausência de evidência forte para excluir não é justificativa válida para omissão
 
 ### Agents de validação
 Tratar `validation-eval-designer` e `validation-runner` como um par por padrão.
