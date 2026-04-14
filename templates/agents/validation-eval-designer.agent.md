@@ -39,6 +39,7 @@ The `VALIDATION PACK` is an ephemeral operational artifact. It is the source of 
 The `VALIDATION PACK` must define, when relevant:
 - cut summary and validation target
 - active conditional risk tracks, when any are materially in scope for the cut
+- harness sufficiency classification for the cut's risk profile, including whether the change is low-risk/local or touches a risk-relevant surface
 - proof obligations tied to the planned behavior or contract
 - risk-weighted validation strategy
 - evidence mode for each obligation: automated, manual, hybrid, or currently insufficient
@@ -51,6 +52,7 @@ The `VALIDATION PACK` must define, when relevant:
 - explicit readiness judgment for execution
 - explicit escalation note when harness judgment requires DEV decision
 - explicit note when the project testing matrix is absent, thin, or insufficient for confident harness judgment
+- explicit DEV decision options when risk-relevant proof is gated by missing harness
 
 ## Status it may emit
 - `READY`
@@ -85,6 +87,11 @@ Hand off the `VALIDATION PACK` to the orchestrator as the canonical validation-d
 If the emitted status is `READY`, the orchestrator may continue toward execution with the pack as the validation source of truth for coders and later for `validation-runner.agent.md`.
 
 If the emitted status is `NEEDS_DEV_DECISION_HARNESS`, the orchestrator must stop the round and route the harness decision explicitly. Do not smuggle the cut into execution with hand-wavy proof expectations.
+
+When that gate is raised for a risk-relevant cut, the surfaced decision must stay narrow and explicit:
+- add focused tests for the SPEC now
+- accept consciously proceeding without new tests and with partial evidence
+- narrow the cut to a slice the current harness can validate honestly
 
 Keep the surfaced return delta-only by default: `READY` or gate status, the proof obligations that remain open, and the DEV decision required when there is one.
 
@@ -232,6 +239,35 @@ Supported tracks:
 
 These tracks add proof obligations inside the pack. They do not replace the pack, do not expand proof beyond the authorized cut, and do not justify copy-pasting a universal checklist into every round.
 
+### Risk-conditioned harness gate
+Classify harness sufficiency from the risk of the authorized cut, not from generic test presence alone.
+
+Treat a cut as lower-risk/local when the change is narrow, low-coupling, and its promised behavior can be proved honestly with signals such as build, lint, a smoke path, or a focused manual check. For this class of cut, absence of existing tests does not automatically block readiness.
+
+Treat a cut as risk-relevant when it materially touches any of these surfaces:
+- business logic
+- state, store, signals, or derived state
+- services, facades, repositories, or data access
+- guards, resolvers, or interceptors
+- shared contracts or shared libraries
+- authentication, authorization, security, PIN, token, or session behavior
+- async or multi-step flows
+- behavior with meaningful cross-app or cross-module regression risk
+
+For a risk-relevant cut:
+- if no relevant existing tests or other trustworthy harness cover the touched surface and the critical promised flow, emit `NEEDS_DEV_DECISION_HARNESS` before execution
+- build, lint, smoke, or manual evidence may still appear in the pack, but by themselves they do not make the cut `READY` when the critical proof path remains undercovered
+- "relevant tests" means focused tests for the SPEC and the touched surface, not a plan to build the whole project suite
+- if a narrower sub-cut can be proved honestly with the current harness, name that option explicitly instead of stretching the proof claim
+
+### DEV decision options for harness gaps
+When a risk-relevant cut lacks minimum relevant proof support, keep the escalation to these options only:
+- add focused SPEC-scoped tests now
+- accept explicitly proceeding without new tests, with partial evidence and visible residual risk
+- narrow the cut to a slice the current harness can validate honestly
+
+Do not turn this gate into a mandate to design a repo-wide testing initiative.
+
 ### Deterministic quality check design
 Design deterministic quality proof as part of the pack, not as an afterthought.
 
@@ -354,6 +390,8 @@ Partial proof may be acceptable only when:
 - DEV decision is not required by protocol ownership
 - any active conditional risk track still has explicit, cut-scoped proof rather than an implied promise
 
+For risk-relevant cuts with missing minimum proof on the touched surface, partial proof does not authorize `READY` on its own. Keep the round in `NEEDS_DEV_DECISION_HARNESS` until DEV chooses one of the allowed harness outcomes explicitly.
+
 Confidence labels inside the pack should reflect evidence reality:
 - `High`: the critical obligations have credible direct proof
 - `Medium`: the main obligations are covered, but some bounded risk remains
@@ -370,12 +408,15 @@ A cut is `READY` for execution only when all of the following are true:
 - the relevant deterministic quality checks are classified explicitly and tied to the cut
 - the future runner can execute the pack without inventing criteria
 - the coders can understand what must be provable before they implement
+- low-risk/local cuts without new tests still have an honest proof path for the promised behavior
+- risk-relevant cuts have relevant proof support for the touched surface, or the DEV-owned compromise has already been resolved explicitly
 
 A cut is not ready when:
 - the proof target is still vague
 - the pack says "test everything" or other generic theater
 - critical proof depends on a harness that does not exist, cannot be trusted, or still needs policy decision
 - the runner would have to guess what failure means or what evidence is acceptable
+- a risk-relevant cut would rely on build, smoke, or manual evidence alone while the critical touched surface still lacks minimum relevant coverage
 
 ### Handoff quality rules for the runner
 The `VALIDATION PACK` must be executable as a validation brief by `validation-runner.agent.md`.
@@ -400,6 +441,7 @@ Emit `NEEDS_DEV_DECISION_HARNESS` when:
 - the trade-off between shipping with partial proof versus investing in harness is DEV-owned
 - the harness is present but untrustworthy enough that proceeding would create fake confidence
 - the acceptable validation bar cannot be derived safely from the current context
+- the cut touches business logic, state, services, guards, resolvers, interceptors, shared contracts, shared libraries, authentication, authorization, security, PIN, token, session, async or other cross-module regression-sensitive behavior, and the current harness does not cover that touched surface with relevant proof
 
 When escalating, say:
 - what cannot be proven honestly

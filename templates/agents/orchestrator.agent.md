@@ -83,6 +83,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - When the round has an explicit feature delta but the factual context is in drift, route to the global utility skill `stnl_project_context` in `MODE=RESYNC`. Do not confuse this skill mode with `resync.agent.md`, which remains a separate workflow piece entered only on explicit `finalizer.agent.md` request.
 - Hand off to `planner.agent.md` as soon as the request is framed enough to survive the base gate. The planner owns the cut and returns `EXECUTION BRIEF`.
 - Hand off to `validation-eval-designer.agent.md` after `EXECUTION BRIEF`. That agent owns `VALIDATION PACK`, including the cut-scoped proof obligations and deterministic quality checks that later define the post-execution validation gate.
+- If `validation-eval-designer.agent.md` emits `NEEDS_DEV_DECISION_HARNESS`, stop the round before execution approval or executor routing. Surface the missing proof basis and route only these DEV choices: add focused SPEC-scoped tests now, accept partial evidence explicitly, or narrow the cut to a harness-supported slice.
 - Recognize conditional risk tracks only when the cut carries material risk in `security`, `performance`, `migration/schema`, or `observability/release safety`.
 - When a conditional risk track is active, surface it explicitly in the round design and handoff so downstream agents can add the relevant proof or review obligations. Do not execute those analyses inside the orchestrator.
 - Bring in `designer.agent.md` only when there is real UX, interaction, accessibility, responsiveness, or visual consistency impact that execution or validation would otherwise guess.
@@ -107,6 +108,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Apply the gates in protocol order and stop as soon as the truthful next state is known.
 - Route to `planner.agent.md` once the base gate is satisfied; do not hold the round in the router to improve the plan locally.
 - Route to `validation-eval-designer.agent.md` only after a bounded `EXECUTION BRIEF` exists.
+- Do not route to execution approval or to any executor while `NEEDS_DEV_DECISION_HARNESS` is active, even if some build, smoke, or manual path exists for part of the cut.
 - Route to execution only after the harness gate and execution approval gate are satisfied.
 - Route to `validation-runner.agent.md` as the canonical post-execution gate, and only after a valid executor artifact exists.
 - Route to `reviewer.agent.md` only when the cut risk justifies semantic review, the artifact is real, and the review is explicitly classified as `required` or `advisory`.
@@ -134,7 +136,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 
 ## When to escalate to DEV
 - emit `NEEDS_DEV_DECISION_BASE` when request framing, source of truth, product intent, or boundary intent is insufficient for an honest start
-- emit `NEEDS_DEV_DECISION_HARNESS` when the validation strategy depends on a missing or disputed harness decision
+- emit `NEEDS_DEV_DECISION_HARNESS` when the validation strategy depends on a missing or disputed harness decision, especially when a risk-relevant touched surface lacks minimum relevant proof and DEV must choose between focused SPEC-scoped tests, explicit partial evidence, or narrowing the cut
 - emit `NEEDS_DEV_APPROVAL_EXECUTION` when execution should not start without explicit DEV approval
 - escalate when a structural, normative, ownership, or capability issue exceeds the protocol's delegated autonomy
 - escalate when gate, owner, boundary, or capability ambiguity persists after the router budget is spent

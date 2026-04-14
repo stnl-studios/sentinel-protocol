@@ -394,6 +394,30 @@ Regras:
 - fazer o `reviewer` verificar se risco estrutural material dessas trilhas foi ignorado, sem transformá-lo em especialista dedicado nem em substituto do runner
 - preservar o ownership atual de `VALIDATION PACK`, `validation-runner` e `reviewer`
 
+## Gate condicional de harness por risco
+A skill deve materializar de forma explícita a diferença entre falta de testes em mudança simples/local e falta de testes em mudança com risco relevante.
+
+Regras:
+- mudança simples, local e de baixo acoplamento pode seguir sem testes novos quando build, lint, smoke, manual path ou outra evidência leve realmente bastarem para o cut
+- ausência de specs existentes, sozinha, não bloqueia automaticamente um cut simples/local
+- quando o cut tocar superfície de risco relevante, a suficiência do harness deixa de ser mera limitação de evidência e vira gate pré-execução do DEV
+- tratar como superfície de risco relevante, no mínimo:
+  - lógica de negócio
+  - state, store, sinais ou estado derivado
+  - services, facades, repositories ou data access
+  - guards, resolvers ou interceptors
+  - contratos compartilhados ou libs compartilhadas
+  - autenticação, autorização, segurança, PIN, token ou sessão
+  - fluxos assíncronos ou multi-step
+  - comportamento com risco de regressão transversal entre apps ou módulos
+- nesses casos, ausência de testes relevantes existentes ou de outro harness minimamente confiável para a superfície tocada deve gerar `NEEDS_DEV_DECISION_HARNESS`
+- build, lint, smoke ou evidência manual podem continuar documentados no `VALIDATION PACK`, mas não bastam sozinhos para marcar o cut como execution-ready quando a prova crítica da superfície de risco continua sem cobertura mínima
+- quando o gate ocorrer, o specialized final deve deixar explícitas apenas estas saídas legítimas do DEV:
+  - criar testes focados na SPEC agora
+  - aceitar seguir sem testes novos, assumindo conscientemente evidência parcial
+  - reduzir o corte para uma parte validável com o harness atual
+- "testes focados na SPEC" significa cobrir apenas a touch surface alterada e os fluxos críticos prometidos pela SPEC; nunca significa planejar ou montar a suíte inteira do projeto
+
 ### Regra de coerência sistêmica
 Não omitir um agent se essa omissão deixar outros agents com referências quebradas ou exigir distorção do contrato canônico para compensar.
 
@@ -493,9 +517,9 @@ Checks obrigatórios de materialização:
 - `chat budget` explícito quando o papel tiver superfície curta relevante no chat principal
 
 Aplicação por papel:
-- `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, delta novo realmente relevante, e trilhas condicionais de risco quando materialmente ativas; nunca absorver implementação, rejeitar handoff descritivo do executor, e só liberar runner com artifact validável
+- `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, delta novo realmente relevante, e trilhas condicionais de risco quando materialmente ativas; nunca absorver implementação, rejeitar handoff descritivo do executor, não auto-empurrar execução quando houver `NEEDS_DEV_DECISION_HARNESS`, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
-- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, além de converter trilhas condicionais materialmente ativas em prova cut-scoped
+- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, e emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC
 - `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; reconhecer quando trilha material de risco foi ignorada, sem virar especialista dedicado; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
@@ -670,6 +694,10 @@ Verificar no `validation-eval-designer`:
 - consumo explícito de `docs/core/TESTING.md` como base factual de comandos canônicos, paths manuais aceitos, pré-requisitos e limites de harness quando esse doc existir
 - a matriz local informa o pack sem ser copiada inteira nem virar checklist universal
 - ausência ou fraqueza da matriz local aparece explicitamente no harness judgment quando relevante
+- a suficiência do harness é classificada pelo risco real do cut, não apenas pela presença ou ausência genérica de specs
+- ausência de testes relevantes existentes em mudança simples/local não vira bloqueio automático
+- ausência de testes relevantes existentes em superfície de risco relevante gera `NEEDS_DEV_DECISION_HARNESS`
+- pedido de novos testes fica explicitamente limitado a testes focados na SPEC e na touch surface alterada, nunca a cobertura ampla do projeto
 - trilhas condicionais ativas viram obrigações cut-scoped de prova para `security`, `performance`, `migration/schema` e `observability/release safety` quando houver risco material
 - ausência de checklist burocrático universal de trilhas de risco quando o cut não pedir
 
@@ -712,6 +740,7 @@ Verificar em `reviewer`:
 Verificar:
 - o `orchestrator` explicita que nunca implementa fallback depois de handoff para executor
 - o `orchestrator` nunca absorve execução após `APPROVED_EXECUTION`
+- o `orchestrator` não roteia aprovação de execução nem executor enquanto `NEEDS_DEV_DECISION_HARNESS` continuar ativo
 - o `orchestrator` só aceita do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
 - gap material de capability de editar ou executar aparece como blocker pré-execução
 - resposta narrativa, descritiva, pseudo-plano, leitura ampla adicional, ou sem diff aplicado é tratada como handoff inválido

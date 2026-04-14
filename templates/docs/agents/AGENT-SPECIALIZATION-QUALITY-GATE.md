@@ -157,8 +157,16 @@ Verificar no `validation-eval-designer`:
 - consumo explicito de `docs/core/TESTING.md` como base factual de comandos canonicos, paths manuais aceitos, pre-requisitos e limites de harness quando esse doc existir
 - a matriz local informa o pack sem ser copiada inteira nem virar checklist universal
 - ausencia ou fraqueza da matriz local aparece explicitamente no harness judgment quando relevante
+- a suficiência do harness é julgada pelo risco real do cut, não apenas pela existência genérica de specs
+- ausência de testes relevantes existentes em mudança simples ou local não vira gate automático
+- ausência de testes relevantes existentes em superfície de risco relevante gera `NEEDS_DEV_DECISION_HARNESS`
+- quando o gate pede novos testes, o escopo fica limitado a testes focados na SPEC e na surface tocada, nunca à suíte ampla do projeto
 - trilhas condicionais ativas viram obrigacoes cut-scoped de prova para `security`, `performance`, `migration/schema` e `observability/release safety` quando houver risco material
 - ausencia de checklist burocratico universal de trilhas de risco quando o cut nao pedir
+
+Hard fails:
+- specialized permite `READY` apoiado apenas em build, lint, smoke ou evidência manual para cut de risco relevante sem cobertura mínima da surface tocada
+- specialized transforma o gate de harness em iniciativa de cobertura ampla do projeto em vez de pedir testes focados na SPEC
 
 ### 8. Executor ownership check
 Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
@@ -213,6 +221,7 @@ Verificar em `reviewer`:
 Verificar:
 - o `orchestrator` explicita que nunca implementa fallback depois de handoff para executor
 - o `orchestrator` nunca absorve execucao apos `APPROVED_EXECUTION`
+- o `orchestrator` nao roteia aprovacao de execucao nem executor com `NEEDS_DEV_DECISION_HARNESS` ainda ativo
 - o `orchestrator` so aceita do executor `READY` com evidencia de alteracao aplicada, ou `BLOCKED` com causa exata
 - gap material de capability de editar ou executar aparece como blocker pre-execucao
 - resposta narrativa, descritiva, pseudo-plano, leitura ampla adicional, ou sem diff aplicado e tratada como handoff invalido
