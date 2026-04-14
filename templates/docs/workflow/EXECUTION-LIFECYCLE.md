@@ -8,11 +8,14 @@ Descrever a ordem operacional canônica do Sentinel com mais precisão que `STAT
 2. `planner` define o cut autorizado e produz `EXECUTION BRIEF`.
 3. `validation-eval-designer` transforma o brief em `VALIDATION PACK`, definindo obrigações de prova, estratégia de evidência, limites de harness e checks determinísticos relevantes ao cut.
 4. O fluxo resolve o gate de harness e o gate de aprovação de execução antes de qualquer implementação. Em mudança simples e local, ausência de testes pode continuar não-bloqueante quando a prova leve do cut for honesta; em mudança de risco relevante sem cobertura mínima da surface tocada, o fluxo para em `NEEDS_DEV_DECISION_HARNESS`.
-5. Os executors implementam o cut autorizado. Execução real devolve artifact aplicável ou `BLOCKED`; resposta descritiva não substitui artifact.
-6. `validation-runner` executa o `VALIDATION PACK` sobre o artifact implementado. Isso inclui prova funcional e os checks determinísticos marcados no pack como relevantes ao cut.
-7. `reviewer` entra quando aplicável para revisar o artifact implementado e o diff resultante em chave semântica e arquitetural. O `orchestrator` deve classificá-lo como `required` ou `advisory` antes da handoff.
-8. `finalizer` apenas consolida o resultado do runner, o sinal do reviewer quando existir, ou um bloqueio pré-validação roteado pelo orchestrator. Ele não redesenha prova, não reexecuta checks e não assume ownership de review técnico substituto.
-9. `resync` entra apenas quando o `finalizer` detecta delta factual fora da feature que precisa ser sincronizado.
+5. Se o DEV escolher adicionar testes focados na SPEC agora, a escolha não libera execução por si só: o `validation-eval-designer` atualiza o `VALIDATION PACK` com a nova prova exigida, e quando a decisão alterar materialmente o cut o fluxo reabre `planner -> validation-eval-designer` antes de qualquer approval.
+6. Se o DEV escolher aceitar evidência parcial explicitamente, o fluxo volta ao `validation-eval-designer` para registrar no `VALIDATION PACK` a limitação aceita, a prova faltante, a evidência substituta, o risco residual visível e que o compromisso foi decisão explícita do DEV; só depois disso o fluxo retorna ao gate normal de execução.
+7. Se o DEV escolher reduzir o cut, o cut anterior deixa de valer como base de execução: o fluxo volta obrigatoriamente ao `planner` para um novo `EXECUTION BRIEF`, depois ao `validation-eval-designer` para um novo `VALIDATION PACK`, e readiness ou approval anteriores não sobrevivem automaticamente.
+8. Os executors implementam o cut autorizado. Execução real devolve artifact aplicável ou `BLOCKED`; resposta descritiva não substitui artifact.
+9. `validation-runner` executa o `VALIDATION PACK` sobre o artifact implementado. Isso inclui prova funcional e os checks determinísticos marcados no pack como relevantes ao cut.
+10. `reviewer` entra quando aplicável para revisar o artifact implementado e o diff resultante em chave semântica e arquitetural. O `orchestrator` deve classificá-lo como `required` ou `advisory` antes da handoff.
+11. `finalizer` apenas consolida o resultado do runner, o sinal do reviewer quando existir, ou um bloqueio pré-validação roteado pelo orchestrator. Ele não redesenha prova, não reexecuta checks e não assume ownership de review técnico substituto.
+12. `resync` entra apenas quando o `finalizer` detecta delta factual fora da feature que precisa ser sincronizado.
 
 ## Contrato do quality gate pós-execução
 - O `VALIDATION PACK` deve definir, quando relevante ao cut, lint, formatter/prettier, typecheck, build e testes mínimos da superfície tocada.
@@ -20,6 +23,8 @@ Descrever a ordem operacional canônica do Sentinel com mais precisão que `STAT
 - Em cuts simples e locais, build, lint, smoke ou manual path podem bastar sem exigir testes novos por default.
 - Em cuts que tocam lógica de negócio, state, services, facades, repositories, data access, guards, resolvers, interceptors, contratos compartilhados, libs compartilhadas, auth, autorização, segurança, PIN, token, sessão, fluxos assíncronos, multi-step ou comportamento com risco de regressão transversal, ausência de testes relevantes existentes ou de harness minimamente confiável para a surface tocada deve acionar `NEEDS_DEV_DECISION_HARNESS` antes da execução.
 - Quando o DEV optar por investir em prova nova nesse gate, a exigência é de testes focados na SPEC e nos fluxos críticos prometidos pelo cut, não de cobertura ampla do projeto.
+- `NEEDS_DEV_DECISION_HARNESS` é gate de decisão, não atalho para execução: depois da escolha do DEV, o fluxo sempre volta ao owner do artifact afetado antes de qualquer approval ou handoff para executor.
+- `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL` e qualquer leitura de readiness valem apenas para o par vigente `EXECUTION BRIEF` + `VALIDATION PACK`, nunca para versões anteriores do recorte.
 - O `validation-runner` executa e julga esses checks no escopo do cut. O runner não vira smoke runner genérico repo-wide e não redesenha o pack durante a run.
 - Falha de check obrigatório, ausência de execução de check obrigatório ou bloqueio real do path de prova afetam formalmente verdict e confidence.
 

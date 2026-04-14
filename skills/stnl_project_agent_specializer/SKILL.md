@@ -416,6 +416,10 @@ Regras:
   - criar testes focados na SPEC agora
   - aceitar seguir sem testes novos, assumindo conscientemente evidência parcial
   - reduzir o corte para uma parte validável com o harness atual
+- após a decisão do DEV, o fluxo deve voltar ao owner canônico do artifact afetado antes de qualquer approval ou execução
+- se o DEV escolher testes focados e o boundary do cut permanecer materialmente o mesmo, o specialized deve voltar ao `validation-eval-designer` para atualizar o `VALIDATION PACK`; se a decisão alterar materialmente o cut, deve voltar primeiro ao `planner` para atualizar o `EXECUTION BRIEF` e só depois ao `validation-eval-designer`
+- se o DEV escolher evidência parcial explícita, o specialized deve voltar ao `validation-eval-designer` para registrar no `VALIDATION PACK` a limitação aceita, a prova faltante, a evidência substituta, o risco residual e que a escolha foi decisão explícita do DEV
+- se o DEV escolher reduzir o cut, o specialized deve invalidar readiness ou approval derivados do cut anterior, voltar obrigatoriamente ao `planner` para recortar o novo cut e depois regenerar o `VALIDATION PACK`
 - "testes focados na SPEC" significa cobrir apenas a touch surface alterada e os fluxos críticos prometidos pela SPEC; nunca significa planejar ou montar a suíte inteira do projeto
 
 ### Regra de coerência sistêmica
@@ -485,6 +489,10 @@ Regras:
 - o `orchestrator` deve ter budget operacional explícito antes do primeiro handoff
 - o `orchestrator` só pode publicar delta mínimo suficiente no chat principal; artifacts ricos e evidência completa ficam no handoff interno por default
 - depois de `APPROVED_EXECUTION` ou `SKIP_EXECUTION_APPROVAL`, o `orchestrator` nunca pode absorver implementação ou fallback de execução
+- ao receber a decisão do DEV para `NEEDS_DEV_DECISION_HARNESS`, o `orchestrator` deve seguir somente a trilha canônica correspondente e nunca converter essa decisão diretamente em execução
+- se a decisão for adicionar testes focados, o `orchestrator` volta ao `validation-eval-designer` quando o cut permanece materialmente o mesmo, ou ao `planner` antes quando o cut muda materialmente
+- se a decisão for aceitar evidência parcial explícita, o `orchestrator` volta ao `validation-eval-designer` para registrar o compromisso no `VALIDATION PACK` antes de qualquer gate normal de execução
+- se a decisão for reduzir o cut, o `orchestrator` volta obrigatoriamente ao `planner` e invalida qualquer readiness ou approval derivado do cut anterior
 - antes de rotear um executor, o `orchestrator` deve tornar explícito se o agent materializado tem capacidade real de editar e executar o cut; gap material vira blocker operacional antes da execução
 - o `orchestrator` só pode aceitar do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
 - resposta narrativa, descritiva, analítica, pseudo-plano ou sem diff aplicado deve ser tratada como handoff inválido do executor, com parada explícita da rodada
@@ -519,7 +527,7 @@ Checks obrigatórios de materialização:
 Aplicação por papel:
 - `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, delta novo realmente relevante, e trilhas condicionais de risco quando materialmente ativas; nunca absorver implementação, rejeitar handoff descritivo do executor, não auto-empurrar execução quando houver `NEEDS_DEV_DECISION_HARNESS`, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
-- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, e emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC
+- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC, registrar operacionalmente no pack qualquer compromisso explícito do DEV sobre evidência parcial, refletir no pack a exigência de testes focados antes da execução, e exigir retorno ao `planner` quando a decisão do DEV alterar materialmente o recorte
 - `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; reconhecer quando trilha material de risco foi ignorada, sem virar especialista dedicado; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
@@ -698,8 +706,17 @@ Verificar no `validation-eval-designer`:
 - ausência de testes relevantes existentes em mudança simples/local não vira bloqueio automático
 - ausência de testes relevantes existentes em superfície de risco relevante gera `NEEDS_DEV_DECISION_HARNESS`
 - pedido de novos testes fica explicitamente limitado a testes focados na SPEC e na touch surface alterada, nunca a cobertura ampla do projeto
+- o `validation-eval-designer` explicita que é owner do registro operacional do compromisso de harness no `VALIDATION PACK`
+- o specialized define o next state canônico após cada uma das 3 opções do DEV em `NEEDS_DEV_DECISION_HARNESS`
+- quando a decisão do DEV altera materialmente o cut, o specialized reabre `planner -> validation-eval-designer` em vez de improvisar novo cut localmente
+- `READY` só reaparece depois que o `VALIDATION PACK` estiver coerente com a escolha do DEV e com o cut vigente
 - trilhas condicionais ativas viram obrigações cut-scoped de prova para `security`, `performance`, `migration/schema` e `observability/release safety` quando houver risco material
 - ausência de checklist burocrático universal de trilhas de risco quando o cut não pedir
+
+Hard fails:
+- o specialized não define o next state após cada uma das 3 opções do DEV em `NEEDS_DEV_DECISION_HARNESS`
+- o specialized não deixa explícito quem atualiza `EXECUTION BRIEF` e quem atualiza `VALIDATION PACK` quando a decisão do DEV muda prova ou boundary
+- o specialized permite `READY`, approval ou execução direta após a escolha do DEV sem brief ou pack coerentes
 
 ### Executor ownership check
 Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
@@ -741,6 +758,10 @@ Verificar:
 - o `orchestrator` explicita que nunca implementa fallback depois de handoff para executor
 - o `orchestrator` nunca absorve execução após `APPROVED_EXECUTION`
 - o `orchestrator` não roteia aprovação de execução nem executor enquanto `NEEDS_DEV_DECISION_HARNESS` continuar ativo
+- o `orchestrator` roteia a decisão do DEV em `NEEDS_DEV_DECISION_HARNESS` apenas pela trilha canônica correspondente e nunca a converte diretamente em execução
+- adicionar testes focados sem mudança material de cut volta ao `validation-eval-designer`; com mudança material de cut volta a `planner` antes do `validation-eval-designer`
+- evidência parcial explícita volta ao `validation-eval-designer` para atualizar o `VALIDATION PACK` antes de qualquer gate normal de execução
+- estreitar ou alterar materialmente o cut invalida readiness ou approval anteriores e volta obrigatoriamente a `planner` antes de regenerar o pack
 - o `orchestrator` só aceita do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
 - gap material de capability de editar ou executar aparece como blocker pré-execução
 - resposta narrativa, descritiva, pseudo-plano, leitura ampla adicional, ou sem diff aplicado é tratada como handoff inválido
@@ -749,6 +770,9 @@ Verificar:
 - `validation-runner` só entra com artifact validável do executor
 - `reviewer` só entra com artifact implementado real e classificação explícita `required` ou `advisory`
 - ausência de review `required` ou risco estrutural material não resolvido impede closure limpa
+
+Hard fails:
+- o specialized reaproveita implicitamente readiness ou execution approval derivados de um cut anterior depois de mudança material do boundary
 
 ### Factual fidelity, certainty, and coverage check
 Verificar:

@@ -10,7 +10,7 @@ Fluxo alvo:
 | Status | Significado | Momento do fluxo |
 | --- | --- | --- |
 | `NEEDS_DEV_DECISION_BASE` | Falta decisão do DEV sobre base, escopo ou direção antes de avançar. | Gate de base. |
-| `NEEDS_DEV_DECISION_HARNESS` | Falta decisão do DEV sobre harness, estratégia ou suficiência de prova para um cut cujo risco não pode seguir só com evidência leve. | Gate de harness. |
+| `NEEDS_DEV_DECISION_HARNESS` | Falta decisão do DEV sobre harness, estratégia ou suficiência de prova para um cut cujo risco não pode seguir só com evidência leve; esse status para o fluxo antes de approval ou execução e não autoriza salto direto para implementar. | Gate de harness. |
 | `NEEDS_DEV_APPROVAL_EXECUTION` | O plano e o desenho de validação estão prontos, mas a execução depende de aprovação explícita. | Gate de aprovação da execução. |
 | `APPROVED_EXECUTION` | A execução foi aprovada explicitamente pelo DEV. | Saída do gate de aprovação, antes da execução. |
 | `SKIP_EXECUTION_APPROVAL` | A execução pode seguir sem aprovação explícita adicional. | Saída do gate de aprovação, quando a política permite seguir direto. |
@@ -35,6 +35,9 @@ Fluxo alvo:
 - Em mudança que toca lógica de negócio, state, services, facades, repositories, data access, guards, resolvers, interceptors, contratos compartilhados, libs compartilhadas, auth, autorização, segurança, PIN, token, sessão, fluxos assíncronos, multi-step ou comportamento com risco de regressão transversal, ausência de testes relevantes existentes ou de harness minimamente confiável para a surface tocada deve virar `NEEDS_DEV_DECISION_HARNESS` antes da execução.
 - Nesse gate, o DEV decide entre criar testes focados na SPEC agora, aceitar seguir com evidência parcial conscientemente, ou reduzir o cut para uma parte validável com o harness atual.
 - "Testes relevantes" aqui significa testes focados na SPEC e na surface tocada, não uma iniciativa de cobertura ampla do projeto.
+- Depois da decisão do DEV, o fluxo retorna ao owner do artifact afetado: mesma fronteira de cut volta ao `validation-eval-designer` para atualizar o `VALIDATION PACK`; mudança material de cut reabre `planner -> validation-eval-designer`.
+- Aceitar evidência parcial explicitamente exige que o `validation-eval-designer` registre no `VALIDATION PACK` a limitação de harness aceita, a prova ainda faltante, a evidência substituta, o risco residual visível e que a escolha foi decisão explícita do DEV antes de qualquer gate normal de execução.
+- Reduzir o cut invalida implicitamente o cut anterior como base de execução; readiness e execution approval derivados do recorte anterior não valem para o novo recorte até existirem novo `EXECUTION BRIEF` e novo `VALIDATION PACK`.
 - Sem proof/check mínimo relevante executado com resultado honesto, a rodada não fecha como "done limpo"; a lacuna, falha ou bloqueio precisa aparecer no verdict e no fechamento.
 
 ## Nota de review técnico pós-execução

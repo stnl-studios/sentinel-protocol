@@ -161,12 +161,19 @@ Verificar no `validation-eval-designer`:
 - ausência de testes relevantes existentes em mudança simples ou local não vira gate automático
 - ausência de testes relevantes existentes em superfície de risco relevante gera `NEEDS_DEV_DECISION_HARNESS`
 - quando o gate pede novos testes, o escopo fica limitado a testes focados na SPEC e na surface tocada, nunca à suíte ampla do projeto
+- `validation-eval-designer` explicita que é owner do registro operacional do compromisso de harness no `VALIDATION PACK`
+- cada uma das 3 opções do DEV após `NEEDS_DEV_DECISION_HARNESS` define o next state canônico: mesmos limites do cut voltam ao `validation-eval-designer`; mudança material de cut volta a `planner` e depois a `validation-eval-designer`
+- evidência parcial explícita reabre pelo menos o `validation-eval-designer` para registrar limitação aceita, prova faltante, evidência substituta, risco residual e decisão explícita do DEV no `VALIDATION PACK`
+- `READY` só reaparece depois que o `VALIDATION PACK` estiver coerente com a escolha do DEV e com o cut vigente
 - trilhas condicionais ativas viram obrigacoes cut-scoped de prova para `security`, `performance`, `migration/schema` e `observability/release safety` quando houver risco material
 - ausencia de checklist burocratico universal de trilhas de risco quando o cut nao pedir
 
 Hard fails:
 - specialized permite `READY` apoiado apenas em build, lint, smoke ou evidência manual para cut de risco relevante sem cobertura mínima da surface tocada
 - specialized transforma o gate de harness em iniciativa de cobertura ampla do projeto em vez de pedir testes focados na SPEC
+- o specialized nao define o next state apos cada uma das 3 opcoes legitimas do DEV em `NEEDS_DEV_DECISION_HARNESS`
+- o specialized nao deixa explicito quem atualiza `EXECUTION BRIEF` e quem atualiza `VALIDATION PACK` apos mudanca de prova ou de cut
+- o specialized permite `READY`, approval ou execucao direta apos a escolha do DEV sem brief ou pack coerentes
 
 ### 8. Executor ownership check
 Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
@@ -222,6 +229,10 @@ Verificar:
 - o `orchestrator` explicita que nunca implementa fallback depois de handoff para executor
 - o `orchestrator` nunca absorve execucao apos `APPROVED_EXECUTION`
 - o `orchestrator` nao roteia aprovacao de execucao nem executor com `NEEDS_DEV_DECISION_HARNESS` ainda ativo
+- o `orchestrator` roteia a decisão do DEV em `NEEDS_DEV_DECISION_HARNESS` apenas pela trilha canônica correspondente e nunca converte a decisão diretamente em execução
+- escolha de adicionar testes focados sem mudança material de cut volta ao `validation-eval-designer`; com mudança material de cut volta a `planner` antes do `validation-eval-designer`
+- escolha de evidência parcial explícita volta ao `validation-eval-designer` para atualizar o `VALIDATION PACK` antes de qualquer gate normal de execução
+- escolha de estreitar ou alterar materialmente o cut invalida readiness ou approval anteriores e volta obrigatoriamente a `planner` antes de regenerar o pack
 - o `orchestrator` so aceita do executor `READY` com evidencia de alteracao aplicada, ou `BLOCKED` com causa exata
 - gap material de capability de editar ou executar aparece como blocker pre-execucao
 - resposta narrativa, descritiva, pseudo-plano, leitura ampla adicional, ou sem diff aplicado e tratada como handoff invalido
@@ -230,6 +241,9 @@ Verificar:
 - `validation-runner` so entra com artifact validavel do executor
 - `reviewer` so entra com artifact implementado real e classificacao explicita `required` ou `advisory`
 - ausencia de review `required` ou risco estrutural material nao resolvido impede closure limpa
+
+Hard fails:
+- o specialized reaproveita implicitamente readiness ou execution approval derivados de um cut anterior depois de mudanca material do boundary
 
 ### 12. Early-discovery wording check
 Verificar:

@@ -35,6 +35,7 @@ It enters to convert the planned cut into a validation design that is specific e
 - short return surface for orchestrator/main chat: readiness or gate status, still-open proof obligations, and DEV decision required if any
 
 The `VALIDATION PACK` is an ephemeral operational artifact. It is the source of truth for how this cut must later be validated, but it is not a durable document and it is not a runner verdict.
+It is also the canonical operational record for any explicit DEV-owned harness compromise accepted for the current cut.
 
 The `VALIDATION PACK` must define, when relevant:
 - cut summary and validation target
@@ -93,6 +94,21 @@ When that gate is raised for a risk-relevant cut, the surfaced decision must sta
 - accept consciously proceeding without new tests and with partial evidence
 - narrow the cut to a slice the current harness can validate honestly
 
+When DEV chooses focused SPEC-scoped tests now:
+- update `VALIDATION PACK` so the new focused tests are explicit proof obligations before execution approval can reopen
+- if the cut boundary stays materially the same, keep the same cut and return the refreshed pack
+- if the choice materially changes or expands the cut boundary, require return to `planner.agent.md` for an updated `EXECUTION BRIEF` before regenerating the pack
+
+When DEV chooses explicit partial evidence:
+- update `VALIDATION PACK` to record what cannot be proven honestly, what substitute evidence will be used, what residual risk remains visible, and that the compromise was an explicit DEV decision
+- treat that choice as ownership of the compromise, not as proof that the cut is now fully established
+- only after this explicit pack update may the round continue to the normal execution-approval gate
+
+When DEV chooses to narrow the cut:
+- require return to `planner.agent.md` for the new authorized cut instead of improvising a new local boundary here
+- regenerate `VALIDATION PACK` for that new cut after the updated `EXECUTION BRIEF` exists
+- treat any readiness or execution-approval state tied to the previous cut as stale until the new pack is coherent
+
 Keep the surfaced return delta-only by default: `READY` or gate status, the proof obligations that remain open, and the DEV decision required when there is one.
 
 ## When to escalate to DEV
@@ -132,6 +148,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - role class: `proof-design`
 - receives `EXECUTION BRIEF` as the main upstream artifact
 - owns the canonical ephemeral `VALIDATION PACK`
+- owns the canonical operational recording of DEV harness-compromise decisions inside `VALIDATION PACK`
 - defines the proof required for the cut before execution starts
 - judges whether the current harness is sufficient for honest execution readiness
 - operates with `targeted-local` reading and expands only around the immediate cut, proof surface, and harness boundary when justified
@@ -410,6 +427,7 @@ A cut is `READY` for execution only when all of the following are true:
 - the coders can understand what must be provable before they implement
 - low-risk/local cuts without new tests still have an honest proof path for the promised behavior
 - risk-relevant cuts have relevant proof support for the touched surface, or the DEV-owned compromise has already been resolved explicitly
+- any DEV harness decision has already been reflected in the current `VALIDATION PACK`, and any material cut change has already gone back through `planner.agent.md`
 
 A cut is not ready when:
 - the proof target is still vague
@@ -442,6 +460,8 @@ Emit `NEEDS_DEV_DECISION_HARNESS` when:
 - the harness is present but untrustworthy enough that proceeding would create fake confidence
 - the acceptable validation bar cannot be derived safely from the current context
 - the cut touches business logic, state, services, guards, resolvers, interceptors, shared contracts, shared libraries, authentication, authorization, security, PIN, token, session, async or other cross-module regression-sensitive behavior, and the current harness does not cover that touched surface with relevant proof
+
+Do not emit `READY` again until the pack is coherent with the chosen DEV path for this same cut version.
 
 When escalating, say:
 - what cannot be proven honestly
