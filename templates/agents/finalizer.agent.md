@@ -123,8 +123,8 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local durable-record locations, milestone examples, closure language, resync triggers, and evidence heuristics.
-- `Non-overridable protocol invariants`: preserve the finalizer role, this physical filename, the `READY` and `BLOCKED` status contract, non-ownership of runner verdicts and reviewer output, ownership of `Feature CONTEXT` and `DONE` judgment, and the `minimal-verification` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
+- `Non-overridable protocol invariants`: preserve the finalizer role, this canonical agent identity, the `READY` and `BLOCKED` status contract, non-ownership of runner verdicts and reviewer output, ownership of `Feature CONTEXT` and `DONE` judgment, and the `minimal-verification` reading class.
+- `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Operating policy
 ### Finalization stance

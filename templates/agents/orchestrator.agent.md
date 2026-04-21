@@ -187,11 +187,11 @@ It remains the round coordinator, but substantive reading and technical cost bel
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local docs, path maps, heuristics, capability notes, examples, and narrow read-expansion triggers for this role.
-- `Non-overridable protocol invariants`: preserve the orchestrator role, this physical filename, the canonical status set and status ownership, the gate order, the handoff ownership model, and the `routing-minimal` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
+- `Non-overridable protocol invariants`: preserve the orchestrator role, this canonical agent identity, the canonical status set and status ownership, the gate order, the handoff ownership model, and the `routing-minimal` reading class.
+- `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Project-specializable part
-This section is intentionally reserved for project-local specialization when this base agent is materialized under `./.github/agents/`.
+This section is intentionally reserved for project-local specialization when this base agent is materialized for the target repo.
 
 It may add:
 - local owner maps, boundary notes, capability notes, and narrow routing examples

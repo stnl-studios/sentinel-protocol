@@ -133,8 +133,8 @@ If execution is `BLOCKED` before a validation-eligible result exists, hand the b
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local UI docs, path conventions, commands, evidence norms, UX-sensitive hotspots, and boundary-specific examples.
-- `Non-overridable protocol invariants`: preserve the front-end executor role, this physical filename, the `READY` and `BLOCKED` status contract, execution-only ownership, no durable-memory ownership, and the `targeted-local` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
+- `Non-overridable protocol invariants`: preserve the front-end executor role, this canonical agent identity, the `READY` and `BLOCKED` status contract, execution-only ownership, no durable-memory ownership, and the `targeted-local` reading class.
+- `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Project-specializable part
 - front-end stack and framework conventions

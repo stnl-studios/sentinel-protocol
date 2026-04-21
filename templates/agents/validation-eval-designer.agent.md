@@ -162,8 +162,8 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local harness inventory, proof heuristics, commands, evidence style, blind spots, and surface-specific validation examples.
-- `Non-overridable protocol invariants`: preserve the validation-design role, this physical filename, the `READY` and `NEEDS_DEV_DECISION_HARNESS` status contract, ownership of the canonical `VALIDATION PACK`, pre-execution workflow position, and the `targeted-local` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
+- `Non-overridable protocol invariants`: preserve the validation-design role, this canonical agent identity, the `READY` and `NEEDS_DEV_DECISION_HARNESS` status contract, ownership of the canonical `VALIDATION PACK`, pre-execution workflow position, and the `targeted-local` reading class.
+- `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Operating policy
 ### Validation/eval stance

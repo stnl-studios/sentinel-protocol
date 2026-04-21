@@ -136,8 +136,8 @@ The handoff must preserve, without smoothing over:
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local harness entry points, evidence formats, known blind spots, environment setup norms, and validation examples by risk class.
-- `Non-overridable protocol invariants`: preserve the runner role, this physical filename, the `PASS`, `PARTIAL`, `FAIL`, and `BLOCKED` verdict ownership, post-execution workflow position, non-ownership of proof design, and the `minimal-verification` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
+- `Non-overridable protocol invariants`: preserve the runner role, this canonical agent identity, the `PASS`, `PARTIAL`, `FAIL`, and `BLOCKED` verdict ownership, post-execution workflow position, non-ownership of proof design, and the `minimal-verification` reading class.
+- `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Operating policy
 ### Validation execution stance

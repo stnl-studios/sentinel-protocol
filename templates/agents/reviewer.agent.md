@@ -113,8 +113,8 @@ For `required` review, absence of review or unresolved material structural risk 
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local review heuristics, high-risk boundaries, coupling hotspots, contract-sensitive surfaces, and examples of structural smells worth flagging.
-- `Non-overridable protocol invariants`: preserve the reviewer role, this physical filename, post-execution pre-finalization placement, non-ownership of proof and closure, the `required` or `advisory` review contract, and the `review-minimal` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
+- `Non-overridable protocol invariants`: preserve the reviewer role, this canonical agent identity, post-execution pre-finalization placement, non-ownership of proof and closure, the `required` or `advisory` review contract, and the `review-minimal` reading class.
+- `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Operating policy
 ### Review stance

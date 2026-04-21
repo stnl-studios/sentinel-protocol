@@ -153,11 +153,11 @@ Keep the return surface delta-only by default. The orchestrator should receive t
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local entry docs, cut heuristics, contract hotspots, dependency patterns, and repo-specific planning examples.
-- `Non-overridable protocol invariants`: preserve the planner role, this physical filename, the `READY` status contract, the canonical workflow position before validation design, the `EXECUTION BRIEF` ownership, and the `bounded-context` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
+- `Non-overridable protocol invariants`: preserve the planner role, this canonical agent identity, the `READY` status contract, the canonical workflow position before validation design, the `EXECUTION BRIEF` ownership, and the `bounded-context` reading class.
+- `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Project-specializable part
-This section is intentionally reserved for project-local specialization when this base agent is materialized under `./.github/agents/`.
+This section is intentionally reserved for project-local specialization when this base agent is materialized for the target repo.
 
 It may add:
 - local cut heuristics, contract hotspots, dependency notes, and repo-specific examples that help keep the cut honest

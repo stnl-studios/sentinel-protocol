@@ -110,8 +110,8 @@ After the minimum factual sync, return `READY` with the applied target and sync 
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine shared-surface maps, target-selection heuristics, wording conventions, and examples of factual versus local versus normative change.
-- `Non-overridable protocol invariants`: preserve the resync role, this physical filename, the `READY` and `BLOCKED` status contract, outside-feature factual-sync-only ownership, non-ownership of closure, and the `targeted-local` reading class.
-- `Materialization rule`: future specialization runs inside the current project and materializes this same file under `./.github/agents/` with no `<PROJECT_ROOT>` parameter.
+- `Non-overridable protocol invariants`: preserve the resync role, this canonical agent identity, the `READY` and `BLOCKED` status contract, outside-feature factual-sync-only ownership, non-ownership of closure, and the `targeted-local` reading class.
+- `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Operating policy
 ### Resync stance
