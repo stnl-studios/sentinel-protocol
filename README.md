@@ -25,8 +25,9 @@ Ele cobre hoje:
 - ciclo isolado de `init`, `update` e `doctor` em `HOME` temporário
 - consistência mínima entre source of truth do repo e artifacts materializados
 - materialização controlada de `stnl_project_context` em repo fixture efêmero local
-- materialização controlada de `stnl_project_agent_specializer` em `.github/agents/` da fixture
-- validação mínima de shape dos docs, references e frontmatters especializados gerados, sem snapshot textual grande
+- materialização controlada de `stnl_project_agent_specializer` para `vscode` em `.github/agents/` da fixture
+- materialização controlada de `stnl_project_agent_specializer` para `codex` em `.codex/agents/*.toml` e `AGENTS.md` da fixture
+- validação mínima de shape dos docs, references, frontmatters `vscode` e TOMLs `codex` gerados, sem snapshot textual grande
 
 Ele ainda não cobre:
 - e2e completo das skills em repositórios reais

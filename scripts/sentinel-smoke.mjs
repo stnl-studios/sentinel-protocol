@@ -169,6 +169,13 @@ const REQUIRED_AGENT_BODY_SNIPPETS = [
     "## Reading contract",
 ];
 
+const CODEX_AGENTS_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "AGENTS.md");
+const REQUIRED_CODEX_TOML_KEYS = [
+    "name",
+    "description",
+    "developer_instructions",
+];
+
 const CONTROLLED_FIXTURE_FILES = {
     "package.json": JSON.stringify({
         name: SMOKE_FIXTURE_REPO_NAME,
@@ -506,6 +513,88 @@ function renderFrontmatter(data) {
     return lines.join("\n");
 }
 
+function parseTomlScalar(rawValue, label) {
+    const value = rawValue.trim();
+
+    if (value.startsWith("\"")) {
+        return JSON.parse(value);
+    }
+
+    if (value === "true") {
+        return true;
+    }
+
+    if (value === "false") {
+        return false;
+    }
+
+    if (/^-?\d+$/.test(value)) {
+        return Number(value);
+    }
+
+    assert.fail(`Valor TOML não parseável em ${label}: ${rawValue}`);
+}
+
+function parseToml(content, label) {
+    const parsed = {};
+    const lines = content.split(/\r?\n/);
+
+    for (let index = 0; index < lines.length; index += 1) {
+        const line = lines[index];
+        const trimmed = line.trim();
+
+        if (!trimmed || trimmed.startsWith("#")) {
+            continue;
+        }
+
+        assert(!trimmed.startsWith("["), `Seção TOML inesperada em ${label}: ${line}`);
+
+        const keyValueMatch = line.match(/^([A-Za-z_][A-Za-z0-9_-]*)\s*=\s*(.*)$/);
+        assert(keyValueMatch, `Linha TOML não parseável em ${label}: ${line}`);
+
+        const [, key, rawValue] = keyValueMatch;
+        assert(!Object.hasOwn(parsed, key), `Chave TOML duplicada em ${label}: ${key}`);
+
+        if (rawValue.trim() === "'''") {
+            const block = [];
+            index += 1;
+
+            for (; index < lines.length; index += 1) {
+                if (lines[index] === "'''") {
+                    break;
+                }
+
+                block.push(lines[index]);
+            }
+
+            assert(index < lines.length, `String literal TOML sem fechamento em ${label}: ${key}`);
+            parsed[key] = block.join("\n");
+            continue;
+        }
+
+        parsed[key] = parseTomlScalar(rawValue, label);
+    }
+
+    return parsed;
+}
+
+function renderTomlScalar(value) {
+    return JSON.stringify(String(value));
+}
+
+function renderCodexAgentToml(data, label) {
+    assert(!data.developer_instructions.includes("'''"), `developer_instructions incompatível com literal TOML: ${label}`);
+
+    return [
+        `name = ${renderTomlScalar(data.name)}`,
+        `description = ${renderTomlScalar(data.description)}`,
+        "developer_instructions = '''",
+        data.developer_instructions.trim(),
+        "'''",
+        "",
+    ].join("\n");
+}
+
 function assertFileHasRequiredShape(filePath, requiredSnippets) {
     assert(fs.existsSync(filePath), `Artifact esperado não existe: ${filePath}`);
 
@@ -567,6 +656,26 @@ function buildSpecializedFrontmatter(baseFrontmatter, fileName, controlledAgentF
     return frontmatter;
 }
 
+function getCodexAgentsTemplatePath(agentSkillRoot) {
+    const installedTemplatePath = path.join(agentSkillRoot, CODEX_AGENTS_TEMPLATE_RELATIVE_PATH);
+
+    if (fs.existsSync(installedTemplatePath)) {
+        return installedTemplatePath;
+    }
+
+    const sourceTemplatePath = path.join(
+        SOURCE_DIR,
+        "stnl_project_agent_specializer",
+        CODEX_AGENTS_TEMPLATE_RELATIVE_PATH
+    );
+    assert(
+        fs.existsSync(sourceTemplatePath),
+        `Template AGENTS.md do target codex não encontrado: ${sourceTemplatePath}`
+    );
+
+    return sourceTemplatePath;
+}
+
 function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles) {
     for (const fileName of controlledAgentFiles) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
@@ -583,6 +692,41 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles) 
             renderFrontmatter(specializedFrontmatter) + body
         );
     }
+}
+
+function buildCodexAgentList(agentNames) {
+    return agentNames
+        .map((agentName) => `- \`${agentName}\` -> \`.codex/agents/${agentName}.toml\``)
+        .join("\n");
+}
+
+function renderCodexAgentsIndex(template, agentNames) {
+    return template
+        .replaceAll("{{PROJECT_NAME}}", SMOKE_FIXTURE_REPO_NAME)
+        .replace("{{AGENT_LIST}}", buildCodexAgentList(agentNames))
+        .replace("{{LOCAL_NOTES}}", "- Smoke fixture for controlled Codex materialization.");
+}
+
+function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles) {
+    const agentNames = controlledAgentFiles.map((fileName) => fileName.replace(/\.agent\.md$/, ""));
+
+    for (const fileName of controlledAgentFiles) {
+        const agentName = fileName.replace(/\.agent\.md$/, "");
+        const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
+        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const tomlContent = renderCodexAgentToml({
+            name: agentName,
+            description: baseFrontmatter.description,
+            developer_instructions: body,
+        }, sourcePath);
+
+        writeFile(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), tomlContent);
+    }
+
+    const templatePath = getCodexAgentsTemplatePath(skillRoot);
+    const template = fs.readFileSync(templatePath, "utf8");
+    writeFile(path.join(repoRoot, "AGENTS.md"), renderCodexAgentsIndex(template, agentNames));
 }
 
 function assertControlledContextMaterialization(repoRoot) {
@@ -702,22 +846,109 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
     }
 }
 
+function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFiles) {
+    const codexAgentsRoot = path.join(repoRoot, ".codex", "agents");
+    const expectedAgentNames = controlledAgentFiles
+        .map((entry) => entry.replace(/\.agent\.md$/, ""))
+        .sort();
+    const materializedTomls = listRelativeFiles(codexAgentsRoot).filter((entry) => entry.endsWith(".toml"));
+    const materializedAgentNames = materializedTomls
+        .map((entry) => entry.replace(/\.toml$/, ""))
+        .sort();
+
+    assert.deepEqual(
+        materializedAgentNames,
+        expectedAgentNames,
+        `Conjunto codex materializado diverge do conjunto controlado: ${codexAgentsRoot}`
+    );
+
+    for (const relativePath of materializedTomls) {
+        const materializedPath = path.join(codexAgentsRoot, relativePath);
+        const content = assertFileHasRequiredShape(materializedPath, []);
+        const parsed = parseToml(content, materializedPath);
+
+        assert.deepEqual(
+            Object.keys(parsed).sort(),
+            [...REQUIRED_CODEX_TOML_KEYS].sort(),
+            `Agent codex controlado deve manter somente o shape mínimo obrigatório: ${materializedPath}`
+        );
+
+        for (const key of REQUIRED_CODEX_TOML_KEYS) {
+            assert(
+                typeof parsed[key] === "string" && parsed[key].trim().length > 0,
+                `Agent codex sem ${key} obrigatório: ${materializedPath}`
+            );
+        }
+    }
+}
+
+function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
+    const agentsIndexPath = path.join(repoRoot, "AGENTS.md");
+    const expectedAgentNames = controlledAgentFiles
+        .map((entry) => entry.replace(/\.agent\.md$/, ""))
+        .sort();
+    const content = assertFileHasRequiredShape(agentsIndexPath, [
+        `# ${SMOKE_FIXTURE_REPO_NAME} Agents`,
+        "## Runtime Contract",
+        "## Managed Agents",
+        ".codex/agents/",
+    ]);
+    const linkedAgentNames = [...content.matchAll(/\.codex\/agents\/([A-Za-z0-9_-]+)\.toml/g)]
+        .map((match) => match[1])
+        .sort();
+
+    assert(
+        content.split(/\r?\n/).length <= 80,
+        `AGENTS.md codex ficou longo demais para shape plausível curto: ${agentsIndexPath}`
+    );
+    assert(
+        !content.includes("{{"),
+        `AGENTS.md codex manteve placeholder não resolvido: ${agentsIndexPath}`
+    );
+    assert.deepEqual(
+        [...new Set(linkedAgentNames)].sort(),
+        expectedAgentNames,
+        `AGENTS.md codex não reflete o conjunto real de TOMLs: ${agentsIndexPath}`
+    );
+}
+
+function assertNoOperationalArtifactsInSentinelRoot() {
+    for (const relativePath of [
+        "AGENTS.md",
+        path.join(".codex", "agents"),
+        path.join(".github", "agents"),
+    ]) {
+        assert(
+            !fs.existsSync(path.join(ROOT, relativePath)),
+            `Artifact operacional não deve existir no repo Sentinel: ${relativePath}`
+        );
+    }
+}
+
 function runControlledMaterializationSmoke(targetHome) {
     const contextSkillRoot = findInstalledSkillRoot(targetHome, "stnl_project_context");
     const agentSkillRoot = findInstalledSkillRoot(targetHome, "stnl_project_agent_specializer");
     const controlledAgentFiles = getControlledAgentFiles(agentSkillRoot);
-    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-fixture-"));
+    const vscodeRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-"));
+    const codexRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-"));
 
     try {
-        createControlledFixtureRepo(repoRoot);
-        materializeControlledContextDocs(contextSkillRoot, repoRoot);
-        materializeControlledAgents(agentSkillRoot, repoRoot, controlledAgentFiles);
+        createControlledFixtureRepo(vscodeRepoRoot);
+        materializeControlledContextDocs(contextSkillRoot, vscodeRepoRoot);
+        materializeControlledAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
 
-        assertControlledContextMaterialization(repoRoot);
+        assertControlledContextMaterialization(vscodeRepoRoot);
         assertControlledReferenceDocs(agentSkillRoot);
-        assertControlledAgentMaterialization(agentSkillRoot, repoRoot, controlledAgentFiles);
+        assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
+
+        createControlledFixtureRepo(codexRepoRoot);
+        materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
+
+        assertControlledCodexAgentMaterialization(codexRepoRoot, controlledAgentFiles);
+        assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
     } finally {
-        fs.rmSync(repoRoot, { recursive: true, force: true });
+        fs.rmSync(vscodeRepoRoot, { recursive: true, force: true });
+        fs.rmSync(codexRepoRoot, { recursive: true, force: true });
     }
 }
 
@@ -727,6 +958,7 @@ async function runSentinelSmoke() {
     assertRequiredBundleCoverage();
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();
+    assertNoOperationalArtifactsInSentinelRoot();
 
     console.log("Smoke Sentinel: init/update/doctor em HOME temporário");
     const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-smoke-"));
@@ -741,6 +973,7 @@ async function runSentinelSmoke() {
         assertDoctorOutput(doctor.stdout);
         console.log("Smoke Sentinel: materialização controlada");
         runControlledMaterializationSmoke(tempHome);
+        assertNoOperationalArtifactsInSentinelRoot();
     } finally {
         fs.rmSync(tempHome, { recursive: true, force: true });
     }
