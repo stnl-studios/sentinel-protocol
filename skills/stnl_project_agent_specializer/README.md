@@ -1,6 +1,6 @@
 # stnl_project_agent_specializer
 
-Skill utilitária global para especializar e manter o conjunto mínimo útil de agents locais de um projeto já preparado por `stnl_project_context`, materializando os artifacts no runtime definido por `target`.
+Skill utilitária global para especializar e manter o conjunto mínimo útil de agents locais de um projeto já preparado por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`, materializando os artifacts no runtime definido por `target`.
 
 O contrato operacional vive em `SKILL.md`. Este README existe só para manutenção do repo.
 
@@ -17,6 +17,7 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - `reference/templates/codex/` é a menor estrutura interna nova para templates que não são base agents canônicos
 - lembrar que o smoke valida `vscode` e `codex` em fixtures efêmeras; `AGENTS.md`, `.codex/agents/` e `.github/agents/` finais pertencem somente ao repo alvo materializado
 - manter `docs/**` como source of truth e exigir discovery sério antes de qualquer geração
+- preservar a diferença entre docs factuais de `stnl_project_context` e docs greenfield de `stnl_project_foundation`; agents não podem promover `declarado` a `observado`
 - manter o modelo factual intermediário como etapa obrigatória, mesmo quando ele não virar artifact persistido
 - manter classes factuais explícitas para evitar overclaim: fato confirmado, pattern scoped, exemplo, TBD, exceção documentada e check manual
 - manter a geração separada do quality gate pós-geração

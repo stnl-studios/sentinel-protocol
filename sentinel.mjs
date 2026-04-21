@@ -28,6 +28,32 @@ function getTargets(homeDir = HOME) {
 }
 
 const SKILL_BUNDLE_MANIFESTS = {
+    stnl_project_foundation: [
+        {
+            sourceRoot: path.join("templates", "docs"),
+            targetRoot: path.join("reference", "docs"),
+            files: [
+                "INDEX.md",
+                "TBDS.md",
+                "core/CONTEXT.md",
+                "core/CONTRACTS.md",
+                "core/RULES.md",
+                "core/STATE.md",
+                "core/TESTING.md",
+                "units/_unit-template/CONTEXT.md",
+                "units/_unit-template/CONTRACTS.md",
+                "units/_unit-template/RULES.md",
+                "units/_unit-template/STATE.md",
+                "units/_unit-template/TESTING.md",
+                "units/_unit-template/UI_KIT.md",
+                "features/_feature-template/CONTEXT.md",
+                "features/_feature-template/done/DONE-TEMPLATE.md",
+                "decisions/ADR-template.md",
+                "decisions/INDEX.md",
+                "reference/DESIGN_SYSTEM.md",
+            ],
+        },
+    ],
     stnl_project_context: [
         {
             sourceRoot: path.join("templates", "docs"),
@@ -99,6 +125,10 @@ const SKILL_BUNDLE_MANIFESTS = {
 };
 
 const SKILL_INSTALL_MANIFESTS = {
+    stnl_project_foundation: [
+        "SKILL.md",
+        "openai.yaml",
+    ],
     stnl_project_context: [
         "SKILL.md",
         "openai.yaml",

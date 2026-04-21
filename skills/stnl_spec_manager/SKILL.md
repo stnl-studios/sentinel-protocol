@@ -21,7 +21,7 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 ## Quando não usar
 - para escrever código, decompor implementação ou substituir `planner`
 - para definir arquitetura profunda cedo demais ou fechar lacunas com suposição implícita
-- para bootstrapar `docs/**`; isso pertence a `stnl_project_context`
+- para bootstrapar `docs/**`; em greenfield isso pertence a `stnl_project_foundation`, e em repo existente isso pertence a `stnl_project_context`
 - para atuar como backlog manager, PM autônomo ou gerador solto de documentação
 - para tocar `PLAN.md`, lifecycle de execução, `phase_closure` ou outros componentes do workflow
 - como subskill implícita do `orchestrator`

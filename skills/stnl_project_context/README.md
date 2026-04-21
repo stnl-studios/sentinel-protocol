@@ -6,6 +6,7 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 
 ## Notas para mantenedores
 - manter `SKILL.md` repo-agnostic e centrado em capacidade
+- manter a fronteira com `stnl_project_foundation`: greenfield/inception com documentacao como fonte principal pertence a `stnl_project_foundation`; discovery factual de codebase existente pertence a `stnl_project_context`
 - manter o kit documental mínimo alinhado ao contrato, incluindo `docs/INDEX.md` como navegação factual do kit base
 - manter `docs/TBDS.md` como consolidado canônico sob ownership de `stnl_project_context`; não criar skill separada para TBDs
 - ao tocar modos, exemplos ou output da skill, alinhar `SKILL.md` com o shape canônico de status em `templates/docs/TBDS.md`

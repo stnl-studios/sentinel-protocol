@@ -1,26 +1,26 @@
 ---
 name: stnl_project_agent_specializer
-description: Descobre, materializa, revisa, atualiza e remove o conjunto minimo util de agents especializados de um repo alvo ja preparado por stnl_project_context.
+description: Descobre, materializa, revisa, atualiza e remove o conjunto minimo util de agents especializados de um repo alvo ja preparado por stnl_project_context ou, em greenfield, por stnl_project_foundation.
 ---
 
 # STNL Project Agent Specializer
 
 ## Missão
-Ler o contexto factual consolidado de um repo alvo já preparado por `stnl_project_context`, construir um modelo factual intermediário normalizado e materializar, com validação e repair controlado, o conjunto mínimo útil de agents locais no runtime indicado por `target`.
+Ler a base documental consolidada de um repo alvo já preparado por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`, construir um modelo factual intermediário normalizado e materializar, com validação e repair controlado, o conjunto mínimo útil de agents locais no runtime indicado por `target`.
 
 Esta skill também revisa, atualiza e deleta artifacts locais obsoletos no output gerenciado do `target` quando forem parte do conjunto gerenciado, mantendo o `orchestrator` alinhado ao conjunto real de agents presentes e sem referências quebradas para artifacts de agent inexistentes.
 
 Esta skill é um utilitário global. Ela não é um agent do workflow do projeto alvo.
 
 ## Quando usar
-- quando o repo alvo já passou por `stnl_project_context` e precisa do primeiro conjunto de agents especializados
+- quando o repo alvo já passou por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`, e precisa do primeiro conjunto de agents especializados
 - quando o output de agents do `target` não existe, está incompleto, está em drift, ou contém artifacts gerenciados stale
 - quando os docs do projeto evoluíram e os agents locais precisam refletir novos boundaries, stacks, comandos, superfícies ou ferramentas
 - quando o `orchestrator` local precisa voltar a refletir apenas os agents realmente materializados
 - quando for preciso revisar ferramentas concedidas na metadata operacional `tools`, remover excesso de privilégio e eliminar drift factual ou estrutural
 
 ## Quando não usar
-- antes de executar `stnl_project_context` no repo alvo
+- antes de executar `stnl_project_context` no repo alvo, ou `stnl_project_foundation` quando o repo ainda for greenfield/inception
 - para inventar especialistas, workflows, boundaries ou integrações sem evidência suficiente
 - para alterar os base agents canônicos, seu contrato, seus status, seus gates ou o versionamento do Sentinel
 - para materializar `agent-contract-shape`, `agent-specialization-quality-gate` ou `status-gates` no repo alvo na v1
@@ -29,14 +29,14 @@ Esta skill é um utilitário global. Ela não é um agent do workflow do projeto
 
 ## Pré-condições
 - o workspace atual já é o repo alvo da especialização
-- `stnl_project_context` já rodou anteriormente no repo alvo
-- existe base factual mínima séria em `docs/**`, especialmente `docs/INDEX.md`, `docs/TBDS.md` quando existir, `docs/core/*`, e os recortes de `docs/units/*` ou `docs/features/*` relevantes
-- a base factual é suficiente para entender com honestidade as camadas reais do projeto, os principais boundaries e o shape mínimo do workflow local
+- `stnl_project_context` já rodou anteriormente no repo alvo, ou `stnl_project_foundation` já materializou uma fundação greenfield séria
+- existe base documental mínima séria em `docs/**`, especialmente `docs/INDEX.md`, `docs/TBDS.md` quando existir, `docs/core/*`, e os recortes de `docs/units/*` ou `docs/features/*` relevantes
+- a base documental é suficiente para entender com honestidade as camadas reais ou declaradas do projeto, os principais boundaries e o shape mínimo do workflow local
 - existe permissão para criar, atualizar e deletar artifacts gerenciados no output do `target` escolhido e, se necessário, limpar referências gerenciadas obsoletas desse mesmo runtime
 
 ## Inputs esperados no repo alvo
-- `docs/**` como source of truth factual principal, com prioridade especial para o material consolidado por `stnl_project_context`
-- `docs/core/TESTING.md`, quando existir, como source of truth factual da matriz local de harness/checks para `validation-eval-designer` e `validation-runner`
+- `docs/**` como source of truth principal, com prioridade especial para o material consolidado por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`
+- `docs/core/TESTING.md`, quando existir, como referência principal da matriz local de harness/checks para `validation-eval-designer` e `validation-runner`; quando a base vier de `stnl_project_context`, pode representar realidade factual observada, e quando a base vier de `stnl_project_foundation`, deve ser lido como estratégia declarada, expectativa de validação ou baseline documental até evidência observada na codebase
 - `target` opcional, com suporte mínimo a `vscode` e `codex`; quando omitido, usar `vscode` para preservar compatibilidade com o comportamento atual
 - artifacts gerenciados já existentes no output do `target`, quando existirem, para revisão de drift, coerência operacional, metadata e stale artifacts
 - a codebase do repo alvo apenas quando os docs precisarem de confirmação, complemento ou desempate factual
@@ -50,16 +50,19 @@ Esta skill é um utilitário global. Ela não é um agent do workflow do projeto
 ## Source of truth e ordem de evidência
 Usar esta ordem de precedência no repo alvo:
 
-1. `docs/**`, especialmente o kit consolidado por `stnl_project_context`
+1. `docs/**`, especialmente o kit consolidado por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`
 2. referências canônicas da skill e templates/base agents canônicos
 3. codebase do repo alvo, apenas quando necessário para validar ou completar entendimento
 4. `web`, apenas como apoio para especializar stack, integrações, frameworks, padrões ou contexto técnico externo atual
 5. `web` nunca substitui evidência factual do projeto alvo
 
 Regras complementares:
-- `docs/**` descreve a verdade factual do projeto alvo; artifacts gerenciados de agents descrevem a materialização operacional local do `target` e não substituem essa verdade factual
-- `docs/core/TESTING.md`, quando existir, é a referência factual primária para comandos canônicos, paths manuais aceitos, pré-requisitos e limites reais de harness dos agents de validação
-- se docs e codebase conflitarem de modo material, não escolher por preferência; nomear o conflito e bloquear se ele impedir uma especialização honesta
+- `docs/**` descreve a verdade documental do projeto alvo; artifacts gerenciados de agents descrevem a materialização operacional local do `target` e não substituem essa verdade documental
+- quando a base vier de `stnl_project_foundation`, preservar nos agents a diferenca entre `declarado`, `observado`, `hipotese` e `TBD`; nao transformar contrato esperado em implementacao existente
+- `docs/core/TESTING.md`, quando existir, é a referência primária para comandos canônicos, paths manuais aceitos, pré-requisitos e limites de harness dos agents de validação; tratar como factual observado quando a base vier de `stnl_project_context`, e como estratégia declarada quando a base vier de `stnl_project_foundation` até confirmação na codebase
+- se docs e codebase conflitarem de modo material, não escolher por preferência nem por conveniência; nomear o conflito e bloquear quando ele impedir especialização honesta
+- em conflito material envolvendo base de `stnl_project_foundation`, seguir rota canônica: se a direção ainda for documental, encaminhar para `stnl_project_foundation MODE=REFINE`; se a autoridade estiver migrando para a codebase, encaminhar para `stnl_project_foundation MODE=HANDOFF` e depois para `stnl_project_context` quando aplicável
+- na dúvida sobre qual fonte deve prevalecer, bloquear a especialização; esta skill não arbitra conflito estrutural entre docs fundacionais e codebase nascente por conta própria
 - usar `web` só depois da leitura séria do projeto e apenas quando contexto externo atual realmente mudar a qualidade da especialização
 - o quality gate pós-geração valida contra o modelo factual intermediário e as referências já mapeadas; ele não é licença para um scan amplo novo por inércia
 
@@ -315,7 +318,7 @@ Regras operacionais:
 - lista priorizada de `model` só deve ser usada quando houver justificativa operacional real, ordem explícita e todos os itens estiverem contidos em `allowed_models` quando essa entrada existir
 
 ## Procedimento operacional
-1. Validar as pré-condições e confirmar que o repo alvo realmente já passou por `stnl_project_context`.
+1. Validar as pré-condições e confirmar que o repo alvo realmente já passou por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`.
 2. Resolver `target`; se omitido, assumir `vscode`; se for desconhecido, bloquear antes de escrever.
 3. Fazer discovery sério de `docs/**`, com prioridade para `docs/INDEX.md`, `docs/core/*`, `docs/TBDS.md` quando existir, e os `units` ou `features` relevantes.
 4. Construir o modelo factual intermediário normalizado, classificando claims, escopo, evidência e agents impactados.
@@ -346,7 +349,7 @@ Leitura mínima esperada:
 
 Durante o discovery:
 - mapear fatos confirmados, padrões locais, exemplos, TBDs, exceções e checks manuais
-- quando `validation-eval-designer` ou `validation-runner` entrarem no conjunto, ler `docs/core/TESTING.md` se ele existir e mapear comandos canônicos, suites, manual paths aceitos, confiança do harness, gaps e pré-requisitos para o modelo factual intermediário
+- quando `validation-eval-designer` ou `validation-runner` entrarem no conjunto, ler `docs/core/TESTING.md` se ele existir e mapear comandos canônicos, suites, manual paths aceitos, confiança do harness, gaps e pré-requisitos para o modelo factual intermediário, qualificando a força semântica pelo tipo de base (`stnl_project_context`: observado/factual; `stnl_project_foundation`: declarado/estratégico até observação)
 - mapear, quando houver evidência suficiente, quais surfaces ou change classes do projeto costumam ativar trilhas condicionais de `security`, `performance`, `migration/schema` ou `observability/release safety`
 - preservar path e contexto de cada evidência importante
 - não diluir um TBD específico em resumo genérico
@@ -362,7 +365,13 @@ Se a especialização puder prosseguir honestamente, o conjunto local normalment
 - `planner`
 - `finalizer`
 
-Adicionar `resync` quando o projeto mantém memória factual fora da feature e essa sync local fizer sentido. Em repos já preparados por `stnl_project_context`, isso tende a ser a escolha padrão, mas ainda deve ser confirmado pela existência real de `docs/**` como memória viva.
+Adicionar `resync` quando o projeto mantém memória documental fora da feature e essa sync local fizer sentido.
+- em repos já preparados por `stnl_project_context`, `resync` costuma fazer sentido, mas ainda depende de evidência real de memória documental viva e recorrente fora do fluxo imediato da feature
+- em repos greenfield preparados por `stnl_project_foundation`, `resync` não é default e não deve ser materializado só porque `docs/**` existe
+- em base `stnl_project_foundation`, só materializar `resync` quando houver evidência concreta de memória documental contínua cross-feature/cross-round, com necessidade real de factual sync fora da feature e updates documentais transversais previsíveis
+- em base `stnl_project_foundation`, não considerar sinal suficiente por si só: existência de `docs/core/*`, existência de `docs/TBDS.md`, organização inicial de `features/units`, ou simples possibilidade futura de drift
+- se o projeto ainda estiver em bootstrap documental, inception inicial ou fundação pouco estabilizada, não materializar `resync`
+- na dúvida, não materializar `resync`; ausência desse agent nesse estágio não é falha do conjunto local
 
 ### Agents por superfície real
 - materializar `coder-backend` quando houver APIs, serviços, domínio, persistência, jobs, integrações, auth, runtime server-side ou equivalentes
@@ -493,7 +502,7 @@ Antes de remover um agent canônico do conjunto local:
   - stack ou frameworks reais
   - boundaries e superfícies do projeto
   - comandos, scripts ou harness local
-  - matriz factual de harness/checks registrada em `docs/core/TESTING.md`
+  - matriz local de harness/checks registrada em `docs/core/TESTING.md`, com força factual condicionada à origem da base documental
   - expectativas de validação
   - TBDs, exceções, padrões locais e escopo factual
   - campos operacionais suportados pelo target, como `target`, `tools`, `agents` e `model` em `vscode`, ou `developer_instructions` em `codex`
@@ -759,7 +768,7 @@ Verificar no `validation-eval-designer`:
 - ausência de tools excessivas herdadas por acidente
 - ausência de wording que compense leitura que `orchestrator` ou `planner` deixaram de fazer
 - `VALIDATION PACK` mantido como artifact local e orientado a prova
-- consumo explícito de `docs/core/TESTING.md` como base factual de comandos canônicos, paths manuais aceitos, pré-requisitos e limites de harness quando esse doc existir
+- consumo explícito de `docs/core/TESTING.md` como base de comandos canônicos, paths manuais aceitos, pré-requisitos e limites de harness quando esse doc existir, preservando semântica observada em base `stnl_project_context` e semântica declarada/estratégica em base `stnl_project_foundation` até evidência na codebase
 - a matriz local informa o pack sem ser copiada inteira nem virar checklist universal
 - ausência ou fraqueza da matriz local aparece explicitamente no harness judgment quando relevante
 - a suficiência do harness é classificada pelo risco real do cut, não apenas pela presença ou ausência genérica de specs
@@ -796,7 +805,7 @@ Verificar em `validation-runner`, `finalizer` e `resync`:
 - ausência de wording que compense erro upstream com scan novo
 - `validation-runner` permanece minimal-verification
 - `validation-runner` executa e julga os checks determinísticos exigidos no `VALIDATION PACK`, sem virar smoke runner repo-wide
-- `validation-runner` usa `VALIDATION PACK` para o que provar e `docs/core/TESTING.md` para quais comandos, manual paths e limites de harness são canônicos quando esse doc existir
+- `validation-runner` usa `VALIDATION PACK` para o que provar e `docs/core/TESTING.md` para quais comandos, manual paths e limites de harness são canônicos quando esse doc existir, preservando semântica observada em base `stnl_project_context` e semântica declarada/estratégica em base `stnl_project_foundation` até evidência na codebase
 - `validation-runner` distingue comando canônico indisponível no ambiente, harness inexistente, harness fraco e path manual aceito
 - a existência da matriz local não expande a run para além do cut
 - check obrigatório ausente, falho ou bloqueado por harness afeta verdict e confidence de forma explícita
@@ -1059,6 +1068,7 @@ Bloquear a especialização quando ocorrer qualquer um destes casos:
 - faltar evidência mínima para distinguir quais agents fazem sentido
 - `target` ausente não puder ser defaultado para `vscode` ou `target` informado não for suportado
 - existir conflito factual relevante entre docs e codebase sem base suficiente para resolver
+- em conflito material envolvendo base de `stnl_project_foundation`, faltar rota canônica explícita para `MODE=REFINE` (quando a direção ainda for documental) ou `MODE=HANDOFF` seguido de `stnl_project_context` (quando a autoridade estiver migrando para a codebase)
 - o pedido exigir invenção de especialistas sem ancoragem factual
 - existir artifact local ambíguo ou manual no output do `target` cujo overwrite ou delete não seja seguro
 - a remoção de um agent exigiria quebrar o protocolo local ou deixar referências órfãs sem alternativa honesta

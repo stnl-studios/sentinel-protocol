@@ -17,6 +17,9 @@ import {
 } from "../sentinel.mjs";
 
 const REQUIRED_BUNDLE_PATHS = [
+    ["stnl_project_foundation", "reference/docs", "core/CONTEXT.md"],
+    ["stnl_project_foundation", "reference/docs", "decisions/ADR-template.md"],
+    ["stnl_project_foundation", "reference/docs", "reference/DESIGN_SYSTEM.md"],
     ["stnl_project_agent_specializer", "reference/agents", "reviewer.agent.md"],
     ["stnl_project_agent_specializer", "reference/agents", "coder-ios.agent.md"],
     ["stnl_project_agent_specializer", "reference/docs", "workflow/EXECUTION-LIFECYCLE.md"],
@@ -26,6 +29,11 @@ const REQUIRED_BUNDLE_PATHS = [
 ];
 
 const OWNED_SOURCE_ROOTS = [
+    ["stnl_project_foundation", path.join("reference", "docs"), "core"],
+    ["stnl_project_foundation", path.join("reference", "docs"), path.join("units", "_unit-template")],
+    ["stnl_project_foundation", path.join("reference", "docs"), path.join("features", "_feature-template")],
+    ["stnl_project_foundation", path.join("reference", "docs"), "decisions"],
+    ["stnl_project_foundation", path.join("reference", "docs"), "reference"],
     ["stnl_project_agent_specializer", path.join("reference", "agents"), ""],
     ["stnl_project_agent_specializer", path.join("reference", "docs"), "agents"],
     ["stnl_project_agent_specializer", path.join("reference", "docs"), "workflow"],
@@ -278,18 +286,22 @@ function assertOwnedRootsAreFullyBundled() {
 }
 
 function assertExplicitRootEntries() {
-    const projectContextBundle = getBundle("stnl_project_context", path.join("reference", "docs"));
+    const projectDocSkills = ["stnl_project_foundation", "stnl_project_context"];
 
-    for (const relativePath of ["INDEX.md", "TBDS.md"]) {
-        assert(
-            projectContextBundle.files.includes(relativePath),
-            `Manifest do stnl_project_context não inclui ${relativePath}`
-        );
+    for (const skillName of projectDocSkills) {
+        const projectDocsBundle = getBundle(skillName, path.join("reference", "docs"));
+
+        for (const relativePath of ["INDEX.md", "TBDS.md"]) {
+            assert(
+                projectDocsBundle.files.includes(relativePath),
+                `Manifest do ${skillName} não inclui ${relativePath}`
+            );
+        }
     }
 }
 
 function assertInstallManifests() {
-    for (const skillName of ["stnl_project_context", "stnl_project_agent_specializer", "stnl_spec_manager"]) {
+    for (const skillName of ["stnl_project_foundation", "stnl_project_context", "stnl_project_agent_specializer", "stnl_spec_manager"]) {
         const installManifest = SKILL_INSTALL_MANIFESTS[skillName];
         assert(installManifest, `Install manifest ausente para ${skillName}`);
         assert.deepEqual(
@@ -381,6 +393,7 @@ function assertDoctorOutput(output) {
 
     for (const requiredLine of [
         "Target:",
+        "bundle: stnl_project_foundation/reference/docs OK",
         "bundle: stnl_project_agent_specializer/reference/agents OK",
         "bundle: stnl_project_agent_specializer/reference/docs OK",
         "bundle: stnl_project_context/reference/docs OK",

@@ -39,6 +39,7 @@ Ele cobre hoje:
 - manifests canônicos de install e bundle das skills materializadas
 - presença obrigatória dos artifacts endurecidos do protocolo atual
 - cobertura dos roots sensíveis para evitar agent/doc canônico fora do bundle por acidente
+- presença e bundle documental de `stnl_project_foundation` para greenfield/inception
 - ciclo isolado de `init`, `update` e `doctor` em `HOME` temporário
 - consistência mínima entre source of truth do repo e artifacts materializados
 - materialização controlada de `stnl_project_context` em repo fixture efêmero local
