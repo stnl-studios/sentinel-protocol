@@ -15,6 +15,23 @@ A implementação anterior do Sentinel foi preservada em `LEGACY/`.
 O foco atual não é evoluir o pipeline legado.
 O foco é construir a base do novo ecossistema.
 
+## Papel do Sentinel
+Este repositório é a fábrica do Sentinel Protocol. Ele mantém:
+- skills
+- templates
+- agents base
+- installer
+- smoke
+
+Ele não é o runtime final dos agents materializados. A materialização acontece sempre no projeto alvo selecionado.
+
+Targets suportados pelo `stnl_project_agent_specializer`:
+- `vscode` -> `.github/agents/*.agent.md` no repo alvo
+- `codex` -> `.codex/agents/*.toml` no repo alvo
+- `codex` -> `AGENTS.md` na raiz do repo alvo
+
+O template de `AGENTS.md` do target `codex` vive internamente na skill, em `skills/stnl_project_agent_specializer/reference/templates/codex/AGENTS.md`. O arquivo `AGENTS.md` operacional não deve existir na raiz do Sentinel; ele só é gerado no repo alvo quando `target=codex`.
+
 ## Smoke do Sentinel
 Use `node sentinel.mjs smoke` como caminho canônico de self-validation estrutural do Sentinel.
 
@@ -28,6 +45,8 @@ Ele cobre hoje:
 - materialização controlada de `stnl_project_agent_specializer` para `vscode` em `.github/agents/` da fixture
 - materialização controlada de `stnl_project_agent_specializer` para `codex` em `.codex/agents/*.toml` e `AGENTS.md` da fixture
 - validação mínima de shape dos docs, references, frontmatters `vscode` e TOMLs `codex` gerados, sem snapshot textual grande
+
+O smoke valida materialização em repos efêmeros controlados. Ele não materializa artifacts operacionais finais no próprio Sentinel.
 
 Ele ainda não cobre:
 - e2e completo das skills em repositórios reais

@@ -8,12 +8,14 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter `SKILL.md` repo-agnostic e centrado na capacidade
 - manter `target=vscode` como default compatível com a v1 atual
 - manter suporte mínimo explícito a `vscode` e `codex`
-- manter a skill ancorada nos outputs do repo alvo:
+- manter a skill ancorada nos outputs do repo alvo, nunca no repo Sentinel:
   - `vscode` -> `.github/agents/*.agent.md`
-  - `codex` -> `.codex/agents/*.toml` e `AGENTS.md`
-- nunca materializar artifacts finais no repo Sentinel Protocol; este repo mantém somente source of truth e templates internos
-- manter o template interno de `AGENTS.md` do target `codex` em `reference/templates/codex/AGENTS.md`
+  - `codex` -> `.codex/agents/*.toml`
+  - `codex` -> `AGENTS.md` na raiz do repo alvo
+- nunca materializar artifacts finais no repo Sentinel Protocol; este repo mantém somente source of truth, templates internos, installer e smoke
+- manter o template interno de `AGENTS.md` do target `codex` em `reference/templates/codex/AGENTS.md`; esse template não é o `AGENTS.md` operacional do Sentinel
 - `reference/templates/codex/` é a menor estrutura interna nova para templates que não são base agents canônicos
+- lembrar que o smoke valida `vscode` e `codex` em fixtures efêmeras; `AGENTS.md`, `.codex/agents/` e `.github/agents/` finais pertencem somente ao repo alvo materializado
 - manter `docs/**` como source of truth e exigir discovery sério antes de qualquer geração
 - manter o modelo factual intermediário como etapa obrigatória, mesmo quando ele não virar artifact persistido
 - manter classes factuais explícitas para evitar overclaim: fato confirmado, pattern scoped, exemplo, TBD, exceção documentada e check manual
