@@ -6,18 +6,18 @@ description: Descobre, materializa, revisa, atualiza e remove o conjunto minimo 
 # STNL Project Agent Specializer
 
 ## Missão
-Ler o contexto factual consolidado de um repo alvo já preparado por `stnl_project_context`, construir um modelo factual intermediário normalizado e materializar, com validação e repair controlado, o conjunto mínimo útil de agents locais em `.github/agents/`.
+Ler o contexto factual consolidado de um repo alvo já preparado por `stnl_project_context`, construir um modelo factual intermediário normalizado e materializar, com validação e repair controlado, o conjunto mínimo útil de agents locais no runtime indicado por `target`.
 
-Esta skill também revisa, atualiza e deleta artifacts locais obsoletos em `.github/` quando forem parte do conjunto gerenciado, mantendo o `orchestrator` alinhado ao conjunto real de agents presentes e sem referências quebradas para `.agent.md` inexistente.
+Esta skill também revisa, atualiza e deleta artifacts locais obsoletos no output gerenciado do `target` quando forem parte do conjunto gerenciado, mantendo o `orchestrator` alinhado ao conjunto real de agents presentes e sem referências quebradas para artifacts de agent inexistentes.
 
 Esta skill é um utilitário global. Ela não é um agent do workflow do projeto alvo.
 
 ## Quando usar
 - quando o repo alvo já passou por `stnl_project_context` e precisa do primeiro conjunto de agents especializados
-- quando `.github/agents/` não existe, está incompleto, está em drift, ou contém artifacts gerenciados stale
+- quando o output de agents do `target` não existe, está incompleto, está em drift, ou contém artifacts gerenciados stale
 - quando os docs do projeto evoluíram e os agents locais precisam refletir novos boundaries, stacks, comandos, superfícies ou ferramentas
 - quando o `orchestrator` local precisa voltar a refletir apenas os agents realmente materializados
-- quando for preciso revisar ferramentas concedidas no frontmatter `tools`, remover excesso de privilégio e eliminar drift factual ou estrutural
+- quando for preciso revisar ferramentas concedidas na metadata operacional `tools`, remover excesso de privilégio e eliminar drift factual ou estrutural
 
 ## Quando não usar
 - antes de executar `stnl_project_context` no repo alvo
@@ -32,12 +32,13 @@ Esta skill é um utilitário global. Ela não é um agent do workflow do projeto
 - `stnl_project_context` já rodou anteriormente no repo alvo
 - existe base factual mínima séria em `docs/**`, especialmente `docs/INDEX.md`, `docs/TBDS.md` quando existir, `docs/core/*`, e os recortes de `docs/units/*` ou `docs/features/*` relevantes
 - a base factual é suficiente para entender com honestidade as camadas reais do projeto, os principais boundaries e o shape mínimo do workflow local
-- existe permissão para criar, atualizar e deletar artifacts gerenciados em `.github/agents/` e, se necessário, limpar artifacts gerenciados obsoletos em `.github/`
+- existe permissão para criar, atualizar e deletar artifacts gerenciados no output do `target` escolhido e, se necessário, limpar referências gerenciadas obsoletas desse mesmo runtime
 
 ## Inputs esperados no repo alvo
 - `docs/**` como source of truth factual principal, com prioridade especial para o material consolidado por `stnl_project_context`
 - `docs/core/TESTING.md`, quando existir, como source of truth factual da matriz local de harness/checks para `validation-eval-designer` e `validation-runner`
-- `.github/agents/*.agent.md` quando já existirem, para revisão de drift, coerência de frontmatter operacional, metadata e stale artifacts
+- `target` opcional, com suporte mínimo a `vscode` e `codex`; quando omitido, usar `vscode` para preservar compatibilidade com o comportamento atual
+- artifacts gerenciados já existentes no output do `target`, quando existirem, para revisão de drift, coerência operacional, metadata e stale artifacts
 - a codebase do repo alvo apenas quando os docs precisarem de confirmação, complemento ou desempate factual
 - manifests de stack, scripts, testes, configs e entrypoints reais quando forem necessários para especializar comandos, provas, boundaries ou superfícies
 - `allowed_models` opcional quando o uso da skill quiser restringir a escolha de `model` dos agents especializados
@@ -56,7 +57,7 @@ Usar esta ordem de precedência no repo alvo:
 5. `web` nunca substitui evidência factual do projeto alvo
 
 Regras complementares:
-- `docs/**` descreve a verdade factual do projeto alvo; `.github/agents/` descreve a materialização operacional local e não substitui essa verdade factual
+- `docs/**` descreve a verdade factual do projeto alvo; artifacts gerenciados de agents descrevem a materialização operacional local do `target` e não substituem essa verdade factual
 - `docs/core/TESTING.md`, quando existir, é a referência factual primária para comandos canônicos, paths manuais aceitos, pré-requisitos e limites reais de harness dos agents de validação
 - se docs e codebase conflitarem de modo material, não escolher por preferência; nomear o conflito e bloquear se ele impedir uma especialização honesta
 - usar `web` só depois da leitura séria do projeto e apenas quando contexto externo atual realmente mudar a qualidade da especialização
@@ -65,12 +66,12 @@ Regras complementares:
 ## Escopo operacional
 - descobrir quais agents locais fazem sentido para o repo alvo
 - construir um modelo factual intermediário normalizado antes de gerar qualquer specialized
-- materializar apenas os agents necessários em `.github/agents/`
-- revisar e atualizar agents já existentes em `.github/agents/`
-- deletar artifacts gerenciados obsoletos em `.github/` quando estiverem stale, órfãos ou incoerentes com o conjunto decidido
+- materializar apenas os agents necessários no output final do `target`
+- revisar e atualizar agents já existentes no output final do `target`
+- deletar artifacts gerenciados obsoletos no output final do `target` quando estiverem stale, órfãos ou incoerentes com o conjunto decidido
 - manter o `orchestrator` alinhado ao conjunto real de agents materializados
-- garantir que nenhum agent materializado continue referenciando `.agent.md` inexistente
-- garantir frontmatter operacional coerente em cada agent especializado do repo alvo
+- garantir que nenhum agent materializado continue referenciando artifact de agent inexistente no mesmo `target`
+- garantir shape operacional coerente com o `target` em cada agent especializado do repo alvo
 - aplicar um quality gate pós-geração separado do framing da geração
 - reparar apenas os arquivos sinalizados pelo gate e revalidar antes de concluir
 
@@ -121,17 +122,45 @@ Regras:
 
 Quando disponíveis no ambiente instalado da skill, preferir estas referências locais:
 - `reference/agents/*.agent.md`
+- `reference/templates/codex/AGENTS.md`
 - `reference/docs/agents/AGENT-CONTRACT-SHAPE.md`
 - `reference/docs/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`
 - `reference/docs/workflow/EXECUTION-LIFECYCLE.md`
 - `reference/docs/workflow/STATUS-GATES.md`
+
+## Contrato de `target`
+`target` define o runtime operacional para o qual a skill vai materializar artifacts no repo alvo.
+
+Targets suportados:
+- `vscode`: comportamento compatível com a v1 atual; materializa agents em `.github/agents/*.agent.md`
+- `codex`: materializa agents em `.codex/agents/*.toml` e materializa também `AGENTS.md` na raiz do repo alvo
+
+Regras:
+- quando `target` for omitido, usar `vscode`
+- `target` sempre pertence ao repo alvo, nunca ao repo Sentinel Protocol
+- o repo Sentinel Protocol mantém somente source of truth e templates internos; ele não é local válido para artifacts finais de nenhum target
+- a semântica dos agents é target-agnostic e deve preservar missão, ownership, gates, role class, sequencing, status, handoffs e política de tools
+- a serialização final varia por target, mas a geração deve sempre partir dos templates internos da skill e das referências canônicas
+- `vscode` usa o shape Markdown com frontmatter operacional em `.github/agents/*.agent.md`
+- `codex` usa arquivos TOML em `.codex/agents/*.toml` com o shape próprio de custom agent do Codex, não como espelho do frontmatter endurecido de `vscode`
+- o shape mínimo obrigatório do custom agent TOML para `codex` contém somente:
+  - `name`
+  - `description`
+  - `developer_instructions`
+- `tools`, `agents`, `target`, `model`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não fazem parte do shape mínimo obrigatório de `codex`
+- qualquer campo adicional em `.codex/agents/*.toml` só pode ser emitido quando for opcional, compatível com a configuração suportada pelo runtime Codex e explicitamente separado do shape mínimo nativo
+- se o Sentinel preservar metadata própria para `codex`, essa metadata é convenção interna opcional do protocolo, nunca requisito nativo do runtime Codex, e deve ser omitida quando houver risco de incompatibilidade com o runtime
+- `codex` usa também `AGENTS.md` como instrução de workspace do runtime Codex
+- `AGENTS.md` do target `codex` deve nascer do template interno `reference/templates/codex/AGENTS.md`; nunca criar ou manter um `AGENTS.md` final no repo Sentinel como source paralela
+- referências internas entre agents devem usar o identificador lógico do agent e ser serializadas no formato físico do `target`; não fixar `.agent.md` quando `target=codex`
+- target desconhecido deve bloquear a materialização antes de qualquer escrita
 
 ## Princípios
 - especializar por evidência, não por simetria
 - materializar o conjunto mínimo útil, não o conjunto máximo possível
 - preservar o contrato canônico dos base agents
 - preservar a role class canônica de cada base agent
-- tratar o frontmatter operacional como source of truth do artifact especializado
+- tratar o shape operacional do `target` como source of truth do artifact especializado
 - aplicar least privilege em tools, leitura e execução
 - preferir disciplina operacional a flexibilidade quando houver conflito
 - materializar disciplina de superfície curta por default, não narrativa operacional
@@ -197,47 +226,60 @@ Regras operacionais:
 - na dúvida, rebaixar a linguagem para pattern, example, open question ou check-docs
 
 ## Modelo de materialização local
-- output canônico: `.github/agents/`
-- naming físico: preservar o nome físico dos base agents correspondentes, agora materializados sob `.github/agents/*.agent.md`
+- output canônico depende de `target`
+- `vscode`: output de agents em `.github/agents/*.agent.md`
+- `codex`: output de agents em `.codex/agents/*.toml` e output complementar em `AGENTS.md`
+- naming lógico: preservar o nome dos base agents correspondentes em qualquer target
+- naming físico:
+  - `vscode`: `<agent>.agent.md`
+  - `codex`: `<agent>.toml`
 - não renomear o agent para outro papel só porque o projeto é diferente
 - manter a parte fixa do protocolo, os status canônicos, o ownership dos gates e o papel central de cada base agent
 - usar `agent-contract-shape` como referência de governança do shape especializado
 - tratar o artifact final como shape normalizado canônico vigente, não como "base agent + remendos históricos"
-- manter o frontmatter operacional especializado compatível com o contrato canônico e com a materialização local:
+- para `vscode`, manter frontmatter operacional especializado compatível com o contrato canônico e com a materialização local:
   - `name`
   - `description`
-  - `target: vscode`
+  - `target`
   - `tools`
   - `agents` no `orchestrator`
   - `model` quando aplicável
   - `base_agent_version`
   - `specialization_revision`
   - `managed_artifact: true`
-- `specialization_revision` começa em `1` na primeira materialização gerenciada do repo alvo
-- `managed_artifact: true` é a marca de overwrite seguro e da deleção segura de artifacts gerenciados
+- para `codex`, manter o custom agent TOML no shape mínimo próprio do runtime:
+  - `name`
+  - `description`
+  - `developer_instructions`
+- em `codex`, `developer_instructions` é o lugar obrigatório para carregar a missão especializada, role class, ownership, gates, sequencing, handoffs, disciplina de superfície, limites de leitura e regras operacionais derivadas dos base agents e do modelo factual intermediário
+- em `vscode`, `specialization_revision` começa em `1` na primeira materialização gerenciada do repo alvo
+- em `vscode`, `managed_artifact: true` é a marca de overwrite seguro e da deleção segura de artifacts gerenciados
+- em `codex`, qualquer marca de gerenciamento do Sentinel é convenção interna opcional e não faz parte do shape mínimo obrigatório do runtime; se for serializada, deve ser compatível com Codex e claramente distinguida de requisito nativo
 - quando fizer sentido, preservar `reading_scope_class` somente como hint compatível com o contrato base; nunca usá-lo para expandir a classe permitida
-- `tools` no frontmatter é obrigatório nos agents especializados materializados e é a source of truth operacional
-- `## Tools` no corpo deve ser removido por default quando `tools` existir no frontmatter
+- em `vscode`, `tools` no frontmatter operacional é obrigatório nos agents especializados materializados e é a source of truth operacional
+- em `codex`, `tools` não é obrigatório no TOML; a política de tools e least privilege deve ser preservada semanticamente em `developer_instructions`, salvo quando houver campo opcional de tools explicitamente suportado pelo runtime
+- `## Tools` no corpo deve ser removido por default quando `tools` existir como metadata operacional suportada pelo target
 - `## Tools` só pode permanecer por ordem humana explícita e com justificativa humana clara
 - mesmo quando `## Tools` permanecer como exceção explícita, ele nunca pode ser tratado como source of truth, requisito operacional, critério de validação ou base para drift detection
-- todo specialized materializado deve conter `name`, `description`, `target: vscode`, `tools`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
-- o `orchestrator.agent.md` deve conter adicionalmente `agents`
-- `agents` no frontmatter é reservado ao `orchestrator` e deve listar apenas subagents realmente materializados em `.github/agents/`
-- `model` no frontmatter é suportado como string única ou lista priorizada quando houver justificativa operacional clara, política explícita ou restrição por `allowed_models`
-- qualquer outro campo no frontmatter especializado final deve ser tratado como ausente por default e removido na normalização, salvo instrução humana explícita em sentido contrário
-- `agent_version` deve ser removido do frontmatter especializado final por default; não faz parte do shape endurecido preservado por esta skill
+- todo specialized `vscode` materializado deve conter `name`, `description`, `target`, `tools`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
+- o `orchestrator` em `vscode` deve conter adicionalmente `agents`
+- `agents` no frontmatter operacional é reservado ao `orchestrator` em `vscode` e deve listar apenas subagents realmente materializados no output de agents do mesmo target
+- em `codex`, `agents` não é campo obrigatório do TOML do `orchestrator`; o conjunto de subagents e o roteamento devem aparecer em `developer_instructions` e no `AGENTS.md` gerado, salvo suporte explícito do runtime para campo equivalente opcional
+- `model` na metadata operacional é suportado como string única ou lista priorizada quando houver justificativa operacional clara, política explícita, restrição por `allowed_models` e compatibilidade com o target
+- qualquer campo fora do shape mínimo do target deve ser tratado como ausente por default e removido na normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
+- `agent_version` deve ser removido da metadata operacional final por default; não faz parte do shape endurecido preservado por esta skill nem do shape mínimo de `codex`
 - se qualquer campo obrigatório faltar no artifact final, a skill ainda não está done
 
 ## Normalização final do artifact
-- ao materializar ou atualizar um specialized, sempre gerar o frontmatter final no shape canônico vigente
+- ao materializar ou atualizar um specialized, sempre gerar o artifact final no shape canônico vigente do `target`
 - a entrega esperada é um artifact final normalizado, limpo, operacional e auditável
 - não preservar resíduos legados só por inércia, compatibilidade aparente ou herança do base agent
 - update também é cleanup: além de corrigir drift factual, a skill deve remover seções redundantes e campos legados fora do contrato vigente
 - a normalização também deve preservar `surface discipline`, `delta-only communication`, `no operational narration`, `no artifact dump into main chat`, e `delegate-first` quando o papel exigir isso
-- o frontmatter especializado final normalizado contém apenas:
+- a metadata especializada final normalizada de `vscode` contém apenas:
   - `name`
   - `description`
-  - `target: vscode`
+  - `target`
   - `tools`
   - `agents` no `orchestrator`
   - `model` quando aplicável
@@ -245,9 +287,16 @@ Regras operacionais:
   - `specialization_revision`
   - `managed_artifact: true`
   - `reading_scope_class` apenas quando fizer sentido e continuar compatível com o contrato
-- qualquer campo fora dessa lista deve ser tratado como legado residual e removido durante a normalização, salvo instrução humana explícita
-- o corpo especializado final deve preservar headings e seções canônicas do base agent, inclusive `## Handoff`, sem variantes frouxas de naming ou shape
-- a normalização final deve eliminar duplicação entre source of truth operacional no frontmatter e texto legado residual no corpo
+- o custom agent TOML final normalizado de `codex` contém obrigatoriamente:
+  - `name`
+  - `description`
+  - `developer_instructions`
+- o custom agent TOML final normalizado de `codex` pode conter campos opcionais somente quando forem suportados pelo runtime e não confundidos com requisito nativo mínimo
+- convenções internas opcionais do Sentinel em `codex`, quando existirem, devem ser claramente classificadas como internas e removíveis sem quebrar o custom agent TOML mínimo
+- qualquer campo fora do shape do target deve ser tratado como legado residual e removido durante a normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
+- em `vscode`, o corpo especializado final deve preservar headings e seções canônicas do base agent, inclusive `## Handoff`, sem variantes frouxas de naming ou shape
+- em `codex`, `developer_instructions` deve preservar a semântica operacional dessas seções sem exigir headings Markdown no TOML
+- a normalização final deve eliminar duplicação entre source of truth operacional do target e texto legado residual
 
 ## Política de `allowed_models` e `model_policy`
 - a skill aceita uma entrada opcional `allowed_models`
@@ -260,29 +309,31 @@ Regras operacionais:
 - agents de execução, prova e validação tendem a usar `execution_default`
 - se `model_policy` indicar valor fora de `allowed_models`, a skill deve bloquear ou escolher alternativa segura explicitando isso no output
 - quando só `allowed_models` existir, preferir política conservadora: usar um modelo padrão único para o conjunto ou variar por papel apenas quando houver justificativa operacional clara
-- se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` no frontmatter e deixar o runtime usar o model picker atual
+- se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` na metadata operacional e deixar o runtime usar o model picker atual
 - não afirmar que um modelo é "o melhor" sem política explícita
 - não inventar ranking universal, fallback complexo, matriz excessiva por agent ou policy especulativa de modelos
 - lista priorizada de `model` só deve ser usada quando houver justificativa operacional real, ordem explícita e todos os itens estiverem contidos em `allowed_models` quando essa entrada existir
 
 ## Procedimento operacional
 1. Validar as pré-condições e confirmar que o repo alvo realmente já passou por `stnl_project_context`.
-2. Fazer discovery sério de `docs/**`, com prioridade para `docs/INDEX.md`, `docs/core/*`, `docs/TBDS.md` quando existir, e os `units` ou `features` relevantes.
-3. Construir o modelo factual intermediário normalizado, classificando claims, escopo, evidência e agents impactados.
-4. Classificar cada agent canônico em sua role class e carregar os invariantes obrigatórios dessa classe antes de gerar qualquer specialized.
-5. Ler os templates/base agents canônicos e as referências `agent-contract-shape`, `agent-specialization-quality-gate`, `execution-lifecycle` e `status-gates`.
-6. Revisar `.github/agents/` atual, classificando cada artifact local como:
+2. Resolver `target`; se omitido, assumir `vscode`; se for desconhecido, bloquear antes de escrever.
+3. Fazer discovery sério de `docs/**`, com prioridade para `docs/INDEX.md`, `docs/core/*`, `docs/TBDS.md` quando existir, e os `units` ou `features` relevantes.
+4. Construir o modelo factual intermediário normalizado, classificando claims, escopo, evidência e agents impactados.
+5. Classificar cada agent canônico em sua role class e carregar os invariantes obrigatórios dessa classe antes de gerar qualquer specialized.
+6. Ler os templates/base agents canônicos, o template `reference/templates/codex/AGENTS.md` quando `target=codex`, e as referências `agent-contract-shape`, `agent-specialization-quality-gate`, `execution-lifecycle` e `status-gates`.
+7. Revisar o output atual do `target`, classificando cada artifact local como:
    - `managed and current`
    - `managed but drifted`
    - `managed but obsolete`
    - `unmanaged / ambiguous`
-7. Decidir o conjunto alvo mínimo e coerente de agents para o repo usando o modelo factual intermediário, não completude estética.
-8. Decidir a política de `model` para a rodada atual, aplicando `model_policy` quando existir e respeitando `allowed_models` quando essa entrada existir.
-9. Gerar ou atualizar os specializeds necessários a partir do modelo factual intermediário e dos invariantes da role class, com frontmatter operacional coerente e shape final normalizado.
-10. Deletar artifacts gerenciados obsoletos e qualquer referência local quebrada deixada por eles.
-11. Reescrever ou ajustar o `orchestrator` por último, para que ele reflita apenas o conjunto final realmente materializado e respeite o budget de router.
-12. Executar um quality gate pós-geração separado do framing da geração.
-13. Se o gate retornar `NEEDS_FIX`, reparar somente os arquivos sinalizados, reexecutar o gate e concluir apenas quando o conjunto estiver consistentemente validado ou honestamente bloqueado.
+8. Decidir o conjunto alvo mínimo e coerente de agents para o repo usando o modelo factual intermediário, não completude estética.
+9. Decidir a política de `model` para a rodada atual, aplicando `model_policy` quando existir e respeitando `allowed_models` quando essa entrada existir.
+10. Gerar ou atualizar os specializeds necessários a partir do modelo factual intermediário e dos invariantes da role class, com metadata operacional coerente e shape final normalizado para o `target`.
+11. Quando `target=codex`, gerar ou atualizar `AGENTS.md` do repo alvo a partir do template interno e do conjunto final de agents materializados.
+12. Deletar artifacts gerenciados obsoletos e qualquer referência local quebrada deixada por eles.
+13. Reescrever ou ajustar o `orchestrator` por último, para que ele reflita apenas o conjunto final realmente materializado e respeite o budget de router.
+14. Executar um quality gate pós-geração separado do framing da geração.
+15. Se o gate retornar `NEEDS_FIX`, reparar somente os arquivos sinalizados, reexecutar o gate e concluir apenas quando o conjunto estiver consistentemente validado ou honestamente bloqueado.
 
 ## Discovery sério de `docs/**`
 O discovery deve ser suficiente para montar o modelo factual intermediário sem virar scan amplo por inércia.
@@ -426,12 +477,12 @@ Regras:
 Não omitir um agent se essa omissão deixar outros agents com referências quebradas ou exigir distorção do contrato canônico para compensar.
 
 Antes de remover um agent canônico do conjunto local:
-- procurar referências a esse `.agent.md` nos demais specializeds
+- procurar referências ao artifact desse agent nos demais specializeds do mesmo `target`
 - remover ou adaptar essas referências de forma coerente com o papel do agent restante
 - se a remoção exigir redefinir o protocolo local ou inventar um substituto não ancorado, não remover
 
 ## Como revisar e atualizar agents existentes
-- revisar o conteúdo atual de `.github/agents/*.agent.md` contra:
+- revisar o conteúdo atual dos artifacts gerenciados do `target` contra:
   - `docs/**`
   - o modelo factual intermediário
   - templates/base agents canônicos
@@ -445,18 +496,18 @@ Antes de remover um agent canônico do conjunto local:
   - matriz factual de harness/checks registrada em `docs/core/TESTING.md`
   - expectativas de validação
   - TBDs, exceções, padrões locais e escopo factual
-  - `target`, `tools`, `agents` e `model` no frontmatter operacional
+  - campos operacionais suportados pelo target, como `target`, `tools`, `agents` e `model` em `vscode`, ou `developer_instructions` em `codex`
   - headings canônicos, inclusive `## Handoff`
   - handoffs ou referências a agents presentes ou ausentes
 - ao revisar artifacts gerenciados existentes, normalizar o shape final e remover resíduos legados, mesmo quando o drift factual for pequeno
-- remover `## Tools` do corpo por default quando `tools` já existir no frontmatter, salvo exceção humana explícita e justificada
-- remover campos legados não canônicos do frontmatter especializado final, incluindo `agent_version`, salvo instrução humana explícita em sentido contrário
+- remover `## Tools` do corpo por default quando `tools` já existir na metadata operacional suportada pelo target, salvo exceção humana explícita e justificada
+- remover campos legados não canônicos da metadata operacional final, incluindo `agent_version`, salvo instrução humana explícita em sentido contrário
 - preferir update em cima do agent local quando ele já for um artifact gerenciado válido
 - quando a divergência for grande, regenerar o agent inteiro com base canônica + especialização factual local em vez de tentar patch incoerente
-- ao alterar materialmente um agent gerenciado, incrementar `specialization_revision`
+- ao alterar materialmente um agent gerenciado em `vscode`, incrementar `specialization_revision`; em `codex`, só incrementar metadata equivalente se ela existir como convenção interna opcional compatível
 
 ## Política para artifacts locais existentes
-- se o arquivo já estiver em `.github/agents/`, tiver shape compatível e indicar `managed_artifact: true`, tratar como artifact gerenciado e atualizar com overwrite seguro
+- se o arquivo já estiver no output gerenciado do `target`, tiver shape compatível e indicar `managed_artifact: true`, tratar como artifact gerenciado e atualizar com overwrite seguro
 - se o arquivo existir mas estiver ambíguo, sem metadata suficiente, ou com sinais fortes de autoria humana fora do fluxo gerenciado, não sobrescrever cegamente
 - se um artifact local não gerenciado conflitar com o conjunto que a skill precisa manter, bloquear e explicitar o conflito em vez de apagar ou substituir silenciosamente
 
@@ -466,22 +517,23 @@ Deletar apenas quando houver evidência suficiente de que o artifact local geren
 Casos típicos:
 - o projeto não possui mais a superfície que justificava aquele agent
 - o agent local ficou fora do conjunto mínimo útil decidido por evidência
-- o agent local referencia um fluxo ou outro `.agent.md` que deixou de existir e isso não é mais justificável
+- o agent local referencia um fluxo ou outro artifact de agent que deixou de existir e isso não é mais justificável
 - há duplicação de responsabilidade sem base factual
 - o `orchestrator` aponta para um agent que não deve mais existir
 
 Regras:
-- priorizar deleção de artifacts gerenciados em `.github/agents/`
-- permitir limpeza de referência stale em `.github/` apenas quando ficar claro que ela pertence ao sistema local gerenciado pela skill
+- priorizar deleção de artifacts gerenciados no output de agents do `target`
+- permitir limpeza de referência stale no output do `target` apenas quando ficar claro que ela pertence ao sistema local gerenciado pela skill
 - nunca tocar `.github/workflows/` por confusão de naming
 - nunca deletar artifact ambíguo ou manual sem explicitar o conflito
 
 ## Como alinhar o `orchestrator`
-- sempre revisar ou regenerar `orchestrator.agent.md` depois de decidir o conjunto final de agents
-- o `orchestrator` deve referenciar apenas os agents realmente presentes em `.github/agents/`
-- o `orchestrator.agent.md` deve conter `agents` e listar ali apenas os subagents realmente materializados em `.github/agents/`
-- se `agents` estiver presente no `orchestrator`, `agent` deve estar presente em `tools`
-- o conjunto em `agents` deve bater exatamente com o conjunto real de subagents materializados que o `orchestrator` coordena
+- sempre revisar ou regenerar o artifact do `orchestrator` depois de decidir o conjunto final de agents
+- o `orchestrator` deve referenciar apenas os agents realmente presentes no output de agents do `target`
+- em `vscode`, o artifact do `orchestrator` deve conter `agents` e listar ali apenas os subagents realmente materializados no mesmo target
+- em `vscode`, se `agents` estiver presente no `orchestrator`, `agent` deve estar presente em `tools`
+- em `vscode`, o conjunto em `agents` deve bater exatamente com o conjunto real de subagents materializados que o `orchestrator` coordena
+- em `codex`, o TOML do `orchestrator` não precisa conter `agents`; o conjunto roteável deve ficar claro em `developer_instructions` e no `AGENTS.md` gerado, salvo campo opcional equivalente suportado pelo runtime
 - o `orchestrator` não pode declarar subagent ausente, stale ou ainda não materializado
 - o `orchestrator` materializado deve operar como `status router only`, com `delegate-first`, `chat budget` explícito, `reading_scope_class: routing-minimal`, e sem narrativa operacional
 - o `orchestrator` não pode carregar `vscode`, `vscode/memory`, `edit`, `execute` ou `todo` por default
@@ -505,9 +557,9 @@ Regras:
 - o `reviewer` não substitui a verdade de proof do `validation-runner`; ele agrega review semântico/arquitetural antes do fechamento
 - ausência de `reviewer` `required` ou risco estrutural material não resolvido impede closure limpa
 - não assumir `coder-frontend`, `coder-ios`, `designer`, `reviewer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
-- se `designer` não existir, remover referências normais a `designer.agent.md` e reescrever a lógica local para não pressupor sua entrada
-- se `coder-ios` não existir, remover referências normais a `coder-ios.agent.md` e reescrever a lógica local para não presumir executor nativo iOS
-- se `reviewer` não existir, remover referências normais a `reviewer.agent.md` e reescrever a lógica local para não pressupor review semântico dedicado
+- se `designer` não existir, remover referências normais ao `designer` e reescrever a lógica local para não pressupor sua entrada
+- se `coder-ios` não existir, remover referências normais ao `coder-ios` e reescrever a lógica local para não presumir executor nativo iOS
+- se `reviewer` não existir, remover referências normais ao `reviewer` e reescrever a lógica local para não pressupor review semântico dedicado
 - se um coder não existir, o `orchestrator` não pode rotear trabalho para ele
 - se os agents de validação não existirem, o `orchestrator` não pode fingir o workflow completo; bloquear ou ajustar o fluxo local sem inventar um agent substituto
 - preservar a ordem canônica dos gates e o ownership definido em `status-gates`
@@ -568,13 +620,15 @@ Só permitir paralelização quando existir pacote de trabalho com:
 Se houver arquivo compartilhado ou contrato compartilhado sem owner claro, não paralelizar.
 
 ## Como escolher `tools`
-`tools` no frontmatter é obrigatório nos agents especializados do repo alvo.
+`tools` na metadata operacional é obrigatório apenas para specializeds `vscode`.
+
+Para `codex`, `tools` não faz parte do shape mínimo obrigatório do custom agent TOML. A política de tools continua sendo uma obrigação semântica da especialização e deve aparecer nas `developer_instructions`; só serializar um campo de tools em TOML quando houver compatibilidade explícita com o runtime Codex.
 
 Regras:
 - escolher tools por missão real do agent e por least privilege
 - `web` nunca é obrigatório por default; só incluir quando a missão do agent realmente precisar consultar contexto externo atual
 - `execute` é ferramenta sensível; só incluir quando o agent precise executar testes, scripts, builds, linters, validações ou diagnósticos locais
-- `agent` é ferramenta de coordenação; reservar para agents que realmente orquestram outros agents, e torná-la obrigatória no `orchestrator` quando `agents` for usado
+- `agent` é ferramenta de coordenação; reservar para agents que realmente orquestram outros agents, e torná-la obrigatória no `orchestrator` de `vscode` quando `agents` for usado
 - `edit` só entra quando o agent precisa materializar, modificar ou sincronizar artifacts locais
 - `read` e `search` são a base da maioria dos agents; `read/readFile` só deve entrar quando o runtime diferenciar isso de forma útil
 - `vscode` e `vscode/memory` são proibidas por default em specializeds gerados por esta skill; só entram com justificativa estrutural fortíssima, explícita e compatível com a role class
@@ -627,10 +681,11 @@ Incluir `web` apenas quando o contexto do projeto indicar dependência real de c
 - usar `docs/**`, o modelo factual intermediário e o papel do agent para inferir o tipo de trabalho, não para prometer "o melhor modelo"
 - se `model_policy` existir, aplicá-la com precedência sobre heurística implícita
 - se `model_policy` não existir mas `allowed_models` existir, preferir uma política conservadora com modelo padrão único ou pequena variação por papel com justificativa operacional clara
-- se não existir `allowed_models` nem `model_policy`, `model` pode ser omitido no frontmatter
+- se não existir `allowed_models` nem `model_policy`, `model` pode ser omitido quando o target suportar essa omissão
 - `model` pode ser string única ou lista priorizada
 - usar lista priorizada apenas quando houver justificativa operacional real e sem criar fallback complexo por imaginação
 - se `model` for lista priorizada, manter ordem explícita e compatível com `allowed_models` quando essa entrada existir
+- em `codex`, só serializar `model` no TOML se esse campo for suportado pelo runtime; caso contrário, tratar a escolha de modelo como política externa ao shape mínimo obrigatório
 - não justificar `model` com texto genérico como "adequado para engenharia"
 - não prometer escolha ótima, universal ou provider-agnostic sem política explícita
 
@@ -638,7 +693,8 @@ Incluir `web` apenas quando o contexto do projeto indicar dependência real de c
 Após gerar ou atualizar os specializeds, executar um quality gate independente do framing da geração.
 
 O gate consome:
-- o conjunto materializado em `.github/agents/`
+- o conjunto materializado no output de agents do `target`
+- `AGENTS.md` materializado no repo alvo quando `target=codex`
 - o modelo factual intermediário
 - os base agents canônicos e o contrato `agent-contract-shape`
 - a referência `agent-specialization-quality-gate`
@@ -650,12 +706,15 @@ Checks obrigatórios:
 
 ### Structural shape check
 Verificar:
-- frontmatter obrigatório presente e completo
-- headings e seções obrigatórias do base agent presentes com naming canônico
+- metadata ou campos obrigatórios do target presentes e completos
 - shape canônico consistente com `agent-contract-shape`
-- `target: vscode`, `tools`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
+- quando `target=vscode`, artifacts de agents estão em `.github/agents/*.agent.md`, headings e seções obrigatórias do base agent existem com naming canônico, e o frontmatter contém `target`, `tools`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
+- quando `target=codex`, artifacts de agents estão em `.codex/agents/*.toml`, cada TOML contém `name`, `description` e `developer_instructions`, e `AGENTS.md` foi gerado a partir do template interno da skill
+- quando `target=codex`, `developer_instructions` preserva a missão, role class, ownership, gates, sequencing, handoffs e regras operacionais do specialized que em `vscode` ficariam no corpo Markdown
+- quando `target=codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não são tratados como campos obrigatórios do TOML
+- quando `target=codex`, qualquer campo opcional além de `name`, `description` e `developer_instructions` é compatível com o runtime e não é apresentado como requisito nativo do Codex
 - remoção de campos legados não permitidos, incluindo `agent_version`
-- ausência de `## Tools` residual por default quando `tools` já existe no frontmatter
+- ausência de `## Tools` residual por default quando `tools` já existe na metadata operacional suportada pelo target
 - presença de contrato explícito de surface discipline quando o papel tiver risco real de poluir o chat principal
 - presença de `chat budget` explícito quando o papel tiver superfície curta relevante no chat principal
 
@@ -675,8 +734,9 @@ Hard fails:
 
 ### Router cost and tool check
 Verificar no `orchestrator`:
-- ferramentas compatíveis com `router`
-- ausência de `edit`, `execute`, `todo`, `vscode`, `vscode/memory` e `web` por default
+- ferramentas compatíveis com `router` quando o target tiver campo operacional de tools
+- em `vscode`, ausência de `edit`, `execute`, `todo`, `vscode`, `vscode/memory` e `web` por default
+- em `codex`, `developer_instructions` não concede nem sugere execução, edição, todo ou web por default como responsabilidade do `orchestrator`; não exigir campo TOML `tools`
 - ausência de leitura ampla obrigatória antes do primeiro handoff
 - budget operacional explícito antes do primeiro handoff
 - regra explícita de handoff imediato quando o owner já está claro
@@ -816,7 +876,9 @@ O repair loop existe para autocorreção localizada, não para esconder fraqueza
 
 ## Exemplos canônicos de shape esperado
 
-### `orchestrator.agent.md`
+### `target=vscode`
+
+#### `.github/agents/orchestrator.agent.md`
 ```yaml
 ---
 name: orchestrator
@@ -841,7 +903,7 @@ managed_artifact: true
 ---
 ```
 
-### `coder-backend.agent.md`
+#### `.github/agents/coder-backend.agent.md`
 ```yaml
 ---
 name: coder-backend
@@ -862,43 +924,86 @@ managed_artifact: true
 ---
 ```
 
+### `target=codex`
+
+#### `.codex/agents/orchestrator.toml`
+```toml
+name = "orchestrator"
+description = "Orquestra o fluxo local do projeto usando apenas os agents realmente materializados."
+developer_instructions = '''
+Coordinate the local Sentinel workflow as a lightweight router.
+
+Preserve the canonical gate order, role class `router`, ownership boundaries, handoff validity, and status sequencing defined by the specialized Sentinel contract.
+
+Route only to agents that are actually materialized for Codex in `.codex/agents/` and reflected in the generated `AGENTS.md`. Do not implement, do not absorb execution, do not write validation packs, and do not treat absent agents as available.
+
+Keep the main chat surface short: return only the current gate, next owner, blocker, DEV decision need, or routing delta that matters.
+'''
+```
+
+#### `.codex/agents/coder-backend.toml`
+```toml
+name = "coder-backend"
+description = "Implementa mudanças backend do projeto respeitando arquitetura, contratos e harness local."
+developer_instructions = '''
+Implement the authorized server-side cut from the Sentinel execution brief and validation pack.
+
+Preserve role class `executor`, targeted-local reading, capability gates, smallest-correct-change discipline, and the required distinction between `READY` with real implementation evidence and `BLOCKED` with an exact cause.
+
+Do not become planner, orchestrator, validation runner, reviewer, or finalizer. Do not return analysis or a pseudo-plan as if implementation happened.
+
+Report only the execution delta needed downstream: changed paths or equivalent implementation evidence, checks run or not run, residual risk, and exact blocker when blocked.
+'''
+```
+
 Notas para os exemplos:
 - os valores acima são apenas exemplos de shape, não prescrição fixa de provider ou modelo
-- `model` pode ser string única ou lista priorizada
-- o valor real de `model` deve respeitar `allowed_models` quando essa entrada existir
+- em `vscode`, `model` pode ser string única ou lista priorizada
+- em `vscode`, o valor real de `model` deve respeitar `allowed_models` quando essa entrada existir
 - quando `model_policy` existir, ele governa a preferência de escolha por papel
-- se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` e deixar o runtime usar o model picker atual
+- se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` quando o target suportar esse comportamento e deixar o runtime usar o model picker atual
+- em `codex`, o shape mínimo obrigatório mostrado é `name`, `description` e `developer_instructions`
+- em `codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision` e `managed_artifact` não aparecem nos exemplos porque não fazem parte do shape mínimo obrigatório do custom agent TOML
+- em `codex`, qualquer campo adicional só pode ser usado como opcional compatível com o runtime ou convenção interna opcional do Sentinel, nunca como requisito nativo mínimo
 - os exemplos representam o artifact final normalizado, sem `## Tools` no corpo e sem campos legados como `agent_version`
-- os exemplos de frontmatter não substituem o contrato endurecido do corpo; `orchestrator` e executors continuam obrigados a explicitar capability gate, validade do handoff e regra de runner só com artifact validável
+- os exemplos de shape não substituem o contrato operacional especializado; `orchestrator` e executors continuam obrigados a explicitar capability gate, validade do handoff e regra de runner só com artifact validável
+- no target `codex`, `AGENTS.md` do repo alvo deve ser gerado a partir de `reference/templates/codex/AGENTS.md` e deve apontar para o conjunto real de `.codex/agents/*.toml`
 - não inventar campos extras fora do necessário
 
 ## EXECUTE OUTPUT esperado
 - informar se houve materialização, atualização, deleção, normalização, validação e repair
 - listar os artifacts criados, atualizados ou removidos
-- explicitar quando houve normalização de frontmatter
+- explicitar o `target` usado
+- explicitar quando houve normalização do shape operacional do target
 - explicitar quando houve remoção de `## Tools`
 - explicitar quando houve remoção de campos legados, incluindo `agent_version`, quando aplicável
+- quando `target=codex`, explicitar se `AGENTS.md` do repo alvo foi criado ou atualizado a partir do template interno
 - informar o verdict final do quality gate e, se houve repair, quais arquivos ele sinalizou
 - nomear qualquer exceção humana explícita que tenha mantido resíduo legado por decisão consciente
 - se houver bloqueio, separar claramente o que foi normalizado do que ficou pendente
 
 ## Definição de done
-- frontmatter operacional coerente em cada specialized materializado
-- ausência de frontmatter parcial tratado como aceitável
+- `target` resolvido e suportado
+- shape obrigatório do target coerente em cada specialized materializado
+- ausência de artifact parcial tratado como aceitável
 - artifacts finais normalizados no shape canônico vigente
-- `target: vscode` presente em todos os `.agent.md` materializados
-- `tools` presente no frontmatter de todos os specializeds materializados
-- `agents` presente no `orchestrator.agent.md`
-- `agents` do `orchestrator` bate exatamente com o conjunto real de subagents materializados
-- `agent` presente em `tools` do `orchestrator` quando `agents` for usado
-- `model` coerente com `allowed_models` e `model_policy` quando essas entradas tiverem sido fornecidas
+- `target=vscode` materializa agents em `.github/agents/*.agent.md` com `target` correto no frontmatter operacional
+- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description` e `developer_instructions`, e materializa `AGENTS.md` na raiz do repo alvo
+- `AGENTS.md` do target `codex` deriva do template interno `reference/templates/codex/AGENTS.md`
+- em `vscode`, `tools` presente no frontmatter operacional de todos os specializeds materializados
+- em `vscode`, `agents` presente no artifact do `orchestrator`
+- em `vscode`, `agents` do `orchestrator` bate exatamente com o conjunto real de subagents materializados
+- em `vscode`, `agent` presente em `tools` do `orchestrator` quando `agents` for usado
+- em `codex`, `developer_instructions` de cada agent preserva missão, ownership, gates, role class, sequencing, handoffs e política de tools sem exigir campo TOML `tools`
+- em `codex`, `developer_instructions` e `AGENTS.md` refletem o conjunto roteável sem exigir campo TOML `agents` no `orchestrator`
+- `model` coerente com `allowed_models`, `model_policy` e compatibilidade do target quando essas entradas tiverem sido fornecidas
 - role class canônica respeitada em todos os specializeds materializados
 - `orchestrator` materializado com `routing-minimal` e sem tools indevidas
 - `planner` materializado com `bounded-context` e sem wording de broad discovery por default
 - `reviewer` materializado com `review-minimal` e sem drift para execução, validação ou closure
-- ausência de `## Tools` no corpo quando `tools` já existir no frontmatter, salvo exceção explicitamente justificada
+- ausência de `## Tools` no corpo quando `tools` já existir na metadata operacional suportada pelo target, salvo exceção explicitamente justificada
 - ausência de campos legados fora do contrato atual, incluindo `agent_version` por default
-- ausência de duplicação entre source of truth operacional e texto legado residual
+- ausência de duplicação entre source of truth operacional do target e texto legado residual
 - surface discipline explícita e coerente com o papel
 - ausência de narrativa operacional e artifact dump no chat principal como comportamento default
 - `chat budget` explícito quando aplicável
@@ -917,7 +1022,7 @@ Notas para os exemplos:
 - trilhas condicionais de `security`, `performance`, `migration/schema` e `observability/release safety` entram apenas quando há risco material e permanecem amarradas a handoff, proof e review sem checklist universal
 - política de paralelização segura restrita aos workers paralelizáveis e limitada a 3 instâncias por papel
 - handoffs coerentes com o conjunto final realmente materializado
-- ausência de referências ativas a `.agent.md` inexistente
+- ausência de referências ativas a artifact de agent inexistente no mesmo `target`
 - TBDs, exceções, scoped patterns, exemplos e checks manuais preservados com a força factual correta onde forem relevantes
 - quality gate final em `PASS` ou `PASS_WITH_WARNINGS`
 
@@ -927,14 +1032,15 @@ Notas para os exemplos:
 - não materializar especialistas cosméticos
 - não alterar base agents
 - não alterar o contrato canônico dos base agents sem ordem humana explícita
-- não depender de `.agent.md` inexistente
+- não depender de artifact de agent inexistente
 - não deixar o `orchestrator` apontando para agents ausentes
 - não usar `web` como source of truth factual do projeto
-- não tratar `.github/agents/` como a fonte factual principal do repo
+- não tratar artifacts gerenciados de agents como a fonte factual principal do repo
 - não materializar `agent-contract-shape`, `agent-specialization-quality-gate` e `status-gates` no repo alvo na v1
+- não criar artifacts finais no repo Sentinel Protocol; `AGENTS.md`, `.codex/agents/` e `.github/agents/` finais pertencem somente ao repo alvo
 - não criar docs do repo alvo por imaginação
 - não espalhar `tools` em dois lugares como source of truth
-- não perpetuar `## Tools` no corpo por inércia quando `tools` já estiver no frontmatter
+- não perpetuar `## Tools` no corpo por inércia quando `tools` já estiver na metadata operacional suportada pelo target
 - não introduzir `metadata:` aninhado como base central do runtime
 - não reintroduzir `agent_version` como campo canônico do specialized
 - não reabrir execution log, narrativa operacional ou artifact dump no chat principal
@@ -951,21 +1057,23 @@ Bloquear a especialização quando ocorrer qualquer um destes casos:
 - a base factual mínima estiver ausente ou insuficiente mesmo após leitura séria de `docs/**`
 - o boundary do projeto for impossível de entender com honestidade
 - faltar evidência mínima para distinguir quais agents fazem sentido
+- `target` ausente não puder ser defaultado para `vscode` ou `target` informado não for suportado
 - existir conflito factual relevante entre docs e codebase sem base suficiente para resolver
 - o pedido exigir invenção de especialistas sem ancoragem factual
-- existir artifact local ambíguo ou manual em `.github/agents/` cujo overwrite ou delete não seja seguro
+- existir artifact local ambíguo ou manual no output do `target` cujo overwrite ou delete não seja seguro
 - a remoção de um agent exigiria quebrar o protocolo local ou deixar referências órfãs sem alternativa honesta
 - o quality gate detectar inconsistência séria de shape, referência ou fidelidade factual que não seja reparável com segurança
 
 ## Fechamento operacional
 A skill só está done no repo alvo quando todas as condições abaixo já estiverem satisfeitas pela definição de done acima:
-- o conjunto de agents em `.github/agents/` foi decidido por evidência factual do projeto
+- o conjunto de agents no output do `target` foi decidido por evidência factual do projeto
 - o modelo factual intermediário foi construído e usado como base de geração e validação
 - apenas os agents necessários foram materializados ou mantidos
 - agents gerenciados stale foram atualizados ou deletados conforme necessário
-- todo artifact materializado contém frontmatter obrigatório completo, sem campos mandatórios ausentes e sem legado residual fora do contrato
+- todo artifact materializado contém o shape obrigatório do target, sem campos mandatórios ausentes e sem legado residual fora do contrato
 - o `orchestrator` reflete apenas o conjunto real de agents presentes
-- nenhum agent local referencia `.agent.md` inexistente
+- quando `target=codex`, `AGENTS.md` foi gerado a partir do template interno da skill e reflete o conjunto real de `.codex/agents/*.toml`
+- nenhum agent local referencia artifact de agent inexistente
 - o contrato canônico dos base agents foi preservado
 - `agent-contract-shape`, `agent-specialization-quality-gate` e `status-gates` foram usados como referência, não materializados no repo alvo
 - o verdict final do quality gate é `PASS` ou `PASS_WITH_WARNINGS`

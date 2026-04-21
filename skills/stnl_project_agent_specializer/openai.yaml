@@ -4,6 +4,6 @@ interface:
   version: "2026.4.0"
   protocol_release: "2026.4"
   status: "active"
-  short_description: "Especializa o conjunto minimo util de agents locais em .github/agents/ a partir do contexto factual consolidado do projeto."
+  short_description: "Especializa o conjunto minimo util de agents locais para targets vscode ou codex a partir do contexto factual consolidado do projeto."
 policy:
   allow_implicit_invocation: false
