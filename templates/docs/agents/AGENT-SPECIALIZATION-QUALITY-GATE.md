@@ -46,6 +46,7 @@ O gate deve primeiro classificar cada specialized em uma role class canonica:
 - `router`: `orchestrator`
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
+- `execution-package-design`: `execution-package-designer`
 - `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
 - `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
@@ -89,6 +90,8 @@ Verificar no minimo:
 - `orchestrator.agents` referencia apenas subagents realmente materializados
 - handoffs nao apontam para `.agent.md` inexistente
 - agents ausentes nao continuam implicitos no workflow local
+- quando o fluxo local usa coders, `execution-package-designer` esta presente no conjunto materializado e no roteamento do `orchestrator`
+- o fluxo passa por `validation-eval-designer -> execution-package-designer -> orchestrator -> coder(s)` antes de execução
 - nao ha contradicao interna relevante entre agents sobre boundaries, routing, harness ou fluxo
 - politica de paralelizacao segura aparece apenas onde fizer sentido e nao transforma singleton em worker paralelo por acidente
 - o `orchestrator` trata paralelizacao como politica de coordenacao, nao como promessa de runtime
@@ -97,6 +100,8 @@ Verificar no minimo:
 Hard fails:
 - `orchestrator.agents` lista agent nao materializado
 - qualquer handoff canonico referencia arquivo inexistente ou owner que nao existe no conjunto atual
+- coders materializados sem `execution-package-designer` quando o fluxo exigir pacote executavel
+- `orchestrator` sem handoff explicito para `execution-package-designer` antes dos coders
 - singleton role aparece como paralelizavel por acidente
 - contradicao material entre specializeds torna o fluxo local internamente incoerente
 
@@ -177,19 +182,24 @@ Hard fails:
 
 ### 8. Executor ownership check
 Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
-- leitura profunda e custo principal da execucao pertencem a essa classe
+- coders recebem e executam `EXECUTION PACKAGE` com `WORK_PACKAGE_ID`
+- coders continuam especialistas por stack/projeto, mas nao sao solucionadores locais nem compiladores de pacote
+- leitura local e suficiente para executar o pacote substitui broad discovery como custo normal
 - `targeted-local` preservado
 - capability gate explicito
 - `read-only runtime is not execution` explicito quando houver risco
 - `READY` apenas com evidencia real de mudanca aplicada
 - `BLOCKED` cedo quando faltar base ou capacidade
+- `BLOCKED` cedo quando o pacote for insuficiente, contraditorio, stale ou exigir ampliar scope
+- proibicao explicita de redefinir cut, recompilar pacote, escolher arquitetura estrutural, ampliar scope ou tocar shared files fora de `OWNED_PATHS`
 - em `coder-ios`, o wording mantém foco default em Swift + SwiftUI e nao deriva para executor UIKit-heavy sem evidencia do repo ou necessidade real do cut
 - wording nao transforma executor em planner, router, runner ou finalizer
 
 Hard fails:
 - executor sem tool de edicao quando sua funcao for implementar codigo
 - executor aceitando `READY` descritivo sem diff, changed paths ou evidencia equivalente
-- executor incentivando discovery amplo como substituto de implementacao
+- coder incentivando discovery amplo como substituto de pacote executavel
+- coder com wording de solucionador local, planejador de arquitetura, ou owner de work-package compilation
 
 ### 9. Proof-execution, closure, and sync containment check
 Verificar em `validation-runner`, `finalizer` e `resync`:
@@ -257,9 +267,30 @@ Verificar:
 - ferramentas condizem com a role class
 - perfis de tool nao favorecem ruido operacional
 - `todo` nao entra por default em `orchestrator`, `planner` ou `validation-eval-designer`
+- `todo` nao entra por default em `coder-backend`, `coder-frontend`, `coder-ios` ou `validation-runner`
+- `execution-package-designer` fica por default em `read` e `search`, sem `edit`, `execute`, `agent`, `todo`, `vscode`, `vscode/memory` ou `web`
 - tools proibidas pela role class nao aparecem sem justificativa explicita e auditavel
 
-### 14. Factual fidelity check
+Hard fails:
+- coders com `todo` por default sem justificativa humana explicita e auditavel
+- `validation-runner` com `todo` por default sem justificativa humana explicita e auditavel
+- `execution-package-designer` com ferramenta de coordenacao, edicao ou execucao por default
+
+### 14. Model-policy compatibility check
+Verificar:
+- `model_policy` aceita configuracao nova por agent ou por papel fino
+- precedencia esta explicita: `model_policy.agents[agent]` primeiro, depois `model_policy.roles[role]`, depois defaults legados
+- defaults legados `reasoning_default`, `coding_default` e `execution_default` continuam aceitos
+- policy nova permite modelos fortes para `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer` e `reviewer`
+- policy nova permite modelos mais baratos para `coder-backend`, `coder-frontend` e `coder-ios`
+- `validation-runner` e `finalizer` podem ficar em faixa intermediaria ou explicitamente definidos
+- qualquer valor escolhido continua subordinado a `allowed_models` quando essa entrada existir
+
+Hard fails:
+- model policy nova sem fallback compativel com `reasoning_default`, `coding_default` e `execution_default`
+- precedencia ambigua entre configuracao por agent, por role e defaults legados
+
+### 15. Factual fidelity check
 Verificar:
 - TBDs relevantes continuam semanticamente preservados
 - excecoes documentadas continuam visiveis quando relevantes
@@ -269,7 +300,7 @@ Verificar:
 - checks manuais continuam marcados como checagem
 - `validation-eval-designer` e `validation-runner` nao ignoram nem contradizem `docs/core/TESTING.md` sem justificativa factual, qualificacao de escopo ou conflito explicitado
 
-### 15. Overclaim and certainty check
+### 16. Overclaim and certainty check
 Verificar linguagem absoluta sem sustentacao suficiente, incluindo:
 - `all`
 - `always`
@@ -280,7 +311,7 @@ Verificar linguagem absoluta sem sustentacao suficiente, incluindo:
 
 Quando a evidencia nao sustentar esse grau de certeza, rebaixar a claim para pattern, example, TBD ou check manual.
 
-### 16. Coverage check
+### 17. Coverage check
 Verificar que o conjunto absorveu, onde fizer sentido:
 - stack e superficies relevantes
 - boundaries e ownerships importantes

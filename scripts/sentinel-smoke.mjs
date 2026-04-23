@@ -22,6 +22,7 @@ const REQUIRED_BUNDLE_PATHS = [
     ["stnl_project_foundation", "reference/docs", "reference/DESIGN_SYSTEM.md"],
     ["stnl_project_agent_specializer", "reference/agents", "reviewer.agent.md"],
     ["stnl_project_agent_specializer", "reference/agents", "coder-ios.agent.md"],
+    ["stnl_project_agent_specializer", "reference/agents", "execution-package-designer.agent.md"],
     ["stnl_project_agent_specializer", "reference/docs", "workflow/EXECUTION-LIFECYCLE.md"],
     ["stnl_project_agent_specializer", "reference/docs", "agents/AGENT-CONTRACT-SHAPE.md"],
     ["stnl_project_agent_specializer", "reference/docs", "agents/AGENT-SPECIALIZATION-QUALITY-GATE.md"],
@@ -126,6 +127,9 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "# Quality Gate Canonico de Especializacao de Agents",
             "## Checks obrigatorios",
             "### 3. Cross-reference / handoff consistency check",
+            "execution-package-designer",
+            "todo` nao entra por default em `coder-backend`, `coder-frontend`, `coder-ios` ou `validation-runner`",
+            "Model-policy compatibility check",
         ],
     },
     {
@@ -133,6 +137,8 @@ const AGENT_REFERENCE_DOC_SPECS = [
         requiredSnippets: [
             "# Execution Lifecycle Canonico",
             "## Ordem do fluxo",
+            "## Contrato do pacote de execução",
+            "execution-package-designer -> orchestrator -> coder(s)",
             "## Regra de closure",
         ],
     },
@@ -150,12 +156,13 @@ const CONTROLLED_AGENT_TOOLSETS = {
     "orchestrator.agent.md": ["read", "search", "agent"],
     "planner.agent.md": ["read", "search"],
     "validation-eval-designer.agent.md": ["read", "search"],
-    "validation-runner.agent.md": ["read", "search", "execute", "todo"],
+    "execution-package-designer.agent.md": ["read", "search"],
+    "validation-runner.agent.md": ["read", "search", "execute"],
     "finalizer.agent.md": ["read", "search", "edit", "todo"],
     "reviewer.agent.md": ["read", "search"],
-    "coder-backend.agent.md": ["read", "search", "edit", "execute", "todo"],
-    "coder-frontend.agent.md": ["read", "search", "edit", "execute", "todo"],
-    "coder-ios.agent.md": ["read", "search", "edit", "execute", "todo"],
+    "coder-backend.agent.md": ["read", "search", "edit", "execute"],
+    "coder-frontend.agent.md": ["read", "search", "edit", "execute"],
+    "coder-ios.agent.md": ["read", "search", "edit", "execute"],
     "designer.agent.md": ["read", "search", "todo"],
 };
 
@@ -163,12 +170,13 @@ const REQUIRED_CONTROLLED_AGENT_FILES = [
     "orchestrator.agent.md",
     "planner.agent.md",
     "validation-eval-designer.agent.md",
-    "validation-runner.agent.md",
-    "finalizer.agent.md",
-    "reviewer.agent.md",
+    "execution-package-designer.agent.md",
     "coder-backend.agent.md",
     "coder-frontend.agent.md",
     "coder-ios.agent.md",
+    "validation-runner.agent.md",
+    "reviewer.agent.md",
+    "finalizer.agent.md",
 ];
 
 const REQUIRED_AGENT_BODY_SNIPPETS = [
@@ -859,6 +867,113 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
     }
 }
 
+function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgentFiles) {
+    assert(
+        controlledAgentFiles.includes("execution-package-designer.agent.md"),
+        "Conjunto controlado não inclui execution-package-designer.agent.md"
+    );
+
+    const packageDesignerPath = path.join(skillRoot, "reference", "agents", "execution-package-designer.agent.md");
+    const packageDesignerContent = assertFileHasRequiredShape(packageDesignerPath, [
+        "# Execution Package Designer Agent",
+        "EXECUTION PACKAGE",
+        "WORK_PACKAGE_ID",
+        "OWNED_PATHS",
+        "BLOCK_IF",
+        "does not coordinate",
+    ]);
+
+    assert(
+        packageDesignerContent.includes("role class: `execution-package-design`"),
+        "execution-package-designer não declara role class canônica"
+    );
+
+    const orchestratorPath = path.join(repoRoot, ".github", "agents", "orchestrator.agent.md");
+    const orchestratorContent = fs.readFileSync(orchestratorPath, "utf8");
+    const { data: orchestratorFrontmatter } = parseFrontmatter(orchestratorContent, orchestratorPath);
+
+    for (const requiredAgent of [
+        "planner",
+        "validation-eval-designer",
+        "execution-package-designer",
+        "coder-backend",
+        "coder-frontend",
+        "coder-ios",
+        "validation-runner",
+        "reviewer",
+        "finalizer",
+    ]) {
+        assert(
+            orchestratorFrontmatter.agents.includes(requiredAgent),
+            `orchestrator.agents não contém ${requiredAgent}`
+        );
+    }
+
+    const packageIndex = orchestratorFrontmatter.agents.indexOf("execution-package-designer");
+    const firstCoderIndex = Math.min(
+        orchestratorFrontmatter.agents.indexOf("coder-backend"),
+        orchestratorFrontmatter.agents.indexOf("coder-frontend"),
+        orchestratorFrontmatter.agents.indexOf("coder-ios")
+    );
+    const runnerIndex = orchestratorFrontmatter.agents.indexOf("validation-runner");
+
+    assert(packageIndex >= 0, "execution-package-designer ausente do orchestrator.agents");
+    assert(
+        packageIndex < firstCoderIndex,
+        "execution-package-designer deve aparecer antes dos coders no conjunto controlado"
+    );
+    assert(
+        firstCoderIndex < runnerIndex,
+        "coders devem aparecer antes do validation-runner no conjunto controlado"
+    );
+
+    const agentContents = new Map(
+        controlledAgentFiles.map((fileName) => [
+            fileName,
+            fs.readFileSync(path.join(skillRoot, "reference", "agents", fileName), "utf8"),
+        ])
+    );
+
+    assert(
+        agentContents.get("orchestrator.agent.md").includes("execution-package-designer.agent.md"),
+        "orchestrator base não referencia o novo handoff canônico"
+    );
+    assert(
+        agentContents.get("validation-eval-designer.agent.md").includes("execution-package-designer.agent.md"),
+        "validation-eval-designer não encaminha READY para package design"
+    );
+
+    for (const coderFile of ["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"]) {
+        const content = agentContents.get(coderFile);
+        assert(content.includes("EXECUTION PACKAGE"), `${coderFile} não consome EXECUTION PACKAGE`);
+        assert(content.includes("WORK_PACKAGE_ID"), `${coderFile} não exige WORK_PACKAGE_ID`);
+        assert(content.includes("do not redefine the cut"), `${coderFile} não bloqueia redefinição do cut`);
+        assert(content.includes("do not rewrite, recompile, or reinterpret the `EXECUTION PACKAGE`"), `${coderFile} não bloqueia recompilação do pacote`);
+        assert(
+            !CONTROLLED_AGENT_TOOLSETS[coderFile].includes("todo"),
+            `${coderFile} não deve receber todo por default`
+        );
+    }
+
+    assert(
+        !CONTROLLED_AGENT_TOOLSETS["validation-runner.agent.md"].includes("todo"),
+        "validation-runner não deve receber todo por default"
+    );
+
+    const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
+    assert(
+        skillContent.includes([
+            "agents:",
+            "  - planner",
+            "  - validation-eval-designer",
+            "  - execution-package-designer",
+            "  - coder-backend",
+            "  - validation-runner",
+        ].join("\n")),
+        "Exemplo vscode da skill não preserva a ordem canônica planner -> validation-eval-designer -> execution-package-designer -> coder -> validation-runner"
+    );
+}
+
 function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFiles) {
     const codexAgentsRoot = path.join(repoRoot, ".codex", "agents");
     const expectedAgentNames = controlledAgentFiles
@@ -953,6 +1068,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledContextMaterialization(vscodeRepoRoot);
         assertControlledReferenceDocs(agentSkillRoot);
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
+        assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(codexRepoRoot);
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);

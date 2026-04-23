@@ -42,10 +42,12 @@ Esta skill é um utilitário global. Ela não é um agent do workflow do projeto
 - a codebase do repo alvo apenas quando os docs precisarem de confirmação, complemento ou desempate factual
 - manifests de stack, scripts, testes, configs e entrypoints reais quando forem necessários para especializar comandos, provas, boundaries ou superfícies
 - `allowed_models` opcional quando o uso da skill quiser restringir a escolha de `model` dos agents especializados
-- `model_policy` opcional para governar a preferência de `model` por perfil de agent, usando apenas:
+- `model_policy` opcional para governar a preferência de `model` por agent, role fina ou defaults legados compatíveis:
   - `reasoning_default`
   - `coding_default`
   - `execution_default`
+  - `agents`
+  - `roles`
 
 ## Source of truth e ordem de evidência
 Usar esta ordem de precedência no repo alvo:
@@ -83,6 +85,7 @@ Regras complementares:
 - `coder-frontend`
 - `coder-ios`
 - `designer`
+- `execution-package-designer`
 - `finalizer`
 - `orchestrator`
 - `planner`
@@ -97,6 +100,7 @@ Antes de especializar qualquer agent, a skill deve classificá-lo em uma role cl
 - `router`: `orchestrator`
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
+- `execution-package-design`: `execution-package-designer`
 - `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
 - `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
@@ -113,7 +117,8 @@ Para cada role class, a skill deve impor no mínimo:
 
 Regras:
 - especialização local pode restringir mais, nunca relaxar os invariantes centrais da role class
-- o custo principal de leitura e execução pertence à classe `executor`
+- a inteligência executável pertence a `execution-package-design`; coders continuam especialistas por stack/projeto, mas executam pacotes explícitos
+- o custo principal de execução pertence aos coders dentro do pacote autorizado; broad discovery não é custo normal do coder
 - `router` e `planning` devem ficar deliberadamente mais fracos que os executors em leitura e ferramentas
 - `proof-execution`, `closure` e `sync` não podem compensar gaps upstream com rediscovery amplo
 
@@ -303,18 +308,42 @@ Regras operacionais:
 
 ## Política de `allowed_models` e `model_policy`
 - a skill aceita uma entrada opcional `allowed_models`
-- a skill aceita uma entrada opcional `model_policy` com `reasoning_default`, `coding_default` e `execution_default`
+- a skill aceita uma entrada opcional `model_policy` granular e compatível
+- chaves novas aceitas:
+  - `agents`: mapa por agent lógico, por exemplo `coder-backend`
+  - `roles`: mapa por role fina, por exemplo `specialist_executor`, `proof_execution`, `closure`
+- chaves legadas continuam aceitas:
+  - `reasoning_default`
+  - `coding_default`
+  - `execution_default`
 - se `allowed_models` for fornecido, toda escolha de `model` para specializeds deve ficar restrita a essa lista
 - a skill não pode materializar `model` fora de `allowed_models`
 - se `model_policy` for fornecido, ele tem precedência sobre heurística implícita
-- agents de coordenação, síntese e planejamento tendem a usar `reasoning_default`
-- agents de implementação tendem a usar `coding_default`
-- agents de execução, prova e validação tendem a usar `execution_default`
+- precedência de resolução:
+  1. `model_policy.agents[agent_name]`
+  2. `model_policy.roles[fine_role]`
+  3. defaults legados compatíveis por perfil
+  4. heurística conservadora somente quando não houver policy explícita
+- role fina sugerida:
+  - `round_coordinator`: `orchestrator`
+  - `cut_planning`: `planner`
+  - `proof_design`: `validation-eval-designer`
+  - `execution_package_design`: `execution-package-designer`
+  - `specialist_executor`: `coder-backend`, `coder-frontend`, `coder-ios`
+  - `ux_direction`: `designer`
+  - `semantic_review`: `reviewer`
+  - `proof_execution`: `validation-runner`
+  - `closure`: `finalizer`
+  - `sync`: `resync`
+- fallback legado compatível:
+  - `reasoning_default`: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `reviewer`
+  - `coding_default`: `coder-backend`, `coder-frontend`, `coder-ios`, e `designer` quando materializado como executor de direção UX
+  - `execution_default`: `validation-runner`, `finalizer`, `resync`
 - se `model_policy` indicar valor fora de `allowed_models`, a skill deve bloquear ou escolher alternativa segura explicitando isso no output
 - quando só `allowed_models` existir, preferir política conservadora: usar um modelo padrão único para o conjunto ou variar por papel apenas quando houver justificativa operacional clara
 - se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` na metadata operacional e deixar o runtime usar o model picker atual
 - não afirmar que um modelo é "o melhor" sem política explícita
-- não inventar ranking universal, fallback complexo, matriz excessiva por agent ou policy especulativa de modelos
+- não inventar ranking universal, fallback complexo, matriz excessiva por provider ou policy especulativa de modelos
 - lista priorizada de `model` só deve ser usada quando houver justificativa operacional real, ordem explícita e todos os itens estiverem contidos em `allowed_models` quando essa entrada existir
 
 ## Procedimento operacional
@@ -438,6 +467,20 @@ Evitar materializar só um deles sem justificativa forte e explicitada.
 
 Se o projeto for tão simples que a separação de design de validação e run de validação não se sustente por evidência, não inventar versões cosméticas desses agents. Nesses casos, bloquear ou reduzir o conjunto com justificativa factual clara, sem deixar handoffs quebrados.
 
+### Agent de pacote de execução
+Materializar `execution-package-designer` sempre que o conjunto local materializar qualquer coder (`coder-backend`, `coder-frontend` ou `coder-ios`) junto com `validation-eval-designer`.
+
+Esse agent ocupa a etapa canônica entre `validation-eval-designer` e os coders. Ele:
+- recebe `EXECUTION BRIEF` e `VALIDATION PACK`
+- produz `EXECUTION PACKAGE`
+- suporta 1..N work packages
+- não coordena coders
+- não chama agents
+- não implementa
+- não substitui o `orchestrator`
+
+Não materializar `execution-package-designer` como ornamento quando o conjunto local não tiver coders executores. Se coders existirem sem package designer, o conjunto fica incoerente porque obriga coders baratos a reinterpretar arquitetura, boundaries e proof.
+
 ### Agent de review semântico
 Materializar `reviewer` quando o workflow local se beneficia de review técnico cut-scoped além da proof do runner, especialmente em mudanças estruturais, boundary-sensitive, refactors relevantes, impacto transversal ou alteração importante de contratos internos.
 
@@ -554,6 +597,9 @@ Regras:
 - se a decisão for adicionar testes focados, o `orchestrator` volta ao `validation-eval-designer` quando o cut permanece materialmente o mesmo, ou ao `planner` antes quando o cut muda materialmente
 - se a decisão for aceitar evidência parcial explícita, o `orchestrator` volta ao `validation-eval-designer` para registrar o compromisso no `VALIDATION PACK` antes de qualquer gate normal de execução
 - se a decisão for reduzir o cut, o `orchestrator` volta obrigatoriamente ao `planner` e invalida qualquer readiness ou approval derivado do cut anterior
+- depois de um `VALIDATION PACK` `READY`, o `orchestrator` deve rotear para `execution-package-designer` antes de qualquer coder
+- o `execution-package-designer` não coordena, não chama coders e não decide sequência; ele devolve `EXECUTION PACKAGE` para o `orchestrator`
+- o `orchestrator` só decide sequência ou paralelização de coders depois que `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH` e `BLOCK_IF` estiverem estáveis
 - antes de rotear um executor, o `orchestrator` deve tornar explícito se o agent materializado tem capacidade real de editar e executar o cut; gap material vira blocker operacional antes da execução
 - o `orchestrator` só pode aceitar do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
 - resposta narrativa, descritiva, analítica, pseudo-plano ou sem diff aplicado deve ser tratada como handoff inválido do executor, com parada explícita da rodada
@@ -565,10 +611,11 @@ Regras:
 - o `reviewer` só pode entrar com artifact implementado real e classificação explícita `required` ou `advisory`
 - o `reviewer` não substitui a verdade de proof do `validation-runner`; ele agrega review semântico/arquitetural antes do fechamento
 - ausência de `reviewer` `required` ou risco estrutural material não resolvido impede closure limpa
-- não assumir `coder-frontend`, `coder-ios`, `designer`, `reviewer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
+- não assumir `coder-frontend`, `coder-ios`, `designer`, `execution-package-designer`, `reviewer`, `validation-eval-designer`, `validation-runner` ou `resync` sem evidência e sem materialização local correspondente
 - se `designer` não existir, remover referências normais ao `designer` e reescrever a lógica local para não pressupor sua entrada
 - se `coder-ios` não existir, remover referências normais ao `coder-ios` e reescrever a lógica local para não presumir executor nativo iOS
 - se `reviewer` não existir, remover referências normais ao `reviewer` e reescrever a lógica local para não pressupor review semântico dedicado
+- se `execution-package-designer` não existir, remover referências normais a coders executores ou bloquear o conjunto; não fazer coders substituírem package design
 - se um coder não existir, o `orchestrator` não pode rotear trabalho para ele
 - se os agents de validação não existirem, o `orchestrator` não pode fingir o workflow completo; bloquear ou ajustar o fluxo local sem inventar um agent substituto
 - preservar a ordem canônica dos gates e o ownership definido em `status-gates`
@@ -587,9 +634,10 @@ Checks obrigatórios de materialização:
 
 Aplicação por papel:
 - `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, delta novo realmente relevante, e trilhas condicionais de risco quando materialmente ativas; nunca absorver implementação, rejeitar handoff descritivo do executor, não auto-empurrar execução quando houver `NEEDS_DEV_DECISION_HARNESS`, e só liberar runner com artifact validável
-- `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos ou packages quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
+- `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos de cut em alto nível quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
 - `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC, registrar operacionalmente no pack qualquer compromisso explícito do DEV sobre evidência parcial, refletir no pack a exigência de testes focados antes da execução, e exigir retorno ao `planner` quando a decisão do DEV alterar materialmente o recorte
-- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; quando faltar capacidade real de editar ou executar, ou quando o cut não puder ser implementado com segurança, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
+- `execution-package-designer`: manter `EXECUTION PACKAGE` rico no handoff, mas devolver só `READY` ou `BLOCKED`, ids de pacotes, ordem/dependência, elegibilidade de paralelização e causa exata de bloqueio; não coordenar coders, não chamar agents, não implementar e não virar planner
+- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; executar apenas o `WORK_PACKAGE_ID` autorizado, com leitura local suficiente para segurança. Quando faltar capacidade real de editar ou executar, quando o pacote for insuficiente, ou quando o cut não puder ser implementado com segurança dentro de `OWNED_PATHS`, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; reconhecer quando trilha material de risco foi ignorada, sem virar especialista dedicado; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
 - `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`
@@ -603,6 +651,7 @@ Singletons obrigatórios:
 - `orchestrator`
 - `planner`
 - `validation-eval-designer`
+- `execution-package-designer`
 - `validation-runner`
 - `finalizer`
 - `resync`
@@ -654,12 +703,16 @@ Perfis mínimos por role class:
 - `proof-design`
   - permitidas: `read`, `search`
   - proibidas por default: `agent`, `edit`, `execute`, `todo`, `vscode`, `vscode/memory`, `web`
+- `execution-package-design`
+  - permitidas: `read`, `search`
+  - proibidas por default: `agent`, `edit`, `execute`, `todo`, `vscode`, `vscode/memory`, `web`
 - `semantic-review`
   - permitidas: `read`, `search`
   - proibidas por default: `agent`, `edit`, `execute`, `todo`, `vscode`, `vscode/memory`, `web`
 - `executor`
   - base permitida: `read`, `search`
-  - coders normalmente adicionam `edit`, `execute`, `todo`
+  - coders especialistas-executores normalmente adicionam `edit`, `execute`
+  - coders não recebem `todo` por default; incluir só com justificativa humana explícita e auditável
   - `designer` pode omitir `edit` e `execute`, mas continua responsável por custo local do seu boundary
 - `proof-execution`
   - permitidas: `read`, `search`, `execute`
@@ -677,18 +730,23 @@ Perfis mínimos sugeridos por papel, sempre ajustáveis por evidência:
 - `reviewer`: `read`, `search`
 - `finalizer`: `read`, `search`, `edit`, `todo`
 - `resync`: `read`, `search`, `edit`, `todo`
-- `coder-backend`: `read`, `search`, `edit`, `execute`, `todo`
-- `coder-frontend`: `read`, `search`, `edit`, `execute`, `todo`
-- `coder-ios`: `read`, `search`, `edit`, `execute`, `todo`
+- `coder-backend`: `read`, `search`, `edit`, `execute`
+- `coder-frontend`: `read`, `search`, `edit`, `execute`
+- `coder-ios`: `read`, `search`, `edit`, `execute`
 - `designer`: `read`, `search`, `todo`
 - `validation-eval-designer`: `read`, `search`
-- `validation-runner`: `read`, `search`, `execute`, `todo`
+- `execution-package-designer`: `read`, `search`
+- `validation-runner`: `read`, `search`, `execute`
 
 Incluir `web` apenas quando o contexto do projeto indicar dependência real de conhecimento externo atual para aquele papel, e nunca como substituto para `docs/**`.
 
 ## Como escolher `model`
 - usar `docs/**`, o modelo factual intermediário e o papel do agent para inferir o tipo de trabalho, não para prometer "o melhor modelo"
 - se `model_policy` existir, aplicá-la com precedência sobre heurística implícita
+- aplicar a precedência granular: agent override, role override, defaults legados, heurística conservadora
+- usar `model_policy.agents` para exceções explícitas por agent
+- usar `model_policy.roles` para grupos finos como `round_coordinator`, `cut_planning`, `proof_design`, `execution_package_design`, `specialist_executor`, `semantic_review`, `proof_execution`, `closure` e `sync`
+- preservar compatibilidade com `reasoning_default`, `coding_default` e `execution_default`
 - se `model_policy` não existir mas `allowed_models` existir, preferir uma política conservadora com modelo padrão único ou pequena variação por papel com justificativa operacional clara
 - se não existir `allowed_models` nem `model_policy`, `model` pode ser omitido quando o target suportar essa omissão
 - `model` pode ser string única ou lista priorizada
@@ -733,6 +791,7 @@ Verificar:
 - `reading_scope_class` está compatível com a role class
 - wording de missão, proibicoes, handoff e protocol-fixed part não empurra o papel para outra classe
 - especialização local não relaxou invariantes centrais da role class
+- `execution-package-designer` permanece package-design only: produz `EXECUTION PACKAGE`, não coordena coders, não chama agents, não implementa e não substitui o `orchestrator`
 
 Hard fails:
 - `orchestrator` fora de `routing-minimal`
@@ -740,6 +799,23 @@ Hard fails:
 - `reviewer` fora de `review-minimal`
 - `validation-runner` ou `finalizer` fora de `minimal-verification`
 - `resync` com leitura mais ampla que `targeted-local`
+- `execution-package-designer` com papel de router, executor, planner ou runner
+
+### Execution-package-design check
+Verificar no `execution-package-designer`:
+- role class `execution-package-design` preservada
+- `EXECUTION PACKAGE` contém contrato leve e operacional com `WORK_PACKAGE_ID`, `GOAL`, `OWNED_PATHS`, `SEARCH_ANCHORS`, `EDIT_ANCHORS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS` e `BLOCK_IF`
+- pacote suporta 1..N work packages sem criar segundo orchestrator
+- ausência de tools excessivas herdadas por acidente
+- leitura local menor que executor e voltada só a anchors, paths, comandos e boundaries do pacote
+- não implementa, não executa, não valida, não revisa, não fecha e não faz resync
+- não seleciona, chama, sequencia, paraleliza ou gerencia coders
+
+Hard fails:
+- `execution-package-designer` chamando coders ou usando `agent` por default
+- `execution-package-designer` com `edit`, `execute`, `todo`, `vscode`, `vscode/memory` ou `web` por default
+- pacote sem campos mínimos ou sem `BLOCK_IF` explícito
+- pacote virando plano prolixo, pseudo-implementação ou arquitetura nova
 
 ### Router cost and tool check
 Verificar no `orchestrator`:
@@ -752,6 +828,8 @@ Verificar no `orchestrator`:
 - regra explícita de parar para blocker ou DEV em vez de continuar lendo indefinidamente
 - reconhecimento explícito de trilhas condicionais de `security`, `performance`, `migration/schema` e `observability/release safety` apenas quando houver risco material
 - trilha material ausente no handoff é tratada como defeito de roteamento, sem universalizar `high risk` por default
+- handoff canônico para `execution-package-designer` depois de `VALIDATION PACK READY` e antes de coders
+- decisão de sequência/paralelização de coders só depois de `EXECUTION PACKAGE` estável
 
 ### Planner containment check
 Verificar no `planner`:
@@ -789,12 +867,16 @@ Hard fails:
 
 ### Executor ownership check
 Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
-- leitura profunda e custo principal da execução pertencem a essa classe
+- coders recebem e executam `EXECUTION PACKAGE` com `WORK_PACKAGE_ID`
+- coders continuam especialistas por stack/projeto, mas não são solucionadores locais nem compiladores de pacote
+- leitura local suficiente para executar o pacote substitui broad discovery como custo normal
 - `targeted-local` preservado
 - capability gate explícito
 - `read-only runtime is not execution` explícito quando houver risco
 - `READY` apenas com evidência real de mudança aplicada
 - `BLOCKED` cedo quando faltar base ou capacidade
+- `BLOCKED` cedo quando pacote for insuficiente, contraditório, stale ou exigir ampliar scope
+- proibição explícita de redefinir cut, recompilar pacote, escolher arquitetura estrutural, ampliar scope ou tocar shared files fora de `OWNED_PATHS`
 - em `coder-ios`, o wording mantém foco default em Swift + SwiftUI e não deriva para executor UIKit-heavy sem evidência do repo ou necessidade real do cut
 - wording não transforma executor em planner, router, runner ou finalizer
 
@@ -831,6 +913,9 @@ Verificar:
 - adicionar testes focados sem mudança material de cut volta ao `validation-eval-designer`; com mudança material de cut volta a `planner` antes do `validation-eval-designer`
 - evidência parcial explícita volta ao `validation-eval-designer` para atualizar o `VALIDATION PACK` antes de qualquer gate normal de execução
 - estreitar ou alterar materialmente o cut invalida readiness ou approval anteriores e volta obrigatoriamente a `planner` antes de regenerar o pack
+- `validation-eval-designer READY` segue para `execution-package-designer`, não diretamente para coders
+- `execution-package-designer READY` devolve `EXECUTION PACKAGE` para o `orchestrator`, não para coders
+- coders só entram com `WORK_PACKAGE_ID` explícito do pacote vigente
 - o `orchestrator` só aceita do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
 - gap material de capability de editar ou executar aparece como blocker pré-execução
 - resposta narrativa, descritiva, pseudo-plano, leitura ampla adicional, ou sem diff aplicado é tratada como handoff inválido
@@ -842,6 +927,34 @@ Verificar:
 
 Hard fails:
 - o specialized reaproveita implicitamente readiness ou execution approval derivados de um cut anterior depois de mudança material do boundary
+- o specialized pula `execution-package-designer` quando coders entram no fluxo
+- coder aceita ampliar scope, recompilar pacote ou escolher arquitetura estrutural em vez de bloquear
+
+### Tool-discipline check
+Verificar:
+- `execution-package-designer`: `read`, `search`
+- `coder-backend`: `read`, `search`, `edit`, `execute`
+- `coder-frontend`: `read`, `search`, `edit`, `execute`
+- `coder-ios`: `read`, `search`, `edit`, `execute`
+- `validation-runner`: `read`, `search`, `execute`
+- `todo` ausente por default em coders e runner
+- ferramentas proibidas pela role class ausentes sem justificativa humana explícita e auditável
+
+Hard fails:
+- coders com `todo` por default
+- `validation-runner` com `todo` por default
+- `execution-package-designer` com `edit`, `execute`, `agent`, `todo`, `vscode`, `vscode/memory` ou `web` por default
+
+### Model-policy compatibility check
+Verificar:
+- precedência clara: `model_policy.agents[agent]`, depois `model_policy.roles[role]`, depois defaults legados
+- compatibilidade mantida com `reasoning_default`, `coding_default` e `execution_default`
+- defaults legados mapeiam roles fortes para reasoning, coders para coding, e runner/finalizer/resync para execution quando não houver override granular
+- `allowed_models`, quando fornecido, continua restringindo qualquer escolha por agent, role ou default
+
+Hard fails:
+- policy granular sem fallback legado
+- conflito ou ambiguidade entre agent override, role override e defaults legados
 
 ### Factual fidelity, certainty, and coverage check
 Verificar:
@@ -899,10 +1012,11 @@ tools:
   - agent
 agents:
   - planner
-  - coder-backend
-  - reviewer
   - validation-eval-designer
+  - execution-package-designer
+  - coder-backend
   - validation-runner
+  - reviewer
   - finalizer
   - resync
 model: <default-model>
@@ -923,7 +1037,6 @@ tools:
   - search
   - edit
   - execute
-  - todo
 model:
   - <coding-model>
   - <shared-default-model>
@@ -944,7 +1057,7 @@ Coordinate the local Sentinel workflow as a lightweight router.
 
 Preserve the canonical gate order, role class `router`, ownership boundaries, handoff validity, and status sequencing defined by the specialized Sentinel contract.
 
-Route only to agents that are actually materialized for Codex in `.codex/agents/` and reflected in the generated `AGENTS.md`. Do not implement, do not absorb execution, do not write validation packs, and do not treat absent agents as available.
+Route only to agents that are actually materialized for Codex in `.codex/agents/` and reflected in the generated `AGENTS.md`. Do not implement, do not absorb execution, do not write validation packs or execution packages, and do not treat absent agents as available.
 
 Keep the main chat surface short: return only the current gate, next owner, blocker, DEV decision need, or routing delta that matters.
 '''
@@ -955,11 +1068,11 @@ Keep the main chat surface short: return only the current gate, next owner, bloc
 name = "coder-backend"
 description = "Implementa mudanças backend do projeto respeitando arquitetura, contratos e harness local."
 developer_instructions = '''
-Implement the authorized server-side cut from the Sentinel execution brief and validation pack.
+Execute the authorized server-side work package from the Sentinel execution package, execution brief, and validation pack.
 
-Preserve role class `executor`, targeted-local reading, capability gates, smallest-correct-change discipline, and the required distinction between `READY` with real implementation evidence and `BLOCKED` with an exact cause.
+Preserve role class `executor`, targeted-local reading constrained to package anchors, capability gates, smallest-correct-change discipline, and the required distinction between `READY` with real implementation evidence and `BLOCKED` with an exact cause.
 
-Do not become planner, orchestrator, validation runner, reviewer, or finalizer. Do not return analysis or a pseudo-plan as if implementation happened.
+Do not become planner, execution-package-designer, orchestrator, validation runner, reviewer, or finalizer. Do not redefine the cut, recompile the package, choose structural architecture, widen scope, or return analysis as if implementation happened.
 
 Report only the execution delta needed downstream: changed paths or equivalent implementation evidence, checks run or not run, residual risk, and exact blocker when blocked.
 '''
@@ -969,7 +1082,7 @@ Notas para os exemplos:
 - os valores acima são apenas exemplos de shape, não prescrição fixa de provider ou modelo
 - em `vscode`, `model` pode ser string única ou lista priorizada
 - em `vscode`, o valor real de `model` deve respeitar `allowed_models` quando essa entrada existir
-- quando `model_policy` existir, ele governa a preferência de escolha por papel
+- quando `model_policy` existir, ele governa a preferência de escolha por agent, role fina ou default legado
 - se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` quando o target suportar esse comportamento e deixar o runtime usar o model picker atual
 - em `codex`, o shape mínimo obrigatório mostrado é `name`, `description` e `developer_instructions`
 - em `codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision` e `managed_artifact` não aparecem nos exemplos porque não fazem parte do shape mínimo obrigatório do custom agent TOML

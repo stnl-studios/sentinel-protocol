@@ -4,7 +4,7 @@
 Registrar os status e gates canônicos do workflow do Sentinel, o momento em que cada um aparece no fluxo, e deixar explícito que o fluxo já contempla proof pós-execução do artifact implementado e pode incluir review técnico semântico adicional do mesmo artifact.
 
 Fluxo alvo:
-`Gate de base → Planner → Design de validação/eval → Gate de harness → Gate de aprovação da execução → Execução → Run de validação/eval + quality proof do pack → Reviewer semântico quando aplicável → Finalização → Resync se necessário`
+`Gate de base → Planner → Design de validação/eval → Gate de harness → Package design de execução → Gate de aprovação da execução → Execução por coders especialistas-executores → Run de validação/eval + quality proof do pack → Reviewer semântico quando aplicável → Finalização → Resync se necessário`
 
 ## Status de decisão e gates
 | Status | Significado | Momento do fluxo |
@@ -25,7 +25,8 @@ Fluxo alvo:
 | `BLOCKED` | A validação não conseguiu provar honestamente o ciclo por impedimento real no path de prova. A origem do bloqueio deve ser nomeada. | Como verdict de validação, pertence ao `validation-runner`; quando houver bloqueio antes do runner, o fechamento deve preservá-lo explicitamente como bloqueio pré-validação, sem inventar verdict limpo. |
 
 ## Artefatos do workflow
-- Os artefatos efêmeros do workflow são `EXECUTION BRIEF` e `VALIDATION PACK`.
+- Os artefatos efêmeros do workflow são `EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE`.
+- `EXECUTION PACKAGE` pertence ao `execution-package-designer`, carrega 1..N work packages executáveis e não substitui o `orchestrator`.
 - A memória durável fica em `DONE`, `Feature CONTEXT` e docs factuais tocadas por Resync.
 
 ## Regra de proof pós-execução
@@ -37,7 +38,7 @@ Fluxo alvo:
 - "Testes relevantes" aqui significa testes focados na SPEC e na surface tocada, não uma iniciativa de cobertura ampla do projeto.
 - Depois da decisão do DEV, o fluxo retorna ao owner do artifact afetado: mesma fronteira de cut volta ao `validation-eval-designer` para atualizar o `VALIDATION PACK`; mudança material de cut reabre `planner -> validation-eval-designer`.
 - Aceitar evidência parcial explicitamente exige que o `validation-eval-designer` registre no `VALIDATION PACK` a limitação de harness aceita, a prova ainda faltante, a evidência substituta, o risco residual visível e que a escolha foi decisão explícita do DEV antes de qualquer gate normal de execução.
-- Reduzir o cut invalida implicitamente o cut anterior como base de execução; readiness e execution approval derivados do recorte anterior não valem para o novo recorte até existirem novo `EXECUTION BRIEF` e novo `VALIDATION PACK`.
+- Reduzir o cut invalida implicitamente o cut anterior como base de execução; readiness, `EXECUTION PACKAGE` e execution approval derivados do recorte anterior não valem para o novo recorte até existirem novo `EXECUTION BRIEF`, novo `VALIDATION PACK` e novo `EXECUTION PACKAGE`.
 - Sem proof/check mínimo relevante executado com resultado honesto, a rodada não fecha como "done limpo"; a lacuna, falha ou bloqueio precisa aparecer no verdict e no fechamento.
 
 ## Nota de review técnico pós-execução
@@ -53,6 +54,7 @@ Fluxo alvo:
 
 ## Notas de ownership
 - `PASS`, `PARTIAL`, `FAIL` e o `BLOCKED` de validação pertencem ao `validation-runner` como vereditos de validação.
+- `execution-package-designer` é owner apenas do `EXECUTION PACKAGE`; o `orchestrator` continua sendo o único coordenador da rodada e único owner de roteamento.
 - O `reviewer` é owner do review semântico/arquitetural pós-execução quando ele entra na rodada; esse sinal não substitui o ownership de proof do runner.
 - O `finalizer` consome esses vereditos para consolidar memória durável, mas não os reemite como seus próprios status.
 - O `finalizer` também pode consumir o sinal do `reviewer` quando ele existir, sem absorver review técnico substituto.

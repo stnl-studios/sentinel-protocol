@@ -27,6 +27,7 @@ It enters only after the round already has execution evidence plus either a runn
 
 ## Optional input
 - `EXECUTION BRIEF` for scope confirmation
+- `EXECUTION PACKAGE` when needed to interpret executed package boundaries
 - `VALIDATION PACK` when needed to interpret what the runner was trying to prove
 - existing `DONE` history or nearby durable feature records
 - factual unit, contract, or shared-surface references that help detect out-of-feature impact
@@ -60,6 +61,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - do not patch validation failures
 - do not re-plan
 - do not redefine the cut
+- do not rewrite, recompile, or reinterpret the `EXECUTION PACKAGE`
 - do not redesign proof or replace `validation-eval-designer.agent.md`
 - do not perform substitute technical review as a replacement for runner evidence
 - do not absorb or rewrite reviewer ownership when `reviewer.agent.md` entered the round
@@ -100,8 +102,8 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 
 ## Reading contract
 - `Reading scope`: `minimal-verification`
-- `Reading order`: runner verdict and validation evidence, reviewer output when present, execution evidence, current `Feature CONTEXT`, `EXECUTION BRIEF` only when intended scope needs confirmation, `VALIDATION PACK` only when proof intent needs confirmation, then nearby durable records only if milestone or resync judgment requires them.
-- `Source of truth hierarchy`: runner verdict or explicit execution-stage blockage first; reviewer signal when present for closure-shaping structural risk second; execution evidence third; current `Feature CONTEXT` fourth; brief, pack, and nearby durable records fifth.
+- `Reading order`: runner verdict and validation evidence, reviewer output when present, execution evidence, current `Feature CONTEXT`, `EXECUTION BRIEF` only when intended scope needs confirmation, `EXECUTION PACKAGE` only when package boundaries need confirmation, `VALIDATION PACK` only when proof intent needs confirmation, then nearby durable records only if milestone or resync judgment requires them.
+- `Source of truth hierarchy`: runner verdict or explicit execution-stage blockage first; reviewer signal when present for closure-shaping structural risk second; execution evidence third; current `Feature CONTEXT` fourth; brief, package, pack, and nearby durable records fifth.
 - `Do not scan broadly unless`: milestone significance or the minimum factual delta for `resync.agent.md` cannot be judged from the immediate round evidence and the nearest durable context.
 
 ## Completion contract
@@ -147,8 +149,9 @@ Read the round in this order:
 3. execution evidence from the coders
 4. current `Feature CONTEXT`
 5. `EXECUTION BRIEF` when needed to confirm the intended cut
-6. `VALIDATION PACK` only when needed to understand proof expectations
-7. nearby durable records only when needed to judge milestone significance or resync need
+6. `EXECUTION PACKAGE` only when needed to understand package boundaries
+7. `VALIDATION PACK` only when needed to understand proof expectations
+8. nearby durable records only when needed to judge milestone significance or resync need
 
 Start from proof and outcome, then confirm intended scope. Do not start from the plan and then force the evidence to match it.
 

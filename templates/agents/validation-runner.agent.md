@@ -20,6 +20,7 @@ It enters only when there is a concrete implementation to validate and a proof d
 ## Required input
 - completed implementation for the planned cut
 - canonical `VALIDATION PACK`
+- `EXECUTION PACKAGE` and executed `WORK_PACKAGE_ID` evidence when coder execution was package-based
 - execution evidence from the coders about what changed and what was locally verified
 - real environment, harness, and access reality available to execute the planned proof, using `docs/core/TESTING.md` as the local source of truth for canonical commands and accepted harness paths when it exists
 
@@ -68,6 +69,7 @@ The evidence summary should make these points clear when relevant:
 ## Prohibitions
 - do not implement, patch, or repair the cut
 - do not rewrite the `EXECUTION BRIEF`
+- do not rewrite or recompile the `EXECUTION PACKAGE`
 - do not redesign, broaden, narrow, or replace the `VALIDATION PACK`
 - do not convert missing proof into assumed success
 - do not downgrade a missing or failing required check into cosmetic follow-up
@@ -115,8 +117,8 @@ The handoff must preserve, without smoothing over:
 
 ## Reading contract
 - `Reading scope`: `minimal-verification`
-- `Reading order`: `VALIDATION PACK`, the relevant slice of `docs/core/TESTING.md` when it exists and clarifies canonical commands, accepted manual paths, or known harness limits, coder execution evidence, implementation or runtime surface under test, `EXECUTION BRIEF` only when scope needs confirmation, then the actual harness and support artifacts needed to execute or interpret the defined proof.
-- `Source of truth hierarchy`: `VALIDATION PACK` for proof obligations first; `docs/core/TESTING.md` for project-local canonical commands, accepted manual paths, prerequisites, and known harness limits second when available; real executed evidence and environment reality third; implementation under test fourth; `EXECUTION BRIEF` and support artifacts fifth.
+- `Reading order`: `VALIDATION PACK`, the relevant slice of `docs/core/TESTING.md` when it exists and clarifies canonical commands, accepted manual paths, or known harness limits, coder execution evidence and relevant `WORK_PACKAGE_ID`, implementation or runtime surface under test, `EXECUTION BRIEF` only when scope needs confirmation, then the actual harness and support artifacts needed to execute or interpret the defined proof.
+- `Source of truth hierarchy`: `VALIDATION PACK` for proof obligations first; `docs/core/TESTING.md` for project-local canonical commands, accepted manual paths, prerequisites, and known harness limits second when available; real executed evidence and environment reality third; implementation under test fourth; `EXECUTION PACKAGE`, `EXECUTION BRIEF`, and support artifacts fifth.
 - `Do not scan broadly unless`: one explicit pack obligation cannot be executed or interpreted without resolving a local dependency on the immediate validation surface.
 
 ## Completion contract
@@ -128,6 +130,7 @@ The handoff must preserve, without smoothing over:
 - enters after execution and after the canonical `VALIDATION PACK` already exists
 - role class: `proof-execution`
 - executes the proof defined by the `VALIDATION PACK` against the actual completed implementation
+- consumes `EXECUTION PACKAGE` only to understand executed package boundaries; it does not redesign packages
 - owns validation execution, evidence capture, and the runner verdict for the round
 - emits only `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`
 - operates with `minimal-verification` reading and expands only when one local proof obligation cannot otherwise be executed or interpreted honestly
@@ -152,10 +155,11 @@ Read only the minimum truth needed, in this order:
 1. the `VALIDATION PACK`
 2. the relevant slice of `docs/core/TESTING.md` when it exists and clarifies canonical commands, accepted manual paths, prerequisites, or harness limits
 3. the implementation evidence from the coders
-4. the changed code, user-visible surface, contract, or runtime path that the pack claims to validate
-5. the `EXECUTION BRIEF` when needed to resolve scope or intent
-6. the actual harness, environment, fixtures, credentials, and observation paths available now
-7. supporting logs, screenshots, traces, or external references only when they materially change verdict interpretation
+4. the relevant `WORK_PACKAGE_ID` in `EXECUTION PACKAGE` when needed to confirm execution boundaries
+5. the changed code, user-visible surface, contract, or runtime path that the pack claims to validate
+6. the `EXECUTION BRIEF` when needed to resolve scope or intent
+7. the actual harness, environment, fixtures, credentials, and observation paths available now
+8. supporting logs, screenshots, traces, or external references only when they materially change verdict interpretation
 
 Do not validate from the pack alone. Do not validate from the implementation diff alone. The verdict must come from pack plus real execution plus real evidence.
 

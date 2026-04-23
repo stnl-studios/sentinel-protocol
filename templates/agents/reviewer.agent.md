@@ -20,6 +20,7 @@ When the workflow also routes `validation-runner.agent.md`, the runner remains t
 ## Required input
 - review classification from the orchestrator: `required` or `advisory`
 - `EXECUTION BRIEF`
+- `EXECUTION PACKAGE` when package boundaries shaped execution
 - implemented artifact or applied diff for the cut
 - minimum execution evidence needed to understand what actually changed
 
@@ -53,6 +54,7 @@ When the workflow also routes `validation-runner.agent.md`, the runner remains t
 - do not implement, patch, or repair the cut
 - do not broad-refactor
 - do not redesign the plan, the brief, or the cut
+- do not rewrite, recompile, or reinterpret the `EXECUTION PACKAGE`
 - do not rerun validation as a replacement for `validation-runner.agent.md`
 - do not replace `validation-runner.agent.md`
 - do not replace `finalizer.agent.md`
@@ -93,8 +95,8 @@ For `required` review, absence of review or unresolved material structural risk 
 
 ## Reading contract
 - `Reading scope`: `review-minimal`
-- `Reading order`: `EXECUTION BRIEF`, the applied diff or implemented artifact, minimum execution evidence, then one nearest rule, contract, context, or adjacent boundary surface only when needed to judge adherence honestly.
-- `Source of truth hierarchy`: authorized cut intent in `EXECUTION BRIEF` first; implemented artifact and applied diff second; minimum execution evidence third; nearest local rules or contracts fourth.
+- `Reading order`: `EXECUTION BRIEF`, `EXECUTION PACKAGE` when package boundaries shaped the work, the applied diff or implemented artifact, minimum execution evidence, then one nearest rule, contract, context, or adjacent boundary surface only when needed to judge adherence honestly.
+- `Source of truth hierarchy`: authorized cut intent in `EXECUTION BRIEF` first; `EXECUTION PACKAGE` for package boundaries second when present; implemented artifact and applied diff third; minimum execution evidence fourth; nearest local rules or contracts fifth.
 - `Do not scan broadly unless`: one concrete structural question cannot be judged from the cut artifact and one nearest local reference.
 
 ## Completion contract

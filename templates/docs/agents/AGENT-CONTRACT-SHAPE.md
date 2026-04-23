@@ -37,6 +37,7 @@ Mapeamento canonico:
 - `router`: `orchestrator`
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
+- `execution-package-design`: `execution-package-designer`
 - `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
 - `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
@@ -46,7 +47,8 @@ Mapeamento canonico:
 Regras:
 - a role class governa ferramentas, leitura, budget operacional, anti-role-drift e shape de output
 - a especializacao local pode restringir mais, mas nao pode relaxar os invariantes centrais da role class
-- a maior parte do custo operacional da rodada pertence a `executor`, nao a `router` nem a `planning`
+- a inteligencia executavel fica acima dos coders no `execution-package-designer`; os coders continuam especialistas por stack/projeto, mas executam pacotes explicitos
+- a maior parte do custo operacional da rodada pertence ao pacote executavel e aos executors dentro de limites locais, nao a `router` nem a `planning`
 - `proof-execution`, `semantic-review`, `closure` e `sync` nao podem compensar falha upstream reabrindo discovery amplo
 
 ## Campos obrigatorios
@@ -98,7 +100,7 @@ Regras:
 Classes canonicas:
 - `routing-minimal`: leitura minima para entender pedido, gate ativo, owner provavel e capability gap real. So `orchestrator` pode usar.
 - `bounded-context`: leitura pequena e orientada a framing para estabilizar escopo, boundary, source of truth e dependencia real. So `planner` pode usar.
-- `targeted-local`: leitura restrita ao handoff, ao entorno imediato do alvo e aos edges locais estritamente necessarios.
+- `targeted-local`: leitura restrita ao handoff, ao entorno imediato do alvo e aos edges locais estritamente necessarios. `execution-package-designer` usa esta classe com budget menor que executor; coders usam esta classe apenas para leitura local suficiente para executar o pacote autorizado.
 - `review-minimal`: leitura curta e estrutural para review tecnico cut-scoped do artifact implementado, sem rediscovery amplo. So `reviewer` pode usar.
 - `minimal-verification`: leitura restrita ao necessario para provar, consolidar ou sincronizar um delta ja delimitado.
 
@@ -115,12 +117,33 @@ Budgets minimos por role class:
 - `router`: budget minimo antes do primeiro handoff; deve consultar pouquissimos artifacts e abortar para blocker ou DEV em vez de continuar lendo
 - `planning`: budget pequeno e condicionado; pode expandir apenas para estabilizar escopo, boundary, source of truth ou shared contract dependency real
 - `proof-design`: budget local para desenhar prova; nao compensa leitura que `router` ou `planning` deixaram de fazer
-- `executor`: e o principal dono da leitura profunda e do custo tecnico da rodada
+- `execution-package-design`: budget local e curto para compilar `EXECUTION PACKAGE` a partir de `EXECUTION BRIEF` e `VALIDATION PACK`; nao coordena coders, nao implementa e nao replaneja o cut
+- `executor`: executa o pacote autorizado com leitura local suficiente para seguranca; nao recompila pacote, nao redefine cut e nao usa broad discovery como custo normal
 - `semantic-review`: budget curto, estrutural e cut-scoped; nao substitui proof nem closure
 - `proof-execution`, `closure` e `sync`: budgets curtos e focados no delta ja delimitado
 
 ## Parte fixa do protocolo
 E a parte canonica que define o contrato do agent base no ecossistema Sentinel. Inclui papel, limites, statuses, gatilhos de entrada e saida, classe de leitura, budget operacional, ownership de artifacts e posicao no workflow.
+
+Artefatos efemeros canonicos do fluxo de execucao:
+- `EXECUTION BRIEF`: owned by `planner`; define cut, boundary e constraints em nivel de planejamento.
+- `VALIDATION PACK`: owned by `validation-eval-designer`; define prova, harness e checks deterministicos.
+- `EXECUTION PACKAGE`: owned by `execution-package-designer`; compila 1..N work packages executaveis para coders especialistas-executores.
+
+Contrato minimo do `EXECUTION PACKAGE`:
+- `WORK_PACKAGE_ID`
+- `GOAL`
+- `OWNED_PATHS`
+- `SEARCH_ANCHORS`
+- `EDIT_ANCHORS`
+- `DEPENDS_ON`
+- `DO_NOT_TOUCH`
+- `CHANGE_RULES`
+- `RUN_COMMANDS`
+- `ACCEPTANCE_CHECKS`
+- `BLOCK_IF`
+
+O `EXECUTION PACKAGE` nao substitui o orchestrator. Ele nao decide routing, sequencing, paralelizacao, retry, stop/go ou handoff; essas decisoes permanecem no `orchestrator`.
 
 ## Parte especializavel por projeto
 E a parte que adapta contexto, heuristicas, exemplos, criterios locais, detalhes operacionais e pontos de leitura local ao projeto sem quebrar o contrato canonico do agent base.

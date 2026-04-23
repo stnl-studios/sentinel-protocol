@@ -85,7 +85,7 @@ The `VALIDATION PACK` must define, when relevant:
 ## Handoff
 Hand off the `VALIDATION PACK` to the orchestrator as the canonical validation-design artifact for the cut.
 
-If the emitted status is `READY`, the orchestrator may continue toward execution with the pack as the validation source of truth for coders and later for `validation-runner.agent.md`.
+If the emitted status is `READY`, the orchestrator may route next to `execution-package-designer.agent.md`. The pack is the validation source of truth for that package and later for `validation-runner.agent.md`; coders should receive proof expectations through the `EXECUTION PACKAGE` instead of rebuilding them locally.
 
 If the emitted status is `NEEDS_DEV_DECISION_HARNESS`, the orchestrator must stop the round and route the harness decision explicitly. Do not smuggle the cut into execution with hand-wavy proof expectations.
 
@@ -144,16 +144,17 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - `Area-specific senior risk checklist`: proof obligation drift from the cut, misleading or shallow harnesses, hidden regression risk, manual versus automated evidence mismatch, and silent proof gaps.
 
 ## Protocol-fixed part
-- enters after `planner.agent.md` and before execution
+- enters after `planner.agent.md` and before `execution-package-designer.agent.md`
 - role class: `proof-design`
 - receives `EXECUTION BRIEF` as the main upstream artifact
 - owns the canonical ephemeral `VALIDATION PACK`
 - owns the canonical operational recording of DEV harness-compromise decisions inside `VALIDATION PACK`
-- defines the proof required for the cut before execution starts
+- defines the proof required for the cut before package design and execution start
 - judges whether the current harness is sufficient for honest execution readiness
 - operates with `targeted-local` reading and expands only around the immediate cut, proof surface, and harness boundary when justified
 - may emit only `READY` or `NEEDS_DEV_DECISION_HARNESS`
 - does not implement
+- does not compile the `EXECUTION PACKAGE`
 - does not execute the validation run
 - does not replace `validation-runner.agent.md`
 - does not replace `finalizer.agent.md`
@@ -424,7 +425,7 @@ A cut is `READY` for execution only when all of the following are true:
 - the required proof is strong enough for the cut's risk profile
 - the relevant deterministic quality checks are classified explicitly and tied to the cut
 - the future runner can execute the pack without inventing criteria
-- the coders can understand what must be provable before they implement
+- `execution-package-designer.agent.md` can map proof obligations into package acceptance checks without coders rebuilding proof locally
 - low-risk/local cuts without new tests still have an honest proof path for the promised behavior
 - risk-relevant cuts have relevant proof support for the touched surface, or the DEV-owned compromise has already been resolved explicitly
 - any DEV harness decision has already been reflected in the current `VALIDATION PACK`, and any material cut change has already gone back through `planner.agent.md`

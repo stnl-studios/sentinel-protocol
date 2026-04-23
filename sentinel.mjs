@@ -86,6 +86,7 @@ const SKILL_BUNDLE_MANIFESTS = {
                 "coder-frontend.agent.md",
                 "coder-ios.agent.md",
                 "designer.agent.md",
+                "execution-package-designer.agent.md",
                 "finalizer.agent.md",
                 "orchestrator.agent.md",
                 "planner.agent.md",
