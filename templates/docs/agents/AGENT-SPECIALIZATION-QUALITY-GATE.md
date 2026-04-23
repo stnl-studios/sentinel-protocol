@@ -96,6 +96,8 @@ Verificar no minimo:
 - politica de paralelizacao segura aparece apenas onde fizer sentido e nao transforma singleton em worker paralelo por acidente
 - o `orchestrator` trata paralelizacao como politica de coordenacao, nao como promessa de runtime
 - rich artifacts e precondicoes de handoff continuam alinhados com os owners corretos
+- handoff inválido de executor não pode parecer sucesso operacional: handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa, diff parcial ou `READY` sem evidência aplicada deve bloquear como `EXECUTOR_HANDOFF_INVALID`
+- `validation-runner` só pode aparecer depois de artifact validável produzido por executor `READY` válido
 
 Hard fails:
 - `orchestrator.agents` lista agent nao materializado
@@ -104,6 +106,8 @@ Hard fails:
 - `orchestrator` sem handoff explicito para `execution-package-designer` antes dos coders
 - singleton role aparece como paralelizavel por acidente
 - contradicao material entre specializeds torna o fluxo local internamente incoerente
+- `orchestrator` permitindo entrada do `validation-runner` sem artifact validável de executor
+- specialized tratando handoff de executor ausente, implícito, intermediário ou narrativo como sucesso
 
 ### 4. Surface discipline check
 Verificar no minimo:
@@ -189,8 +193,10 @@ Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equiva
 - capability gate explicito
 - `read-only runtime is not execution` explicito quando houver risco
 - `READY` apenas com evidencia real de mudanca aplicada
+- terminal handoff explícito com exatamente `READY` ou `BLOCKED`; progresso, log, narrativa operacional, promessa, diff parcial ou status implícito não contam como handoff final válido
 - `BLOCKED` cedo quando faltar base ou capacidade
 - `BLOCKED` cedo quando o pacote for insuficiente, contraditorio, stale ou exigir ampliar scope
+- `BLOCKED` obrigatório quando houve edição parcial sem conclusão segura, preservando motivo objetivo, arquivos tocados, o que ficou parcial, e se o estado parcial é inspecionável/reaproveitável ou deve ser descartado/reexecutado
 - proibicao explicita de redefinir cut, recompilar pacote, escolher arquitetura estrutural, ampliar scope ou tocar shared files fora de `OWNED_PATHS`
 - em `coder-ios`, o wording mantém foco default em Swift + SwiftUI e nao deriva para executor UIKit-heavy sem evidencia do repo ou necessidade real do cut
 - wording nao transforma executor em planner, router, runner ou finalizer
@@ -198,6 +204,9 @@ Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equiva
 Hard fails:
 - executor sem tool de edicao quando sua funcao for implementar codigo
 - executor aceitando `READY` descritivo sem diff, changed paths ou evidencia equivalente
+- executor podendo terminar sem status terminal claro `READY` ou `BLOCKED`
+- executor permitindo progresso intermediário, log operacional, promessa, narrativa ou diff parcial como handoff final
+- executor com edição parcial sem exigir `BLOCKED` e preservação de arquivos tocados, parcialidade e decisão inspectable/reusable-or-discard/reexecute
 - coder incentivando discovery amplo como substituto de pacote executavel
 - coder com wording de solucionador local, planejador de arquitetura, ou owner de work-package compilation
 
@@ -210,16 +219,23 @@ Verificar em `validation-runner`, `finalizer` e `resync`:
 - `validation-runner` executa e julga os checks determinísticos exigidos no `VALIDATION PACK`, sem virar smoke runner repo-wide
 - `validation-runner` usa `VALIDATION PACK` para o que provar e `docs/core/TESTING.md` para quais comandos, manual paths e limites de harness são canônicos quando esse doc existir
 - `validation-runner` distingue comando canônico indisponível no ambiente, harness inexistente, harness fraco e path manual aceito
+- `validation-runner` só entra com artifact validável de executor `READY` válido; promessa, output descritivo, pseudo-implementação, progresso narrativo ou `READY` sem evidência aplicada não é alvo de validação
 - a existência da matriz local não expande a run para além do cut
 - check obrigatório ausente, falho ou bloqueado por harness afeta verdict e confidence de forma explícita
 - `finalizer` permanece minimal-verification
 - `finalizer` permanece closure-only e não absorve review técnico, rerun ou re-julgamento do runner
 - `finalizer` preserva o sinal do `reviewer` quando ele existir sem absorver seu ownership, e não ignora `reviewer required` pendente nem risco estrutural material explicitado
+- `finalizer` não confunde status próprio (`READY`/`BLOCKED`) com verdict do runner (`PASS`/`PARTIAL`/`FAIL`/`BLOCKED`), que deve ser preservado como input
+- `finalizer` explicita artifacts de memória/contexto alterados, `DONE: yes` ou `DONE: no`, racional curto da decisão, `resync: yes` ou `resync: no`, racional curto da decisão, e delta factual quando resync for necessário
 - `resync` permanece targeted-local
 - `finalizer` nao instrui sync direto em shared docs ou source-of-truth compartilhada; apenas detecta impacto, pede `resync` e passa delta factual minimo
 - referencias a `docs/TBDS.md` ou shared docs no `finalizer` aparecem, no maximo, como superficie impactada para o handoff de `resync`, nunca como acao direta do proprio `finalizer`
 
 Hard fails:
+- `validation-runner` validando promessa, output descritivo, pseudo-implementação, progresso narrativo ou `READY` sem evidência aplicada
+- `finalizer` reemitindo `PASS`, `PARTIAL` ou `FAIL` como status próprio em vez de preservar o verdict do runner
+- `finalizer READY` sem `DONE` yes/no explícito ou sem resync yes/no explícito
+- `finalizer READY` sem preservar reviewer signal quando review entrou na rodada
 - runner validando sem artifact executor validavel
 - finalizer ou resync reabrindo discovery amplo como comportamento normal
 - `finalizer` sugerindo update direto em `docs/TBDS.md` ou outro shared target que pertence a `resync`

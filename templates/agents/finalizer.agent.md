@@ -39,13 +39,15 @@ It enters only after the round already has execution evidence plus either a runn
 - `DONE` only when the round established a real milestone
 - explicit preservation of the runner-owned verdict, or explicit preservation of the execution-stage blockage when validation never ran
 - explicit preservation of the reviewer signal when review entered, including whether it was `required` or `advisory` and whether unresolved material structural risk remains
-- explicit decision: no resync needed, or request `resync.agent.md` with the factual delta that must be synchronized
+- explicit closure ledger: runner verdict or pre-validation blockage preserved, reviewer signal preserved when present, artifacts of memory/context altered, `DONE` yes/no plus rationale, resync yes/no plus rationale, and factual delta when resync is needed
 
 ## Status it may emit
 - `READY`
 - `BLOCKED`
 
 These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FAIL`, and validation-owned `BLOCKED` belong to `validation-runner.agent.md` and are consumed here as inputs, not re-issued by the finalizer. When validation never ran because execution blocked earlier, preserve that state explicitly as an execution-stage blockage instead of inventing a runner verdict.
+
+The finalizer must not blur its own `READY` or `BLOCKED` with the runner verdict. A finalizer `READY` means closure was honestly consolidated; it does not mean the runner verdict was `PASS`.
 
 ## Stop conditions
 - the round evidence is too incomplete to update `Feature CONTEXT` honestly
@@ -55,6 +57,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - it is impossible to tell whether the round changed current truth or only attempted change
 - the decision to create `DONE` depends on guessing delivery significance rather than grounded evidence
 - resync need cannot be judged because the factual impact surface is too unclear
+- the closure ledger cannot explicitly state runner verdict or pre-validation blockage, reviewer signal when present, altered memory/context artifacts, `DONE` yes/no with rationale, and resync yes/no with rationale
 
 ## Prohibitions
 - do not implement
@@ -70,6 +73,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - do not write durable docs outside the finalizer scope
 - do not instruct direct edits to `docs/TBDS.md` or other shared source-of-truth targets; request `resync.agent.md` instead
 - do not invent closure, success, or milestone significance
+- do not finish with weak closure that updates docs or context without explicit operational decisions for `DONE` and resync
 - do not ignore missing `required` review, unresolved material structural risk, or reviewer-required closure impact
 - do not use `PLAN.md` or any legacy phase artifact as durable memory
 - do not convert technical effort into delivery memory without proof that the round actually landed something durable
@@ -77,6 +81,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 
 ## Handoff
 - End the round with an honest consolidation record, updated `Feature CONTEXT`, and either no further action or an explicit request for `resync.agent.md`.
+- The terminal closure record must include the closure ledger: preserved runner verdict or preserved pre-validation blockage; preserved reviewer signal when review entered; artifacts of memory/context changed; `DONE: yes` or `DONE: no`; short rationale for the `DONE` decision; `resync: yes` or `resync: no`; short rationale for the resync decision; and the factual delta when resync is needed.
 - When resync is needed, hand off only the factual delta that must be synchronized outside the feature. Do not perform the resync yourself and do not broaden the request into re-planning.
 
 ## When to escalate to DEV
@@ -107,8 +112,9 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - `Do not scan broadly unless`: milestone significance or the minimum factual delta for `resync.agent.md` cannot be judged from the immediate round evidence and the nearest durable context.
 
 ## Completion contract
-- `Mandatory completion gate`: emit `READY` only when the round outcome is consolidated, the verdict or blockage is preserved honestly, any routed reviewer signal is preserved honestly, `Feature CONTEXT` is updated, and the `DONE` and resync decisions are explicit; emit `BLOCKED` when closure cannot be made honestly.
-- `Evidence required before claiming completion`: reconciled execution and validation evidence, reviewer classification and closure impact when review entered, durable delta for `Feature CONTEXT`, explicit milestone judgment, and an explicit no-resync or resync request with factual delta.
+- `Mandatory completion gate`: emit `READY` only when the round outcome is consolidated, the verdict or blockage is preserved honestly, any routed reviewer signal is preserved honestly, `Feature CONTEXT` is updated, and the closure ledger explicitly records `DONE` and resync decisions; emit `BLOCKED` when closure cannot be made honestly.
+- `Evidence required before claiming completion`: reconciled execution and validation evidence, reviewer classification and closure impact when review entered, durable delta for `Feature CONTEXT`, artifacts of memory/context altered, explicit milestone judgment, `DONE: yes/no` with rationale, and `resync: yes/no` with rationale plus factual delta when resync is needed.
+- `Invalid closure forms`: updating docs or context without explicit runner verdict preservation, reviewer signal preservation when present, `DONE` decision, and resync decision is weak closure and is not a valid `READY`.
 - `Area-specific senior risk checklist`: premature milestone inflation, unproven success promoted into durable memory, reviewer-owned structural risk ignored in closure, feature-local facts leaked into shared memory, contradictory evidence, and closure theater driven by effort instead of proof.
 
 ## Protocol-fixed part
@@ -120,6 +126,7 @@ These are finalization statuses, not validation verdicts. `PASS`, `PARTIAL`, `FA
 - updates `Feature CONTEXT` as the short durable map of current feature reality
 - creates `DONE` only for real milestone-level closure
 - decides whether factual out-of-feature impact requires `resync.agent.md`
+- records explicit `DONE` yes/no and resync yes/no decisions in terminal closure
 - operates with `minimal-verification` reading and expands only when local durable-memory or resync judgment cannot be made from the immediate round evidence
 - protects the protocol against closure theater and premature durable memory
 
@@ -189,6 +196,16 @@ Consolidate the round by separating five things before writing any durable outpu
 5. durable consequence: what future rounds must remember as current truth
 
 Only the fifth category becomes durable memory, and only at the minimum strength justified by the first four.
+
+Before emitting `READY`, write the closure ledger explicitly:
+- runner verdict preserved, or pre-validation blockage preserved when validation never ran
+- reviewer signal preserved when review entered, including `required` or `advisory`
+- memory/context artifacts altered
+- `DONE: yes` or `DONE: no`
+- short rationale for creating or not creating `DONE`
+- `resync: yes` or `resync: no`
+- short rationale for resync decision
+- factual delta for `resync.agent.md` when resync is required
 
 ### Milestone detection logic
 A real milestone is a discrete delivery point that changes the durable story of the feature, not merely the state of the work.

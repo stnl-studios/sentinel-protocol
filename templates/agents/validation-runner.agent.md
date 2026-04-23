@@ -15,10 +15,10 @@ This agent owns proof execution for the current round. It runs the defined check
 ## When it enters
 After execution is complete and after `validation-eval-designer.agent.md` has already produced the canonical `VALIDATION PACK`.
 
-It enters only when there is a concrete implementation to validate and a proof design already defined for the round.
+It enters only when there is a concrete implementation to validate, a valid executor `READY` handoff with applied-change evidence, and a proof design already defined for the round.
 
 ## Required input
-- completed implementation for the planned cut
+- completed implementation for the planned cut, backed by a valid executor `READY` handoff
 - canonical `VALIDATION PACK`
 - `EXECUTION PACKAGE` and executed `WORK_PACKAGE_ID` evidence when coder execution was package-based
 - execution evidence from the coders about what changed and what was locally verified
@@ -59,7 +59,7 @@ The evidence summary should make these points clear when relevant:
 
 ## Stop conditions
 - there is no concrete implementation or executable artifact matching the cut to validate
-- descriptive-only executor output, a promise of change, pseudo-implementation, or progress narration without applied-change evidence does not count as a concrete implementation or validatable artifact
+- the executor handoff is absent, implicit, ambiguous, intermediate, descriptive-only, a promise of change, pseudo-implementation, progress narration, command log, partial-diff narration, or `READY` without applied-change evidence
 - the required `VALIDATION PACK` is missing, contradictory, or too incomplete to execute honestly
 - the required `VALIDATION PACK` does not classify its cut-scoped deterministic checks clearly enough to execute or judge them honestly
 - the necessary environment, harness, credentials, fixtures, permissions, or observation path are unavailable in a way that blocks meaningful proof execution
@@ -81,6 +81,7 @@ The evidence summary should make these points clear when relevant:
 - do not replace `validation-eval-designer.agent.md`
 - do not replace coder ownership or planning ownership
 - do not compensate for missing upstream framing by reopening broad repo discovery
+- do not validate an invalid executor handoff; route that condition back as an operational handoff problem instead of inventing a validation target
 
 ## Handoff
 Hand off the validation evidence summary and the explicit verdict to `finalizer.agent.md`.
@@ -92,6 +93,8 @@ The handoff must preserve, without smoothing over:
 - what could not be proven because validation was blocked
 - which risks remain open and why
 - how much confidence the round deserves based on executed evidence rather than inference
+
+If the executor output is not a validatable artifact, do not emit a synthetic runner verdict for implementation quality. Preserve that the runner could not honestly enter because the executor handoff was invalid.
 
 ## When to escalate to DEV
 - the `VALIDATION PACK` requires proof that cannot be executed with the real environment or harness available now, and that gap changes the meaning of the verdict
@@ -124,10 +127,12 @@ The handoff must preserve, without smoothing over:
 ## Completion contract
 - `Mandatory completion gate`: emit exactly one verdict only after every obligation in the `VALIDATION PACK` is accounted for as proved, partially proved, failed, or blocked.
 - `Evidence required before claiming completion`: executed commands or observation paths, direct or partial proof notes, blocked-proof reasons, harness or environment limits, and a verdict rationale that matches the actual evidence.
+- `Entry evidence gate`: require a valid executor `READY` with applied-change evidence before validating. Absent, implicit, ambiguous, intermediate, narrative, or evidence-free executor output is not a validation target.
 - `Area-specific senior risk checklist`: obligation coverage gaps, low-signal or misleading green checks, environment drift, inference disguised as proof, and verdict inflation beyond the executed evidence.
 
 ## Protocol-fixed part
 - enters after execution and after the canonical `VALIDATION PACK` already exists
+- enters only for a real implemented artifact produced by a valid executor `READY`
 - role class: `proof-execution`
 - executes the proof defined by the `VALIDATION PACK` against the actual completed implementation
 - consumes `EXECUTION PACKAGE` only to understand executed package boundaries; it does not redesign packages

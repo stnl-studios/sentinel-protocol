@@ -632,6 +632,15 @@ function assertFileHasRequiredShape(filePath, requiredSnippets) {
     return content;
 }
 
+function assertContentIncludesAll(content, snippets, label) {
+    for (const snippet of snippets) {
+        assert(
+            content.includes(snippet),
+            `${label} não contém o invariante esperado: ${snippet}`
+        );
+    }
+}
+
 function createControlledFixtureRepo(repoRoot) {
     ensureDir(repoRoot);
 
@@ -974,6 +983,171 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
     );
 }
 
+function assertProtocolHardeningInReferenceAgents(skillRoot) {
+    const agentContents = new Map(
+        REQUIRED_CONTROLLED_AGENT_FILES.map((fileName) => [
+            fileName,
+            fs.readFileSync(path.join(skillRoot, "reference", "agents", fileName), "utf8"),
+        ])
+    );
+
+    for (const coderFile of ["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"]) {
+        assertContentIncludesAll(agentContents.get(coderFile), [
+            "No other terminal handoff is valid.",
+            "`Terminal handoff contract`",
+            "`Partial-edit blocking`",
+            "A handoff without an explicit terminal status is invalid.",
+            "`Invalid terminal forms`",
+            "partial edits without safe completion",
+            "never uses progress, logs, partial diff narration, or implicit terminal state as final handoff",
+        ], `${coderFile} terminal contract`);
+    }
+
+    assertContentIncludesAll(agentContents.get("orchestrator.agent.md"), [
+        "EXECUTOR_HANDOFF_INVALID",
+        "absent handoff",
+        "implicit terminal state",
+        "intermediate progress update",
+        "valid executor `READY`",
+        "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+    ], "orchestrator consumer-side rejection");
+
+    assertContentIncludesAll(agentContents.get("validation-runner.agent.md"), [
+        "valid executor `READY` handoff",
+        "`Entry evidence gate`",
+        "not a validation target",
+        "Preserve that the runner could not honestly enter because the executor handoff was invalid",
+    ], "validation-runner artifact gate");
+
+    assertContentIncludesAll(agentContents.get("finalizer.agent.md"), [
+        "closure ledger",
+        "`DONE: yes` or `DONE: no`",
+        "`resync: yes` or `resync: no`",
+        "does not mean the runner verdict was `PASS`",
+        "`Invalid closure forms`",
+    ], "finalizer explicit closure");
+}
+
+function assertProtocolHardeningInCanonicalRefs(skillRoot) {
+    const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
+    assertContentIncludesAll(skillContent, [
+        "nenhum `target` (`vscode` ou `codex`) pode relaxar executor `READY/BLOCKED`",
+        "terminal handoff de executor nunca pode ser implícito",
+        "EXECUTOR_HANDOFF_INVALID",
+        "finalizer` só pode fechar `READY` com closure ledger explícito",
+        "`DONE` yes/no com racional",
+        "resync yes/no com racional",
+    ], "stnl_project_agent_specializer anti-drift");
+
+    const qualityGateContent = fs.readFileSync(
+        path.join(skillRoot, "reference", "docs", "agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+        "utf8"
+    );
+    assertContentIncludesAll(qualityGateContent, [
+        "EXECUTOR_HANDOFF_INVALID",
+        "terminal handoff explícito com exatamente `READY` ou `BLOCKED`",
+        "executor podendo terminar sem status terminal claro `READY` ou `BLOCKED`",
+        "validation-runner` só entra com artifact validável de executor `READY` válido",
+        "finalizer` não confunde status próprio (`READY`/`BLOCKED`) com verdict do runner",
+        "finalizer READY` sem `DONE` yes/no explícito ou sem resync yes/no explícito",
+    ], "agent specialization quality gate hardening");
+
+    const lifecycleContent = fs.readFileSync(
+        path.join(skillRoot, "reference", "docs", "workflow", "EXECUTION-LIFECYCLE.md"),
+        "utf8"
+    );
+    assertContentIncludesAll(lifecycleContent, [
+        "EXECUTOR_HANDOFF_INVALID",
+        "não entra no `validation-runner`",
+        "somente quando houver executor `READY` válido",
+        "`finalizer` emite apenas `READY` ou `BLOCKED`",
+        "`finalizer READY` exige closure ledger explícito",
+    ], "execution lifecycle hardening");
+}
+
+function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const content = fs.readFileSync(path.join(repoRoot, ".github", "agents", fileName), "utf8");
+
+        if (["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"].includes(fileName)) {
+            assertContentIncludesAll(content, [
+                "No other terminal handoff is valid.",
+                "`Terminal handoff contract`",
+                "`Partial-edit blocking`",
+                "`Invalid terminal forms`",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "orchestrator.agent.md") {
+            assertContentIncludesAll(content, [
+                "EXECUTOR_HANDOFF_INVALID",
+                "valid executor `READY`",
+                "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "validation-runner.agent.md") {
+            assertContentIncludesAll(content, [
+                "valid executor `READY` handoff",
+                "`Entry evidence gate`",
+                "not a validation target",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "finalizer.agent.md") {
+            assertContentIncludesAll(content, [
+                "closure ledger",
+                "`DONE: yes` or `DONE: no`",
+                "`resync: yes` or `resync: no`",
+                "`Invalid closure forms`",
+            ], `${fileName} vscode hardening`);
+        }
+    }
+}
+
+function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = fileName.replace(/\.agent\.md$/, "");
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+        const instructions = parsed.developer_instructions;
+
+        if (["coder-backend", "coder-frontend", "coder-ios"].includes(agentName)) {
+            assertContentIncludesAll(instructions, [
+                "No other terminal handoff is valid.",
+                "`Terminal handoff contract`",
+                "`Partial-edit blocking`",
+                "`Invalid terminal forms`",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "orchestrator") {
+            assertContentIncludesAll(instructions, [
+                "EXECUTOR_HANDOFF_INVALID",
+                "valid executor `READY`",
+                "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "validation-runner") {
+            assertContentIncludesAll(instructions, [
+                "valid executor `READY` handoff",
+                "`Entry evidence gate`",
+                "not a validation target",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "finalizer") {
+            assertContentIncludesAll(instructions, [
+                "closure ledger",
+                "`DONE: yes` or `DONE: no`",
+                "`resync: yes` or `resync: no`",
+                "`Invalid closure forms`",
+            ], `${agentName} codex hardening`);
+        }
+    }
+}
+
 function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFiles) {
     const codexAgentsRoot = path.join(repoRoot, ".codex", "agents");
     const expectedAgentNames = controlledAgentFiles
@@ -1067,14 +1241,18 @@ function runControlledMaterializationSmoke(targetHome) {
 
         assertControlledContextMaterialization(vscodeRepoRoot);
         assertControlledReferenceDocs(agentSkillRoot);
+        assertProtocolHardeningInReferenceAgents(agentSkillRoot);
+        assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
+        assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(codexRepoRoot);
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
 
         assertControlledCodexAgentMaterialization(codexRepoRoot, controlledAgentFiles);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
+        assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
     } finally {
         fs.rmSync(vscodeRepoRoot, { recursive: true, force: true });
         fs.rmSync(codexRepoRoot, { recursive: true, force: true });

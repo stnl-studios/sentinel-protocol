@@ -46,6 +46,11 @@ Ele cobre hoje:
 - materialização controlada de `stnl_project_agent_specializer` para `vscode` em `.github/agents/` da fixture
 - materialização controlada de `stnl_project_agent_specializer` para `codex` em `.codex/agents/*.toml` e `AGENTS.md` da fixture
 - validação mínima de shape dos docs, references, frontmatters `vscode` e TOMLs `codex` gerados, sem snapshot textual grande
+- invariantes estruturais de handoff terminal dos executors (`READY`/`BLOCKED`, evidência aplicada, parcialidade preservada)
+- rejeição canônica pelo `orchestrator` de handoff inválido do executor antes do `validation-runner`
+- entrada do `validation-runner` somente com artifact validável
+- closure explícito do `finalizer`, incluindo runner verdict preservado, reviewer signal quando houver, `DONE` yes/no e resync yes/no
+- anti-drift entre templates base, quality gate da skill e materialização `vscode`/`codex`
 
 O smoke valida materialização em repos efêmeros controlados. Ele não materializa artifacts operacionais finais no próprio Sentinel.
 

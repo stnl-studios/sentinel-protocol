@@ -50,7 +50,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - a canonical gate requires DEV input before the round may proceed
 - the round depends on a capability materially absent from the available agents
 - the selected executor lacks the material edit or execution capability required for the authorized cut
-- an executor returns analysis, description, pseudo-plan, or any response without evidence of applied implementation
+- an executor returns no handoff, an implicit handoff, an ambiguous handoff, an intermediate progress report, analysis, description, pseudo-plan, or any `READY` response without evidence of applied implementation
 - the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material change in gate, scope, or authorization
 - ownership or shared-contract boundaries cannot be stabilized enough for safe execution without exceeding router budget
 
@@ -76,6 +76,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - do not "correct", finish, or patch executor work after an invalid executor handoff
 - do not reopen broad discovery after an invalid executor handoff or executor loop
 - do not continue to `validation-runner.agent.md` without a valid executor artifact
+- do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success
 - do not route `reviewer.agent.md` without a real implemented artifact and an explicit `required` or `advisory` classification
 - do not reopen or trigger `resync.agent.md` unless `finalizer.agent.md` explicitly requires it
 - do not recreate the legacy phase-plan model
@@ -105,9 +106,10 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Decide sequential versus parallel execution only from stabilized package facts such as `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, and `BLOCK_IF`. Do not ask coders to negotiate boundaries themselves.
 - Before handing off to an executor after `APPROVED_EXECUTION` or `SKIP_EXECUTION_APPROVAL`, confirm that the selected agent has the material edit and execution capability the cut requires. If that capability is materially absent, stop with an explicit operational blocker instead of discovering it late inside execution.
 - During execution, accept only two valid executor outcomes: `READY` with evidence of real implementation applied, or `BLOCKED` with the exact missing basis or operational cause.
-- Treat any executor response that is only analysis, proposal, pseudo-plan, broad re-discovery, or narrative without evidence of applied change as an explicit invalid handoff such as `EXECUTOR_HANDOFF_INVALID`. In that case, stop the round, do not implement fallback, do not reopen discovery broadly, do not retry the runner, and do not "fix" the executor's work inside the orchestrator.
+- Treat any absent handoff, implicit terminal state, ambiguous status, intermediate progress update, command log, partial-diff narration, analysis, proposal, pseudo-plan, broad re-discovery, or `READY` without applied-change evidence as an explicit invalid handoff such as `EXECUTOR_HANDOFF_INVALID`. In that case, stop the round as an operational problem, do not implement fallback, do not reopen discovery broadly, do not retry the runner, and do not "fix" the executor's work inside the orchestrator.
+- If an executor reports `BLOCKED` after partial editing, require the blockage evidence to preserve objective blocker, touched files, partial work left behind, and whether the state is inspectable/reusable or should be discarded and re-executed. If that preservation is missing, treat the handoff as invalid rather than successful.
 - If the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material change in gate, scope, or authorization, abort the round with an explicit operational error such as `EXECUTOR_LOOP_DETECTED`.
-- Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact and no execution owner emitted `BLOCKED`. The canonical next gate after execution is validation of the implemented artifact, including the quality proof required by the pack.
+- Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact through a valid executor `READY` and no execution owner emitted `BLOCKED`. The canonical next gate after execution is validation of the implemented artifact, including the quality proof required by the pack.
 - Hand off to `reviewer.agent.md` after implementation when the cut carries structural change, boundary-sensitive logic, relevant refactor shape, cross-surface impact, or important internal contract movement that merits semantic review. Classify that review explicitly as `required` or `advisory` before the handoff.
 - Mark `reviewer.agent.md` as `required` for changes with real structural or architectural risk. Mark it as `advisory` for smaller cuts where review adds signal but should not block closure by default.
 - `reviewer.agent.md` reviews semantic and architectural fit of the implemented artifact. It does not replace runner proof, does not rerun proof as a substitute, and does not own closure.
@@ -132,6 +134,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Every handoff must name the next owner, the active boundary, and the minimum contract note or blocker needed to proceed honestly.
 - Every handoff must also name any materially active conditional risk track, or explicitly leave it absent when no such track is evidenced.
 - Every coder handoff must identify the relevant `WORK_PACKAGE_ID` from the current `EXECUTION PACKAGE`.
+- Every executor-to-runner transition must be backed by a terminal `READY` handoff with applied-change evidence. Missing, ambiguous, intermediate, narrative, or evidence-free executor output is `EXECUTOR_HANDOFF_INVALID`, not success.
 - Pass rich artifacts through the handoff itself; keep the main chat delta-only unless DEV explicitly asks for the full artifact.
 - Do not hand off to an absent owner, a nonexistent `.agent.md`, or a route whose required artifact is missing or invalid.
 - If the boundary, contract, or owner is still too unstable for a truthful handoff, stop or escalate instead of guessing.
@@ -181,7 +184,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 
 ## Completion contract
 - `Mandatory completion gate`: emit the truthful current gate status for the round. Emit `READY` only when the next agent has enough bounded context to proceed without reconstructing the round. For coder routing, require a current `EXECUTION PACKAGE` and a named `WORK_PACKAGE_ID`.
-- `Evidence required before claiming completion`: enough evidence to justify the route, the selected agents, the sequencing, the ownership split, the current source of truth, and any stop or escalation signal. When routing from execution to runner, reviewer, or finalizer, require a valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause. Do not treat missing pack-required proof, missing required review, or unresolved required-review structural risk as clean-ready closure evidence.
+- `Evidence required before claiming completion`: enough evidence to justify the route, the selected agents, the sequencing, the ownership split, the current source of truth, and any stop or escalation signal. When routing from execution to runner, reviewer, or finalizer, require a valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause and required partial-edit preservation when partial edits exist. Do not treat missing, ambiguous, intermediate, narrative, or evidence-free executor output, missing pack-required proof, missing required review, or unresolved required-review structural risk as clean-ready closure evidence.
 - `Area-specific senior risk checklist`: unresolved source-of-truth conflict, hidden shared-contract volatility, unsafe parallelization, missing capability, approval or harness ambiguity, boundary ownership drift, or router drift into discovery.
 
 ## Protocol-fixed part

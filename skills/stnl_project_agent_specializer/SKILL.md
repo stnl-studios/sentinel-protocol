@@ -148,6 +148,7 @@ Regras:
 - `target` sempre pertence ao repo alvo, nunca ao repo Sentinel Protocol
 - o repo Sentinel Protocol mantém somente source of truth e templates internos; ele não é local válido para artifacts finais de nenhum target
 - a semântica dos agents é target-agnostic e deve preservar missão, ownership, gates, role class, sequencing, status, handoffs e política de tools
+- a semântica dos agents é target-agnostic também para terminal handoff: nenhum `target` (`vscode` ou `codex`) pode relaxar executor `READY/BLOCKED`, consumer-side rejection de handoff inválido, runner apenas com artifact validável, ou finalizer com ledger explícito de `DONE` e resync
 - a serialização final varia por target, mas a geração deve sempre partir dos templates internos da skill e das referências canônicas
 - `vscode` usa o shape Markdown com frontmatter operacional em `.github/agents/*.agent.md`
 - `codex` usa arquivos TOML em `.codex/agents/*.toml` com o shape próprio de custom agent do Codex, não como espelho do frontmatter endurecido de `vscode`
@@ -638,9 +639,12 @@ Aplicação por papel:
 - `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC, registrar operacionalmente no pack qualquer compromisso explícito do DEV sobre evidência parcial, refletir no pack a exigência de testes focados antes da execução, e exigir retorno ao `planner` quando a decisão do DEV alterar materialmente o recorte
 - `execution-package-designer`: manter `EXECUTION PACKAGE` rico no handoff, mas devolver só `READY` ou `BLOCKED`, ids de pacotes, ordem/dependência, elegibilidade de paralelização e causa exata de bloqueio; não coordenar coders, não chamar agents, não implementar e não virar planner
 - `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; executar apenas o `WORK_PACKAGE_ID` autorizado, com leitura local suficiente para segurança. Quando faltar capacidade real de editar ou executar, quando o pacote for insuficiente, ou quando o cut não puder ser implementado com segurança dentro de `OWNED_PATHS`, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
+- terminal handoff de executor nunca pode ser implícito: progresso intermediário, log de comando, narrativa operacional, promessa de mudança, diff parcial ou resposta sem status terminal claro não conta como `READY` nem como `BLOCKED`
+- quando um executor editou parcialmente mas não concluiu com segurança, `BLOCKED` é obrigatório e deve preservar motivo objetivo, arquivos tocados, o que ficou parcial, e se o estado parcial é inspecionável/reaproveitável ou deve ser descartado/reexecutado
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; reconhecer quando trilha material de risco foi ignorada, sem virar especialista dedicado; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
-- `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`
+- `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`; preservar o verdict do runner como input e emitir somente `READY` ou `BLOCKED` próprios
+- `finalizer` só pode fechar `READY` com closure ledger explícito: runner verdict preservado ou bloqueio pré-validação preservado, reviewer signal preservado quando houver, artifacts de memória/contexto alterados, `DONE` yes/no com racional, resync yes/no com racional, e delta factual quando resync for necessário
 
 Se o specialized reabrir verbosity, execution log ou narrativa operacional como comportamento default, a materialização falhou.
 
@@ -874,8 +878,10 @@ Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equiva
 - capability gate explícito
 - `read-only runtime is not execution` explícito quando houver risco
 - `READY` apenas com evidência real de mudança aplicada
+- terminal handoff explícito com exatamente `READY` ou `BLOCKED`; handoff ausente, implícito, ambíguo, intermediário, narrativo, log de comando, promessa ou diff parcial não é output final válido
 - `BLOCKED` cedo quando faltar base ou capacidade
 - `BLOCKED` cedo quando pacote for insuficiente, contraditório, stale ou exigir ampliar scope
+- `BLOCKED` obrigatório quando houve edição parcial sem conclusão segura, preservando motivo objetivo, arquivos tocados, o que ficou parcial, e decisão de reaproveitar/inspecionar ou descartar/reexecutar o estado parcial
 - proibição explícita de redefinir cut, recompilar pacote, escolher arquitetura estrutural, ampliar scope ou tocar shared files fora de `OWNED_PATHS`
 - em `coder-ios`, o wording mantém foco default em Swift + SwiftUI e não deriva para executor UIKit-heavy sem evidência do repo ou necessidade real do cut
 - wording não transforma executor em planner, router, runner ou finalizer
@@ -889,10 +895,13 @@ Verificar em `validation-runner`, `finalizer` e `resync`:
 - `validation-runner` executa e julga os checks determinísticos exigidos no `VALIDATION PACK`, sem virar smoke runner repo-wide
 - `validation-runner` usa `VALIDATION PACK` para o que provar e `docs/core/TESTING.md` para quais comandos, manual paths e limites de harness são canônicos quando esse doc existir, preservando semântica observada em base `stnl_project_context` e semântica declarada/estratégica em base `stnl_project_foundation` até evidência na codebase
 - `validation-runner` distingue comando canônico indisponível no ambiente, harness inexistente, harness fraco e path manual aceito
+- `validation-runner` só entra com artifact validável de executor `READY` válido; promessa, output descritivo, pseudo-implementação, progresso narrativo ou `READY` sem evidência aplicada não é alvo de validação
 - a existência da matriz local não expande a run para além do cut
 - check obrigatório ausente, falho ou bloqueado por harness afeta verdict e confidence de forma explícita
 - `finalizer` permanece minimal-verification
 - `finalizer` permanece closure-only e não absorve review técnico, rerun ou re-julgamento do runner
+- `finalizer` não confunde status próprio (`READY`/`BLOCKED`) com verdict do runner (`PASS`/`PARTIAL`/`FAIL`/`BLOCKED`), que deve ser preservado como input
+- `finalizer` explicita `DONE: yes` ou `DONE: no`, racional curto da decisão, `resync: yes` ou `resync: no`, racional curto da decisão, e delta factual quando resync for necessário
 - `resync` permanece targeted-local
 
 ### Semantic-review containment check
@@ -917,6 +926,8 @@ Verificar:
 - `execution-package-designer READY` devolve `EXECUTION PACKAGE` para o `orchestrator`, não para coders
 - coders só entram com `WORK_PACKAGE_ID` explícito do pacote vigente
 - o `orchestrator` só aceita do executor `READY` com evidência de alteração aplicada, ou `BLOCKED` com causa exata
+- o `orchestrator` trata handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa, diff parcial ou `READY` sem evidência aplicada como `EXECUTOR_HANDOFF_INVALID`
+- o `orchestrator` bloqueia a rodada em `EXECUTOR_HANDOFF_INVALID` e não chama `validation-runner` sem artifact validável
 - gap material de capability de editar ou executar aparece como blocker pré-execução
 - resposta narrativa, descritiva, pseudo-plano, leitura ampla adicional, ou sem diff aplicado é tratada como handoff inválido
 - reentrada do mesmo executor sem diff aplicado, `BLOCKED` formal, ou mudança real de gate, escopo ou autorização é rejeitada como erro operacional
@@ -929,6 +940,11 @@ Hard fails:
 - o specialized reaproveita implicitamente readiness ou execution approval derivados de um cut anterior depois de mudança material do boundary
 - o specialized pula `execution-package-designer` quando coders entram no fluxo
 - coder aceita ampliar scope, recompilar pacote ou escolher arquitetura estrutural em vez de bloquear
+- executor podendo terminar sem status terminal claro `READY` ou `BLOCKED`
+- executor permitindo progresso intermediário, log operacional, promessa, narrativa ou diff parcial como handoff final
+- executor com edição parcial sem exigir `BLOCKED` e preservação de arquivos tocados, parcialidade e decisão inspectable/reusable-or-discard/reexecute
+- orchestrator permitindo `validation-runner` após `EXECUTOR_HANDOFF_INVALID`
+- finalizer emitindo `READY` sem `DONE` yes/no e resync yes/no explícitos
 
 ### Tool-discipline check
 Verificar:
@@ -1134,10 +1150,13 @@ Notas para os exemplos:
 - o `orchestrator` tem budget operacional explícito antes do primeiro handoff
 - gaps materiais de capability aparecem como blockers pré-execução
 - executors materializados restringem a saída a `READY` real ou `BLOCKED` real
+- executors materializados não podem terminar com handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa ou diff parcial como final
+- `BLOCKED` de executor após edição parcial preserva motivo objetivo, arquivos tocados, parcialidade restante e decisão inspectable/reusable-or-discard/reexecute
 - executors materializados carregam a maior parte do custo operacional da rodada
 - resposta descritiva do executor sem alteração aplicada é rejeitada como handoff inválido
 - reentrada do mesmo executor sem diff, `BLOCKED`, ou mudança real de gate, escopo ou autorização é tratada como erro operacional
 - `validation-runner` só é habilitado com artifact validável do executor
+- `finalizer` materializado exige closure ledger explícito com runner verdict preservado, reviewer signal quando houver, artifacts alterados, `DONE` yes/no com racional, resync yes/no com racional, e delta factual quando resync for necessário
 - `validation-eval-designer` e `validation-runner` permanecem coerentes com `docs/core/TESTING.md` quando esse doc existir, sem substituir o `VALIDATION PACK`
 - `reviewer` só é habilitado com artifact implementado real e classificação explícita `required` ou `advisory`
 - `reviewer` distingue risco estrutural material de melhoria recomendada e observação cosmética sem drift para executor, runner ou finalizer

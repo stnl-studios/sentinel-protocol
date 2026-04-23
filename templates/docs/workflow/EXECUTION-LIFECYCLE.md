@@ -13,11 +13,12 @@ Descrever a ordem operacional canônica do Sentinel com mais precisão que `STAT
 7. Se o DEV escolher reduzir o cut, o cut anterior deixa de valer como base de execução: o fluxo volta obrigatoriamente ao `planner` para um novo `EXECUTION BRIEF`, depois ao `validation-eval-designer` para um novo `VALIDATION PACK`, e readiness ou approval anteriores não sobrevivem automaticamente.
 8. `execution-package-designer` compila `EXECUTION PACKAGE` a partir do `EXECUTION BRIEF` e do `VALIDATION PACK`, com 1..N work packages executáveis. Ele não coordena coders, não chama agents, não implementa e não substitui o `orchestrator`.
 9. O `orchestrator` consome o `EXECUTION PACKAGE`, decide sequência ou paralelização dos coders, confirma capability e só então roteia os coders especialistas-executores.
-10. Os coders executam apenas o `WORK_PACKAGE_ID` autorizado. Execução real devolve artifact aplicável ou `BLOCKED`; resposta descritiva, pacote recompilado localmente ou scope ampliado não substitui artifact.
-11. `validation-runner` executa o `VALIDATION PACK` sobre o artifact implementado. Isso inclui prova funcional e os checks determinísticos marcados no pack como relevantes ao cut.
-12. `reviewer` entra quando aplicável para revisar o artifact implementado e o diff resultante em chave semântica e arquitetural. O `orchestrator` deve classificá-lo como `required` ou `advisory` antes da handoff.
-13. `finalizer` apenas consolida o resultado do runner, o sinal do reviewer quando existir, ou um bloqueio pré-validação roteado pelo orchestrator. Ele não redesenha prova, não reexecuta checks e não assume ownership de review técnico substituto.
-14. `resync` entra apenas quando o `finalizer` detecta delta factual fora da feature que precisa ser sincronizado.
+10. Os coders executam apenas o `WORK_PACKAGE_ID` autorizado. Execução real devolve handoff terminal explícito: `READY` com artifact aplicável e evidência de alteração aplicada, ou `BLOCKED` com causa objetiva. Resposta descritiva, pacote recompilado localmente, progresso intermediário, log operacional, promessa, diff parcial, status implícito ou scope ampliado não substitui artifact.
+11. O `orchestrator` rejeita handoff ausente, implícito, ambíguo, intermediário, narrativo ou `READY` sem evidência aplicada como `EXECUTOR_HANDOFF_INVALID`; a rodada bloqueia operacionalmente e não entra no `validation-runner`.
+12. `validation-runner` executa o `VALIDATION PACK` sobre o artifact implementado somente quando houver executor `READY` válido. Isso inclui prova funcional e os checks determinísticos marcados no pack como relevantes ao cut.
+13. `reviewer` entra quando aplicável para revisar o artifact implementado e o diff resultante em chave semântica e arquitetural. O `orchestrator` deve classificá-lo como `required` ou `advisory` antes da handoff.
+14. `finalizer` apenas consolida o resultado do runner, o sinal do reviewer quando existir, ou um bloqueio pré-validação roteado pelo orchestrator. Ele não redesenha prova, não reexecuta checks e não assume ownership de review técnico substituto.
+15. `resync` entra apenas quando o `finalizer` detecta delta factual fora da feature que precisa ser sincronizado.
 
 Fluxo alvo resumido:
 `orchestrator -> planner -> validation-eval-designer -> execution-package-designer -> orchestrator -> coder(s) -> validation-runner -> reviewer quando aplicável -> finalizer`
@@ -67,5 +68,8 @@ O pacote pode conter 1..N work packages. Isso não cria um segundo coordenador: 
 - Sem proof funcional ou sem check mínimo relevante definido no pack e executado honestamente, não existe closure otimista.
 - `PASS` limpo exige artifact implementado mais prova suficiente do runner para as obrigações e checks obrigatórios relevantes.
 - `PASS` limpo também exige que a execução tenha vindo de work package válido ou que qualquer bloqueio de package tenha sido preservado explicitamente.
+- Handoff inválido do executor bloqueia antes do runner: handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa, diff parcial ou `READY` sem evidência aplicada não vira validation target.
 - Quando houver `reviewer required`, também não existe closure limpa com review pendente ou com risco estrutural material não resolvido.
 - `finalizer` consome essa evidência para fechar a rodada; ele não suaviza falta de prova, não ignora review `required` pendente ou materialmente bloqueado, e não transforma green irrelevante em entrega limpa.
+- O `finalizer` emite apenas `READY` ou `BLOCKED`; verdicts do runner (`PASS`, `PARTIAL`, `FAIL`, `BLOCKED`) são inputs preservados, não status reemitidos.
+- `finalizer READY` exige closure ledger explícito: runner verdict preservado ou bloqueio pré-validação preservado, reviewer signal preservado quando houver, artifacts de memória/contexto alterados, `DONE` yes/no com racional, resync yes/no com racional, e delta factual quando resync for necessário.
