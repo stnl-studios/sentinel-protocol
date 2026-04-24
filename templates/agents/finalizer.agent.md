@@ -201,8 +201,10 @@ Before emitting `READY`, write the closure ledger explicitly:
 - runner verdict preserved, or pre-validation blockage preserved when validation never ran
 - reviewer signal preserved when review entered, including `required` or `advisory`
 - memory/context artifacts altered
+- explicit decision form: `DONE: yes/no`
 - `DONE: yes` or `DONE: no`
 - short rationale for creating or not creating `DONE`
+- explicit resync decision form: `resync: yes/no`
 - `resync: yes` or `resync: no`
 - short rationale for resync decision
 - factual delta for `resync.agent.md` when resync is required

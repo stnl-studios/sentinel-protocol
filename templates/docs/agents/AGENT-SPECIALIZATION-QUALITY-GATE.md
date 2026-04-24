@@ -98,6 +98,8 @@ Verificar no minimo:
 - rich artifacts e precondicoes de handoff continuam alinhados com os owners corretos
 - handoff inválido de executor não pode parecer sucesso operacional: handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa, diff parcial ou `READY` sem evidência aplicada deve bloquear como `EXECUTOR_HANDOFF_INVALID`
 - `validation-runner` só pode aparecer depois de artifact validável produzido por executor `READY` válido
+- protocol-fixed blocks sao non-compressible: executor terminal handoff contract, partial-edit blocking, invalid terminal forms, orchestrator `EXECUTOR_HANDOFF_INVALID`, validation-runner entry evidence gate, finalizer closure ledger, e separacao entre status do finalizer `READY/BLOCKED` e verdict do runner `PASS/PARTIAL/FAIL/BLOCKED`
+- os specializeds finais devem preservar esses blocos por copia dos templates/base agents ou por preservacao semanticamente verificavel pelos marcadores obrigatorios; versao resumida que perca hardening e hard fail mesmo quando metadata, tools, modelos e referencias estejam corretos
 
 Hard fails:
 - `orchestrator.agents` lista agent nao materializado
@@ -108,6 +110,7 @@ Hard fails:
 - contradicao material entre specializeds torna o fluxo local internamente incoerente
 - `orchestrator` permitindo entrada do `validation-runner` sem artifact validável de executor
 - specialized tratando handoff de executor ausente, implícito, intermediário ou narrativo como sucesso
+- artifact final materializado sem bloco protocol-fixed aplicavel ao papel
 
 ### 4. Surface discipline check
 Verificar no minimo:

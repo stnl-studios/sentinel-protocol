@@ -179,6 +179,16 @@ const REQUIRED_CONTROLLED_AGENT_FILES = [
     "finalizer.agent.md",
 ];
 
+const BACKEND_ONLY_SPECIALIZED_AGENT_FILES = [
+    "orchestrator.agent.md",
+    "planner.agent.md",
+    "validation-eval-designer.agent.md",
+    "execution-package-designer.agent.md",
+    "coder-backend.agent.md",
+    "validation-runner.agent.md",
+    "finalizer.agent.md",
+];
+
 const REQUIRED_AGENT_BODY_SNIPPETS = [
     "## Mission",
     "## Handoff",
@@ -724,6 +734,70 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles) 
     }
 }
 
+function renderBackendOnlySpecializedBody(body, fileName) {
+    const localSpecialization = [
+        "## Project specialization",
+        "- Fixture specialization: backend-only Node.js/TypeScript service.",
+        "- Canonical implementation surface: `src/backend/**`.",
+        "- Canonical lightweight proof: focused backend checks or explicit harness limitation from `docs/core/TESTING.md`.",
+        "- Frontend, iOS and design agents are intentionally not materialized for this fixture.",
+        "",
+    ].join("\n");
+
+    assert(body.includes("## Mission"), `Base agent sem ## Mission para especialização realista: ${fileName}`);
+    return body.replace("## Mission", `${localSpecialization}## Mission`);
+}
+
+function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
+    for (const fileName of BACKEND_ONLY_SPECIALIZED_AGENT_FILES) {
+        const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
+        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const specializedFrontmatter = buildSpecializedFrontmatter(
+            baseFrontmatter,
+            fileName,
+            BACKEND_ONLY_SPECIALIZED_AGENT_FILES
+        );
+
+        specializedFrontmatter.specialization_revision = 2;
+
+        writeFile(
+            path.join(repoRoot, ".github", "agents", fileName),
+            renderFrontmatter(specializedFrontmatter) + renderBackendOnlySpecializedBody(body, fileName)
+        );
+    }
+}
+
+function materializeCompactedWeakBackendOnlyAgents(skillRoot, repoRoot) {
+    for (const fileName of BACKEND_ONLY_SPECIALIZED_AGENT_FILES) {
+        const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
+        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const { data: baseFrontmatter } = parseFrontmatter(sourceContent, sourcePath);
+        const specializedFrontmatter = buildSpecializedFrontmatter(
+            baseFrontmatter,
+            fileName,
+            BACKEND_ONLY_SPECIALIZED_AGENT_FILES
+        );
+
+        specializedFrontmatter.specialization_revision = 2;
+
+        writeFile(
+            path.join(repoRoot, ".github", "agents", fileName),
+            renderFrontmatter(specializedFrontmatter) + [
+                "## Mission",
+                "Backend-only specialized agent with compact operational guidance.",
+                "",
+                "## Reading contract",
+                "Read local backend docs and paths as needed.",
+                "",
+                "## Handoff",
+                "Return a concise final status for downstream agents.",
+                "",
+            ].join("\n")
+        );
+    }
+}
+
 function buildCodexAgentList(agentNames) {
     return agentNames
         .map((agentName) => `- \`${agentName}\` -> \`.codex/agents/${agentName}.toml\``)
@@ -1021,7 +1095,9 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
 
     assertContentIncludesAll(agentContents.get("finalizer.agent.md"), [
         "closure ledger",
+        "`DONE: yes/no`",
         "`DONE: yes` or `DONE: no`",
+        "`resync: yes/no`",
         "`resync: yes` or `resync: no`",
         "does not mean the runner verdict was `PASS`",
         "`Invalid closure forms`",
@@ -1032,6 +1108,17 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
     const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
     assertContentIncludesAll(skillContent, [
         "nenhum `target` (`vscode` ou `codex`) pode relaxar executor `READY/BLOCKED`",
+        "Blocos protocol-fixed non-compressible",
+        "não podem ser resumidos, removidos, enfraquecidos, reescritos do zero prático",
+        "executor terminal handoff contract",
+        "executor partial-edit blocking",
+        "executor invalid terminal forms",
+        "orchestrator consumer-side rejection",
+        "validation-runner entry evidence gate",
+        "finalizer closure ledger",
+        "separação explícita entre status terminal do finalizer (`READY`/`BLOCKED`) e verdict do runner (`PASS`/`PARTIAL`/`FAIL`/`BLOCKED`)",
+        "a skill deve bloquear a materialização antes de escrever",
+        "Validar só frontmatter, shape, `model`, tools, ausência de TODO ou referências a agents ausentes não basta",
         "terminal handoff de executor nunca pode ser implícito",
         "EXECUTOR_HANDOFF_INVALID",
         "finalizer` só pode fechar `READY` com closure ledger explícito",
@@ -1046,6 +1133,9 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
     assertContentIncludesAll(qualityGateContent, [
         "EXECUTOR_HANDOFF_INVALID",
         "terminal handoff explícito com exatamente `READY` ou `BLOCKED`",
+        "protocol-fixed blocks sao non-compressible",
+        "executor terminal handoff contract, partial-edit blocking, invalid terminal forms",
+        "artifact final materializado sem bloco protocol-fixed aplicavel ao papel",
         "executor podendo terminar sem status terminal claro `READY` ou `BLOCKED`",
         "validation-runner` só entra com artifact validável de executor `READY` válido",
         "finalizer` não confunde status próprio (`READY`/`BLOCKED`) com verdict do runner",
@@ -1097,7 +1187,9 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
         if (fileName === "finalizer.agent.md") {
             assertContentIncludesAll(content, [
                 "closure ledger",
+                "`DONE: yes/no`",
                 "`DONE: yes` or `DONE: no`",
+                "`resync: yes/no`",
                 "`resync: yes` or `resync: no`",
                 "`Invalid closure forms`",
             ], `${fileName} vscode hardening`);
@@ -1140,11 +1232,63 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
         if (agentName === "finalizer") {
             assertContentIncludesAll(instructions, [
                 "closure ledger",
+                "`DONE: yes/no`",
                 "`DONE: yes` or `DONE: no`",
+                "`resync: yes/no`",
                 "`resync: yes` or `resync: no`",
                 "`Invalid closure forms`",
             ], `${agentName} codex hardening`);
         }
+    }
+}
+
+function assertBackendOnlySpecializedMaterialization(repoRoot) {
+    const agentsRoot = path.join(repoRoot, ".github", "agents");
+    const materializedFiles = listRelativeFiles(agentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort();
+
+    assert.deepEqual(
+        materializedFiles,
+        [...BACKEND_ONLY_SPECIALIZED_AGENT_FILES].sort(),
+        `Especialização backend-only materializou conjunto inesperado: ${agentsRoot}`
+    );
+
+    for (const fileName of BACKEND_ONLY_SPECIALIZED_AGENT_FILES) {
+        const materializedPath = path.join(agentsRoot, fileName);
+        const content = assertFileHasRequiredShape(materializedPath, [
+            "## Project specialization",
+            "backend-only Node.js/TypeScript service",
+            "## Mission",
+            "## Reading contract",
+            "## Handoff",
+        ]);
+        const { data: materializedFrontmatter } = parseFrontmatter(content, materializedPath);
+
+        assert.equal(
+            materializedFrontmatter.specialization_revision,
+            2,
+            `Especialização backend-only deve simular revision 2: ${materializedPath}`
+        );
+    }
+
+    assertProtocolHardeningInMaterializedAgents(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES);
+}
+
+function assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(skillRoot) {
+    const weakRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-weak-backend-"));
+
+    try {
+        createControlledFixtureRepo(weakRepoRoot);
+        materializeCompactedWeakBackendOnlyAgents(skillRoot, weakRepoRoot);
+
+        assert.throws(
+            () => assertProtocolHardeningInMaterializedAgents(weakRepoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES),
+            /não contém o invariante esperado/,
+            "Validação protocol-fixed deveria rejeitar materialização compactada sem hardenings"
+        );
+    } finally {
+        fs.rmSync(weakRepoRoot, { recursive: true, force: true });
     }
 }
 
@@ -1232,6 +1376,7 @@ function runControlledMaterializationSmoke(targetHome) {
     const agentSkillRoot = findInstalledSkillRoot(targetHome, "stnl_project_agent_specializer");
     const controlledAgentFiles = getControlledAgentFiles(agentSkillRoot);
     const vscodeRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-"));
+    const backendOnlyRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-backend-only-"));
     const codexRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-"));
 
     try {
@@ -1247,6 +1392,12 @@ function runControlledMaterializationSmoke(targetHome) {
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
 
+        createControlledFixtureRepo(backendOnlyRepoRoot);
+        materializeControlledContextDocs(contextSkillRoot, backendOnlyRepoRoot);
+        materializeBackendOnlySpecializedAgents(agentSkillRoot, backendOnlyRepoRoot);
+        assertBackendOnlySpecializedMaterialization(backendOnlyRepoRoot);
+        assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(agentSkillRoot);
+
         createControlledFixtureRepo(codexRepoRoot);
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
 
@@ -1255,6 +1406,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
     } finally {
         fs.rmSync(vscodeRepoRoot, { recursive: true, force: true });
+        fs.rmSync(backendOnlyRepoRoot, { recursive: true, force: true });
         fs.rmSync(codexRepoRoot, { recursive: true, force: true });
     }
 }

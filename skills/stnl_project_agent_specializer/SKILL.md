@@ -307,6 +307,27 @@ Regras operacionais:
 - em `codex`, `developer_instructions` deve preservar a semântica operacional dessas seções sem exigir headings Markdown no TOML
 - a normalização final deve eliminar duplicação entre source of truth operacional do target e texto legado residual
 
+## Blocos protocol-fixed non-compressible
+Os blocos abaixo são parte fixa do protocolo, não são conteúdo local do projeto e não podem ser resumidos, removidos, enfraquecidos, reescritos do zero prático ou substituídos por paráfrase incompleta durante a especialização:
+- executor terminal handoff contract, incluindo `Terminal handoff contract`, `No other terminal handoff is valid`, exigência de status terminal explícito `READY` ou `BLOCKED`, evidência real de mudança aplicada para `READY`, e rejeição de handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa ou diff parcial
+- executor partial-edit blocking, incluindo `Partial-edit blocking`, `BLOCKED` obrigatório quando houve edição parcial sem conclusão segura, motivo objetivo, arquivos tocados, parcialidade restante, e decisão inspectable/reusable-or-discard/reexecute
+- executor invalid terminal forms, incluindo `Invalid terminal forms`
+- orchestrator consumer-side rejection, incluindo `EXECUTOR_HANDOFF_INVALID`, rejeição forte de handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa, diff parcial ou `READY` sem evidência aplicada, e bloqueio da rodada sem chamar `validation-runner`
+- validation-runner entry evidence gate, incluindo `Entry evidence gate`, exigência de valid executor `READY` handoff com evidência aplicada, e preservação de que output inválido não é validation target
+- finalizer closure ledger, incluindo `closure ledger`, `DONE: yes` ou `DONE: no`, racional da decisão de `DONE`, `resync: yes` ou `resync: no`, racional da decisão de resync, delta factual quando resync for necessário, e `Invalid closure forms`
+- separação explícita entre status terminal do finalizer (`READY`/`BLOCKED`) e verdict do runner (`PASS`/`PARTIAL`/`FAIL`/`BLOCKED`), preservando o verdict como input e sem transformar `DONE` em obrigatório; obrigatória é a decisão explícita `DONE: yes` ou `DONE: no`
+
+Estratégia obrigatória de especialização:
+- a skill pode especializar stack, paths, docs, models, TBDs, targets, constraints locais, comandos canônicos, owners e leitura local
+- a skill não pode reescrever do zero prático os blocos protocol-fixed nem compactá-los para "equivalentes" genéricos
+- a materialização deve copiar o bloco fixo do template/base agent ou preservá-lo semanticamente de forma verificável pelos marcadores obrigatórios acima
+- em `vscode`, os marcadores protocol-fixed devem permanecer no corpo final do agent materializado
+- em `codex`, os marcadores protocol-fixed devem permanecer em `developer_instructions`
+- se um invariant protocol-fixed obrigatório não couber no formato final, a skill deve bloquear a materialização antes de escrever ou reparar imediatamente o artifact e revalidar; nunca entregar agent fraco com hardening resumido
+- se uma regra local do projeto entrar em tensão com bloco protocol-fixed, a regra local perde; se a tensão impedir materialização honesta, bloquear em vez de relaxar o protocolo
+
+O quality gate final deve validar os artifacts materializados finais contra esses invariantes protocol-fixed. Validar só frontmatter, shape, `model`, tools, ausência de TODO ou referências a agents ausentes não basta.
+
 ## Política de `allowed_models` e `model_policy`
 - a skill aceita uma entrada opcional `allowed_models`
 - a skill aceita uma entrada opcional `model_policy` granular e compatível
@@ -1152,6 +1173,7 @@ Notas para os exemplos:
 - executors materializados restringem a saída a `READY` real ou `BLOCKED` real
 - executors materializados não podem terminar com handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa ou diff parcial como final
 - `BLOCKED` de executor após edição parcial preserva motivo objetivo, arquivos tocados, parcialidade restante e decisão inspectable/reusable-or-discard/reexecute
+- artifacts finais materializados preservam todos os blocos protocol-fixed non-compressible aplicáveis ao papel; materialização que perde esses invariantes deve falhar no quality gate, mesmo que shape, tools, modelos e referências estejam corretos
 - executors materializados carregam a maior parte do custo operacional da rodada
 - resposta descritiva do executor sem alteração aplicada é rejeitada como handoff inválido
 - reentrada do mesmo executor sem diff, `BLOCKED`, ou mudança real de gate, escopo ou autorização é tratada como erro operacional
