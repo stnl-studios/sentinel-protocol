@@ -106,6 +106,13 @@ const SKILL_BUNDLE_MANIFESTS = {
                 "workflow/STATUS-GATES.md",
             ],
         },
+        {
+            sourceRoot: path.join("skills", "stnl_project_agent_specializer", "reference", "templates"),
+            targetRoot: path.join("reference", "templates"),
+            files: [
+                "codex/AGENTS.md",
+            ],
+        },
     ],
     stnl_spec_manager: [
         {

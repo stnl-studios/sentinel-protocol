@@ -42,7 +42,7 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter qualquer handoff apenas como `Optional Manual Handoff Prompt`, nunca como roteamento automático
 - nunca permitir formulações que absorvam por default todos os auxiliares no `feature_spec.md`
 - nunca permitir que a skill toque `memory.md` ou aja como closure/finalizer operacional
-- evitar overlap com `planner`, `orchestrator`, `phase_closure`, `finalizer`, `validation-runner` ou bootstrap de `docs/**`
+- evitar overlap com `planner`, `orchestrator`, `finalizer`, `validation-runner`, artifacts legados de closure ou bootstrap de `docs/**`
 
 ## Bundle de templates
 Canônico obrigatório em criação nova ou fork legítimo:

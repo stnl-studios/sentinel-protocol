@@ -23,7 +23,7 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 - para definir arquitetura profunda cedo demais ou fechar lacunas com suposição implícita
 - para bootstrapar `docs/**`; em greenfield isso pertence a `stnl_project_foundation`, e em repo existente isso pertence a `stnl_project_context`
 - para atuar como backlog manager, PM autônomo ou gerador solto de documentação
-- para tocar `PLAN.md`, lifecycle de execução, `phase_closure` ou outros componentes do workflow
+- para tocar `PLAN.md`, `phase_closure` ou outros artifacts legados/proibidos como lifecycle canônico, nem outros componentes do workflow
 - como subskill implícita do `orchestrator`
 - para chamar, promover, acionar, rotear ou assumir automaticamente `orchestrator`, `planner`, `executor`, `closure` ou equivalente
 - para escolher o próximo agente ou o próximo passo operativo do fluxo
@@ -414,7 +414,7 @@ Esse DoD responde quando é honesto dizer que a feature ou fix está pronta como
 
 Regras:
 - o DoD da SPEC é a referência canônica da mudança
-- um `PLAN.md` ou um slice de execução pode ter DoDs locais e menores
+- um slice de execução pode ter DoDs locais e menores; `PLAN.md` é artifact legado/proibido como lifecycle canônico
 - o DoD do plano não pode contrariar o DoD da SPEC
 - o DoD do plano deve mapear para itens do DoD da SPEC
 - um plano pode fechar localmente e ainda assim a feature não estar concluída
@@ -476,8 +476,8 @@ Mensagens proibidas:
 ## Relação com o restante do Sentinel
 - produzir SPEC consumível sem conduzir o fluxo
 - não alterar o papel do `planner`
-- não alterar o papel do `phase_closure`
-- não assumir lifecycle do `PLAN.md`
+- não alterar o papel do `finalizer` como closure owner canônico
+- não reintroduzir `phase_closure` / `PLAN.md` como lifecycle canônico
 - produzir artefatos canônicos que podem ser consumidos depois pelo restante do workflow
 
 ## Exemplos canônicos

@@ -26,6 +26,7 @@ const REQUIRED_BUNDLE_PATHS = [
     ["stnl_project_agent_specializer", "reference/docs", "workflow/EXECUTION-LIFECYCLE.md"],
     ["stnl_project_agent_specializer", "reference/docs", "agents/AGENT-CONTRACT-SHAPE.md"],
     ["stnl_project_agent_specializer", "reference/docs", "agents/AGENT-SPECIALIZATION-QUALITY-GATE.md"],
+    ["stnl_project_agent_specializer", "reference/templates", "codex/AGENTS.md"],
     ["stnl_project_context", "reference/docs", "core/TESTING.md"],
 ];
 
@@ -38,6 +39,7 @@ const OWNED_SOURCE_ROOTS = [
     ["stnl_project_agent_specializer", path.join("reference", "agents"), ""],
     ["stnl_project_agent_specializer", path.join("reference", "docs"), "agents"],
     ["stnl_project_agent_specializer", path.join("reference", "docs"), "workflow"],
+    ["stnl_project_agent_specializer", path.join("reference", "templates"), "codex"],
     ["stnl_project_context", path.join("reference", "docs"), "core"],
     ["stnl_project_context", path.join("reference", "docs"), path.join("units", "_unit-template")],
     ["stnl_project_context", path.join("reference", "docs"), path.join("features", "_feature-template")],
@@ -414,6 +416,7 @@ function assertDoctorOutput(output) {
         "bundle: stnl_project_foundation/reference/docs OK",
         "bundle: stnl_project_agent_specializer/reference/agents OK",
         "bundle: stnl_project_agent_specializer/reference/docs OK",
+        "bundle: stnl_project_agent_specializer/reference/templates OK",
         "bundle: stnl_project_context/reference/docs OK",
     ]) {
         assert(
@@ -699,21 +702,12 @@ function buildSpecializedFrontmatter(baseFrontmatter, fileName, controlledAgentF
 function getCodexAgentsTemplatePath(agentSkillRoot) {
     const installedTemplatePath = path.join(agentSkillRoot, CODEX_AGENTS_TEMPLATE_RELATIVE_PATH);
 
-    if (fs.existsSync(installedTemplatePath)) {
-        return installedTemplatePath;
-    }
-
-    const sourceTemplatePath = path.join(
-        SOURCE_DIR,
-        "stnl_project_agent_specializer",
-        CODEX_AGENTS_TEMPLATE_RELATIVE_PATH
-    );
     assert(
-        fs.existsSync(sourceTemplatePath),
-        `Template AGENTS.md do target codex não encontrado: ${sourceTemplatePath}`
+        fs.existsSync(installedTemplatePath),
+        `Template AGENTS.md do target codex não instalado no bundle da skill: ${installedTemplatePath}`
     );
 
-    return sourceTemplatePath;
+    return installedTemplatePath;
 }
 
 function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles) {

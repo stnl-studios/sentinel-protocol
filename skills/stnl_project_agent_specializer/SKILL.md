@@ -101,7 +101,8 @@ Antes de especializar qualquer agent, a skill deve classificá-lo em uma role cl
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
 - `execution-package-design`: `execution-package-designer`
-- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
+- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`
+- `design-contributor`: `designer`
 - `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
 - `closure`: `finalizer`
@@ -359,7 +360,8 @@ O quality gate final deve validar os artifacts materializados finais contra esse
   - `sync`: `resync`
 - fallback legado compatível:
   - `reasoning_default`: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `reviewer`
-  - `coding_default`: `coder-backend`, `coder-frontend`, `coder-ios`, e `designer` quando materializado como executor de direção UX
+  - `coding_default`: `coder-backend`, `coder-frontend`, `coder-ios`
+  - `design_support_default`: `designer` quando materializado como suporte de direção UX on-demand ou contributor paralelo
   - `execution_default`: `validation-runner`, `finalizer`, `resync`
 - se `model_policy` indicar valor fora de `allowed_models`, a skill deve bloquear ou escolher alternativa segura explicitando isso no output
 - quando só `allowed_models` existir, preferir política conservadora: usar um modelo padrão único para o conjunto ou variar por papel apenas quando houver justificativa operacional clara

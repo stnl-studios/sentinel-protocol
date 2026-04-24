@@ -62,5 +62,5 @@ Ele ainda não cobre:
 
 Para manter:
 - rode `node sentinel.mjs smoke` antes de fechar mudanças em `sentinel.mjs`, templates cobertos ou wiring das skills
-- estenda [`scripts/sentinel-smoke.mjs`](../sentinel-protocol/scripts/sentinel-smoke.mjs) com checks estruturais novos só quando houver novo source of truth ou novo root realmente possuído pelo bundle
+- estenda [`scripts/sentinel-smoke.mjs`](scripts/sentinel-smoke.mjs) com checks estruturais novos só quando houver novo source of truth ou novo root realmente possuído pelo bundle
 - evite asserts cosméticos ou snapshots grandes; priorize presença, cobertura de manifest e coerência materializada
