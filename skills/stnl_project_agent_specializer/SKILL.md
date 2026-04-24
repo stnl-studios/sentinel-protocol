@@ -359,9 +359,8 @@ O quality gate final deve validar os artifacts materializados finais contra esse
   - `closure`: `finalizer`
   - `sync`: `resync`
 - fallback legado compatível:
-  - `reasoning_default`: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `reviewer`
+  - `reasoning_default`: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `reviewer`, e `designer` quando materializado como contributor de direção UX/design
   - `coding_default`: `coder-backend`, `coder-frontend`, `coder-ios`
-  - `design_support_default`: `designer` quando materializado como suporte de direção UX on-demand ou contributor paralelo
   - `execution_default`: `validation-runner`, `finalizer`, `resync`
 - se `model_policy` indicar valor fora de `allowed_models`, a skill deve bloquear ou escolher alternativa segura explicitando isso no output
 - quando só `allowed_models` existir, preferir política conservadora: usar um modelo padrão único para o conjunto ou variar por papel apenas quando houver justificativa operacional clara
@@ -740,7 +739,10 @@ Perfis mínimos por role class:
   - base permitida: `read`, `search`
   - coders especialistas-executores normalmente adicionam `edit`, `execute`
   - coders não recebem `todo` por default; incluir só com justificativa humana explícita e auditável
-  - `designer` pode omitir `edit` e `execute`, mas continua responsável por custo local do seu boundary
+- `design-contributor`
+  - permitidas: `read`, `search`
+  - `todo` só quando houver justificativa operacional forte, explícita e auditável
+  - `designer` é contributor de direção UX/design paralelo ou on-demand conforme política local; não é executor nem coder
 - `proof-execution`
   - permitidas: `read`, `search`, `execute`
   - `todo` só quando houver justificativa operacional forte
@@ -760,7 +762,8 @@ Perfis mínimos sugeridos por papel, sempre ajustáveis por evidência:
 - `coder-backend`: `read`, `search`, `edit`, `execute`
 - `coder-frontend`: `read`, `search`, `edit`, `execute`
 - `coder-ios`: `read`, `search`, `edit`, `execute`
-- `designer`: `read`, `search`, `todo`
+- `designer`: `read`, `search`
+  - `todo` apenas quando o cut ou o workflow local exigir decomposição multi-etapa de UX/design com justificativa explícita
 - `validation-eval-designer`: `read`, `search`
 - `execution-package-designer`: `read`, `search`
 - `validation-runner`: `read`, `search`, `execute`

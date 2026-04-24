@@ -165,7 +165,7 @@ const CONTROLLED_AGENT_TOOLSETS = {
     "coder-backend.agent.md": ["read", "search", "edit", "execute"],
     "coder-frontend.agent.md": ["read", "search", "edit", "execute"],
     "coder-ios.agent.md": ["read", "search", "edit", "execute"],
-    "designer.agent.md": ["read", "search", "todo"],
+    "designer.agent.md": ["read", "search"],
 };
 
 const REQUIRED_CONTROLLED_AGENT_FILES = [
@@ -1035,6 +1035,10 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
     assert(
         !CONTROLLED_AGENT_TOOLSETS["validation-runner.agent.md"].includes("todo"),
         "validation-runner não deve receber todo por default"
+    );
+    assert(
+        !CONTROLLED_AGENT_TOOLSETS["designer.agent.md"].includes("todo"),
+        "designer não deve receber todo por default"
     );
 
     const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
