@@ -243,6 +243,8 @@ Regras operacionais:
 - naming físico:
   - `vscode`: `<agent>.agent.md`
   - `codex`: `<agent>.toml`
+- identidade operacional em `vscode`: `basename` do arquivo sem `.agent.md` == `frontmatter.name` == referência em `orchestrator.agents`
+- em `vscode`, `frontmatter.name` é ID lógico canônico operacional em kebab-case; nunca usar title-case, display label ou versão humanizada nesse campo
 - não renomear o agent para outro papel só porque o projeto é diferente
 - manter a parte fixa do protocolo, os status canônicos, o ownership dos gates e o papel central de cada base agent
 - usar `agent-contract-shape` como referência de governança do shape especializado
@@ -272,8 +274,9 @@ Regras operacionais:
 - `## Tools` só pode permanecer por ordem humana explícita e com justificativa humana clara
 - mesmo quando `## Tools` permanecer como exceção explícita, ele nunca pode ser tratado como source of truth, requisito operacional, critério de validação ou base para drift detection
 - todo specialized `vscode` materializado deve conter `name`, `description`, `target`, `tools`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
+- todo specialized `vscode` materializado deve serializar `name` a partir da mesma fonte de verdade usada para o nome físico do arquivo; exemplo: `.github/agents/planner.agent.md` deve conter `name: planner`
 - o `orchestrator` em `vscode` deve conter adicionalmente `agents`
-- `agents` no frontmatter operacional é reservado ao `orchestrator` em `vscode` e deve listar apenas subagents realmente materializados no output de agents do mesmo target
+- `agents` no frontmatter operacional é reservado ao `orchestrator` em `vscode` e deve listar apenas os `frontmatter.name` canônicos dos subagents realmente materializados no output de agents do mesmo target
 - em `codex`, `agents` não é campo obrigatório do TOML do `orchestrator`; o conjunto de subagents e o roteamento devem aparecer em `developer_instructions` e no `AGENTS.md` gerado, salvo suporte explícito do runtime para campo equivalente opcional
 - `model` na metadata operacional é suportado como string única ou lista priorizada quando houver justificativa operacional clara, política explícita, restrição por `allowed_models` e compatibilidade com o target
 - qualquer campo fora do shape mínimo do target deve ser tratado como ausente por default e removido na normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
@@ -1152,6 +1155,7 @@ Notas para os exemplos:
 - ausência de artifact parcial tratado como aceitável
 - artifacts finais normalizados no shape canônico vigente
 - `target=vscode` materializa agents em `.github/agents/*.agent.md` com `target` correto no frontmatter operacional
+- em `vscode`, para cada agent materializado, `basename` do arquivo sem `.agent.md`, `frontmatter.name` e qualquer item correspondente em `orchestrator.agents` são exatamente o mesmo ID canônico em kebab-case
 - `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description` e `developer_instructions`, e materializa `AGENTS.md` na raiz do repo alvo
 - `AGENTS.md` do target `codex` deriva do template interno `reference/templates/codex/AGENTS.md`
 - em `vscode`, `tools` presente no frontmatter operacional de todos os specializeds materializados

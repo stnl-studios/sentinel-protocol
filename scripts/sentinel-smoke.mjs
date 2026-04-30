@@ -455,6 +455,18 @@ function getControlledAgentFiles(installedSkillRoot) {
     return controlledAgents;
 }
 
+function canonicalAgentIdFromFileName(fileName) {
+    const agentId = fileName.replace(/\.agent\.md$/, "");
+
+    assert.notEqual(agentId, fileName, `Nome de arquivo de agent inválido: ${fileName}`);
+    assert(
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(agentId),
+        `ID lógico de agent deve ser kebab-case canônico: ${fileName}`
+    );
+
+    return agentId;
+}
+
 function splitFrontmatter(content, label) {
     const match = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
     assert(match, `Frontmatter YAML ausente ou inválido em ${label}`);
@@ -675,7 +687,7 @@ function materializeControlledContextDocs(skillRoot, repoRoot) {
 }
 
 function buildSpecializedFrontmatter(baseFrontmatter, fileName, controlledAgentFiles) {
-    const agentName = fileName.replace(/\.agent\.md$/, "");
+    const agentName = canonicalAgentIdFromFileName(fileName);
     const frontmatter = {
         name: agentName,
         description: baseFrontmatter.description,
@@ -693,7 +705,7 @@ function buildSpecializedFrontmatter(baseFrontmatter, fileName, controlledAgentF
     if (fileName === "orchestrator.agent.md") {
         frontmatter.agents = controlledAgentFiles
             .filter((entry) => entry !== "orchestrator.agent.md")
-            .map((entry) => entry.replace(/\.agent\.md$/, ""));
+            .map((entry) => canonicalAgentIdFromFileName(entry));
     }
 
     return frontmatter;
@@ -806,10 +818,10 @@ function renderCodexAgentsIndex(template, agentNames) {
 }
 
 function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles) {
-    const agentNames = controlledAgentFiles.map((fileName) => fileName.replace(/\.agent\.md$/, ""));
+    const agentNames = controlledAgentFiles.map((fileName) => canonicalAgentIdFromFileName(fileName));
 
     for (const fileName of controlledAgentFiles) {
-        const agentName = fileName.replace(/\.agent\.md$/, "");
+        const agentName = canonicalAgentIdFromFileName(fileName);
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
@@ -858,16 +870,75 @@ function assertControlledReferenceDocs(skillRoot) {
     }
 }
 
+function assertVscodeOperationalIdentity(materializedAgentRecords) {
+    const frontmatterNames = new Set(materializedAgentRecords.map(({ frontmatter }) => frontmatter.name));
+    const orchestratorRecord = materializedAgentRecords.find(({ agentId }) => agentId === "orchestrator");
+
+    assert(orchestratorRecord, "orchestrator materializado ausente da validação de identidade operacional");
+
+    for (const { agentId, fileName, frontmatter, materializedPath } of materializedAgentRecords) {
+        assert.equal(
+            frontmatter.name,
+            agentId,
+            `Identidade operacional inválida em ${materializedPath}: frontmatter.name deve ser exatamente ${agentId}, sem display name humanizado`
+        );
+        assert(
+            /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(frontmatter.name),
+            `frontmatter.name humanizado ou fora de kebab-case no agent ${fileName}: ${frontmatter.name}`
+        );
+    }
+
+    assert(Array.isArray(orchestratorRecord.frontmatter.agents), "orchestrator.agents deve ser lista em vscode");
+
+    if (orchestratorRecord.frontmatter.agents.length > 0) {
+        assert(
+            orchestratorRecord.frontmatter.tools.includes("agent"),
+            "orchestrator com agents deve incluir a tool agent"
+        );
+    }
+
+    for (const referencedAgent of orchestratorRecord.frontmatter.agents) {
+        assert(
+            frontmatterNames.has(referencedAgent),
+            `orchestrator.agents referencia agent sem frontmatter.name materializado correspondente: ${referencedAgent}`
+        );
+    }
+}
+
+function collectVscodeOperationalIdentityRecords(repoRoot, agentFiles) {
+    return agentFiles.map((fileName) => {
+        const agentId = canonicalAgentIdFromFileName(fileName);
+        const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
+        const content = fs.readFileSync(materializedPath, "utf8");
+        const { data: frontmatter } = parseFrontmatter(content, materializedPath);
+
+        return {
+            agentId,
+            fileName,
+            frontmatter,
+            materializedPath,
+        };
+    });
+}
+
 function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAgentFiles) {
-    const materializedAgentNames = controlledAgentFiles.map((entry) => entry.replace(/\.agent\.md$/, ""));
+    const materializedAgentNames = controlledAgentFiles.map((entry) => canonicalAgentIdFromFileName(entry));
+    const materializedAgentRecords = [];
 
     for (const fileName of controlledAgentFiles) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
+        const agentId = canonicalAgentIdFromFileName(fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const materializedContent = assertFileHasRequiredShape(materializedPath, REQUIRED_AGENT_BODY_SNIPPETS);
         const { data: sourceFrontmatter } = parseFrontmatter(sourceContent, sourcePath);
         const { data: materializedFrontmatter } = parseFrontmatter(materializedContent, materializedPath);
+        materializedAgentRecords.push({
+            agentId,
+            fileName,
+            frontmatter: materializedFrontmatter,
+            materializedPath,
+        });
 
         assert(materializedFrontmatter.name, `Agent especializado sem name: ${materializedPath}`);
         assert(materializedFrontmatter.description, `Agent especializado sem description: ${materializedPath}`);
@@ -942,6 +1013,8 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
             `Frontmatter especializado contém campos não canônicos: ${materializedPath} -> ${unexpectedKeys.join(", ")}`
         );
     }
+
+    assertVscodeOperationalIdentity(materializedAgentRecords);
 }
 
 function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgentFiles) {
@@ -1197,7 +1270,7 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
 
 function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
     for (const fileName of controlledAgentFiles) {
-        const agentName = fileName.replace(/\.agent\.md$/, "");
+        const agentName = canonicalAgentIdFromFileName(fileName);
         const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
         const parsed = parseToml(content, `${agentName}.toml`);
         const instructions = parsed.developer_instructions;
@@ -1270,6 +1343,9 @@ function assertBackendOnlySpecializedMaterialization(repoRoot) {
         );
     }
 
+    assertVscodeOperationalIdentity(
+        collectVscodeOperationalIdentityRecords(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES)
+    );
     assertProtocolHardeningInMaterializedAgents(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES);
 }
 
@@ -1293,7 +1369,7 @@ function assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(skill
 function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFiles) {
     const codexAgentsRoot = path.join(repoRoot, ".codex", "agents");
     const expectedAgentNames = controlledAgentFiles
-        .map((entry) => entry.replace(/\.agent\.md$/, ""))
+        .map((entry) => canonicalAgentIdFromFileName(entry))
         .sort();
     const materializedTomls = listRelativeFiles(codexAgentsRoot).filter((entry) => entry.endsWith(".toml"));
     const materializedAgentNames = materializedTomls
@@ -1329,7 +1405,7 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
 function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
     const agentsIndexPath = path.join(repoRoot, "AGENTS.md");
     const expectedAgentNames = controlledAgentFiles
-        .map((entry) => entry.replace(/\.agent\.md$/, ""))
+        .map((entry) => canonicalAgentIdFromFileName(entry))
         .sort();
     const content = assertFileHasRequiredShape(agentsIndexPath, [
         `# ${SMOKE_FIXTURE_REPO_NAME} Agents`,
