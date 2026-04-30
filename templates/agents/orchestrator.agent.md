@@ -1,5 +1,5 @@
 ---
-name: Orchestrator
+name: orchestrator
 description: Coordinates the round as a lightweight router, applies canonical gates, selects the next owner, and enforces valid handoffs without implementing.
 agent_version: 2026.4
 reading_scope_class: routing-minimal

@@ -1,5 +1,5 @@
 ---
-name: Resync
+name: resync
 description: Synchronizes narrowly-scoped factual impact outside the feature when the finalizer identifies stale shared memory that must be corrected.
 agent_version: 2026.4
 reading_scope_class: targeted-local

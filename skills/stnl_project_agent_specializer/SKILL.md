@@ -239,12 +239,13 @@ Regras operacionais:
 - output canônico depende de `target`
 - `vscode`: output de agents em `.github/agents/*.agent.md`
 - `codex`: output de agents em `.codex/agents/*.toml` e output complementar em `AGENTS.md`
-- naming lógico: preservar o nome dos base agents correspondentes em qualquer target
+- naming lógico: preservar o ID canônico do base agent, derivado do basename físico do arquivo, nunca o display label nem nome humanizado
 - naming físico:
   - `vscode`: `<agent>.agent.md`
   - `codex`: `<agent>.toml`
 - identidade operacional em `vscode`: `basename` do arquivo sem `.agent.md` == `frontmatter.name` == referência em `orchestrator.agents`
 - em `vscode`, `frontmatter.name` é ID lógico canônico operacional em kebab-case; nunca usar title-case, display label ou versão humanizada nesse campo
+- nos templates fonte `templates/agents/*.agent.md` e no bundle instalado `reference/agents/*.agent.md`, `frontmatter.name` também deve ser exatamente o basename sem `.agent.md`; labels humanos pertencem somente ao heading Markdown, descrição ou corpo
 - não renomear o agent para outro papel só porque o projeto é diferente
 - manter a parte fixa do protocolo, os status canônicos, o ownership dos gates e o papel central de cada base agent
 - usar `agent-contract-shape` como referência de governança do shape especializado

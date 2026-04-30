@@ -400,6 +400,11 @@ function assertInstalledArtifactsMatchSources(targetHome) {
                 }
             }
         }
+
+        assertAgentFrontmatterNamesMatchBasenames(
+            path.join(target, "stnl_project_agent_specializer", "reference", "agents"),
+            "stnl_project_agent_specializer/reference/agents instalado"
+        );
     }
 }
 
@@ -465,6 +470,35 @@ function canonicalAgentIdFromFileName(fileName) {
     );
 
     return agentId;
+}
+
+function assertAgentFrontmatterNamesMatchBasenames(agentsRoot, label) {
+    assert(fs.existsSync(agentsRoot), `Diretório de agents ausente para validação de identidade: ${agentsRoot}`);
+
+    const agentFiles = listRelativeFiles(agentsRoot).filter((relativePath) => relativePath.endsWith(".agent.md"));
+    assert(agentFiles.length > 0, `Nenhum agent encontrado para validação de identidade em ${agentsRoot}`);
+
+    for (const fileName of agentFiles) {
+        assert.equal(
+            path.basename(fileName),
+            fileName,
+            `Agent aninhado inesperado em ${label}: ${fileName}`
+        );
+
+        const agentId = canonicalAgentIdFromFileName(fileName);
+        const agentPath = path.join(agentsRoot, fileName);
+        const { data: frontmatter } = parseFrontmatter(fs.readFileSync(agentPath, "utf8"), agentPath);
+
+        assert.equal(
+            frontmatter.name,
+            agentId,
+            `${label}/${fileName} tem frontmatter.name inválido: esperado ${agentId}; recebido ${frontmatter.name}. O campo name deve ser o ID canônico em kebab-case, nunca display name humanizado.`
+        );
+        assert(
+            /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(frontmatter.name),
+            `${label}/${fileName} tem frontmatter.name humanizado ou fora de kebab-case: ${frontmatter.name}`
+        );
+    }
 }
 
 function splitFrontmatter(content, label) {
@@ -875,6 +909,11 @@ function assertVscodeOperationalIdentity(materializedAgentRecords) {
     const orchestratorRecord = materializedAgentRecords.find(({ agentId }) => agentId === "orchestrator");
 
     assert(orchestratorRecord, "orchestrator materializado ausente da validação de identidade operacional");
+    assert.equal(
+        frontmatterNames.size,
+        materializedAgentRecords.length,
+        "Identidade operacional duplicada em agents materializados vscode"
+    );
 
     for (const { agentId, fileName, frontmatter, materializedPath } of materializedAgentRecords) {
         assert.equal(
@@ -898,6 +937,15 @@ function assertVscodeOperationalIdentity(materializedAgentRecords) {
     }
 
     for (const referencedAgent of orchestratorRecord.frontmatter.agents) {
+        assert(
+            /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(referencedAgent),
+            `orchestrator.agents contém referência humanizada ou fora de kebab-case: ${referencedAgent}`
+        );
+        assert.notEqual(
+            referencedAgent,
+            "orchestrator",
+            "orchestrator.agents não deve referenciar o próprio orchestrator"
+        );
         assert(
             frontmatterNames.has(referencedAgent),
             `orchestrator.agents referencia agent sem frontmatter.name materializado correspondente: ${referencedAgent}`
@@ -1491,6 +1539,10 @@ async function runSentinelSmoke() {
     assertRequiredBundleCoverage();
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();
+    assertAgentFrontmatterNamesMatchBasenames(
+        path.join(ROOT, "templates", "agents"),
+        "templates/agents"
+    );
     assertNoOperationalArtifactsInSentinelRoot();
 
     console.log("Smoke Sentinel: init/update/doctor em HOME temporário");

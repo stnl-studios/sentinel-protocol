@@ -1,5 +1,5 @@
 ---
-name: Coder Back-End
+name: coder-backend
 description: Executes the authorized server-side work package with correctness, safety, contract awareness, and honest technical evidence.
 agent_version: 2026.4
 reading_scope_class: targeted-local

@@ -1,5 +1,5 @@
 ---
-name: Planner
+name: planner
 description: Turns an approved request into a small, honest, validation-aware EXECUTION BRIEF without becoming a discovery or implementation agent.
 agent_version: 2026.4
 reading_scope_class: bounded-context
