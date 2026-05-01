@@ -224,12 +224,22 @@ Exemplos curtos de fronteira:
 
 ## Template canônico e templates auxiliares
 - `reference/templates/feature_spec.md` define o shape canônico obrigatório e durável da SPEC persistida
-- os demais arquivos em `reference/templates/*` definem o restante do bundle canônico obrigatório em criação nova ou fork legítimo e shapes condicionais quando aplicável
+- os demais templates listados em `reference/MANIFEST.md` definem o restante do bundle canônico obrigatório em criação nova ou fork legítimo e shapes condicionais quando aplicável
 - não tratar template como sugestão frouxa e não produzir versões simplificadas, ad hoc ou colapsadas do artefato canônico
 - preservar headings, campos e blocos de governança de `feature_spec.md` mesmo quando o conteúdo ainda estiver parcial
 - quando algo ainda não estiver confirmado, registrar `none`, `pending`, condição explícita ou nota curta de lacuna; não remover a seção nem inventar certeza
 - quando um artefato auxiliar for usado, manter o shape do template correspondente
 - a saída operacional pode ser curta; o bundle persistido obrigatório em criação nova ou fork legítimo inclui todos os arquivos canônicos listados acima
+
+Contrato obrigatório do bundle interno:
+- antes de ler qualquer template interno da SPEC, ler primeiro `reference/MANIFEST.md`
+- usar somente os paths explícitos listados em `reference/MANIFEST.md` e necessários para a rodada
+- não descobrir templates internos por busca ampla, regex, glob, inspeção de árvore ou scan textual
+- não usar fallback em `templates/**`, `skills/**`, `~/.agents/**`, filesystem externo ou qualquer cópia fora do bundle instalado da própria skill
+- se `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
+- se qualquer arquivo obrigatório listado em `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
+- o bloqueio deve reportar a skill `stnl_spec_manager`, o arquivo ausente e a ação sugerida: `node sentinel.mjs update` e `node sentinel.mjs doctor`
+- nunca reconstruir, adivinhar, simplificar ou procurar substituto para template interno ausente
 
 ## Estados de maturidade
 Estados obrigatórios:
@@ -333,7 +343,7 @@ Perguntas ruins:
 2. classificar explicitamente a lineage como `correlated`, `resumed`, `forked` ou `superseded` antes de tocar qualquer SPEC existente
 3. quando houver recorte com itens concretos, fazer discovery factual mínimo item a item para reduzir perguntas abstratas e registrar a matriz factual curta
 4. decidir a localização canônica da SPEC sem chutar ownership de feature
-5. atualizar `feature_spec.md` com classificação factual explícita e manter o bundle canônico coerente; em criação nova ou fork legítimo, materializar obrigatoriamente todos os arquivos do bundle
+5. ler primeiro `reference/MANIFEST.md`, carregar apenas os templates listados nele que forem necessários, atualizar `feature_spec.md` com classificação factual explícita e manter o bundle canônico coerente; em criação nova ou fork legítimo, materializar obrigatoriamente todos os arquivos do bundle
 6. quando existir ou for útil, recalcular maturidade em `readiness_report.md` com aderência ao gate canônico, peso real de `classification_strength` e condicionalidades explícitas, sem transferir para ele o papel de referência final
 7. quando fizer sentido para retomada, registrar delta append-only em `session_summary.md`
 8. perguntar apenas o mínimo necessário, até 5 perguntas, ou parar com status operacional honesto e blockers explícitos

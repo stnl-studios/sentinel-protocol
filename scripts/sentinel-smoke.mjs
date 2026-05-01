@@ -10,10 +10,12 @@ import {
     SOURCE_DIR,
     SKILL_BUNDLE_MANIFESTS,
     SKILL_INSTALL_MANIFESTS,
+    getExpectedReferenceManifestEntries,
     getTargets,
     inspectTarget,
     isIgnoredEntry,
     listSkillFolders,
+    parseReferenceManifest,
 } from "../sentinel.mjs";
 
 const REQUIRED_BUNDLE_PATHS = [
@@ -326,9 +328,43 @@ function assertInstallManifests() {
         assert(installManifest, `Install manifest ausente para ${skillName}`);
         assert.deepEqual(
             installManifest,
-            ["SKILL.md", "openai.yaml"],
+            ["SKILL.md", "openai.yaml", path.join("reference", "MANIFEST.md")],
             `Install manifest inesperado para ${skillName}`
         );
+    }
+}
+
+function assertReferenceManifests() {
+    for (const [skillName, bundles] of Object.entries(SKILL_BUNDLE_MANIFESTS)) {
+        assert(bundles.length > 0, `Skill sem bundle inesperada no manifesto de bundles: ${skillName}`);
+
+        const manifestPath = path.join(SOURCE_DIR, skillName, "reference", "MANIFEST.md");
+        assert(fs.existsSync(manifestPath), `reference/MANIFEST.md ausente para ${skillName}`);
+
+        const entries = parseReferenceManifest(fs.readFileSync(manifestPath, "utf8"), manifestPath);
+        const expectedEntries = getExpectedReferenceManifestEntries(skillName);
+
+        assert.deepEqual(
+            entries,
+            expectedEntries,
+            `reference/MANIFEST.md diverge do bundle declarado para ${skillName}`
+        );
+
+        for (const entry of entries) {
+            assert(!entry.includes("*"), `Manifest ${skillName} contem glob proibido: ${entry}`);
+        }
+
+        const skillContent = fs.readFileSync(path.join(SOURCE_DIR, skillName, "SKILL.md"), "utf8");
+        assertContentIncludesAll(skillContent, [
+            "reference/MANIFEST.md",
+            "BLOCKED_REFERENCE_BUNDLE_MISSING",
+            "busca ampla",
+            "glob",
+            "templates/**",
+            "skills/**",
+            "~/.agents/**",
+            "filesystem externo",
+        ], `${skillName}/SKILL.md`);
     }
 }
 
@@ -371,6 +407,17 @@ function assertInstalledArtifactsMatchSources(targetHome) {
                 assert(
                     bundleReport.prepared,
                     `Bundle incompleto em ${target}/${skillReport.name}/${bundleReport.targetRoot}: ${bundleReport.missingFiles.join(", ")}`
+                );
+            }
+
+            if (skillReport.bundleReports.length > 0) {
+                assert(
+                    skillReport.referenceManifestReport?.consistent,
+                    `reference/MANIFEST.md inconsistente em ${target}/${skillReport.name}`
+                );
+                assert(
+                    skillReport.referenceManifestReport?.prepared,
+                    `reference/MANIFEST.md aponta arquivos ausentes em ${target}/${skillReport.name}: ${skillReport.referenceManifestReport?.missingFiles.join(", ")}`
                 );
             }
         }
@@ -423,6 +470,7 @@ function assertDoctorOutput(output) {
         "bundle: stnl_project_agent_specializer/reference/docs OK",
         "bundle: stnl_project_agent_specializer/reference/templates OK",
         "bundle: stnl_project_context/reference/docs OK",
+        "reference manifest: reference/MANIFEST.md OK",
     ]) {
         assert(
             output.includes(requiredLine),
@@ -1536,6 +1584,7 @@ function runControlledMaterializationSmoke(targetHome) {
 async function runSentinelSmoke() {
     console.log("Smoke Sentinel: manifests canônicos");
     assertInstallManifests();
+    assertReferenceManifests();
     assertRequiredBundleCoverage();
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();

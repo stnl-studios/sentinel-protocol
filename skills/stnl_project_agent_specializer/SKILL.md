@@ -129,13 +129,21 @@ Regras:
 - `execution-lifecycle`
 - `status-gates`
 
-Quando disponíveis no ambiente instalado da skill, preferir estas referências locais:
-- `reference/agents/*.agent.md`
-- `reference/templates/codex/AGENTS.md`
-- `reference/docs/agents/AGENT-CONTRACT-SHAPE.md`
-- `reference/docs/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`
-- `reference/docs/workflow/EXECUTION-LIFECYCLE.md`
-- `reference/docs/workflow/STATUS-GATES.md`
+Contrato obrigatório do bundle interno:
+- antes de ler qualquer base agent, template ou contrato interno da skill, ler primeiro `reference/MANIFEST.md`
+- usar somente os paths explícitos listados em `reference/MANIFEST.md` e necessários para a rodada
+- não descobrir base agents, templates ou contratos internos por busca ampla, regex, glob, inspeção de árvore ou scan textual
+- não usar fallback em `templates/**`, `skills/**`, `~/.agents/**`, filesystem externo ou qualquer cópia fora do bundle instalado da própria skill
+- se `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
+- se qualquer arquivo obrigatório listado em `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
+- o bloqueio deve reportar a skill `stnl_project_agent_specializer`, o arquivo ausente e a ação sugerida: `node sentinel.mjs update` e `node sentinel.mjs doctor`
+- nunca reconstruir, adivinhar, simplificar ou procurar substituto para base agent, template ou contrato interno ausente
+
+Referências internas esperadas devem vir do manifest instalado, incluindo:
+- base agents canônicos em `reference/agents/`
+- template Codex em `reference/templates/codex/AGENTS.md`
+- contratos de agent em `reference/docs/agents/`
+- contratos de workflow em `reference/docs/workflow/`
 
 ## Contrato de `target`
 `target` define o runtime operacional para o qual a skill vai materializar artifacts no repo alvo.
@@ -379,7 +387,7 @@ O quality gate final deve validar os artifacts materializados finais contra esse
 3. Fazer discovery sério de `docs/**`, com prioridade para `docs/INDEX.md`, `docs/core/*`, `docs/TBDS.md` quando existir, e os `units` ou `features` relevantes.
 4. Construir o modelo factual intermediário normalizado, classificando claims, escopo, evidência e agents impactados.
 5. Classificar cada agent canônico em sua role class e carregar os invariantes obrigatórios dessa classe antes de gerar qualquer specialized.
-6. Ler os templates/base agents canônicos, o template `reference/templates/codex/AGENTS.md` quando `target=codex`, e as referências `agent-contract-shape`, `agent-specialization-quality-gate`, `execution-lifecycle` e `status-gates`.
+6. Ler primeiro `reference/MANIFEST.md`; depois ler apenas os templates/base agents canônicos, o template `reference/templates/codex/AGENTS.md` quando `target=codex`, e as referências `agent-contract-shape`, `agent-specialization-quality-gate`, `execution-lifecycle` e `status-gates` que estiverem listados no manifest e forem necessários para a rodada.
 7. Revisar o output atual do `target`, classificando cada artifact local como:
    - `managed and current`
    - `managed but drifted`

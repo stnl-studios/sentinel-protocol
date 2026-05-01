@@ -36,6 +36,16 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - usar o kit documental canônico disponível no ambiente apenas como apoio de materialização
 - ignorar `docs/workflow/*`
 
+## Contrato obrigatório do bundle interno
+- antes de ler qualquer template documental interno da skill, ler primeiro `reference/MANIFEST.md`
+- usar somente os paths explícitos listados em `reference/MANIFEST.md` e necessários para a rodada
+- não descobrir templates internos por busca ampla, regex, glob, inspeção de árvore ou scan textual
+- não usar fallback em `templates/**`, `skills/**`, `~/.agents/**`, filesystem externo ou qualquer cópia fora do bundle instalado da própria skill
+- se `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
+- se qualquer arquivo obrigatório listado em `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
+- o bloqueio deve reportar a skill `stnl_project_context`, o arquivo ausente e a ação sugerida: `node sentinel.mjs update` e `node sentinel.mjs doctor`
+- nunca reconstruir, adivinhar, simplificar ou procurar substituto para template interno ausente
+
 ## Modelo documental alvo
 - `CONTEXT`: base factual do projeto ou recorte; domínio, superfícies, integrações relevantes, linguagem e lacunas observáveis
 - `RULES`: regras ativas do projeto em estrutura simples; separar regras confirmadas de seeds e priorizar bullets operacionais por camada ou superfície
@@ -340,15 +350,16 @@ Regras de decisão para `BOOTSTRAP`:
 Ordem operacional:
 1. ler a raiz do projeto e o `docs/` já existente
 2. classificar stack, superfícies e `repo shape`
-3. materializar primeiro `docs/core/*`
-4. materializar `docs/TBDS.md` como consolidado canônico das lacunas relevantes
-5. materializar `docs/INDEX.md` como navegação simples da base documental criada
-6. decidir se existe evidência suficiente para materializar `units` além do `core`
-7. se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `units`
-8. abrir `units` apenas quando houver especialização factual útil evidenciada
-9. fazer feature discovery inicial por evidência, com até 3 tentativas internas de discovery
-10. abrir até 3 features canônicas de alta confiança
-11. encerrar com saída verificável de criados, `SKIPPED`, `TBD` e candidatas não abertas quando isso for útil
+3. ler primeiro `reference/MANIFEST.md` e carregar apenas os templates listados nele que forem necessários
+4. materializar primeiro `docs/core/*`
+5. materializar `docs/TBDS.md` como consolidado canônico das lacunas relevantes
+6. materializar `docs/INDEX.md` como navegação simples da base documental criada
+7. decidir se existe evidência suficiente para materializar `units` além do `core`
+8. se `repo shape = single-unit` e não houver especialização útil clara, seguir sem abrir `units`
+9. abrir `units` apenas quando houver especialização factual útil evidenciada
+10. fazer feature discovery inicial por evidência, com até 3 tentativas internas de discovery
+11. abrir até 3 features canônicas de alta confiança
+12. encerrar com saída verificável de criados, `SKIPPED`, `TBD` e candidatas não abertas quando isso for útil
 
 ## Regras de propagação controlada no `RESYNC`
 `RESYNC` é o modo de atualização localizada.

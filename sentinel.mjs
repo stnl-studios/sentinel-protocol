@@ -136,20 +136,27 @@ const SKILL_INSTALL_MANIFESTS = {
     stnl_project_foundation: [
         "SKILL.md",
         "openai.yaml",
+        path.join("reference", "MANIFEST.md"),
     ],
     stnl_project_context: [
         "SKILL.md",
         "openai.yaml",
+        path.join("reference", "MANIFEST.md"),
     ],
     stnl_project_agent_specializer: [
         "SKILL.md",
         "openai.yaml",
+        path.join("reference", "MANIFEST.md"),
     ],
     stnl_spec_manager: [
         "SKILL.md",
         "openai.yaml",
+        path.join("reference", "MANIFEST.md"),
     ],
 };
+
+const REFERENCE_MANIFEST_PATH = path.join("reference", "MANIFEST.md");
+const REFERENCE_MANIFEST_GLOB_PATTERN = /[*?[\]{}]/;
 
 function exists(targetPath) {
     return fs.existsSync(targetPath);
@@ -222,6 +229,94 @@ function getSkillBundles(skillName) {
 
 function getSkillInstallManifest(skillName) {
     return SKILL_INSTALL_MANIFESTS[skillName] ?? null;
+}
+
+function toManifestPath(relativePath) {
+    return relativePath.split(path.sep).join("/");
+}
+
+function parseReferenceManifest(content, manifestPath) {
+    const entries = [];
+
+    for (const line of content.split(/\r?\n/)) {
+        const match = line.match(/^\s*-\s+`([^`]+)`\s*$/);
+        if (!match) {
+            continue;
+        }
+
+        const entry = match[1].trim();
+
+        if (!entry.startsWith("reference/")) {
+            throw new Error(`Manifest de referência inválido em ${manifestPath}: path fora de reference/**: ${entry}`);
+        }
+
+        if (path.isAbsolute(entry) || entry.includes("..")) {
+            throw new Error(`Manifest de referência inválido em ${manifestPath}: path não permitido: ${entry}`);
+        }
+
+        if (REFERENCE_MANIFEST_GLOB_PATTERN.test(entry)) {
+            throw new Error(`Manifest de referência inválido em ${manifestPath}: glob proibido: ${entry}`);
+        }
+
+        entries.push(entry);
+    }
+
+    const duplicates = entries.filter((entry, index) => entries.indexOf(entry) !== index);
+    if (duplicates.length > 0) {
+        throw new Error(`Manifest de referência inválido em ${manifestPath}: entradas duplicadas: ${[...new Set(duplicates)].join(", ")}`);
+    }
+
+    if (entries.length === 0) {
+        throw new Error(`Manifest de referência inválido em ${manifestPath}: nenhuma entrada de reference/** listada.`);
+    }
+
+    return entries.sort();
+}
+
+function readReferenceManifest(manifestPath) {
+    if (!exists(manifestPath)) {
+        throw new Error(`Manifest de referência ausente: ${manifestPath}`);
+    }
+
+    return parseReferenceManifest(fs.readFileSync(manifestPath, "utf8"), manifestPath);
+}
+
+function getExpectedReferenceManifestEntries(skillName) {
+    return getSkillBundles(skillName)
+        .flatMap((bundle) => bundle.files.map((relativePath) => (
+            toManifestPath(path.join(bundle.targetRoot, relativePath))
+        )))
+        .sort();
+}
+
+function validateReferenceManifestConsistency(skillName, skillRoot, options = {}) {
+    const { checkFiles = true } = options;
+    const manifestPath = path.join(skillRoot, REFERENCE_MANIFEST_PATH);
+    const actual = readReferenceManifest(manifestPath);
+    const expected = getExpectedReferenceManifestEntries(skillName);
+
+    const missing = expected.filter((entry) => !actual.includes(entry));
+    const extra = actual.filter((entry) => !expected.includes(entry));
+
+    if (missing.length > 0 || extra.length > 0) {
+        throw new Error([
+            `Manifest de referência inconsistente para ${skillName}: ${manifestPath}`,
+            missing.length > 0 ? `faltando: ${missing.join(", ")}` : "",
+            extra.length > 0 ? `extra: ${extra.join(", ")}` : "",
+        ].filter(Boolean).join("\n"));
+    }
+
+    const missingFiles = checkFiles
+        ? actual.filter((entry) => !exists(path.join(skillRoot, entry)))
+        : [];
+
+    return {
+        manifestPath,
+        entries: actual,
+        consistent: true,
+        prepared: missingFiles.length === 0,
+        missingFiles,
+    };
 }
 
 function prepareSkillBundles(skillName, installedSkillDir) {
@@ -342,6 +437,21 @@ function inspectTarget(target, skills) {
             }
         }
 
+        let referenceManifestReport = null;
+        if (skillExists && bundleSpecs.length > 0) {
+            try {
+                referenceManifestReport = validateReferenceManifestConsistency(skill, installedSkillDir);
+            } catch (error) {
+                referenceManifestReport = {
+                    manifestPath: path.join(installedSkillDir, REFERENCE_MANIFEST_PATH),
+                    entries: [],
+                    consistent: false,
+                    prepared: false,
+                    missingFiles: [error.message],
+                };
+            }
+        }
+
         report.skills.push({
             name: skill,
             exists: skillExists,
@@ -350,6 +460,7 @@ function inspectTarget(target, skills) {
             installPrepared: !installManifest || (skillExists && missingInstallFiles.length === 0),
             missingInstallFiles,
             bundleReports,
+            referenceManifestReport,
         });
     }
 
@@ -367,6 +478,26 @@ function runDoctor() {
 
     for (const skill of skills) {
         console.log(`- ${skill}`);
+    }
+
+    console.log("");
+
+    for (const skill of skills) {
+        const sourceSkillDir = path.join(SOURCE_DIR, skill);
+        const bundleSpecs = getSkillBundles(skill);
+
+        if (bundleSpecs.length === 0) {
+            continue;
+        }
+
+        try {
+            validateReferenceManifestConsistency(skill, sourceSkillDir, { checkFiles: false });
+            console.log(`Source manifest: ${skill}/${REFERENCE_MANIFEST_PATH} OK`);
+        } catch (error) {
+            hasIssue = true;
+            console.log(`Source manifest: ${skill}/${REFERENCE_MANIFEST_PATH} MISSING`);
+            console.log(`  missing: ${error.message}`);
+        }
     }
 
     console.log("");
@@ -409,6 +540,19 @@ function runDoctor() {
                 if (bundleReport.missingFiles.length > 0) {
                     hasIssue = true;
                     console.log(`  missing: ${bundleReport.missingFiles.join(", ")}`);
+                }
+            }
+
+            if (skillReport.referenceManifestReport) {
+                const manifestReport = skillReport.referenceManifestReport;
+                console.log(
+                    `  reference manifest: ${path.relative(path.join(report.target, skillReport.name), manifestReport.manifestPath)} ${manifestReport.consistent && manifestReport.prepared ? "OK" : "MISSING"}`
+                );
+                console.log(`  reference manifest paths: ${manifestReport.entries.join(", ")}`);
+
+                if (!manifestReport.consistent || !manifestReport.prepared) {
+                    hasIssue = true;
+                    console.log(`  missing reference manifest files: ${manifestReport.missingFiles.join(", ")}`);
                 }
             }
         }
@@ -482,11 +626,14 @@ export {
     exists,
     getSkillBundles,
     getSkillInstallManifest,
+    getExpectedReferenceManifestEntries,
     getTargets,
     inspectTarget,
     isIgnoredEntry,
     listSkillFolders,
     main,
+    parseReferenceManifest,
     runDoctor,
     installSkills,
+    validateReferenceManifestConsistency,
 };

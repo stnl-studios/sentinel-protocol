@@ -65,6 +65,16 @@ Esta skill prepara `docs/**` no padrao Sentinel para consumo posterior por human
 - `docs/decisions/INDEX.md` e `docs/decisions/ADR-*.md` apenas para decisoes duraveis e transversais
 - `docs/reference/*` apenas com evidencia concreta e valor de consulta real
 
+## Contrato obrigatorio do bundle interno
+- antes de ler qualquer template documental interno da skill, ler primeiro `reference/MANIFEST.md`
+- usar somente os paths explicitos listados em `reference/MANIFEST.md` e necessarios para a rodada
+- nao descobrir templates internos por busca ampla, regex, glob, inspecao de arvore ou scan textual
+- nao usar fallback em `templates/**`, `skills/**`, `~/.agents/**`, filesystem externo ou qualquer copia fora do bundle instalado da propria skill
+- se `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
+- se qualquer arquivo obrigatorio listado em `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
+- o bloqueio deve reportar a skill `stnl_project_foundation`, o arquivo ausente e a acao sugerida: `node sentinel.mjs update` e `node sentinel.mjs doctor`
+- nunca reconstruir, adivinhar, simplificar ou procurar substituto para template interno ausente
+
 ## Classes de proveniencia e confianca
 Toda afirmacao material em `docs/**` deve caber em uma classe explicita:
 
@@ -275,10 +285,11 @@ Ordem operacional:
 3. identificar problema, motivacao, stack declarada, contratos e boundaries globais
 4. decidir features candidatas a partir de capabilities, jornadas e recortes funcionais
 5. decidir se ha units estruturais claras; por default nao ha
-6. materializar `docs/core/*`, `docs/TBDS.md` e `docs/INDEX.md`
-7. materializar `docs/features/*` para candidatas fortes
-8. materializar `docs/units/*`, `docs/decisions/*` e `docs/reference/*` apenas quando as regras acima sustentarem
-9. encerrar com output auditavel de docs criadas, alteradas, skipped, features, units, TBDs e limites
+6. ler primeiro `reference/MANIFEST.md` e carregar apenas os templates listados nele que forem necessarios
+7. materializar `docs/core/*`, `docs/TBDS.md` e `docs/INDEX.md`
+8. materializar `docs/features/*` para candidatas fortes
+9. materializar `docs/units/*`, `docs/decisions/*` e `docs/reference/*` apenas quando as regras acima sustentarem
+10. encerrar com output auditavel de docs criadas, alteradas, skipped, features, units, TBDs e limites
 
 ### `MODE=REFINE`
 Refino incremental apos chegada de novas docs, decisoes, contratos ou conflitos.
