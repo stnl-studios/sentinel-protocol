@@ -298,8 +298,8 @@ Hard fails:
 ### 14. Model-policy compatibility check
 Verificar:
 - `model_policy` aceita configuracao nova por agent ou por papel fino
-- precedencia esta explicita: `model_policy.agents[agent]` primeiro, depois `model_policy.roles[role]`, depois defaults legados
-- defaults legados `reasoning_default`, `coding_default` e `execution_default` continuam aceitos
+- precedencia esta explicita: `model_policy.agents[agent]` primeiro, depois `model_policy.roles[role]`, depois defaults de compatibilidade
+- defaults de compatibilidade `reasoning_default`, `coding_default` e `execution_default` continuam aceitos
 - policy nova permite modelos fortes para `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer` e `reviewer`
 - policy nova permite modelos mais baratos para `coder-backend`, `coder-frontend` e `coder-ios`
 - `validation-runner` e `finalizer` podem ficar em faixa intermediaria ou explicitamente definidos
@@ -307,7 +307,7 @@ Verificar:
 
 Hard fails:
 - model policy nova sem fallback compativel com `reasoning_default`, `coding_default` e `execution_default`
-- precedencia ambigua entre configuracao por agent, por role e defaults legados
+- precedencia ambigua entre configuracao por agent, por role e defaults de compatibilidade
 
 ### 15. Factual fidelity check
 Verificar:

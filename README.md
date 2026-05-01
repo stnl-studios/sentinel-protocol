@@ -8,11 +8,7 @@ Este repositório entrou em uma nova fase focada em:
 - estruturação de templates e overlays
 - rastreabilidade arquitetural da evolução
 
-## Legado
-A implementação anterior do Sentinel foi preservada em `LEGACY/`.
-
 ## Foco atual
-O foco atual não é evoluir o pipeline legado.
 O foco é construir a base do novo ecossistema.
 
 ## Papel do Sentinel

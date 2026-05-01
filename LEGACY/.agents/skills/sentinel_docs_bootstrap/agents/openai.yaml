@@ -1,9 +1,0 @@
-interface:
-  name: "sentinel_docs_bootstrap"
-  display_name: "Sentinel Docs Bootstrap"
-  version: "2026.3.1"
-  protocol_release: "2026.3"
-  status: "active"
-  short_description: "Bootstrap de documentação (create only) para projeto existente com discovery e heurísticas por stack. Não toca em PLAN.md."
-policy:
-  allow_implicit_invocation: true

@@ -42,7 +42,7 @@ Esta skill é um utilitário global. Ela não é um agent do workflow do projeto
 - a codebase do repo alvo apenas quando os docs precisarem de confirmação, complemento ou desempate factual
 - manifests de stack, scripts, testes, configs e entrypoints reais quando forem necessários para especializar comandos, provas, boundaries ou superfícies
 - `allowed_models` opcional quando o uso da skill quiser restringir a escolha de `model` dos agents especializados
-- `model_policy` opcional para governar a preferência de `model` por agent, role fina ou defaults legados compatíveis:
+- `model_policy` opcional para governar a preferência de `model` por agent, role fina ou defaults de compatibilidade:
   - `reasoning_default`
   - `coding_default`
   - `execution_default`
@@ -357,7 +357,7 @@ O quality gate final deve validar os artifacts materializados finais contra esse
 - precedência de resolução:
   1. `model_policy.agents[agent_name]`
   2. `model_policy.roles[fine_role]`
-  3. defaults legados compatíveis por perfil
+  3. defaults de compatibilidade por perfil
   4. heurística conservadora somente quando não houver policy explícita
 - role fina sugerida:
   - `round_coordinator`: `orchestrator`
@@ -370,7 +370,7 @@ O quality gate final deve validar os artifacts materializados finais contra esse
   - `proof_execution`: `validation-runner`
   - `closure`: `finalizer`
   - `sync`: `resync`
-- fallback legado compatível:
+- fallback de compatibilidade:
   - `reasoning_default`: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `reviewer`, e `designer` quando materializado como contributor de direção UX/design
   - `coding_default`: `coder-backend`, `coder-frontend`, `coder-ios`
   - `execution_default`: `validation-runner`, `finalizer`, `resync`
@@ -785,7 +785,7 @@ Incluir `web` apenas quando o contexto do projeto indicar dependência real de c
 ## Como escolher `model`
 - usar `docs/**`, o modelo factual intermediário e o papel do agent para inferir o tipo de trabalho, não para prometer "o melhor modelo"
 - se `model_policy` existir, aplicá-la com precedência sobre heurística implícita
-- aplicar a precedência granular: agent override, role override, defaults legados, heurística conservadora
+- aplicar a precedência granular: agent override, role override, defaults de compatibilidade, heurística conservadora
 - usar `model_policy.agents` para exceções explícitas por agent
 - usar `model_policy.roles` para grupos finos como `round_coordinator`, `cut_planning`, `proof_design`, `execution_package_design`, `specialist_executor`, `semantic_review`, `proof_execution`, `closure` e `sync`
 - preservar compatibilidade com `reasoning_default`, `coding_default` e `execution_default`
@@ -1001,14 +1001,14 @@ Hard fails:
 
 ### Model-policy compatibility check
 Verificar:
-- precedência clara: `model_policy.agents[agent]`, depois `model_policy.roles[role]`, depois defaults legados
+- precedência clara: `model_policy.agents[agent]`, depois `model_policy.roles[role]`, depois defaults de compatibilidade
 - compatibilidade mantida com `reasoning_default`, `coding_default` e `execution_default`
-- defaults legados mapeiam roles fortes para reasoning, coders para coding, e runner/finalizer/resync para execution quando não houver override granular
+- defaults de compatibilidade mapeiam roles fortes para reasoning, coders para coding, e runner/finalizer/resync para execution quando não houver override granular
 - `allowed_models`, quando fornecido, continua restringindo qualquer escolha por agent, role ou default
 
 Hard fails:
-- policy granular sem fallback legado
-- conflito ou ambiguidade entre agent override, role override e defaults legados
+- policy granular sem fallback de compatibilidade
+- conflito ou ambiguidade entre agent override, role override e defaults de compatibilidade
 
 ### Factual fidelity, certainty, and coverage check
 Verificar:
@@ -1136,7 +1136,7 @@ Notas para os exemplos:
 - os valores acima são apenas exemplos de shape, não prescrição fixa de provider ou modelo
 - em `vscode`, `model` pode ser string única ou lista priorizada
 - em `vscode`, o valor real de `model` deve respeitar `allowed_models` quando essa entrada existir
-- quando `model_policy` existir, ele governa a preferência de escolha por agent, role fina ou default legado
+- quando `model_policy` existir, ele governa a preferência de escolha por agent, role fina ou default de compatibilidade
 - se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` quando o target suportar esse comportamento e deixar o runtime usar o model picker atual
 - em `codex`, o shape mínimo obrigatório mostrado é `name`, `description` e `developer_instructions`
 - em `codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision` e `managed_artifact` não aparecem nos exemplos porque não fazem parte do shape mínimo obrigatório do custom agent TOML

@@ -1541,6 +1541,13 @@ function assertNoOperationalArtifactsInSentinelRoot() {
     }
 }
 
+function assertNoLegacyDirectoryInSentinelRoot() {
+    assert(
+        !fs.existsSync(path.join(ROOT, "LEGACY")),
+        "LEGACY/ não deve existir na raiz do repo Sentinel"
+    );
+}
+
 function runControlledMaterializationSmoke(targetHome) {
     const contextSkillRoot = findInstalledSkillRoot(targetHome, "stnl_project_context");
     const agentSkillRoot = findInstalledSkillRoot(targetHome, "stnl_project_agent_specializer");
@@ -1593,6 +1600,7 @@ async function runSentinelSmoke() {
         "templates/agents"
     );
     assertNoOperationalArtifactsInSentinelRoot();
+    assertNoLegacyDirectoryInSentinelRoot();
 
     console.log("Smoke Sentinel: init/update/doctor em HOME temporário");
     const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-smoke-"));
@@ -1608,6 +1616,7 @@ async function runSentinelSmoke() {
         console.log("Smoke Sentinel: materialização controlada");
         runControlledMaterializationSmoke(tempHome);
         assertNoOperationalArtifactsInSentinelRoot();
+        assertNoLegacyDirectoryInSentinelRoot();
     } finally {
         fs.rmSync(tempHome, { recursive: true, force: true });
     }
