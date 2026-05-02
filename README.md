@@ -1,68 +1,54 @@
 # Sentinel Protocol
 
-Nova fase em construção.
+**Status:** Alpha Preview - `v2026.4.0-alpha.1`
 
-## Estado do repositório
-Este repositório entrou em uma nova fase focada em:
-- geração de agents custom por projeto
-- estruturação de templates e overlays
-- rastreabilidade arquitetural da evolução
+Sentinel Protocol é um kit pessoal e não oficial de protocolo para organizar trabalho de software assistido por IA em torno de contexto explícito de projeto, SPECs, agents especializados e execução controlada.
 
-## Foco atual
-O foco é construir a base do novo ecossistema.
+Esta release é a **Sentinel Protocol Alpha Preview**, a primeira alpha externa/controlada da arquitetura atual. Ela não é estável, não é um runtime autônomo de agents e não é afiliada, endossada ou oficial de nenhuma empresa.
 
-## Papel do Sentinel
-Este repositório é a fábrica do Sentinel Protocol. Ele mantém:
-- skills
-- templates
-- agents base
-- installer
-- smoke
+Este repo é a fábrica do Sentinel Protocol: mantém skills, templates, agents base, installer e smoke. Os agents finais são materializados nos projetos alvo.
 
-Ele não é o runtime final dos agents materializados. A materialização acontece sempre no projeto alvo selecionado.
+## Para quem é
 
+Sentinel é para mantenedores que querem uma estrutura leve para:
 
-## Prompt launchers
-A pasta [`templates/prompts/`](templates/prompts/) contém prompts lançadores curtos para uso humano no dia a dia.
+- mapear contexto de projeto antes da execução;
+- criar ou retomar SPECs rastreáveis;
+- materializar agents específicos por projeto a partir de templates base;
+- conduzir implementação por um fluxo controlado via `orchestrator`.
 
-Eles não são runtime automático do Sentinel: funcionam como biblioteca operacional de copy/paste para invocar skills e agents sem repetir contratos internos que já vivem nas `SKILL.md`, nos base agents e nos artifacts canônicos.
+Ele é útil quando o trabalho assistido por IA precisa de limites mais claros que prompts avulsos, mas ainda depende de julgamento humano.
 
-Targets suportados pelo `stnl_project_agent_specializer`:
-- `vscode` -> `.github/agents/*.agent.md` no repo alvo
-- `codex` -> `.codex/agents/*.toml` no repo alvo
-- `codex` -> `AGENTS.md` na raiz do repo alvo
+## O que não resolve
 
-O template de `AGENTS.md` do target `codex` vive internamente na skill, em `skills/stnl_project_agent_specializer/reference/templates/codex/AGENTS.md`. O arquivo `AGENTS.md` operacional não deve existir na raiz do Sentinel; ele só é gerado no repo alvo quando `target=codex`.
+Sentinel não substitui testes, code review, julgamento de produto ou responsabilidade humana. Ele não garante código correto sozinho.
 
-## Smoke do Sentinel
-Use `node sentinel.mjs smoke` como caminho canônico de self-validation estrutural do Sentinel.
+Revisão humana é obrigatória. O smoke valida estrutura e wiring; ele não prova qualidade semântica completa em projetos reais.
 
-Ele cobre hoje:
-- manifests canônicos de install e bundle das skills materializadas
-- presença obrigatória dos artifacts endurecidos do protocolo atual
-- cobertura dos roots sensíveis para evitar agent/doc canônico fora do bundle por acidente
-- presença e bundle documental de `stnl_project_foundation` para greenfield/inception
-- ciclo isolado de `init`, `update` e `doctor` em `HOME` temporário
-- consistência mínima entre source of truth do repo e artifacts materializados
-- materialização controlada de `stnl_project_context` em repo fixture efêmero local
-- materialização controlada de `stnl_project_agent_specializer` para `vscode` em `.github/agents/` da fixture
-- materialização controlada de `stnl_project_agent_specializer` para `codex` em `.codex/agents/*.toml` e `AGENTS.md` da fixture
-- validação mínima de shape dos docs, references, frontmatters `vscode` e TOMLs `codex` gerados, sem snapshot textual grande
-- invariantes estruturais de handoff terminal dos executors (`READY`/`BLOCKED`, evidência aplicada, parcialidade preservada)
-- rejeição canônica pelo `orchestrator` de handoff inválido do executor antes do `validation-runner`
-- entrada do `validation-runner` somente com artifact validável
-- closure explícito do `finalizer`, incluindo runner verdict preservado, reviewer signal quando houver, `DONE` yes/no e resync yes/no
-- anti-drift entre templates base, quality gate da skill e materialização `vscode`/`codex`
+## Fluxo recomendado
 
-O smoke valida materialização em repos efêmeros controlados. Ele não materializa artifacts operacionais finais no próprio Sentinel.
+Para repo existente:
 
-Ele ainda não cobre:
-- e2e completo das skills em repositórios reais
-- decisão semântica completa de quais docs/features/agents um projeto real deveria materializar
-- semântica profunda dos templates ou qualidade de conteúdo além do wiring estrutural e do shape mínimo
-- integrações externas ou variações de ambiente fora do smoke local reproduzível
+1. `stnl_project_context`
+2. `stnl_project_agent_specializer`
+3. `stnl_spec_manager`
+4. `orchestrator`
 
-Para manter:
-- rode `node sentinel.mjs smoke` antes de fechar mudanças em `sentinel.mjs`, templates cobertos ou wiring das skills
-- estenda [`scripts/sentinel-smoke.mjs`](scripts/sentinel-smoke.mjs) com checks estruturais novos só quando houver novo source of truth ou novo root realmente possuído pelo bundle
-- evite asserts cosméticos ou snapshots grandes; priorize presença, cobertura de manifest e coerência materializada
+Para projeto novo ou greenfield:
+
+1. `stnl_project_foundation`
+2. `stnl_project_agent_specializer`
+3. `stnl_spec_manager`
+4. `orchestrator`
+
+Targets suportados para materialização de agents:
+
+- `vscode` -> `.github/agents/`
+- `codex` -> `.codex/agents/` + `AGENTS.md`
+
+## Comece aqui
+
+- [QUICKSTART.md](QUICKSTART.md)
+- [PROMPTS.md](PROMPTS.md)
+- [CHANGELOG.md](CHANGELOG.md)
+- [LICENSE](LICENSE)
