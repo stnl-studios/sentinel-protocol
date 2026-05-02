@@ -21,6 +21,12 @@ Este repositório é a fábrica do Sentinel Protocol. Ele mantém:
 
 Ele não é o runtime final dos agents materializados. A materialização acontece sempre no projeto alvo selecionado.
 
+
+## Prompt launchers
+A pasta [`templates/prompts/`](templates/prompts/) contém prompts lançadores curtos para uso humano no dia a dia.
+
+Eles não são runtime automático do Sentinel: funcionam como biblioteca operacional de copy/paste para invocar skills e agents sem repetir contratos internos que já vivem nas `SKILL.md`, nos base agents e nos artifacts canônicos.
+
 Targets suportados pelo `stnl_project_agent_specializer`:
 - `vscode` -> `.github/agents/*.agent.md` no repo alvo
 - `codex` -> `.codex/agents/*.toml` no repo alvo
