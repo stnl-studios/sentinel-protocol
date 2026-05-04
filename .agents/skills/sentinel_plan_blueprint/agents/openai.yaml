@@ -1,9 +1,0 @@
-interface:
-  name: "sentinel_plan_blueprint"
-  display_name: "Sentinel Plan Blueprint"
-  version: "2026.3.1"
-  protocol_release: "2026.3"
-  status: "active"
-  short_description: "Cria ou recicla o PLAN.md; organiza Escopo ativo, Bloco seguinte e Bloco posterior; detalha apenas o Escopo ativo."
-policy:
-  allow_implicit_invocation: true

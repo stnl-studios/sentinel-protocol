@@ -1,9 +1,0 @@
-interface:
-  name: "sentinel_prompt_preflight"
-  display_name: "Sentinel Prompt Preflight"
-  version: "2026.3.1"
-  protocol_release: "2026.3"
-  status: "active"
-  short_description: "Normaliza pedido bruto em prompt governado de execucao; nao le o conteudo do repo por design; nao faz fechamento pos-execucao."
-policy:
-  allow_implicit_invocation: true
