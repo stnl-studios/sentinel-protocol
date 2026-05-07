@@ -161,11 +161,18 @@ Regras:
 - a serialização final varia por target, mas a geração deve sempre partir dos templates internos da skill e das referências canônicas
 - `vscode` usa o shape Markdown com frontmatter operacional em `.github/agents/*.agent.md`
 - `codex` usa arquivos TOML em `.codex/agents/*.toml` com o shape próprio de custom agent do Codex, não como espelho do frontmatter endurecido de `vscode`
-- o shape mínimo obrigatório do custom agent TOML para `codex` contém somente:
+- o shape mínimo obrigatório nativo do custom agent TOML para `codex` contém:
   - `name`
   - `description`
   - `developer_instructions`
-- `tools`, `agents`, `target`, `model`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não fazem parte do shape mínimo obrigatório de `codex`
+- `sandbox_mode` é campo opcional documentado do runtime Codex; por política Sentinel, todo custom agent Codex materializado deve serializar `sandbox_mode`
+- `sandbox_mode` deve ser derivado da role class e da capability real do agent:
+  - `read-only` para agents que apenas leem, analisam, roteiam, revisam ou desenham
+  - `workspace-write` para agents que precisam editar ou executar comandos locais
+- `workspace-write` só libera a capacidade técnica mínima exigida pelo papel; não autoriza absorver responsabilidade fora da role
+- `validation-runner` usa `workspace-write` por necessidade de execução local de checks, mas suas `developer_instructions` continuam proibindo edição, fix, redesign de prova, replanning ou closure
+- `finalizer` e `resync` usam `workspace-write` porque o contrato atual permite `edit` para memória/documentação durável
+- `tools`, `agents`, `target`, `model`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não fazem parte do shape mínimo obrigatório nativo de `codex`
 - qualquer campo adicional em `.codex/agents/*.toml` só pode ser emitido quando for opcional, compatível com a configuração suportada pelo runtime Codex e explicitamente separado do shape mínimo nativo
 - se o Sentinel preservar metadata própria para `codex`, essa metadata é convenção interna opcional do protocolo, nunca requisito nativo do runtime Codex, e deve ser omitida quando houver risco de incompatibilidade com o runtime
 - `codex` usa também `AGENTS.md` como instrução de workspace do runtime Codex
@@ -268,17 +275,18 @@ Regras operacionais:
   - `base_agent_version`
   - `specialization_revision`
   - `managed_artifact: true`
-- para `codex`, manter o custom agent TOML no shape mínimo próprio do runtime:
+- para `codex`, preservar o shape mínimo nativo próprio do runtime:
   - `name`
   - `description`
   - `developer_instructions`
+- para `codex`, o shape Sentinel materializado adiciona obrigatoriamente `sandbox_mode` como campo opcional suportado pelo runtime e obrigatório por política Sentinel
 - em `codex`, `developer_instructions` é o lugar obrigatório para carregar a missão especializada, role class, ownership, gates, sequencing, handoffs, disciplina de superfície, limites de leitura e regras operacionais derivadas dos base agents e do modelo factual intermediário
 - em `vscode`, `specialization_revision` começa em `1` na primeira materialização gerenciada do repo alvo
 - em `vscode`, `managed_artifact: true` é a marca de overwrite seguro e da deleção segura de artifacts gerenciados
 - em `codex`, qualquer marca de gerenciamento do Sentinel é convenção interna opcional e não faz parte do shape mínimo obrigatório do runtime; se for serializada, deve ser compatível com Codex e claramente distinguida de requisito nativo
 - quando fizer sentido, preservar `reading_scope_class` somente como hint compatível com o contrato base; nunca usá-lo para expandir a classe permitida
 - em `vscode`, `tools` no frontmatter operacional é obrigatório nos agents especializados materializados e é a source of truth operacional
-- em `codex`, `tools` não é obrigatório no TOML; a política de tools e least privilege deve ser preservada semanticamente em `developer_instructions`, salvo quando houver campo opcional de tools explicitamente suportado pelo runtime
+- em `codex`, `tools` não é obrigatório nem deve ser serializado no TOML controlado; a política de tools e least privilege deve ser preservada semanticamente em `developer_instructions` e em `sandbox_mode`
 - `## Tools` no corpo deve ser removido por default quando `tools` existir como metadata operacional suportada pelo target
 - `## Tools` só pode permanecer por ordem humana explícita e com justificativa humana clara
 - mesmo quando `## Tools` permanecer como exceção explícita, ele nunca pode ser tratado como source of truth, requisito operacional, critério de validação ou base para drift detection
@@ -288,7 +296,7 @@ Regras operacionais:
 - `agents` no frontmatter operacional é reservado ao `orchestrator` em `vscode` e deve listar apenas os `frontmatter.name` canônicos dos subagents realmente materializados no output de agents do mesmo target
 - em `codex`, `agents` não é campo obrigatório do TOML do `orchestrator`; o conjunto de subagents e o roteamento devem aparecer em `developer_instructions` e no `AGENTS.md` gerado, salvo suporte explícito do runtime para campo equivalente opcional
 - `model` na metadata operacional é suportado como string única ou lista priorizada quando houver justificativa operacional clara, política explícita, restrição por `allowed_models` e compatibilidade com o target
-- qualquer campo fora do shape mínimo do target deve ser tratado como ausente por default e removido na normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
+- qualquer campo fora do shape mínimo nativo ou dos campos opcionais suportados e adotados pela política Sentinel do target deve ser tratado como ausente por default e removido na normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
 - `agent_version` deve ser removido da metadata operacional final por default; não faz parte do shape endurecido preservado por esta skill nem do shape mínimo de `codex`
 - se qualquer campo obrigatório faltar no artifact final, a skill ainda não está done
 
@@ -312,8 +320,10 @@ Regras operacionais:
 - o custom agent TOML final normalizado de `codex` contém obrigatoriamente:
   - `name`
   - `description`
+  - `sandbox_mode`
   - `developer_instructions`
-- o custom agent TOML final normalizado de `codex` pode conter campos opcionais somente quando forem suportados pelo runtime e não confundidos com requisito nativo mínimo
+- `sandbox_mode` é obrigatório por política Sentinel no TOML Codex final, não por fazer parte do shape mínimo nativo Codex
+- o custom agent TOML final normalizado de `codex` pode conter campos opcionais adicionais somente quando forem suportados pelo runtime e não confundidos com requisito nativo mínimo
 - convenções internas opcionais do Sentinel em `codex`, quando existirem, devem ser claramente classificadas como internas e removíveis sem quebrar o custom agent TOML mínimo
 - qualquer campo fora do shape do target deve ser tratado como legado residual e removido durante a normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
 - em `vscode`, o corpo especializado final deve preservar headings e seções canônicas do base agent, inclusive `## Handoff`, sem variantes frouxas de naming ou shape
@@ -718,7 +728,7 @@ Se houver arquivo compartilhado ou contrato compartilhado sem owner claro, não 
 ## Como escolher `tools`
 `tools` na metadata operacional é obrigatório apenas para specializeds `vscode`.
 
-Para `codex`, `tools` não faz parte do shape mínimo obrigatório do custom agent TOML. A política de tools continua sendo uma obrigação semântica da especialização e deve aparecer nas `developer_instructions`; só serializar um campo de tools em TOML quando houver compatibilidade explícita com o runtime Codex.
+Para `codex`, `tools` não faz parte do shape mínimo obrigatório nativo do custom agent TOML e não deve ser serializado nos TOMLs controlados. A política de tools continua sendo uma obrigação semântica da especialização e deve aparecer nas `developer_instructions`, com hardening runtime via `sandbox_mode`.
 
 Regras:
 - escolher tools por missão real do agent e por least privilege
@@ -818,10 +828,10 @@ Verificar:
 - metadata ou campos obrigatórios do target presentes e completos
 - shape canônico consistente com `agent-contract-shape`
 - quando `target=vscode`, artifacts de agents estão em `.github/agents/*.agent.md`, headings e seções obrigatórias do base agent existem com naming canônico, e o frontmatter contém `target`, `tools`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
-- quando `target=codex`, artifacts de agents estão em `.codex/agents/*.toml`, cada TOML contém `name`, `description` e `developer_instructions`, e `AGENTS.md` foi gerado a partir do template interno da skill
+- quando `target=codex`, artifacts de agents estão em `.codex/agents/*.toml`, cada TOML contém `name`, `description`, `sandbox_mode` e `developer_instructions`, e `AGENTS.md` foi gerado a partir do template interno da skill
 - quando `target=codex`, `developer_instructions` preserva a missão, role class, ownership, gates, sequencing, handoffs e regras operacionais do specialized que em `vscode` ficariam no corpo Markdown
 - quando `target=codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não são tratados como campos obrigatórios do TOML
-- quando `target=codex`, qualquer campo opcional além de `name`, `description` e `developer_instructions` é compatível com o runtime e não é apresentado como requisito nativo do Codex
+- quando `target=codex`, `sandbox_mode` é tratado como obrigatório pela política Sentinel e não como requisito nativo mínimo do Codex; qualquer outro campo opcional é compatível com o runtime e não é apresentado como requisito nativo do Codex
 - remoção de campos legados não permitidos, incluindo `agent_version`
 - ausência de `## Tools` residual por default quando `tools` já existe na metadata operacional suportada pelo target
 - presença de contrato explícito de surface discipline quando o papel tiver risco real de poluir o chat principal
@@ -1106,6 +1116,7 @@ managed_artifact: true
 ```toml
 name = "orchestrator"
 description = "Orquestra o fluxo local do projeto usando apenas os agents realmente materializados."
+sandbox_mode = "read-only"
 developer_instructions = '''
 Coordinate the local Sentinel workflow as a lightweight router.
 
@@ -1121,6 +1132,7 @@ Keep the main chat surface short: return only the current gate, next owner, bloc
 ```toml
 name = "coder-backend"
 description = "Implementa mudanças backend do projeto respeitando arquitetura, contratos e harness local."
+sandbox_mode = "workspace-write"
 developer_instructions = '''
 Execute the authorized server-side work package from the Sentinel execution package, execution brief, and validation pack.
 
@@ -1138,9 +1150,10 @@ Notas para os exemplos:
 - em `vscode`, o valor real de `model` deve respeitar `allowed_models` quando essa entrada existir
 - quando `model_policy` existir, ele governa a preferência de escolha por agent, role fina ou default de compatibilidade
 - se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` quando o target suportar esse comportamento e deixar o runtime usar o model picker atual
-- em `codex`, o shape mínimo obrigatório mostrado é `name`, `description` e `developer_instructions`
-- em `codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision` e `managed_artifact` não aparecem nos exemplos porque não fazem parte do shape mínimo obrigatório do custom agent TOML
-- em `codex`, qualquer campo adicional só pode ser usado como opcional compatível com o runtime ou convenção interna opcional do Sentinel, nunca como requisito nativo mínimo
+- em `codex`, o shape mínimo nativo continua sendo `name`, `description` e `developer_instructions`
+- em `codex`, `sandbox_mode` aparece nos exemplos porque é campo opcional suportado pelo runtime e obrigatório pela política Sentinel para agents materializados
+- em `codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision` e `managed_artifact` não aparecem nos exemplos porque não fazem parte do shape mínimo nativo do custom agent TOML nem da política Sentinel de serialização Codex
+- em `codex`, qualquer campo adicional além de `sandbox_mode` só pode ser usado como opcional compatível com o runtime ou convenção interna opcional do Sentinel, nunca como requisito nativo mínimo
 - os exemplos representam o artifact final normalizado, sem `## Tools` no corpo e sem campos legados como `agent_version`
 - os exemplos de shape não substituem o contrato operacional especializado; `orchestrator` e executors continuam obrigados a explicitar capability gate, validade do handoff e regra de runner só com artifact validável
 - no target `codex`, `AGENTS.md` do repo alvo deve ser gerado a partir de `reference/templates/codex/AGENTS.md` e deve apontar para o conjunto real de `.codex/agents/*.toml`
@@ -1165,7 +1178,7 @@ Notas para os exemplos:
 - artifacts finais normalizados no shape canônico vigente
 - `target=vscode` materializa agents em `.github/agents/*.agent.md` com `target` correto no frontmatter operacional
 - em `vscode`, para cada agent materializado, `basename` do arquivo sem `.agent.md`, `frontmatter.name` e qualquer item correspondente em `orchestrator.agents` são exatamente o mesmo ID canônico em kebab-case
-- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description` e `developer_instructions`, e materializa `AGENTS.md` na raiz do repo alvo
+- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description`, `sandbox_mode` e `developer_instructions`, e materializa `AGENTS.md` na raiz do repo alvo
 - `AGENTS.md` do target `codex` deriva do template interno `reference/templates/codex/AGENTS.md`
 - em `vscode`, `tools` presente no frontmatter operacional de todos os specializeds materializados
 - em `vscode`, `agents` presente no artifact do `orchestrator`

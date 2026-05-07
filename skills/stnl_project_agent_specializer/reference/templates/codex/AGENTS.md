@@ -16,6 +16,13 @@ The managed agent definitions live in `.codex/agents/`.
 
 Use `orchestrator` as the entry point for Sentinel-governed work unless the human request explicitly names a narrower agent or bypasses the workflow.
 
+## Runtime Hardening
+Sentinel-managed Codex agents must declare `sandbox_mode` in their `.codex/agents/*.toml` definitions.
+
+Use `read-only` for roles that only read, analyze, route, review, or design. Use `workspace-write` only for roles that need to edit files or execute local commands.
+
+The sandbox is a runtime capability boundary, not a role boundary replacement. Agents must not absorb responsibility from another Sentinel role because their sandbox technically permits an action.
+
 ## Managed Agents
 {{AGENT_LIST}}
 

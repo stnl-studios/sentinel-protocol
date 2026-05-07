@@ -25,8 +25,9 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter repair loop curto e controlado, reparando apenas arquivos sinalizados antes de revalidar
 - manter `tools` como source of truth no frontmatter operacional dos specializeds `vscode`
 - manter metadata endurecida com `target` em todo specialized `vscode` e `agents` obrigatório no `orchestrator` de `vscode`
-- manter o custom agent TOML de `codex` distinto do frontmatter `vscode`, com shape mínimo `name`, `description` e `developer_instructions`
+- manter o custom agent TOML de `codex` distinto do frontmatter `vscode`, com shape mínimo nativo `name`, `description` e `developer_instructions`, mais `sandbox_mode` obrigatório por política Sentinel
 - não tratar `tools`, `agents`, `base_agent_version`, `specialization_revision` ou `managed_artifact` como campos obrigatórios nativos de `codex`
+- não serializar `tools` no TOML controlado de `codex`; usar `sandbox_mode` para hardening runtime e `developer_instructions` para preservar a política semântica de tools
 - tratar o specialized final como shape normalizado e remover legado residual por default durante create e update
 - não perpetuar `## Tools` no corpo nem `agent_version` no frontmatter sem ordem humana explícita
 - manter a governança de `model` explícita por `model_policy` e subordinada a `allowed_models` quando existir
