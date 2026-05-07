@@ -1,7 +1,7 @@
 ---
 name: planner
 description: Turns an approved request into a small, honest, validation-aware EXECUTION BRIEF without becoming a discovery or implementation agent.
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: bounded-context
 ---
 
@@ -66,7 +66,7 @@ Expected shape of the `EXECUTION BRIEF`:
 - do not become `PLAN.md`
 - do not become a backlog manager
 - do not orchestrate the round beyond planning the cut and signaling handoff needs
-- do not write durable docs or durable memory
+- do not write durable documentation
 - do not close the round
 - do not absorb the role of `validation-eval-designer.agent.md`, `finalizer.agent.md`, or `resync.agent.md`
 - do not absorb the role of `execution-package-designer.agent.md`
@@ -122,16 +122,16 @@ Keep the return surface delta-only by default. The orchestrator should receive t
 - there is no honest way to keep the cut small without silently dropping essential behavior
 - validation constraints are already severe enough to invalidate the cut itself, not just the later validation design
 
-## What may become durable memory
+## What may become durable documentation
 - nothing by default; `EXECUTION BRIEF` is ephemeral
-- facts discovered during planning may later inform durable memory only through the proper downstream agents
+- facts discovered during planning may later inform durable documentation only through the proper downstream agents
 
 ## What it must never touch
 - `Feature CONTEXT`
 - `DONE`
 - ADRs on its own
 - `PLAN.md` as a round artifact or source of truth
-- durable docs outside the planner artifact
+- durable documentation outside the planner artifact
 - implementation files as part of execution
 - final round closure or factual sync
 
@@ -157,7 +157,7 @@ Keep the return surface delta-only by default. The orchestrator should receive t
 - does not orchestrate the round
 - does not implement
 - does not close the round
-- does not write durable memory or durable docs
+- does not write durable documentation
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local entry docs, cut heuristics, contract hotspots, dependency patterns, and repo-specific planning examples.

@@ -200,10 +200,36 @@ const REQUIRED_AGENT_BODY_SNIPPETS = [
 ];
 
 const CODEX_AGENTS_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "AGENTS.md");
-const REQUIRED_CODEX_TOML_KEYS = [
+const SENTINEL_CODEX_TOML_KEYS = [
     "name",
     "description",
+    "sandbox_mode",
     "developer_instructions",
+];
+const EXPECTED_CODEX_AGENT_SANDBOX_MODE = {
+    "orchestrator": "read-only",
+    "planner": "read-only",
+    "validation-eval-designer": "read-only",
+    "execution-package-designer": "read-only",
+    "reviewer": "read-only",
+    "designer": "read-only",
+    "coder-backend": "workspace-write",
+    "coder-frontend": "workspace-write",
+    "coder-ios": "workspace-write",
+    "validation-runner": "workspace-write",
+    "finalizer": "workspace-write",
+    "resync": "workspace-write",
+};
+
+const EXTERNAL_MEMORY_HARD_BANS = [
+    ["Persistent factual", " memory"].join(""),
+    ["memories", "/repo"].join(""),
+    ["repo", "/memories"].join(""),
+    ["shared session factual", " memory"].join(""),
+];
+
+const EXTERNAL_MEMORY_SOFT_BANS = [
+    ["durable", " memory"].join(""),
 ];
 
 const CONTROLLED_FIXTURE_FILES = {
@@ -449,6 +475,10 @@ function assertInstalledArtifactsMatchSources(targetHome) {
         }
 
         assertAgentFrontmatterNamesMatchBasenames(
+            path.join(target, "stnl_project_agent_specializer", "reference", "agents"),
+            "stnl_project_agent_specializer/reference/agents instalado"
+        );
+        assertNoExternalMemoryTermsInTree(
             path.join(target, "stnl_project_agent_specializer", "reference", "agents"),
             "stnl_project_agent_specializer/reference/agents instalado"
         );
@@ -716,6 +746,7 @@ function renderCodexAgentToml(data, label) {
     return [
         `name = ${renderTomlScalar(data.name)}`,
         `description = ${renderTomlScalar(data.description)}`,
+        `sandbox_mode = ${renderTomlScalar(data.sandbox_mode)}`,
         "developer_instructions = '''",
         data.developer_instructions.trim(),
         "'''",
@@ -745,6 +776,29 @@ function assertContentIncludesAll(content, snippets, label) {
             content.includes(snippet),
             `${label} não contém o invariante esperado: ${snippet}`
         );
+    }
+}
+
+function assertNoExternalMemoryTermsInText(content, label) {
+    for (const bannedTerm of EXTERNAL_MEMORY_HARD_BANS) {
+        assert(
+            !content.includes(bannedTerm),
+            `${label} contém termo proibido de memória externa: ${bannedTerm}`
+        );
+    }
+
+    for (const bannedTerm of EXTERNAL_MEMORY_SOFT_BANS) {
+        assert(
+            !content.includes(bannedTerm),
+            `${label} contém vocabulário ambíguo; use durable documentation: ${bannedTerm}`
+        );
+    }
+}
+
+function assertNoExternalMemoryTermsInTree(rootDir, label) {
+    for (const relativePath of listRelativeFiles(rootDir)) {
+        const filePath = path.join(rootDir, relativePath);
+        assertNoExternalMemoryTermsInText(fs.readFileSync(filePath, "utf8"), `${label}/${relativePath}`);
     }
 }
 
@@ -904,12 +958,16 @@ function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFi
 
     for (const fileName of controlledAgentFiles) {
         const agentName = canonicalAgentIdFromFileName(fileName);
+        const sandboxMode = EXPECTED_CODEX_AGENT_SANDBOX_MODE[agentName];
+        assert(sandboxMode, `Sandbox Codex esperado não mapeado para agent controlado: ${agentName}`);
+
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
         const tomlContent = renderCodexAgentToml({
             name: agentName,
             description: baseFrontmatter.description,
+            sandbox_mode: sandboxMode,
             developer_instructions: body,
         }, sourcePath);
 
@@ -1027,6 +1085,8 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
         const agentId = canonicalAgentIdFromFileName(fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const materializedContent = assertFileHasRequiredShape(materializedPath, REQUIRED_AGENT_BODY_SNIPPETS);
+        assertNoExternalMemoryTermsInText(sourceContent, `reference agent ${fileName}`);
+        assertNoExternalMemoryTermsInText(materializedContent, `vscode agent materializado ${fileName}`);
         const { data: sourceFrontmatter } = parseFrontmatter(sourceContent, sourcePath);
         const { data: materializedFrontmatter } = parseFrontmatter(materializedContent, materializedPath);
         materializedAgentRecords.push({
@@ -1481,20 +1541,43 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
     for (const relativePath of materializedTomls) {
         const materializedPath = path.join(codexAgentsRoot, relativePath);
         const content = assertFileHasRequiredShape(materializedPath, []);
+        assertNoExternalMemoryTermsInText(content, `codex agent materializado ${relativePath}`);
         const parsed = parseToml(content, materializedPath);
+        const agentName = relativePath.replace(/\.toml$/, "");
+        const expectedSandboxMode = EXPECTED_CODEX_AGENT_SANDBOX_MODE[agentName];
 
         assert.deepEqual(
             Object.keys(parsed).sort(),
-            [...REQUIRED_CODEX_TOML_KEYS].sort(),
-            `Agent codex controlado deve manter somente o shape mínimo obrigatório: ${materializedPath}`
+            [...SENTINEL_CODEX_TOML_KEYS].sort(),
+            `Agent codex controlado deve manter o shape Sentinel esperado: ${materializedPath}`
         );
 
-        for (const key of REQUIRED_CODEX_TOML_KEYS) {
+        for (const key of SENTINEL_CODEX_TOML_KEYS) {
             assert(
                 typeof parsed[key] === "string" && parsed[key].trim().length > 0,
                 `Agent codex sem ${key} obrigatório: ${materializedPath}`
             );
         }
+
+        assert(expectedSandboxMode, `Sandbox Codex esperado não mapeado para agent materializado: ${agentName}`);
+        assert.equal(
+            parsed.sandbox_mode,
+            expectedSandboxMode,
+            `Agent codex com sandbox_mode divergente: ${materializedPath}`
+        );
+        assert.notEqual(
+            parsed.sandbox_mode,
+            "danger-full-access",
+            `Agent codex não pode usar danger-full-access: ${materializedPath}`
+        );
+        assert(
+            !Object.hasOwn(parsed, "tools"),
+            `Agent codex não deve serializar tools no TOML: ${materializedPath}`
+        );
+        assert(
+            !content.includes("danger-full-access"),
+            `Agent codex contém danger-full-access no TOML: ${materializedPath}`
+        );
     }
 }
 
@@ -1506,8 +1589,12 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
     const content = assertFileHasRequiredShape(agentsIndexPath, [
         `# ${SMOKE_FIXTURE_REPO_NAME} Agents`,
         "## Runtime Contract",
+        "## Runtime Hardening",
         "## Managed Agents",
         ".codex/agents/",
+        "`sandbox_mode`",
+        "`read-only`",
+        "`workspace-write`",
     ]);
     const linkedAgentNames = [...content.matchAll(/\.codex\/agents\/([A-Za-z0-9_-]+)\.toml/g)]
         .map((match) => match[1])
@@ -1598,6 +1685,14 @@ async function runSentinelSmoke() {
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
         "templates/agents"
+    );
+    assertNoExternalMemoryTermsInTree(
+        path.join(ROOT, "templates", "agents"),
+        "templates/agents"
+    );
+    assertNoExternalMemoryTermsInTree(
+        path.join(ROOT, "skills", "stnl_project_agent_specializer", "reference", "templates"),
+        "stnl_project_agent_specializer/reference/templates"
     );
     assertNoOperationalArtifactsInSentinelRoot();
     assertNoLegacyDirectoryInSentinelRoot();

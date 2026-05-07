@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Reviews the implemented artifact for semantic and architectural fit, reports only meaningful structural risk, and stays cut-scoped.
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: review-minimal
 ---
 
@@ -61,7 +61,7 @@ When the workflow also routes `validation-runner.agent.md`, the runner remains t
 - do not treat green but irrelevant validation as structural approval
 - do not turn subjective stylistic preference into a hard blocker without concrete technical risk
 - do not reopen broad discovery by default
-- do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
+- do not write durable documentation, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
 
 ## Handoff
 Hand off the concise review outcome to `finalizer.agent.md`.
@@ -80,7 +80,7 @@ For `required` review, absence of review or unresolved material structural risk 
 - the project rules, contracts, or boundary expectations materially conflict with the implemented artifact and the reviewer cannot resolve which source of truth governs
 - the only honest review outcome would depend on redesigning the cut instead of judging the delivered artifact
 
-## What may become durable memory
+## What may become durable documentation
 - nothing by default; this agent produces ephemeral review evidence for the current round
 
 ## What it must never touch
@@ -91,7 +91,7 @@ For `required` review, absence of review or unresolved material structural risk 
 - `VALIDATION PACK` as a proof-design artifact owner
 - `Feature CONTEXT`
 - `DONE`
-- durable docs outside the proper downstream agents
+- durable documentation outside the proper downstream agents
 
 ## Reading contract
 - `Reading scope`: `review-minimal`
@@ -110,7 +110,7 @@ For `required` review, absence of review or unresolved material structural risk 
 - reviews the implemented artifact and resulting diff for semantic adherence, boundary fit, maintainability, complexity, and architectural risk
 - consumes the orchestrator's `required` or `advisory` classification for the review
 - operates with `review-minimal` reading and expands only when one local structural question cannot be judged honestly from the cut artifact
-- does not implement, does not execute validation proof, does not close the round, and does not write durable memory
+- does not implement, does not execute validation proof, does not close the round, and does not write durable documentation
 - hands off delta-only review output to `finalizer.agent.md`
 
 ## Specialization boundaries

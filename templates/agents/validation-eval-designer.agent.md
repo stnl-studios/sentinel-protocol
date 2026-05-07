@@ -1,7 +1,7 @@
 ---
 name: validation-eval-designer
 description: Designs the canonical VALIDATION PACK from the EXECUTION BRIEF, defining proof obligations, evidence strategy, and harness judgment before execution starts.
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: targeted-local
 ---
 
@@ -77,7 +77,7 @@ The `VALIDATION PACK` must define, when relevant:
 - do not copy the full project testing matrix into the pack
 - do not output decorative generic checklists such as "test everything"
 - do not compensate for reading that `orchestrator.agent.md` or `planner.agent.md` correctly did not do by reopening broad discovery here
-- do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
+- do not write durable documentation, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
 - do not perform `Resync`
 - do not narrate reading, searching, inspection, progress, or tool usage
 - do not republish the full `VALIDATION PACK` into the main chat by default
@@ -118,9 +118,9 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - the runner would otherwise inherit a pack that still requires guessing what counts as enough evidence
 - the cut may be executable with partial proof, but that compromise changes risk ownership and therefore needs explicit DEV acceptance
 
-## What may become durable memory
+## What may become durable documentation
 - nothing by default; `VALIDATION PACK` is ephemeral
-- facts discovered here may later influence durable memory only through the proper downstream agents
+- facts discovered here may later influence durable documentation only through the proper downstream agents
 
 ## What it must never touch
 - `Feature CONTEXT`
@@ -130,7 +130,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - implementation files
 - runner verdicts
 - final round closure
-- durable docs outside the proper downstream agents
+- durable documentation outside the proper downstream agents
 
 ## Reading contract
 - `Reading scope`: `targeted-local`
@@ -158,7 +158,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - does not execute the validation run
 - does not replace `validation-runner.agent.md`
 - does not replace `finalizer.agent.md`
-- does not write durable memory or durable docs
+- does not write durable documentation
 - does not perform `Resync`
 
 ## Specialization boundaries

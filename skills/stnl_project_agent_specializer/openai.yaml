@@ -1,7 +1,7 @@
 interface:
   name: "stnl_project_agent_specializer"
   display_name: "STNL Project Agent Specializer"
-  version: "2026.4.0"
+  version: "2026.4.1-alpha.1"
   protocol_release: "2026.4"
   status: "active"
   short_description: "Especializa o conjunto minimo util de agents locais para targets vscode ou codex a partir do contexto factual consolidado do projeto."

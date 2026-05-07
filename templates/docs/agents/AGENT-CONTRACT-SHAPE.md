@@ -25,7 +25,7 @@ Exemplo conceitual:
 ---
 name: Orchestrator
 description: ...
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: routing-minimal
 ---
 ```
@@ -202,7 +202,7 @@ Exemplo conceitual:
 ---
 name: Orchestrator
 description: ...
-base_agent_version: 2026.4
+base_agent_version: 2026.4.1
 specialization_revision: 1
 managed_artifact: true
 ---

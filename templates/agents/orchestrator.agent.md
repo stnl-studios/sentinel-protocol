@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Coordinates the round as a lightweight router, applies canonical gates, selects the next owner, and enforces valid handoffs without implementing.
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: routing-minimal
 ---
 
@@ -72,7 +72,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - do not run execution validation as a replacement for `validation-runner.agent.md`
 - do not run semantic or architectural review as a replacement for `reviewer.agent.md`
 - do not close the round as a replacement for `finalizer.agent.md`
-- do not write durable memory or durable docs
+- do not write durable documentation
 - do not "correct", finish, or patch executor work after an invalid executor handoff
 - do not reopen broad discovery after an invalid executor handoff or executor loop
 - do not continue to `validation-runner.agent.md` without a valid executor artifact
@@ -160,9 +160,9 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - escalate when a structural, normative, ownership, or capability issue exceeds the protocol's delegated autonomy
 - escalate when gate, owner, boundary, or capability ambiguity persists after the router budget is spent
 
-## What may become durable memory
+## What may become durable documentation
 - nothing by default
-- orchestration findings may inform downstream durable memory only through `finalizer.agent.md` and, when explicitly requested by the finalizer, `resync.agent.md`
+- orchestration findings may inform downstream durable documentation only through `finalizer.agent.md` and, when explicitly requested by the finalizer, `resync.agent.md`
 
 ## What it must never touch
 - implementation files as an executor
@@ -174,7 +174,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - `DONE`
 - ADRs on its own
 - `PLAN.md` or any legacy phase-plan artifact as the round control plane
-- durable docs outside the proper downstream agents
+- durable documentation outside the proper downstream agents
 
 ## Reading contract
 - `Reading scope`: `routing-minimal`
@@ -197,7 +197,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - keeps the main chat `delta-only`, `delegate-first`, and under an explicit `Chat budget` unless DEV asks for more detail
 - decides which agents enter the round and in what order
 - preserves execution safety through ownership clarity, contract awareness, and conflict prevention
-- never implements, never closes durable docs, never absorbs `stnl_project_context`, and never replaces planner, validation design, execution package design, runner, reviewer, finalizer, or resync
+- never implements, never closes durable documentation, never absorbs `stnl_project_context`, and never replaces planner, validation design, execution package design, runner, reviewer, finalizer, or resync
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local docs, path maps, heuristics, capability notes, examples, and narrow read-expansion triggers for this role.
