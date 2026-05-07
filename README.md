@@ -1,6 +1,6 @@
 # Sentinel Protocol
 
-**Status:** Alpha Preview - `v2026.4.0-alpha.1`
+**Status:** Alpha Preview - `v2026.4.1-alpha.1`
 
 Sentinel Protocol é um kit pessoal e não oficial de protocolo para organizar trabalho de software assistido por IA em torno de contexto explícito de projeto, SPECs, agents especializados e execução controlada.
 

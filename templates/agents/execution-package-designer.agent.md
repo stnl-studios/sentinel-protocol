@@ -86,7 +86,7 @@ The package may contain 1..N `WORK_PACKAGE` entries. Multiple work packages do n
 - do not review implemented artifacts or replace `reviewer.agent.md`
 - do not close the round or replace `finalizer.agent.md`
 - do not perform `Resync`
-- do not write durable docs or durable memory
+- do not write durable documentation
 - do not choose new architecture, structural ownership, or breaking contract strategy
 - do not turn the package into a long implementation plan or pseudo-code dump
 - do not make coders infer scope from prose when fields such as `OWNED_PATHS`, `DO_NOT_TOUCH`, or `BLOCK_IF` are needed
@@ -105,9 +105,9 @@ If the package is `BLOCKED`, return the exact missing basis to the orchestrator.
 - the only safe package would require narrowing, splitting, or sequencing decisions that materially change the cut
 - the validation obligations cannot be mapped to executable acceptance checks without a DEV-owned trade-off
 
-## What may become durable memory
+## What may become durable documentation
 - nothing by default; `EXECUTION PACKAGE` is ephemeral
-- facts found here may inform durable memory only through downstream finalization if implementation and validation later earn that memory
+- facts found here may inform durable documentation only through downstream finalization if implementation and validation later earn that documentation
 
 ## What it must never touch
 - implementation files as an executor
@@ -119,7 +119,7 @@ If the package is `BLOCKED`, return the exact missing basis to the orchestrator.
 - `DONE`
 - ADRs on its own
 - `PLAN.md` or any legacy phase-plan artifact
-- durable docs outside the proper downstream agents
+- durable documentation outside the proper downstream agents
 
 ## Reading contract
 - `Reading scope`: `targeted-local`
@@ -140,7 +140,7 @@ If the package is `BLOCKED`, return the exact missing basis to the orchestrator.
 - compiles 1..N bounded work packages for specialist coders
 - operates with `targeted-local` reading and a package-focused budget
 - emits only `READY` or `BLOCKED`
-- does not coordinate, route, call coders, implement, validate, review, close, write durable memory, or perform resync
+- does not coordinate, route, call coders, implement, validate, review, close, write durable documentation, or perform resync
 - hands the package back to the orchestrator, which remains the only coordinator of the round
 
 ## Specialization boundaries

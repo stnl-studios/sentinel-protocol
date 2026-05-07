@@ -17,6 +17,8 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - `reference/templates/codex/` é a menor estrutura interna nova para templates que não são base agents canônicos
 - lembrar que o smoke valida `vscode` e `codex` em fixtures efêmeras; `AGENTS.md`, `.codex/agents/` e `.github/agents/` finais pertencem somente ao repo alvo materializado
 - manter `docs/**` como source of truth e exigir discovery sério antes de qualquer geração
+- manter claro que agents Sentinel não usam storage persistente externo; durable documentation vive somente em canonical docs under `docs/**`
+- impedir que templates, reference agents ou agents materializados criem, atualizem, dependam ou mencionem canais externos de fatos fora de `docs/**`
 - preservar a diferença entre docs factuais de `stnl_project_context` e docs greenfield de `stnl_project_foundation`; agents não podem promover `declarado` a `observado`
 - manter o modelo factual intermediário como etapa obrigatória, mesmo quando ele não virar artifact persistido
 - manter classes factuais explícitas para evitar overclaim: fato confirmado, pattern scoped, exemplo, TBD, exceção documentada e check manual

@@ -60,6 +60,10 @@ Usar esta ordem de precedência no repo alvo:
 
 Regras complementares:
 - `docs/**` descreve a verdade documental do projeto alvo; artifacts gerenciados de agents descrevem a materialização operacional local do `target` e não substituem essa verdade documental
+- o Sentinel não usa storage persistente externo para agents; o único estado persistente permitido é durable documentation em canonical docs under `docs/**`
+- nenhum agent Sentinel, template gerenciado ou reference agent pode criar, atualizar, depender, autorizar ou mencionar storage externo de fatos fora de `docs/**`, incluindo caminhos externos de memória de repo ou canais persistentes equivalentes
+- estado de feature deve ser tratado como `Feature CONTEXT` em `docs/features/<feature>/CONTEXT.md`; documentação compartilhada deve ser tratada como shared canonical docs em `docs/core/*`, `docs/TBDS.md`, `docs/INDEX.md` e superfícies canônicas equivalentes já existentes
+- vocabulário de materialização deve usar durable documentation, canonical docs under `docs/**`, `Feature CONTEXT`, shared canonical docs e documentation targets; não introduzir contrato paralelo de memória
 - quando a base vier de `stnl_project_foundation`, preservar nos agents a diferenca entre `declarado`, `observado`, `hipotese` e `TBD`; nao transformar contrato esperado em implementacao existente
 - `docs/core/TESTING.md`, quando existir, é a referência primária para comandos canônicos, paths manuais aceitos, pré-requisitos e limites de harness dos agents de validação; tratar como factual observado quando a base vier de `stnl_project_context`, e como estratégia declarada quando a base vier de `stnl_project_foundation` até confirmação na codebase
 - se docs e codebase conflitarem de modo material, não escolher por preferência nem por conveniência; nomear o conflito e bloquear quando ele impedir especialização honesta
@@ -171,7 +175,7 @@ Regras:
   - `workspace-write` para agents que precisam editar ou executar comandos locais
 - `workspace-write` só libera a capacidade técnica mínima exigida pelo papel; não autoriza absorver responsabilidade fora da role
 - `validation-runner` usa `workspace-write` por necessidade de execução local de checks, mas suas `developer_instructions` continuam proibindo edição, fix, redesign de prova, replanning ou closure
-- `finalizer` e `resync` usam `workspace-write` porque o contrato atual permite `edit` para memória/documentação durável
+- `finalizer` e `resync` usam `workspace-write` porque o contrato atual permite `edit` para durable documentation em canonical docs under `docs/**`
 - `tools`, `agents`, `target`, `model`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não fazem parte do shape mínimo obrigatório nativo de `codex`
 - qualquer campo adicional em `.codex/agents/*.toml` só pode ser emitido quando for opcional, compatível com a configuração suportada pelo runtime Codex e explicitamente separado do shape mínimo nativo
 - se o Sentinel preservar metadata própria para `codex`, essa metadata é convenção interna opcional do protocolo, nunca requisito nativo do runtime Codex, e deve ser omitida quando houver risco de incompatibilidade com o runtime
@@ -439,10 +443,10 @@ Se a especialização puder prosseguir honestamente, o conjunto local normalment
 - `planner`
 - `finalizer`
 
-Adicionar `resync` quando o projeto mantém memória documental fora da feature e essa sync local fizer sentido.
-- em repos já preparados por `stnl_project_context`, `resync` costuma fazer sentido, mas ainda depende de evidência real de memória documental viva e recorrente fora do fluxo imediato da feature
+Adicionar `resync` quando o projeto mantém shared canonical docs fora da feature e essa sync local fizer sentido.
+- em repos já preparados por `stnl_project_context`, `resync` costuma fazer sentido, mas ainda depende de evidência real de documentação canônica viva e recorrente fora do fluxo imediato da feature
 - em repos greenfield preparados por `stnl_project_foundation`, `resync` não é default e não deve ser materializado só porque `docs/**` existe
-- em base `stnl_project_foundation`, só materializar `resync` quando houver evidência concreta de memória documental contínua cross-feature/cross-round, com necessidade real de factual sync fora da feature e updates documentais transversais previsíveis
+- em base `stnl_project_foundation`, só materializar `resync` quando houver evidência concreta de shared canonical docs contínuas cross-feature/cross-round, com necessidade real de factual sync fora da feature e updates documentais transversais previsíveis
 - em base `stnl_project_foundation`, não considerar sinal suficiente por si só: existência de `docs/core/*`, existência de `docs/TBDS.md`, organização inicial de `features/units`, ou simples possibilidade futura de drift
 - se o projeto ainda estiver em bootstrap documental, inception inicial ou fundação pouco estabilizada, não materializar `resync`
 - na dúvida, não materializar `resync`; ausência desse agent nesse estágio não é falha do conjunto local
@@ -688,7 +692,7 @@ Aplicação por papel:
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; reconhecer quando trilha material de risco foi ignorada, sem virar especialista dedicado; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
 - `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
 - `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`; preservar o verdict do runner como input e emitir somente `READY` ou `BLOCKED` próprios
-- `finalizer` só pode fechar `READY` com closure ledger explícito: runner verdict preservado ou bloqueio pré-validação preservado, reviewer signal preservado quando houver, artifacts de memória/contexto alterados, `DONE` yes/no com racional, resync yes/no com racional, e delta factual quando resync for necessário
+- `finalizer` só pode fechar `READY` com closure ledger explícito: runner verdict preservado ou bloqueio pré-validação preservado, reviewer signal preservado quando houver, artifacts de documentation/context alterados, `DONE` yes/no com racional, resync yes/no com racional, e delta factual quando resync for necessário
 
 Se o specialized reabrir verbosity, execution log ou narrativa operacional como comportamento default, a materialização falhou.
 

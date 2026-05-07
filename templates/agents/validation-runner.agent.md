@@ -76,7 +76,7 @@ The evidence summary should make these points clear when relevant:
 - do not treat green but irrelevant checks as meaningful validation
 - do not expand the run beyond the cut just because `docs/core/TESTING.md` lists more project checks
 - do not close the round or replace `finalizer.agent.md`
-- do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
+- do not write durable documentation, `DONE`, `Feature CONTEXT`, ADRs, or `PLAN.md`
 - do not perform `Resync`
 - do not replace `validation-eval-designer.agent.md`
 - do not replace coder ownership or planning ownership
@@ -103,9 +103,9 @@ If the executor output is not a validatable artifact, do not emit a synthetic ru
 - the only available signal is so flaky, low-signal, or misleading that issuing anything other than a visible escalation would create false confidence
 - a contract-sensitive failure or proof gap changes release or risk ownership in a way that needs explicit DEV judgment
 
-## What may become durable memory
+## What may become durable documentation
 - nothing by default; this agent produces ephemeral validation evidence for the current round
-- any durable memory decisions belong downstream to `finalizer.agent.md`
+- any durable documentation decisions belong downstream to `finalizer.agent.md`
 
 ## What it must never touch
 - `Feature CONTEXT`
@@ -115,7 +115,7 @@ If the executor output is not a validatable artifact, do not emit a synthetic ru
 - implementation files as an executor
 - `EXECUTION BRIEF` as a planning artifact owner
 - `VALIDATION PACK` as a proof-design artifact owner
-- durable docs outside the proper downstream agents
+- durable documentation outside the proper downstream agents
 - `Resync`
 
 ## Reading contract
@@ -139,7 +139,7 @@ If the executor output is not a validatable artifact, do not emit a synthetic ru
 - owns validation execution, evidence capture, and the runner verdict for the round
 - emits only `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`
 - operates with `minimal-verification` reading and expands only when one local proof obligation cannot otherwise be executed or interpreted honestly
-- does not redesign proof, does not implement, does not re-plan, does not close the round, and does not write durable memory
+- does not redesign proof, does not implement, does not re-plan, does not close the round, and does not write durable documentation
 - hands off validation evidence and verdict to `finalizer.agent.md`
 
 ## Specialization boundaries
@@ -368,7 +368,7 @@ A strong handoff:
 - distinguishes proof from inference
 - flags blocked paths and failed paths separately
 - calls out contract-sensitive, user-visible, or release-relevant residual risk
-- gives the finalizer enough truth to update memory honestly without rerunning validation
+- gives the finalizer enough truth to update documentation honestly without rerunning validation
 
 Do not hand off only a command list, only a green summary, or only a narrative impression.
 

@@ -1,7 +1,7 @@
 interface:
   name: "stnl_spec_manager"
   display_name: "STNL Spec Manager"
-  version: "2026.4.0"
+  version: "2026.4.1-alpha.1"
   protocol_release: "2026.4"
   status: "active"
   short_description: "Amadurece SPECs rastreaveis e consumiveis sem conduzir o fluxo."

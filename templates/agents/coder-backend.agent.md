@@ -75,7 +75,7 @@ No other terminal handoff is valid. Progress notes, partial logs, command narrat
 
 ## Prohibitions
 - do not close the round
-- do not write durable docs or durable memory
+- do not write durable documentation
 - do not perform `Resync`
 - do not rewrite the brief or redefine validation criteria
 - do not rewrite, recompile, or reinterpret the `EXECUTION PACKAGE`
@@ -106,7 +106,7 @@ When `BLOCKED` follows partial editing, the handoff must explicitly preserve: ob
 - when async behavior, locking, transactions, or idempotency requirements cannot be derived safely from the available context
 - when validation expectations cannot be satisfied honestly because the necessary basis or environment is missing
 
-## What may become durable memory
+## What may become durable documentation
 - nothing by default; this agent returns implementation and technical evidence for the current round
 
 ## What it must never touch
@@ -137,13 +137,13 @@ When `BLOCKED` follows partial editing, the handoff must explicitly preserve: ob
 - returns implementation plus a short execution delta: status, changed paths or equivalent implementation evidence, checks run or honestly not run, residual risk, and exact blocker only when `BLOCKED`
 - never uses progress, logs, partial diff narration, or implicit terminal state as final handoff
 - does not close the round
-- does not write durable memory
+- does not write durable documentation
 - does not perform `Resync`
 - does not replace planning, validation, or finalization roles
 
 ## Specialization boundaries
 - `Specialization slots`: the project-specializable part below may refine local stack docs, path conventions, commands, evidence norms, risk hotspots, and boundary-specific examples.
-- `Non-overridable protocol invariants`: preserve the back-end specialist-executor role, this canonical agent identity, the `READY` and `BLOCKED` status contract, package-bound execution-only ownership, no durable-memory ownership, and the `targeted-local` reading class.
+- `Non-overridable protocol invariants`: preserve the back-end specialist-executor role, this canonical agent identity, the `READY` and `BLOCKED` status contract, package-bound execution-only ownership, no durable documentation ownership, and the `targeted-local` reading class.
 - `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Project-specializable part

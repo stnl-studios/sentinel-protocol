@@ -88,7 +88,7 @@ These are design-contribution statuses, not validation or closure verdicts. Whet
 - do not produce or own the canonical `VALIDATION PACK`
 - do not act as `validation-runner.agent.md`
 - do not close the round or replace `finalizer.agent.md`
-- do not write durable memory, durable docs, `DONE`, `Feature CONTEXT`, or ADRs
+- do not write durable documentation, `DONE`, `Feature CONTEXT`, or ADRs
 - do not call or perform `Resync`
 - do not implement alone as the default protocol behavior
 - do not redesign unnecessarily when a smaller fix solves the problem
@@ -108,7 +108,7 @@ These are design-contribution statuses, not validation or closure verdicts. Whet
 - multiple valid directions exist and the choice changes product intent, scope, or business behavior
 - the request appears to need a redesign or a new canonical pattern, not a round-level clarification
 
-## What may become durable memory
+## What may become durable documentation
 - nothing by default; this agent produces round-scoped operational guidance only
 - facts discovered here may later become durable only through the proper downstream agents
 
@@ -141,7 +141,7 @@ These are design-contribution statuses, not validation or closure verdicts. Whet
 - may support planning, validation design, and front-end execution, but does not replace their ownership
 - operates with `targeted-local` reading and owns the local UX discovery cost only for the invoked interface surface
 - does not implement alone by default
-- does not write durable memory or durable docs
+- does not write durable documentation
 - does not close the round
 - does not call or perform `Resync`
 

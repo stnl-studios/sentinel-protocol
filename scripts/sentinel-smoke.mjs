@@ -221,6 +221,17 @@ const EXPECTED_CODEX_AGENT_SANDBOX_MODE = {
     "resync": "workspace-write",
 };
 
+const EXTERNAL_MEMORY_HARD_BANS = [
+    ["Persistent factual", " memory"].join(""),
+    ["memories", "/repo"].join(""),
+    ["repo", "/memories"].join(""),
+    ["shared session factual", " memory"].join(""),
+];
+
+const EXTERNAL_MEMORY_SOFT_BANS = [
+    ["durable", " memory"].join(""),
+];
+
 const CONTROLLED_FIXTURE_FILES = {
     "package.json": JSON.stringify({
         name: SMOKE_FIXTURE_REPO_NAME,
@@ -464,6 +475,10 @@ function assertInstalledArtifactsMatchSources(targetHome) {
         }
 
         assertAgentFrontmatterNamesMatchBasenames(
+            path.join(target, "stnl_project_agent_specializer", "reference", "agents"),
+            "stnl_project_agent_specializer/reference/agents instalado"
+        );
+        assertNoExternalMemoryTermsInTree(
             path.join(target, "stnl_project_agent_specializer", "reference", "agents"),
             "stnl_project_agent_specializer/reference/agents instalado"
         );
@@ -764,6 +779,29 @@ function assertContentIncludesAll(content, snippets, label) {
     }
 }
 
+function assertNoExternalMemoryTermsInText(content, label) {
+    for (const bannedTerm of EXTERNAL_MEMORY_HARD_BANS) {
+        assert(
+            !content.includes(bannedTerm),
+            `${label} contém termo proibido de memória externa: ${bannedTerm}`
+        );
+    }
+
+    for (const bannedTerm of EXTERNAL_MEMORY_SOFT_BANS) {
+        assert(
+            !content.includes(bannedTerm),
+            `${label} contém vocabulário ambíguo; use durable documentation: ${bannedTerm}`
+        );
+    }
+}
+
+function assertNoExternalMemoryTermsInTree(rootDir, label) {
+    for (const relativePath of listRelativeFiles(rootDir)) {
+        const filePath = path.join(rootDir, relativePath);
+        assertNoExternalMemoryTermsInText(fs.readFileSync(filePath, "utf8"), `${label}/${relativePath}`);
+    }
+}
+
 function createControlledFixtureRepo(repoRoot) {
     ensureDir(repoRoot);
 
@@ -1047,6 +1085,8 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
         const agentId = canonicalAgentIdFromFileName(fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const materializedContent = assertFileHasRequiredShape(materializedPath, REQUIRED_AGENT_BODY_SNIPPETS);
+        assertNoExternalMemoryTermsInText(sourceContent, `reference agent ${fileName}`);
+        assertNoExternalMemoryTermsInText(materializedContent, `vscode agent materializado ${fileName}`);
         const { data: sourceFrontmatter } = parseFrontmatter(sourceContent, sourcePath);
         const { data: materializedFrontmatter } = parseFrontmatter(materializedContent, materializedPath);
         materializedAgentRecords.push({
@@ -1501,6 +1541,7 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
     for (const relativePath of materializedTomls) {
         const materializedPath = path.join(codexAgentsRoot, relativePath);
         const content = assertFileHasRequiredShape(materializedPath, []);
+        assertNoExternalMemoryTermsInText(content, `codex agent materializado ${relativePath}`);
         const parsed = parseToml(content, materializedPath);
         const agentName = relativePath.replace(/\.toml$/, "");
         const expectedSandboxMode = EXPECTED_CODEX_AGENT_SANDBOX_MODE[agentName];
@@ -1644,6 +1685,14 @@ async function runSentinelSmoke() {
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
         "templates/agents"
+    );
+    assertNoExternalMemoryTermsInTree(
+        path.join(ROOT, "templates", "agents"),
+        "templates/agents"
+    );
+    assertNoExternalMemoryTermsInTree(
+        path.join(ROOT, "skills", "stnl_project_agent_specializer", "reference", "templates"),
+        "stnl_project_agent_specializer/reference/templates"
     );
     assertNoOperationalArtifactsInSentinelRoot();
     assertNoLegacyDirectoryInSentinelRoot();
