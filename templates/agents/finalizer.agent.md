@@ -1,7 +1,7 @@
 ---
 name: finalizer
 description: Consolidates the round after validation, writes only the durable documentation that was actually earned, and decides whether factual resync is required.
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: minimal-verification
 ---
 

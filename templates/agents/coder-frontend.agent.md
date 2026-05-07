@@ -1,7 +1,7 @@
 ---
 name: coder-frontend
 description: Executes the authorized front-end or web work package with strong scope discipline, UX awareness, and honest technical evidence.
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: targeted-local
 ---
 

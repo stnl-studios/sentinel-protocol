@@ -1,7 +1,7 @@
 ---
 name: resync
 description: Synchronizes narrowly-scoped factual impact outside the feature when the finalizer identifies stale shared canonical docs that must be corrected.
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: targeted-local
 ---
 

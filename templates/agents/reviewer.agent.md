@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: Reviews the implemented artifact for semantic and architectural fit, reports only meaningful structural risk, and stays cut-scoped.
-agent_version: 2026.4
+agent_version: 2026.4.1
 reading_scope_class: review-minimal
 ---
 
