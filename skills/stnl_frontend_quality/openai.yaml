@@ -1,0 +1,9 @@
+interface:
+  name: "stnl_frontend_quality"
+  display_name: "Frontend Quality Guardrail"
+  version: "2026.4.1-alpha.1"
+  protocol_release: "2026.4"
+  status: "active"
+  short_description: "Structural frontend quality guardrail for implementation and review."
+policy:
+  allow_implicit_invocation: false
