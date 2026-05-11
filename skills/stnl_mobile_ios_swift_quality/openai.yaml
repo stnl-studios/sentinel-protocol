@@ -1,0 +1,9 @@
+interface:
+  name: "stnl_mobile_ios_swift_quality"
+  display_name: "iOS Swift Quality Guardrail"
+  version: "2026.4.1-alpha.1"
+  protocol_release: "2026.4"
+  status: "active"
+  short_description: "Structural iOS Swift quality guardrail for implementation and review."
+policy:
+  allow_implicit_invocation: false
