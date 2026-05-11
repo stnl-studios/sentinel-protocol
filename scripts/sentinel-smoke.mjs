@@ -134,6 +134,10 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "execution-package-designer",
             "todo` nao entra por default em `coder-backend`, `coder-frontend`, `coder-ios` ou `validation-runner`",
             "Model-policy compatibility check",
+            "model_reasoning_effort",
+            "Consistency without legacy propagation",
+            "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
+            "artifact final materializado",
         ],
     },
     {
@@ -192,19 +196,41 @@ const BACKEND_ONLY_SPECIALIZED_AGENT_FILES = [
     "validation-runner.agent.md",
     "finalizer.agent.md",
 ];
+const LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE = "coder-backend.agent.md";
 
 const REQUIRED_AGENT_BODY_SNIPPETS = [
     "## Mission",
     "## Handoff",
     "## Reading contract",
+    "## Consistency without legacy propagation",
 ];
 
+const CONSISTENCY_WITHOUT_LEGACY_PROPAGATION_SNIPPETS = [
+    "## Consistency without legacy propagation",
+    "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
+    "This policy does not authorize broad refactors",
+];
+const CONSISTENCY_POLICY_CANONICAL_HEADING = "## Consistency without legacy propagation";
+const CONSISTENCY_POLICY_LEGACY_MARKER = "Consistency without legacy propagation:";
+
 const CODEX_AGENTS_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "AGENTS.md");
+const VSCODE_AGENT_MARKDOWN_CHAR_LIMIT = 30000;
+const CONTROLLED_ALLOWED_MODELS = [
+    "sentinel-strong-model",
+    "sentinel-economy-model",
+];
 const SENTINEL_CODEX_TOML_KEYS = [
     "name",
     "description",
+    "model",
+    "model_reasoning_effort",
     "sandbox_mode",
     "developer_instructions",
+];
+const OPERATIONAL_EFFORT_FRONTMATTER_KEYS = [
+    "reasoning_effort",
+    "thinking_effort",
+    "model_reasoning_effort",
 ];
 const EXPECTED_CODEX_AGENT_SANDBOX_MODE = {
     "orchestrator": "read-only",
@@ -219,6 +245,20 @@ const EXPECTED_CODEX_AGENT_SANDBOX_MODE = {
     "validation-runner": "workspace-write",
     "finalizer": "workspace-write",
     "resync": "workspace-write",
+};
+const EXPECTED_CODEX_AGENT_REASONING_EFFORT = {
+    "orchestrator": "high",
+    "planner": "high",
+    "validation-eval-designer": "high",
+    "execution-package-designer": "high",
+    "reviewer": "high",
+    "designer": "medium",
+    "coder-backend": "medium",
+    "coder-frontend": "medium",
+    "coder-ios": "medium",
+    "validation-runner": "low",
+    "finalizer": "low",
+    "resync": "low",
 };
 
 const EXTERNAL_MEMORY_HARD_BANS = [
@@ -671,6 +711,27 @@ function renderFrontmatter(data) {
     return lines.join("\n");
 }
 
+function getControlledModelForAgent(agentName) {
+    if ([
+        "orchestrator",
+        "planner",
+        "validation-eval-designer",
+        "execution-package-designer",
+        "reviewer",
+    ].includes(agentName)) {
+        return CONTROLLED_ALLOWED_MODELS[0];
+    }
+
+    return CONTROLLED_ALLOWED_MODELS.at(-1);
+}
+
+function assertValidControlledModel(model, label) {
+    assert(
+        CONTROLLED_ALLOWED_MODELS.includes(model),
+        `${label} materializou model fora de allowed_models controlado: ${model}`
+    );
+}
+
 function parseTomlScalar(rawValue, label) {
     const value = rawValue.trim();
 
@@ -741,14 +802,18 @@ function renderTomlScalar(value) {
 }
 
 function renderCodexAgentToml(data, label) {
-    assert(!data.developer_instructions.includes("'''"), `developer_instructions incompatível com literal TOML: ${label}`);
+    const developerInstructions = normalizeProtocolFixedConsistencyHeading(data.developer_instructions);
+    assert(!developerInstructions.includes("'''"), `developer_instructions incompatível com literal TOML: ${label}`);
 
     return [
+        "# Sentinel managed artifact: true",
         `name = ${renderTomlScalar(data.name)}`,
         `description = ${renderTomlScalar(data.description)}`,
+        `model = ${renderTomlScalar(data.model)}`,
+        `model_reasoning_effort = ${renderTomlScalar(data.model_reasoning_effort)}`,
         `sandbox_mode = ${renderTomlScalar(data.sandbox_mode)}`,
         "developer_instructions = '''",
-        data.developer_instructions.trim(),
+        developerInstructions.trim(),
         "'''",
         "",
     ].join("\n");
@@ -777,6 +842,69 @@ function assertContentIncludesAll(content, snippets, label) {
             `${label} não contém o invariante esperado: ${snippet}`
         );
     }
+}
+
+function countOccurrences(content, snippet) {
+    return content.split(snippet).length - 1;
+}
+
+function assertSingleConsistencyPolicyBlock(content, label) {
+    assertContentIncludesAll(content, CONSISTENCY_WITHOUT_LEGACY_PROPAGATION_SNIPPETS, label);
+    assert.equal(
+        countOccurrences(content, CONSISTENCY_POLICY_CANONICAL_HEADING),
+        1,
+        `${label} deve conter exatamente um bloco Consistency without legacy propagation`
+    );
+    assert(
+        !new RegExp(`^\\s*${escapeRegExp(CONSISTENCY_POLICY_LEGACY_MARKER)}\\s*$`, "m").test(content),
+        `${label} não pode conter marcador legado com dois-pontos`
+    );
+}
+
+function stripConsistencyPolicyBlock(content, label) {
+    const heading = CONSISTENCY_POLICY_CANONICAL_HEADING;
+    const start = content.indexOf(heading);
+    assert(start >= 0, `Fixture negativa sem bloco de consistência para remover: ${label}`);
+
+    const nextHeading = content.indexOf("\n## ", start + heading.length);
+    const end = nextHeading >= 0 ? nextHeading + 1 : content.length;
+    return content.slice(0, start) + content.slice(end);
+}
+
+function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function normalizeProtocolFixedConsistencyHeading(content) {
+    const lineBreak = content.includes("\r\n") ? "\r\n" : "\n";
+    const lines = content.split(/\r?\n/);
+    const hasCanonicalHeading = lines.some((line) => line.trim() === CONSISTENCY_POLICY_CANONICAL_HEADING);
+    let repairedLegacyHeading = false;
+
+    const normalizedLines = [];
+
+    for (const line of lines) {
+        if (line.trim() !== CONSISTENCY_POLICY_LEGACY_MARKER) {
+            normalizedLines.push(line);
+            continue;
+        }
+
+        if (!hasCanonicalHeading && !repairedLegacyHeading) {
+            normalizedLines.push(CONSISTENCY_POLICY_CANONICAL_HEADING);
+            repairedLegacyHeading = true;
+        }
+    }
+
+    return normalizedLines.join(lineBreak);
+}
+
+function withLegacyConsistencyHeadingFixture(content) {
+    assert(
+        content.includes(CONSISTENCY_POLICY_CANONICAL_HEADING),
+        "Fixture de variante legada não encontrou heading canônico para substituir"
+    );
+
+    return content.replace(CONSISTENCY_POLICY_CANONICAL_HEADING, CONSISTENCY_POLICY_LEGACY_MARKER);
 }
 
 function assertNoExternalMemoryTermsInText(content, label) {
@@ -829,6 +957,7 @@ function buildSpecializedFrontmatter(baseFrontmatter, fileName, controlledAgentF
         description: baseFrontmatter.description,
         target: "vscode",
         tools: CONTROLLED_AGENT_TOOLSETS[fileName],
+        model: getControlledModelForAgent(agentName),
         base_agent_version: String(baseFrontmatter.agent_version),
         specialization_revision: 1,
         managed_artifact: true,
@@ -858,11 +987,23 @@ function getCodexAgentsTemplatePath(agentSkillRoot) {
     return installedTemplatePath;
 }
 
-function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles) {
+function readControlledAgentSourceContent(skillRoot, fileName, options = {}) {
+    const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
+    const sourceContent = fs.readFileSync(sourcePath, "utf8");
+
+    if (options.legacyConsistencyHeadingFile === fileName) {
+        return withLegacyConsistencyHeadingFixture(sourceContent);
+    }
+
+    return sourceContent;
+}
+
+function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
     for (const fileName of controlledAgentFiles) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
-        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const sourceContent = readControlledAgentSourceContent(skillRoot, fileName, options);
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const normalizedBody = normalizeProtocolFixedConsistencyHeading(body);
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
             fileName,
@@ -871,7 +1012,7 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles) 
 
         writeFile(
             path.join(repoRoot, ".github", "agents", fileName),
-            renderFrontmatter(specializedFrontmatter) + body
+            renderFrontmatter(specializedFrontmatter) + normalizedBody
         );
     }
 }
@@ -895,6 +1036,7 @@ function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const normalizedBody = normalizeProtocolFixedConsistencyHeading(body);
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
             fileName,
@@ -905,7 +1047,7 @@ function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
 
         writeFile(
             path.join(repoRoot, ".github", "agents", fileName),
-            renderFrontmatter(specializedFrontmatter) + renderBackendOnlySpecializedBody(body, fileName)
+            renderFrontmatter(specializedFrontmatter) + renderBackendOnlySpecializedBody(normalizedBody, fileName)
         );
     }
 }
@@ -953,22 +1095,27 @@ function renderCodexAgentsIndex(template, agentNames) {
         .replace("{{LOCAL_NOTES}}", "- Smoke fixture for controlled Codex materialization.");
 }
 
-function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles) {
+function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
     const agentNames = controlledAgentFiles.map((fileName) => canonicalAgentIdFromFileName(fileName));
 
     for (const fileName of controlledAgentFiles) {
         const agentName = canonicalAgentIdFromFileName(fileName);
         const sandboxMode = EXPECTED_CODEX_AGENT_SANDBOX_MODE[agentName];
+        const modelReasoningEffort = EXPECTED_CODEX_AGENT_REASONING_EFFORT[agentName];
         assert(sandboxMode, `Sandbox Codex esperado não mapeado para agent controlado: ${agentName}`);
+        assert(modelReasoningEffort, `Effort Codex esperado não mapeado para agent controlado: ${agentName}`);
 
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
-        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const sourceContent = readControlledAgentSourceContent(skillRoot, fileName, options);
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const normalizedBody = normalizeProtocolFixedConsistencyHeading(body);
         const tomlContent = renderCodexAgentToml({
             name: agentName,
             description: baseFrontmatter.description,
+            model: getControlledModelForAgent(agentName),
+            model_reasoning_effort: modelReasoningEffort,
             sandbox_mode: sandboxMode,
-            developer_instructions: body,
+            developer_instructions: normalizedBody,
         }, sourcePath);
 
         writeFile(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), tomlContent);
@@ -1103,6 +1250,20 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
             "vscode",
             `Agent especializado sem target canônico: ${materializedPath}`
         );
+        assertValidControlledModel(
+            materializedFrontmatter.model,
+            `vscode agent ${materializedPath}`
+        );
+        for (const effortKey of OPERATIONAL_EFFORT_FRONTMATTER_KEYS) {
+            assert(
+                !Object.hasOwn(materializedFrontmatter, effortKey),
+                `Agent VS Code/GitHub não deve serializar effort operacional no frontmatter (${effortKey}): ${materializedPath}`
+            );
+        }
+        assert(
+            materializedContent.length <= VSCODE_AGENT_MARKDOWN_CHAR_LIMIT,
+            `Agent VS Code/GitHub excede ${VSCODE_AGENT_MARKDOWN_CHAR_LIMIT} caracteres: ${materializedPath}`
+        );
         assert.deepEqual(
             materializedFrontmatter.tools,
             CONTROLLED_AGENT_TOOLSETS[fileName],
@@ -1142,6 +1303,7 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
             "description",
             "target",
             "tools",
+            "model",
             "base_agent_version",
             "specialization_revision",
             "managed_artifact",
@@ -1285,12 +1447,20 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
 }
 
 function assertProtocolHardeningInReferenceAgents(skillRoot) {
+    const referenceAgentsRoot = path.join(skillRoot, "reference", "agents");
+    const referenceAgentFiles = listRelativeFiles(referenceAgentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort();
     const agentContents = new Map(
-        REQUIRED_CONTROLLED_AGENT_FILES.map((fileName) => [
+        referenceAgentFiles.map((fileName) => [
             fileName,
-            fs.readFileSync(path.join(skillRoot, "reference", "agents", fileName), "utf8"),
+            fs.readFileSync(path.join(referenceAgentsRoot, fileName), "utf8"),
         ])
     );
+
+    for (const [fileName, content] of agentContents.entries()) {
+        assertSingleConsistencyPolicyBlock(content, `${fileName} reference consistency policy`);
+    }
 
     for (const coderFile of ["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"]) {
         assertContentIncludesAll(agentContents.get(coderFile), [
@@ -1331,6 +1501,20 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
     ], "finalizer explicit closure");
 }
 
+function assertProtocolHardeningInTemplateAgents() {
+    const templateAgentsRoot = path.join(ROOT, "templates", "agents");
+    const templateAgentFiles = listRelativeFiles(templateAgentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort();
+
+    assert(templateAgentFiles.length > 0, "Nenhum template agent encontrado para validar policy protocol-fixed");
+
+    for (const fileName of templateAgentFiles) {
+        const content = fs.readFileSync(path.join(templateAgentsRoot, fileName), "utf8");
+        assertSingleConsistencyPolicyBlock(content, `${fileName} template consistency policy`);
+    }
+}
+
 function assertProtocolHardeningInCanonicalRefs(skillRoot) {
     const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
     assertContentIncludesAll(skillContent, [
@@ -1351,6 +1535,13 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "finalizer` só pode fechar `READY` com closure ledger explícito",
         "`DONE` yes/no com racional",
         "resync yes/no com racional",
+        "Contrato operacional de `model` e effort",
+        "nunca entregar agent gerenciado sem `model`",
+        "`model_reasoning_effort` é obrigatório",
+        "Consistency without legacy propagation",
+        "Seguir o padrão do projeto não significa copiar dívida técnica",
+        "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
+        "a propagação protocol-fixed deve ser validada comparando template/base agent canônico, `reference/agents/*.agent.md` instalado e artifact final materializado do target",
     ], "stnl_project_agent_specializer anti-drift");
 
     const qualityGateContent = fs.readFileSync(
@@ -1367,6 +1558,10 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "validation-runner` só entra com artifact validável de executor `READY` válido",
         "finalizer` não confunde status próprio (`READY`/`BLOCKED`) com verdict do runner",
         "finalizer READY` sem `DONE` yes/no explícito ou sem resync yes/no explícito",
+        "todo artifact gerenciado materializa `model`",
+        "Consistency without legacy propagation check",
+        "frases sentinela de consistencia presentes no template/base ou reference agent mas ausentes de `developer_instructions` em Codex",
+        "compactacao ou normalizacao remove bloco protocol-fixed para caber no limite de 30.000 caracteres",
     ], "agent specialization quality gate hardening");
 
     const lifecycleContent = fs.readFileSync(
@@ -1385,6 +1580,8 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
 function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFiles) {
     for (const fileName of controlledAgentFiles) {
         const content = fs.readFileSync(path.join(repoRoot, ".github", "agents", fileName), "utf8");
+
+        assertSingleConsistencyPolicyBlock(content, `${fileName} vscode consistency policy`);
 
         if (["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"].includes(fileName)) {
             assertContentIncludesAll(content, [
@@ -1431,6 +1628,8 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
         const parsed = parseToml(content, `${agentName}.toml`);
         const instructions = parsed.developer_instructions;
 
+        assertSingleConsistencyPolicyBlock(instructions, `${agentName} codex developer_instructions consistency policy`);
+
         if (["coder-backend", "coder-frontend", "coder-ios"].includes(agentName)) {
             assertContentIncludesAll(instructions, [
                 "No other terminal handoff is valid.",
@@ -1469,6 +1668,41 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
     }
 }
 
+function assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const templatePath = path.join(ROOT, "templates", "agents", fileName);
+        const referencePath = path.join(skillRoot, "reference", "agents", fileName);
+        const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
+        const templateContent = fs.readFileSync(templatePath, "utf8");
+        const referenceContent = fs.readFileSync(referencePath, "utf8");
+        const materializedContent = fs.readFileSync(materializedPath, "utf8");
+
+        assertSingleConsistencyPolicyBlock(templateContent, `${fileName} template consistency policy`);
+        assertSingleConsistencyPolicyBlock(referenceContent, `${fileName} reference consistency policy`);
+        assertSingleConsistencyPolicyBlock(materializedContent, `${fileName} vscode materialized consistency policy`);
+    }
+}
+
+function assertConsistencyPolicyPropagationToCodexAgents(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const templatePath = path.join(ROOT, "templates", "agents", fileName);
+        const referencePath = path.join(skillRoot, "reference", "agents", fileName);
+        const materializedPath = path.join(repoRoot, ".codex", "agents", `${agentName}.toml`);
+        const templateContent = fs.readFileSync(templatePath, "utf8");
+        const referenceContent = fs.readFileSync(referencePath, "utf8");
+        const materializedContent = fs.readFileSync(materializedPath, "utf8");
+        const parsed = parseToml(materializedContent, materializedPath);
+
+        assertSingleConsistencyPolicyBlock(templateContent, `${fileName} template consistency policy`);
+        assertSingleConsistencyPolicyBlock(referenceContent, `${fileName} reference consistency policy`);
+        assertSingleConsistencyPolicyBlock(
+            parsed.developer_instructions,
+            `${agentName} codex developer_instructions consistency policy`
+        );
+    }
+}
+
 function assertBackendOnlySpecializedMaterialization(repoRoot) {
     const agentsRoot = path.join(repoRoot, ".github", "agents");
     const materializedFiles = listRelativeFiles(agentsRoot)
@@ -1497,6 +1731,20 @@ function assertBackendOnlySpecializedMaterialization(repoRoot) {
             2,
             `Especialização backend-only deve simular revision 2: ${materializedPath}`
         );
+        assertValidControlledModel(
+            materializedFrontmatter.model,
+            `backend-only vscode agent ${materializedPath}`
+        );
+        for (const effortKey of OPERATIONAL_EFFORT_FRONTMATTER_KEYS) {
+            assert(
+                !Object.hasOwn(materializedFrontmatter, effortKey),
+                `Backend-only VS Code/GitHub não deve serializar effort operacional no frontmatter (${effortKey}): ${materializedPath}`
+            );
+        }
+        assert(
+            content.length <= VSCODE_AGENT_MARKDOWN_CHAR_LIMIT,
+            `Backend-only VS Code/GitHub excede ${VSCODE_AGENT_MARKDOWN_CHAR_LIMIT} caracteres: ${materializedPath}`
+        );
     }
 
     assertVscodeOperationalIdentity(
@@ -1519,6 +1767,100 @@ function assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(skill
         );
     } finally {
         fs.rmSync(weakRepoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertConsistencyPolicyRejectsVscodeMaterializationDrift(skillRoot, controlledAgentFiles) {
+    const weakRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-no-consistency-"));
+
+    try {
+        createControlledFixtureRepo(weakRepoRoot);
+        materializeControlledAgents(skillRoot, weakRepoRoot, controlledAgentFiles);
+
+        const driftFileName = "coder-backend.agent.md";
+        const driftPath = path.join(weakRepoRoot, ".github", "agents", driftFileName);
+        const driftContent = fs.readFileSync(driftPath, "utf8");
+        writeFile(driftPath, stripConsistencyPolicyBlock(driftContent, driftPath));
+
+        assert.throws(
+            () => assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, weakRepoRoot, controlledAgentFiles),
+            /não contém o invariante esperado/,
+            "Validação protocol-fixed deveria rejeitar VS Code/GitHub final sem Consistency without legacy propagation"
+        );
+    } finally {
+        fs.rmSync(weakRepoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertConsistencyPolicyRejectsCodexMaterializationDrift(skillRoot, controlledAgentFiles) {
+    const weakRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-no-consistency-"));
+
+    try {
+        createControlledFixtureRepo(weakRepoRoot);
+        materializeControlledCodexAgents(skillRoot, weakRepoRoot, controlledAgentFiles);
+
+        const driftAgentName = "coder-backend";
+        const driftPath = path.join(weakRepoRoot, ".codex", "agents", `${driftAgentName}.toml`);
+        const driftContent = fs.readFileSync(driftPath, "utf8");
+        const parsed = parseToml(driftContent, driftPath);
+        writeFile(driftPath, renderCodexAgentToml({
+            ...parsed,
+            developer_instructions: stripConsistencyPolicyBlock(parsed.developer_instructions, driftPath),
+        }, driftPath));
+
+        assert.throws(
+            () => assertConsistencyPolicyPropagationToCodexAgents(skillRoot, weakRepoRoot, controlledAgentFiles),
+            /não contém o invariante esperado/,
+            "Validação protocol-fixed deveria rejeitar Codex final sem Consistency without legacy propagation em developer_instructions"
+        );
+    } finally {
+        fs.rmSync(weakRepoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertConsistencyPolicyRepairsLegacyVscodeMaterialization(skillRoot, controlledAgentFiles) {
+    const repairedRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-legacy-consistency-"));
+
+    try {
+        createControlledFixtureRepo(repairedRepoRoot);
+        materializeControlledAgents(skillRoot, repairedRepoRoot, controlledAgentFiles, {
+            legacyConsistencyHeadingFile: LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE,
+        });
+
+        const repairedPath = path.join(repairedRepoRoot, ".github", "agents", LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE);
+        const repairedContent = fs.readFileSync(repairedPath, "utf8");
+
+        assertSingleConsistencyPolicyBlock(
+            repairedContent,
+            `${LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE} vscode legacy consistency repair`
+        );
+        assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, repairedRepoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repairedRepoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertConsistencyPolicyRepairsLegacyCodexMaterialization(skillRoot, controlledAgentFiles) {
+    const repairedRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-legacy-consistency-"));
+
+    try {
+        createControlledFixtureRepo(repairedRepoRoot);
+        materializeControlledCodexAgents(skillRoot, repairedRepoRoot, controlledAgentFiles, {
+            legacyConsistencyHeadingFile: LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE,
+        });
+
+        const agentName = canonicalAgentIdFromFileName(LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE);
+        const repairedPath = path.join(repairedRepoRoot, ".codex", "agents", `${agentName}.toml`);
+        const repairedContent = fs.readFileSync(repairedPath, "utf8");
+        const parsed = parseToml(repairedContent, repairedPath);
+
+        assertSingleConsistencyPolicyBlock(
+            parsed.developer_instructions,
+            `${agentName} codex legacy consistency repair`
+        );
+        assertConsistencyPolicyPropagationToCodexAgents(skillRoot, repairedRepoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repairedRepoRoot, { recursive: true, force: true });
     }
 }
 
@@ -1545,6 +1887,7 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
         const parsed = parseToml(content, materializedPath);
         const agentName = relativePath.replace(/\.toml$/, "");
         const expectedSandboxMode = EXPECTED_CODEX_AGENT_SANDBOX_MODE[agentName];
+        const expectedReasoningEffort = EXPECTED_CODEX_AGENT_REASONING_EFFORT[agentName];
 
         assert.deepEqual(
             Object.keys(parsed).sort(),
@@ -1559,6 +1902,20 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
             );
         }
 
+        assert(
+            content.startsWith("# Sentinel managed artifact: true\n"),
+            `Agent codex gerenciado deve usar comentario/header seguro, não campo runtime desconhecido: ${materializedPath}`
+        );
+        assertValidControlledModel(
+            parsed.model,
+            `codex agent ${materializedPath}`
+        );
+        assert(expectedReasoningEffort, `Effort Codex esperado não mapeado para agent materializado: ${agentName}`);
+        assert.equal(
+            parsed.model_reasoning_effort,
+            expectedReasoningEffort,
+            `Agent codex com model_reasoning_effort divergente: ${materializedPath}`
+        );
         assert(expectedSandboxMode, `Sandbox Codex esperado não mapeado para agent materializado: ${agentName}`);
         assert.equal(
             parsed.sandbox_mode,
@@ -1574,6 +1931,12 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
             !Object.hasOwn(parsed, "tools"),
             `Agent codex não deve serializar tools no TOML: ${materializedPath}`
         );
+        for (const forbiddenKey of ["reasoning_effort", "thinking_effort"]) {
+            assert(
+                !Object.hasOwn(parsed, forbiddenKey),
+                `Agent codex não deve inventar campo operacional de effort (${forbiddenKey}): ${materializedPath}`
+            );
+        }
         assert(
             !content.includes("danger-full-access"),
             `Agent codex contém danger-full-access no TOML: ${materializedPath}`
@@ -1592,6 +1955,8 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         "## Runtime Hardening",
         "## Managed Agents",
         ".codex/agents/",
+        "`model`",
+        "`model_reasoning_effort`",
         "`sandbox_mode`",
         "`read-only`",
         "`workspace-write`",
@@ -1650,17 +2015,21 @@ function runControlledMaterializationSmoke(targetHome) {
 
         assertControlledContextMaterialization(vscodeRepoRoot);
         assertControlledReferenceDocs(agentSkillRoot);
+        assertProtocolHardeningInTemplateAgents();
         assertProtocolHardeningInReferenceAgents(agentSkillRoot);
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertConsistencyPolicyPropagationToVscodeAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(backendOnlyRepoRoot);
         materializeControlledContextDocs(contextSkillRoot, backendOnlyRepoRoot);
         materializeBackendOnlySpecializedAgents(agentSkillRoot, backendOnlyRepoRoot);
         assertBackendOnlySpecializedMaterialization(backendOnlyRepoRoot);
         assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(agentSkillRoot);
+        assertConsistencyPolicyRejectsVscodeMaterializationDrift(agentSkillRoot, controlledAgentFiles);
+        assertConsistencyPolicyRepairsLegacyVscodeMaterialization(agentSkillRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(codexRepoRoot);
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
@@ -1668,6 +2037,9 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexAgentMaterialization(codexRepoRoot, controlledAgentFiles);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertConsistencyPolicyPropagationToCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
+        assertConsistencyPolicyRejectsCodexMaterializationDrift(agentSkillRoot, controlledAgentFiles);
+        assertConsistencyPolicyRepairsLegacyCodexMaterialization(agentSkillRoot, controlledAgentFiles);
     } finally {
         fs.rmSync(vscodeRepoRoot, { recursive: true, force: true });
         fs.rmSync(backendOnlyRepoRoot, { recursive: true, force: true });

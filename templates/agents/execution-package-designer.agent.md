@@ -160,6 +160,13 @@ It must not:
 - relax the `EXECUTION PACKAGE` contract
 - turn package compilation into broad implementation discovery or pseudo-code design
 
+## Consistency without legacy propagation
+Preserve real contracts, public behavior, interoperability, schemas, APIs, routes, flows, and compatibility. Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.
+
+Follow an existing pattern only when it is a real contract, required interoperability, a documented architecture decision, an explicit execution-package requirement, or local consistency needed to avoid breaking behavior. Otherwise, use the safest current practice compatible with the project's existing stack and authorized scope.
+
+This policy does not authorize broad refactors, architecture rewrites, stack changes, opportunistic modernization, public contract breaks, schema/API changes without authorization, or unrequested behavior changes. If the safer fix needs wider scope, block or record a follow-up through the owning downstream agent instead of hiding the change.
+
 ## Operating policy
 ### Package-design stance
 Compile executable boundaries, not a second plan.

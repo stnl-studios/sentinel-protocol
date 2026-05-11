@@ -32,7 +32,14 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - não serializar `tools` no TOML controlado de `codex`; usar `sandbox_mode` para hardening runtime e `developer_instructions` para preservar a política semântica de tools
 - tratar o specialized final como shape normalizado e remover legado residual por default durante create e update
 - não perpetuar `## Tools` no corpo nem `agent_version` no frontmatter sem ordem humana explícita
-- manter a governança de `model` explícita por `model_policy` e subordinada a `allowed_models` quando existir
+- manter `model` como campo operacional obrigatório em todo agent materializado
+- manter `model_policy` como override avançado opcional; ausência de `model_policy` não deve exigir matriz longa nos prompts de uso diário
+- manter `allowed_models` como lista autorizada e ordenada para resolução default por role class
+- manter `model_reasoning_effort` obrigatório apenas nos TOMLs `codex`
+- nunca serializar effort operacional no frontmatter `.agent.md` de VS Code/GitHub
+- manter o gate de 30.000 caracteres para prompts Markdown de `.agent.md` VS Code/GitHub
+- preservar a política `Consistency without legacy propagation`: consistência com o projeto não autoriza copiar dívida técnica acidental nem fazer refactor amplo escondido
+- manter gate explícito de propagação protocol-fixed entre `templates/agents`, `reference/agents` instalado e artifact final materializado; Codex deve carregar esses blocos em `developer_instructions`
 - manter o bundle de referências alinhado aos base agents canônicos e às docs `AGENT-CONTRACT-SHAPE`, `AGENT-SPECIALIZATION-QUALITY-GATE`, `EXECUTION-LIFECYCLE` e `STATUS-GATES`
 - evitar que este README ou detalhes internos do repo virem parte do contrato final da skill
 

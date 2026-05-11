@@ -184,6 +184,11 @@ A especializacao por projeto nunca pode alterar:
 Mesmo sem materializar agora, o shape esperado do arquivo especializado em `./.github/agents/*.agent.md` ja fica definido.
 
 Campos canonicos esperados no frontmatter do agent especializado:
+- `name`
+- `description`
+- `target`
+- `tools`
+- `model`
 - `base_agent_version`
 - `specialization_revision`
 - `managed_artifact`
@@ -193,6 +198,9 @@ Regras:
 - `specialization_revision` versiona apenas a materializacao especializada daquele projeto
 - `specialization_revision` comeca em `1`
 - `managed_artifact: true` identifica artifact gerenciado pela futura skill
+- `model` identifica o modelo operacional materializado; texto no corpo do agent nao substitui esse campo
+- `.agent.md` de VS Code/GitHub nao deve serializar `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter
+- `.agent.md` gerenciado para VS Code/GitHub deve respeitar o limite de 30.000 caracteres do prompt Markdown do agent
 - a metadata minima do specialized tambem nao e source of truth comportamental
 - o comportamento do specialized continua sendo definido pelo corpo contratual materializado, derivado do base e das docs canonicas
 
@@ -207,6 +215,24 @@ specialization_revision: 1
 managed_artifact: true
 ---
 ```
+
+## Shape esperado para Codex
+Artifacts Codex gerenciados em `.codex/agents/*.toml` usam contrato operacional proprio e nao espelham o frontmatter VS Code.
+
+Campos Sentinel obrigatorios no TOML Codex:
+- `name`
+- `description`
+- `model`
+- `model_reasoning_effort`
+- `sandbox_mode`
+- `developer_instructions`
+
+Regras:
+- `model` e `model_reasoning_effort` sao configuracao operacional, nao texto descritivo.
+- `sandbox_mode` continua obrigatorio por politica Sentinel.
+- `tools` nao deve ser serializado no TOML Codex controlado quando a politica vigente preserva tools semanticamente em `developer_instructions` e por hardening de `sandbox_mode`.
+- `reasoning_effort`, `thinking_effort` ou equivalentes fora de `model_reasoning_effort` nao devem ser inventados.
+- marcas gerenciadas devem preferir comentario/header TOML, nao campo runtime desconhecido.
 
 ## Finalidade auditavel desses metadados
 Esses metadados existem para:
