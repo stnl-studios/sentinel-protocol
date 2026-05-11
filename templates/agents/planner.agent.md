@@ -46,6 +46,7 @@ Expected shape of the `EXECUTION BRIEF`:
 - assumptions, risks, and open questions
 - definition of done for this cut
 - validation-aware notes for `validation-eval-designer.agent.md`
+- active stack quality guardrails that downstream agents must apply when relevant: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, and/or `stnl_mobile_ios_swift_quality`
 - package-shaping notes for `execution-package-designer.agent.md` when the cut likely needs multiple work packages
 - signal to the orchestrator when `designer.agent.md` should be involved
 
@@ -102,8 +103,13 @@ Keep the return surface delta-only by default. The orchestrator should receive t
 - Do not hide blockers inside assumptions or optional follow-up notes.
 - When the honest cut cannot stay small without dropping required behavior, stop and escalate instead of compressing scope dishonestly.
 
+## Stack quality guardrail detection
+- Identify stack quality guardrails as planning metadata, not as implementation details: `stnl_frontend_quality` for web/browser front-end work, `stnl_backend_quality` for server-side/API/service/domain/job/integration/runtime work, `stnl_backend_sql_quality` for persistence, data access, query, ORM, NoSQL, cache, migration, transaction, or index work, and `stnl_mobile_ios_swift_quality` for native Swift/SwiftUI/UIKit iOS work.
+- Activate only the guardrails evidenced by the cut surface. Multiple guardrails may be active for one cut, especially back-end plus persistence work or cross-surface work.
+- Do not rewrite the guardrail content, do not treat guardrails as agents, and do not invent a stack guardrail when none of the known surfaces applies. Pass the active names downstream so validation, package design, execution, and review can apply them.
+
 ## Validation-aware planning
-- Frame the cut so `validation-eval-designer.agent.md` receives the behavior, contract edges, and proof-relevant constraints it needs without reconstructing planning intent.
+- Frame the cut so `validation-eval-designer.agent.md` receives the behavior, contract edges, proof-relevant constraints, and active stack quality guardrails it needs without reconstructing planning intent.
 - Include the minimum observable outcomes, harness-sensitive constraints, and validation notes that affect whether the cut is executable and checkable.
 - Keep validation-aware planning at the level of cut framing; do not absorb proof design or runner work into the brief.
 - If no credible validation path can be described yet, narrow the cut or escalate instead of passing speculative work downstream.
@@ -142,7 +148,7 @@ Keep the return surface delta-only by default. The orchestrator should receive t
 - `Do not scan broadly unless`: the honest cut, active source of truth, boundary, or a real shared dependency cannot be stabilized from the immediate boundary-local context.
 
 ## Completion contract
-- `Mandatory completion gate`: emit `READY` only when `EXECUTION BRIEF` defines a small honest cut with explicit in-scope and out-of-scope boundaries, source-of-truth notes, dependencies, and validation-aware guidance.
+- `Mandatory completion gate`: emit `READY` only when `EXECUTION BRIEF` defines a small honest cut with explicit in-scope and out-of-scope boundaries, source-of-truth notes, dependencies, active stack quality guardrails when relevant, and validation-aware guidance.
 - `Evidence required before claiming completion`: enough current-state evidence to justify the cut, the out-of-scope line, the active source of truth, the main dependencies, the likely validation path, and any safe-parallelization claim.
 - `Area-specific senior risk checklist`: hidden contract work, source-of-truth drift, cross-surface coupling, dishonest scope compression, validation infeasibility, speculative parallelization, or planner drift into local design.
 

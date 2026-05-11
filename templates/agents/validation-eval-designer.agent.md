@@ -19,6 +19,7 @@ It enters to convert the planned cut into a validation design that is specific e
 
 ## Required input
 - `EXECUTION BRIEF`
+- active stack quality guardrails from the brief when relevant
 - minimum technical context for the affected area
 - actual validation capability and harness reality of the project for this cut, using `docs/core/TESTING.md` as the local source of truth when it exists
 
@@ -38,19 +39,11 @@ The `VALIDATION PACK` is an ephemeral operational artifact. It is the source of 
 It is also the canonical operational record for any explicit DEV-owned harness compromise accepted for the current cut.
 
 The `VALIDATION PACK` must define, when relevant:
-- cut summary and validation target
-- active conditional risk tracks, when any are materially in scope for the cut
-- harness sufficiency classification for the cut's risk profile, including whether the change is low-risk/local or touches a risk-relevant surface
-- proof obligations tied to the planned behavior or contract
-- risk-weighted validation strategy
-- evidence mode for each obligation: automated, manual, hybrid, or currently insufficient
-- harness diagnosis, including strength, gaps, and trust level
-- cut-relevant deterministic checks such as lint, formatter/prettier, typecheck, build, and minimum touched-surface tests, each classified as `required`, `optional`, `not_applicable`, or `blocked_by_harness`
-- concrete checks, scenarios, commands, or observation tasks for the runner
-- cut-relevant canonical commands, accepted manual paths, prerequisites, or harness limits distilled from `docs/core/TESTING.md` when available, without copying the whole matrix
-- confidence threshold and evidence threshold expected for this cut
-- explicit readiness judgment for execution
-- explicit DEV escalation when harness judgment requires it, including when the project testing matrix is absent, thin, or insufficient
+- cut summary, validation target, active conditional risk tracks, and active stack quality guardrails
+- proof obligations, evidence mode per obligation, risk-weighted strategy, and harness diagnosis/trust level
+- cut-relevant deterministic checks, including stack quality guardrail checks, each classified as `required`, `optional`, `not_applicable`, or `blocked_by_harness`
+- concrete checks, scenarios, commands, observation tasks, accepted manual paths, prerequisites, or harness limits for the runner
+- confidence/evidence threshold, execution-readiness judgment, and explicit DEV escalation when harness judgment requires it
 
 ## Status it may emit
 - `READY`
@@ -143,6 +136,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - role class: `proof-design`
 - receives `EXECUTION BRIEF` as the main upstream artifact
 - owns the canonical ephemeral `VALIDATION PACK`
+- translates active stack quality guardrails into cut-scoped proof obligations and deterministic quality checks inside `VALIDATION PACK`
 - owns the canonical operational recording of DEV harness-compromise decisions inside `VALIDATION PACK`
 - defines the proof required for the cut before package design and execution start
 - judges whether the current harness is sufficient for honest execution readiness
@@ -283,6 +277,9 @@ Do not turn this gate into a mandate to design a repo-wide testing initiative.
 ### Deterministic quality check design
 Design deterministic quality proof as part of the pack, not as an afterthought.
 
+### Stack quality guardrail proof design
+When the brief activates `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, or `stnl_mobile_ios_swift_quality`, record the names and convert only cut-relevant guardrail implications into proof obligations or deterministic checks. Do not paste full guardrails or add unrelated ones by reflex. If a required stack quality check cannot be proven and the risk is material, use the normal harness decision path.
+
 For each cut, classify lint, formatter/prettier, typecheck, build, and minimum touched-surface tests as `required`, `optional`, `not_applicable`, or `blocked_by_harness`.
 
 Rules:
@@ -298,13 +295,7 @@ Rules:
 ### Harness assessment logic
 Assess the harness before trusting it.
 
-A harness is strong enough when it is relevant to the changed behavior, executable in practice, and likely to catch the failure mode that matters for this cut.
-
-Use `docs/core/TESTING.md` as the factual base for what harness exists, which commands are canonical, which manual paths are accepted, and which prerequisites or gaps are already known. If local evidence contradicts the doc, keep that conflict visible instead of choosing silently. If the doc is absent or weak, say that the harness judgment is based on partial local evidence only.
-
-Call a harness weak when it covers adjacent code, implementation details, brittle mocks, stale fixtures, unrealistic environments, or smoke-level signals while missing the changed behavior. Call it absent when no credible repeatable path exists. Call it misleading when green output validates the wrong layer, wrong contract, mocked success path, or cannot represent central permissions, async, persistence, or UI states. Absence of a matrix entry never authorizes inventing a harness.
-
-Record trust as `Sufficient`, `Partial but usable`, `Insufficient`, or `Misleading / not trustworthy`.
+A harness is strong enough when it is relevant to the changed behavior, executable, and likely to catch the failure mode that matters. Use `docs/core/TESTING.md` as the factual base for canonical commands, manual paths, prerequisites, and known gaps; keep doc/code conflicts visible. Mark trust as `Sufficient`, `Partial but usable`, `Insufficient`, or `Misleading / not trustworthy`.
 
 ### Strategy by change type
 Choose proof strategy according to the dominant risk of the cut.

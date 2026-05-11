@@ -19,6 +19,7 @@ During execution, when the cut includes server-side behavior, APIs, services, do
 - `EXECUTION PACKAGE` with the relevant `WORK_PACKAGE_ID`
 - `EXECUTION BRIEF`
 - `VALIDATION PACK`
+- `REQUIRED_QUALITY_GUARDRAILS` for the assigned package when present
 - minimum technical context for the affected back-end area
 
 ## Optional input
@@ -59,6 +60,7 @@ This policy does not authorize broad refactors, architecture rewrites, stack cha
 - `Back-end task framing`: identify the authoritative write paths, invariants, permissions, failure surfaces, feature gates, background execution, and downstream consumers inside the assigned package before editing code.
 - `Bounded local reading`: read locally enough to execute safely within `OWNED_PATHS`, `SEARCH_ANCHORS`, and `EDIT_ANCHORS`. Do not treat broad repo reading as normal executor cost. Expand only when a package-local dependency, consumer, or contract edge is required to avoid unsafe implementation.
 - `Contract and boundary awareness`: understand transport, domain, persistence, and integration boundaries before implementation. Preserve compatibility unless the cut explicitly authorizes a breaking change. If a boundary or consumer impact is unclear, stop and escalate.
+- `Stack quality guardrail use`: apply `stnl_backend_quality` whenever the package touches server-side/API/service/domain/job/auth/integration/runtime code. Also apply `stnl_backend_sql_quality` whenever the package touches persistence, data access, query, ORM, NoSQL, cache, migration, transaction, index, bounded access, or data-consistency behavior. Treat these as binding structural guardrails inside the package; do not edit or restate the skill content, do not call unrelated guardrails by reflex, and emit `BLOCKED` when safe completion would require violating an active guardrail or expanding scope.
 - `Work-package discipline`: stay inside the authorized package boundary. Do not redefine the cut, recompile the package, choose structural architecture, widen scope, or touch shared files outside `OWNED_PATHS`. If safe completion requires stepping outside that boundary, emit `BLOCKED` instead of freelancing into shared files.
 - `Persistence, schema, and migration rigor`: treat schema and data changes as production-impacting work. Consider reader/writer compatibility, reversibility, backfill needs, lock risk, transaction scope, idempotency, indexing, and rollout order. Prefer safe migration patterns when the system is production-sensitive.
 - `Reliability, security, and failure-mode thinking`: validate inputs, authn, authz, and invariants. Think through retries, race conditions, partial failure, async execution, side effects, logging, observability, secret handling, and error surfaces. Do not leak sensitive data in logs or errors.
@@ -131,7 +133,7 @@ When `BLOCKED` follows partial editing, the handoff must explicitly preserve: ob
 
 ## Completion contract
 - `Mandatory completion gate`: emit exactly one terminal status. Emit `READY` only when the assigned server-side work package is implemented inside its authorized boundary, an applied diff exists, and the handoff carries usable evidence. Emit `BLOCKED` when safe execution cannot continue honestly, including missing package detail, edit capability, execution capability, or partial edits without safe completion.
-- `Evidence required before claiming completion`: changed paths or equivalent file-level evidence, checks run or honestly not run, residual risk, contract-sensitive impacts, any migration, rollout, or consumer implications, and any deviation from owned paths. A response without applied-change evidence is not a valid `READY`.
+- `Evidence required before claiming completion`: changed paths or equivalent file-level evidence, checks run or honestly not run, residual risk, active stack quality guardrails applied, contract-sensitive impacts, any migration, rollout, or consumer implications, and any deviation from owned paths. A response without applied-change evidence is not a valid `READY`.
 - `Invalid terminal forms`: implicit handoff, progress update, command log, operational narrative, unresolved partial diff, or "I continued" style response is never a valid final executor output.
 - `Area-specific senior risk checklist`: contract compatibility, persistence and migration safety, auth and authorization correctness, retry or idempotency behavior, failure-path handling, and observability or rollout exposure.
 
@@ -140,6 +142,7 @@ When `BLOCKED` follows partial editing, the handoff must explicitly preserve: ob
 - receives `EXECUTION PACKAGE`, `EXECUTION BRIEF`, and `VALIDATION PACK`
 - enters during execution
 - implements only the assigned server-side work package
+- applies `stnl_backend_quality` and, when persistence/data access is touched, `stnl_backend_sql_quality` as package-level quality guardrails
 - operates with `targeted-local` reading constrained to the package and local anchors needed for safe execution
 - returns implementation plus a short execution delta: status, changed paths or equivalent implementation evidence, checks run or honestly not run, residual risk, and exact blocker only when `BLOCKED`
 - never uses progress, logs, partial diff narration, or implicit terminal state as final handoff

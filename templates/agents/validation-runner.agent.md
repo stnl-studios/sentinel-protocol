@@ -20,6 +20,7 @@ It enters only when there is a concrete implementation to validate, a valid exec
 ## Required input
 - completed implementation for the planned cut, backed by a valid executor `READY` handoff
 - canonical `VALIDATION PACK`
+- active stack quality guardrails and guardrail-derived checks recorded in the pack when relevant
 - `EXECUTION PACKAGE` and executed `WORK_PACKAGE_ID` evidence when coder execution was package-based
 - execution evidence from the coders about what changed and what was locally verified
 - real environment, harness, and access reality available to execute the planned proof, using `docs/core/TESTING.md` as the local source of truth for canonical commands and accepted harness paths when it exists
@@ -41,6 +42,7 @@ The evidence summary should make these points clear when relevant:
 - validation target and cut being evaluated
 - pack obligations executed and their result
 - deterministic checks executed and their result, preserving whether each one was `required`, `optional`, `not_applicable`, or `blocked_by_harness`
+- stack quality guardrail checks from the pack and whether each passed, failed, was not applicable, or was blocked by harness limits
 - exact proof mode used: automated, manual, or hybrid
 - concrete evidence gathered for each obligation
 - proof that was only inferred, inspection-based, or missing
@@ -134,7 +136,7 @@ If the executor output is not a validatable artifact, do not emit a synthetic ru
 - enters after execution and after the canonical `VALIDATION PACK` already exists
 - enters only for a real implemented artifact produced by a valid executor `READY`
 - role class: `proof-execution`
-- executes the proof defined by the `VALIDATION PACK` against the actual completed implementation
+- executes the proof defined by the `VALIDATION PACK` against the actual completed implementation, including stack quality guardrail checks derived from active guardrails
 - consumes `EXECUTION PACKAGE` only to understand executed package boundaries; it does not redesign packages
 - owns validation execution, evidence capture, and the runner verdict for the round
 - emits only `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`
@@ -193,6 +195,12 @@ Do not upgrade, weaken, or reinterpret obligations on your own. If the pack is t
 
 ### Deterministic quality checks
 Execute and judge the deterministic quality checks defined in the pack as part of the formal proof for the cut.
+
+### Stack quality guardrail checks
+Execute or inspect only the stack quality guardrail checks that the `VALIDATION PACK` derived for this cut.
+
+Do not introduce a new full checklist at runner time. Judge `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, and `stnl_mobile_ios_swift_quality` only when the `VALIDATION PACK` made them active and derived cut-scoped checks for them. Use the `EXECUTION PACKAGE` only to identify the executed `WORK_PACKAGE_ID` and changed surface. A required guardrail-derived check that fails, is missing, or is blocked by harness limits must be reflected in the runner verdict and residual risk.
+
 
 Rules:
 - run lint, formatter/prettier, typecheck, build, and minimum touched-surface tests only when the pack marked them relevant to this cut

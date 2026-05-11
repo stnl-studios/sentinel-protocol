@@ -20,6 +20,7 @@ It exists to move execution intelligence above the coders without creating a sec
 ## Required input
 - `EXECUTION BRIEF`
 - `VALIDATION PACK`
+- active stack quality guardrails from the brief and pack when relevant
 - any shared-contract, dependency, or boundary notes already stabilized by upstream agents
 - minimum local context needed to identify safe package boundaries, owned paths, anchors, and execution commands
 
@@ -58,6 +59,7 @@ WORK_PACKAGE:
 - CHANGE_RULES: <bounded implementation constraints, invariants, style/pattern guardrails>
 - RUN_COMMANDS: <package-local commands the coder should run when available>
 - ACCEPTANCE_CHECKS: <package-local checks mapped to VALIDATION PACK obligations>
+- REQUIRED_QUALITY_GUARDRAILS: <active stack quality guardrail names for this package, or `none`>
 - BLOCK_IF: <conditions that require BLOCKED instead of scope expansion>
 ```
 
@@ -129,13 +131,14 @@ If the package is `BLOCKED`, return the exact missing basis to the orchestrator.
 
 ## Completion contract
 - `Mandatory completion gate`: emit `READY` only when the `EXECUTION PACKAGE` contains one or more bounded work packages with explicit ownership, anchors, dependency order, run commands, acceptance checks, and block conditions. Emit `BLOCKED` when coders would still need to re-plan, re-architect, or expand scope to execute safely.
-- `Evidence required before claiming completion`: enough evidence to justify each `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, and `BLOCK_IF`.
+- `Evidence required before claiming completion`: enough evidence to justify each `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, `REQUIRED_QUALITY_GUARDRAILS`, and `BLOCK_IF`.
 - `Area-specific senior risk checklist`: hidden shared-file ownership, unstable contract boundaries, package dependency inversion, missing do-not-touch constraints, acceptance checks not mapped to the validation pack, and package drift into implementation design.
 
 ## Protocol-fixed part
 - enters after `validation-eval-designer.agent.md` and before coder execution
 - role class: `execution-package-design`
 - receives `EXECUTION BRIEF` and `VALIDATION PACK`
+- carries active stack quality guardrails into package-level constraints through `REQUIRED_QUALITY_GUARDRAILS`
 - owns the canonical ephemeral `EXECUTION PACKAGE`
 - compiles 1..N bounded work packages for specialist coders
 - operates with `targeted-local` reading and a package-focused budget
@@ -190,6 +193,14 @@ Default budget:
 - expand by at most 2 targeted artifacts only when owned paths, dependency order, run commands, or block conditions remain unsafe
 
 If the package still cannot be compiled after that, emit `BLOCKED` instead of turning into an executor.
+
+
+### Stack quality guardrail packaging
+Carry active stack quality guardrails into each `WORK_PACKAGE_ID` as package constraints, not as separate agents.
+
+Use `stnl_frontend_quality` for web/browser client packages, `stnl_backend_quality` for server-side packages, `stnl_backend_sql_quality` for data access, persistence, query, ORM, NoSQL, cache, migration, transaction, or index packages, and `stnl_mobile_ios_swift_quality` for native Swift/SwiftUI/UIKit iOS packages. A package may list more than one guardrail when the owned paths and acceptance checks cross those concerns.
+
+Do not copy the guardrail body into the package. Name only the active guardrail identifiers and convert any relevant implications into `CHANGE_RULES`, `ACCEPTANCE_CHECKS`, or `BLOCK_IF`.
 
 ### Work package rules
 Every work package must be executable by exactly one coder role candidate, even when the orchestrator later runs multiple coders.

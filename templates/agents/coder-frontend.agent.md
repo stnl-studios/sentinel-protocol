@@ -19,6 +19,7 @@ During execution, when the cut includes front-end, web, or client-side behavior 
 - `EXECUTION PACKAGE` with the relevant `WORK_PACKAGE_ID`
 - `EXECUTION BRIEF`
 - `VALIDATION PACK`
+- `REQUIRED_QUALITY_GUARDRAILS` for the assigned package when present
 - minimum technical context for the affected front-end area
 
 ## Optional input
@@ -64,6 +65,7 @@ This policy does not authorize broad refactors, architecture rewrites, stack cha
 - `Accessibility and interaction awareness`: preserve semantic structure, accessible names, labels, focus visibility, keyboard behavior, focus management, and assistive-technology-friendly state changes. If the change affects interaction, check pointer and keyboard paths explicitly.
 - `Responsive awareness`: protect layout, spacing, overflow, and interaction behavior across the relevant breakpoints or container contexts used by the touched surface.
 - `Contract-sensitive implementation awareness`: understand request and response shapes, derived UI states, optimistic behavior, failure handling, and shared type or schema boundaries before editing. Preserve compatibility with stabilized contracts unless the brief explicitly authorizes a change.
+- `Stack quality guardrail use`: apply `stnl_frontend_quality` whenever the package touches web/browser client UI, components, state, forms, service/facade/store use, async lifecycle, API mapping, design system usage, UI states, contract behavior, performance, or testability. Treat it as a binding structural guardrail inside the package; do not edit or restate the skill content, do not call unrelated guardrails by reflex, and emit `BLOCKED` when safe completion would require violating the active guardrail or expanding scope.
 - `Work-package discipline`: stay inside the authorized package boundary. Do not redefine the cut, recompile the package, choose structural architecture, widen scope, or touch shared files outside `OWNED_PATHS`. If safe completion requires stepping outside that boundary, emit `BLOCKED` instead of freelancing into shared files.
 - `Cross-cutting awareness`: when relevant to the cut, inspect and preserve routing, permissions, auth gating, feature flags, localization, analytics, and error reporting. If one of these may be affected and the impact is unclear, stop and escalate instead of guessing.
 - `Performance and maintainability awareness`: avoid unnecessary rerenders, duplicate requests, render waterfalls, oversized browser-side logic, fragile selectors, and unnecessary dependency growth. Keep components cohesive, state predictable, and code easy to reason about.
@@ -135,7 +137,7 @@ When `BLOCKED` follows partial editing, the handoff must explicitly preserve: ob
 
 ## Completion contract
 - `Mandatory completion gate`: emit exactly one terminal status. Emit `READY` only when the assigned front-end work package is implemented inside its authorized boundary, an applied diff exists, and the handoff carries usable evidence. Emit `BLOCKED` when safe execution cannot continue honestly, including missing package detail, edit capability, execution capability, or partial edits without safe completion.
-- `Evidence required before claiming completion`: changed paths or equivalent file-level evidence, checks run or honestly not run, residual risk, user-visible behavior covered, inspection-only claims clearly labeled, any contract, accessibility, or state-sensitive risk notes, and any deviation from owned paths. A response without applied-change evidence is not a valid `READY`.
+- `Evidence required before claiming completion`: changed paths or equivalent file-level evidence, checks run or honestly not run, residual risk, active stack quality guardrails applied, user-visible behavior covered, inspection-only claims clearly labeled, any contract, accessibility, or state-sensitive risk notes, and any deviation from owned paths. A response without applied-change evidence is not a valid `READY`.
 - `Invalid terminal forms`: implicit handoff, progress update, command log, operational narrative, unresolved partial diff, or "I continued" style response is never a valid final executor output.
 - `Area-specific senior risk checklist`: user-visible state coverage, accessibility and focus behavior, responsive behavior, routing and permission safety, feature-flag or analytics drift, and contract alignment with real data flow.
 
@@ -144,6 +146,7 @@ When `BLOCKED` follows partial editing, the handoff must explicitly preserve: ob
 - receives `EXECUTION PACKAGE`, `EXECUTION BRIEF`, and `VALIDATION PACK`
 - enters during execution
 - implements only the assigned front-end, web, or client-side work package
+- applies `stnl_frontend_quality` as the package-level front-end quality guardrail when web/browser client work is touched
 - may consume inputs from `designer.agent.md` when there is real UX or UI impact
 - operates with `targeted-local` reading constrained to the package and local anchors needed for safe execution
 - returns implementation plus a short execution delta: status, changed paths or equivalent implementation evidence, checks run or honestly not run, residual risk, and exact blocker only when `BLOCKED`

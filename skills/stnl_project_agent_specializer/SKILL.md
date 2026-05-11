@@ -747,7 +747,8 @@ Regras:
 - após execução, o próximo gate canônico é `validation-runner`, com prova do artifact implementado e quality proof definido no `VALIDATION PACK`
 - o `validation-runner` só pode entrar quando existir artifact validável do executor; promessa de mudança não basta
 - o `orchestrator` deve reconhecer quando o cut ativa trilha material de `security`, `performance`, `migration/schema` ou `observability/release safety` e explicitá-la no handoff
-- o `orchestrator` não pode inventar trilha por reflexo nem transformar todo cut em `high risk` por default
+- o `orchestrator` deve marcar stack quality guardrails ativas conforme a superfície real do cut: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e/ou `stnl_mobile_ios_swift_quality`; essas guardrails não viram agents nem substituem coders, runner, reviewer ou finalizer
+- o `orchestrator` não pode inventar trilha ou guardrail por reflexo nem transformar todo cut em `high risk` por default
 - o `reviewer` só pode entrar com artifact implementado real e classificação explícita `required` ou `advisory`
 - o `reviewer` não substitui a verdade de proof do `validation-runner`; ele agrega review semântico/arquitetural antes do fechamento
 - ausência de `reviewer` `required` ou risco estrutural material não resolvido impede closure limpa
@@ -775,14 +776,14 @@ Checks obrigatórios de materialização:
 Aplicação por papel:
 - `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, delta novo realmente relevante, e trilhas condicionais de risco quando materialmente ativas; nunca absorver implementação, rejeitar handoff descritivo do executor, não auto-empurrar execução quando houver `NEEDS_DEV_DECISION_HARNESS`, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos de cut em alto nível quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
-- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC, registrar operacionalmente no pack qualquer compromisso explícito do DEV sobre evidência parcial, refletir no pack a exigência de testes focados antes da execução, e exigir retorno ao `planner` quando a decisão do DEV alterar materialmente o recorte
-- `execution-package-designer`: manter `EXECUTION PACKAGE` rico no handoff, mas devolver só `READY` ou `BLOCKED`, ids de pacotes, ordem/dependência, elegibilidade de paralelização e causa exata de bloqueio; não coordenar coders, não chamar agents, não implementar e não virar planner
-- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; executar apenas o `WORK_PACKAGE_ID` autorizado, com leitura local suficiente para segurança. Quando faltar capacidade real de editar ou executar, quando o pacote for insuficiente, ou quando o cut não puder ser implementado com segurança dentro de `OWNED_PATHS`, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
+- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos e checks derivados de stack quality guardrails ativas, classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC, registrar operacionalmente no pack qualquer compromisso explícito do DEV sobre evidência parcial, refletir no pack a exigência de testes focados antes da execução, e exigir retorno ao `planner` quando a decisão do DEV alterar materialmente o recorte
+- `execution-package-designer`: manter `EXECUTION PACKAGE` rico no handoff, mas devolver só `READY` ou `BLOCKED`, ids de pacotes, ordem/dependência, elegibilidade de paralelização e causa exata de bloqueio; carregar `REQUIRED_QUALITY_GUARDRAILS` por package quando aplicável; não coordenar coders, não chamar agents, não implementar e não virar planner
+- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, stack quality guardrails aplicadas quando ativas, e risco residual; executar apenas o `WORK_PACKAGE_ID` autorizado, com leitura local suficiente para segurança. Quando faltar capacidade real de editar ou executar, quando o pacote for insuficiente, ou quando o cut não puder ser implementado com segurança dentro de `OWNED_PATHS`, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
 - terminal handoff de executor nunca pode ser implícito: progresso intermediário, log de comando, narrativa operacional, promessa de mudança, diff parcial ou resposta sem status terminal claro não conta como `READY` nem como `BLOCKED`
 - quando um executor editou parcialmente mas não concluiu com segurança, `BLOCKED` é obrigatório e deve preservar motivo objetivo, arquivos tocados, o que ficou parcial, e se o estado parcial é inspecionável/reaproveitável ou deve ser descartado/reexecutado
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; reconhecer quando trilha material de risco foi ignorada, sem virar especialista dedicado; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
-- `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
-- `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`; preservar o verdict do runner como input e emitir somente `READY` ou `BLOCKED` próprios
+- `validation-runner`: executar e julgar a prova funcional, os checks determinísticos e os checks derivados de stack quality guardrails ativas no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
+- `finalizer`: consumir evidência e verdict do runner para closure, preservando sinais de stack quality guardrail quando afetarem `DONE`, risco residual ou resync; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`; preservar o verdict do runner como input e emitir somente `READY` ou `BLOCKED` próprios
 - `finalizer` só pode fechar `READY` com closure ledger explícito: runner verdict preservado ou bloqueio pré-validação preservado, reviewer signal preservado quando houver, artifacts de documentation/context alterados, `DONE` yes/no com racional, resync yes/no com racional, e delta factual quando resync for necessário
 
 Se o specialized reabrir verbosity, execution log ou narrativa operacional como comportamento default, a materialização falhou.
@@ -957,7 +958,7 @@ Hard fails:
 ### Execution-package-design check
 Verificar no `execution-package-designer`:
 - role class `execution-package-design` preservada
-- `EXECUTION PACKAGE` contém contrato leve e operacional com `WORK_PACKAGE_ID`, `GOAL`, `OWNED_PATHS`, `SEARCH_ANCHORS`, `EDIT_ANCHORS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS` e `BLOCK_IF`
+- `EXECUTION PACKAGE` contém contrato leve e operacional com `WORK_PACKAGE_ID`, `GOAL`, `OWNED_PATHS`, `SEARCH_ANCHORS`, `EDIT_ANCHORS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, `REQUIRED_QUALITY_GUARDRAILS` e `BLOCK_IF`
 - pacote suporta 1..N work packages sem criar segundo orchestrator
 - ausência de tools excessivas herdadas por acidente
 - leitura local menor que executor e voltada só a anchors, paths, comandos e boundaries do pacote
@@ -980,7 +981,7 @@ Verificar no `orchestrator`:
 - regra explícita de handoff imediato quando o owner já está claro
 - regra explícita de parar para blocker ou DEV em vez de continuar lendo indefinidamente
 - reconhecimento explícito de trilhas condicionais de `security`, `performance`, `migration/schema` e `observability/release safety` apenas quando houver risco material
-- trilha material ausente no handoff é tratada como defeito de roteamento, sem universalizar `high risk` por default
+- trilha material ou stack quality guardrail materialmente aplicável ausente no handoff é tratada como defeito de roteamento, sem universalizar `high risk` por default
 - handoff canônico para `execution-package-designer` depois de `VALIDATION PACK READY` e antes de coders
 - decisão de sequência/paralelização de coders só depois de `EXECUTION PACKAGE` estável
 
@@ -1011,6 +1012,7 @@ Verificar no `validation-eval-designer`:
 - quando a decisão do DEV altera materialmente o cut, o specialized reabre `planner -> validation-eval-designer` em vez de improvisar novo cut localmente
 - `READY` só reaparece depois que o `VALIDATION PACK` estiver coerente com a escolha do DEV e com o cut vigente
 - trilhas condicionais ativas viram obrigações cut-scoped de prova para `security`, `performance`, `migration/schema` e `observability/release safety` quando houver risco material
+- stack quality guardrails ativas viram checks cut-scoped de prova sem copiar checklist inteiro nem acionar guardrail irrelevante por reflexo
 - ausência de checklist burocrático universal de trilhas de risco quando o cut não pedir
 
 Hard fails:
@@ -1021,6 +1023,7 @@ Hard fails:
 ### Executor ownership check
 Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
 - coders recebem e executam `EXECUTION PACKAGE` com `WORK_PACKAGE_ID`
+- coders aplicam `REQUIRED_QUALITY_GUARDRAILS` quando presentes: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e/ou `stnl_mobile_ios_swift_quality`
 - coders continuam especialistas por stack/projeto, mas não são solucionadores locais nem compiladores de pacote
 - leitura local suficiente para executar o pacote substitui broad discovery como custo normal
 - `targeted-local` preservado

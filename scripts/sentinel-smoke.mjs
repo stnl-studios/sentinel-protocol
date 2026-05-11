@@ -147,6 +147,8 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "## Ordem do fluxo",
             "## Contrato do pacote de execução",
             "execution-package-designer -> orchestrator -> coder(s)",
+            "REQUIRED_QUALITY_GUARDRAILS",
+            "## Contrato das stack quality guardrails",
             "## Regra de closure",
         ],
     },
@@ -155,6 +157,8 @@ const AGENT_REFERENCE_DOC_SPECS = [
         requiredSnippets: [
             "# Status e Gates Canônicos",
             "## Status de decisão e gates",
+            "## Regra de stack quality guardrails",
+            "REQUIRED_QUALITY_GUARDRAILS",
             "## Status de validação e fechamento",
         ],
     },
@@ -1347,6 +1351,7 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
         "EXECUTION PACKAGE",
         "WORK_PACKAGE_ID",
         "OWNED_PATHS",
+        "REQUIRED_QUALITY_GUARDRAILS",
         "BLOCK_IF",
         "does not coordinate",
     ]);
@@ -1417,6 +1422,7 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
         assert(content.includes("WORK_PACKAGE_ID"), `${coderFile} não exige WORK_PACKAGE_ID`);
         assert(content.includes("do not redefine the cut"), `${coderFile} não bloqueia redefinição do cut`);
         assert(content.includes("do not rewrite, recompile, or reinterpret the `EXECUTION PACKAGE`"), `${coderFile} não bloqueia recompilação do pacote`);
+        assert(content.includes("Stack quality guardrail use"), `${coderFile} não aplica stack quality guardrails`);
         assert(
             !CONTROLLED_AGENT_TOOLSETS[coderFile].includes("todo"),
             `${coderFile} não deve receber todo por default`
@@ -1480,15 +1486,35 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "implicit terminal state",
         "intermediate progress update",
         "valid executor `READY`",
+        "Activate stack quality guardrails as downstream constraints",
         "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
     ], "orchestrator consumer-side rejection");
+
+    assertContentIncludesAll(agentContents.get("planner.agent.md"), [
+        "Stack quality guardrail detection",
+        "Do not rewrite the guardrail content",
+        "do not treat guardrails as agents",
+    ], "planner stack quality guardrail detection");
+
+    assertContentIncludesAll(agentContents.get("validation-eval-designer.agent.md"), [
+        "Stack quality guardrail proof design",
+        "convert only cut-relevant guardrail implications",
+        "Do not paste full guardrails or add unrelated ones by reflex",
+    ], "validation-eval-designer stack quality guardrail proof design");
 
     assertContentIncludesAll(agentContents.get("validation-runner.agent.md"), [
         "valid executor `READY` handoff",
         "`Entry evidence gate`",
         "not a validation target",
+        "Stack quality guardrail checks",
         "Preserve that the runner could not honestly enter because the executor handoff was invalid",
     ], "validation-runner artifact gate");
+
+    assertContentIncludesAll(agentContents.get("reviewer.agent.md"), [
+        "Stack quality guardrail review",
+        "Do not invoke unrelated guardrails by reflex",
+        "material structural risk",
+    ], "reviewer stack quality guardrail review");
 
     assertContentIncludesAll(agentContents.get("finalizer.agent.md"), [
         "closure ledger",
@@ -1497,6 +1523,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "`resync: yes/no`",
         "`resync: yes` or `resync: no`",
         "does not mean the runner verdict was `PASS`",
+        "Stack quality guardrail closure",
         "`Invalid closure forms`",
     ], "finalizer explicit closure");
 }
@@ -1542,6 +1569,9 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "Seguir o padrão do projeto não significa copiar dívida técnica",
         "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
         "a propagação protocol-fixed deve ser validada comparando template/base agent canônico, `reference/agents/*.agent.md` instalado e artifact final materializado do target",
+        "REQUIRED_QUALITY_GUARDRAILS",
+        "stnl_frontend_quality",
+        "stnl_backend_sql_quality",
     ], "stnl_project_agent_specializer anti-drift");
 
     const qualityGateContent = fs.readFileSync(
@@ -1573,6 +1603,8 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "não entra no `validation-runner`",
         "somente quando houver executor `READY` válido",
         "`finalizer` emite apenas `READY` ou `BLOCKED`",
+        "REQUIRED_QUALITY_GUARDRAILS",
+        "## Contrato das stack quality guardrails",
         "`finalizer READY` exige closure ledger explícito",
     ], "execution lifecycle hardening");
 }
@@ -1589,6 +1621,7 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
                 "`Terminal handoff contract`",
                 "`Partial-edit blocking`",
                 "`Invalid terminal forms`",
+                "Stack quality guardrail use",
             ], `${fileName} vscode hardening`);
         }
 
@@ -1596,7 +1629,24 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
             assertContentIncludesAll(content, [
                 "EXECUTOR_HANDOFF_INVALID",
                 "valid executor `READY`",
+                "Activate stack quality guardrails as downstream constraints",
                 "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "planner.agent.md") {
+            assertContentIncludesAll(content, [
+                "Stack quality guardrail detection",
+                "Do not rewrite the guardrail content",
+                "do not treat guardrails as agents",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "validation-eval-designer.agent.md") {
+            assertContentIncludesAll(content, [
+                "Stack quality guardrail proof design",
+                "convert only cut-relevant guardrail implications",
+                "Do not paste full guardrails or add unrelated ones by reflex",
             ], `${fileName} vscode hardening`);
         }
 
@@ -1605,6 +1655,15 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
                 "valid executor `READY` handoff",
                 "`Entry evidence gate`",
                 "not a validation target",
+                "Stack quality guardrail checks",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "reviewer.agent.md") {
+            assertContentIncludesAll(content, [
+                "Stack quality guardrail review",
+                "Do not invoke unrelated guardrails by reflex",
+                "material structural risk",
             ], `${fileName} vscode hardening`);
         }
 
@@ -1615,6 +1674,7 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
                 "`DONE: yes` or `DONE: no`",
                 "`resync: yes/no`",
                 "`resync: yes` or `resync: no`",
+                "Stack quality guardrail closure",
                 "`Invalid closure forms`",
             ], `${fileName} vscode hardening`);
         }
@@ -1636,6 +1696,7 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
                 "`Terminal handoff contract`",
                 "`Partial-edit blocking`",
                 "`Invalid terminal forms`",
+                "Stack quality guardrail use",
             ], `${agentName} codex hardening`);
         }
 
@@ -1643,7 +1704,24 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
             assertContentIncludesAll(instructions, [
                 "EXECUTOR_HANDOFF_INVALID",
                 "valid executor `READY`",
+                "Activate stack quality guardrails as downstream constraints",
                 "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "planner") {
+            assertContentIncludesAll(instructions, [
+                "Stack quality guardrail detection",
+                "Do not rewrite the guardrail content",
+                "do not treat guardrails as agents",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "validation-eval-designer") {
+            assertContentIncludesAll(instructions, [
+                "Stack quality guardrail proof design",
+                "convert only cut-relevant guardrail implications",
+                "Do not paste full guardrails or add unrelated ones by reflex",
             ], `${agentName} codex hardening`);
         }
 
@@ -1652,6 +1730,15 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
                 "valid executor `READY` handoff",
                 "`Entry evidence gate`",
                 "not a validation target",
+                "Stack quality guardrail checks",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "reviewer") {
+            assertContentIncludesAll(instructions, [
+                "Stack quality guardrail review",
+                "Do not invoke unrelated guardrails by reflex",
+                "material structural risk",
             ], `${agentName} codex hardening`);
         }
 
@@ -1662,6 +1749,7 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
                 "`DONE: yes` or `DONE: no`",
                 "`resync: yes/no`",
                 "`resync: yes` or `resync: no`",
+                "Stack quality guardrail closure",
                 "`Invalid closure forms`",
             ], `${agentName} codex hardening`);
         }

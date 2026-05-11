@@ -33,6 +33,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - next agent, stop, or escalation route
 - minimum sufficient routing delta: owner, boundary, contract note, blocker, or invalid-handoff signal only when decision-useful
 - active conditional risk tracks when materially relevant to the cut
+- active stack quality guardrails when materially relevant to the cut
 - execution-package routing state when `EXECUTION PACKAGE` exists or is required before coder entry
 - explicit operational error when executor handoff validity or execution safety collapses
 
@@ -83,33 +84,20 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - do not keep reading once the next honest state is handoff, blocker, or DEV escalation
 
 ## Handoff
-- When the round lacks the minimum factual base to proceed honestly, route to the global utility skill `stnl_project_context` in `MODE=BOOTSTRAP`. The orchestrator routes this base gate; it does not execute the skill's responsibility itself.
-- When the round has an explicit feature delta but the factual context is in drift, route to the global utility skill `stnl_project_context` in `MODE=RESYNC`. Do not confuse this skill mode with `resync.agent.md`, which remains a separate workflow piece entered only on explicit `finalizer.agent.md` request.
-- Hand off to `planner.agent.md` as soon as the request is framed enough to survive the base gate. The planner owns the cut and returns `EXECUTION BRIEF`.
-- Hand off to `validation-eval-designer.agent.md` after `EXECUTION BRIEF`. That agent owns `VALIDATION PACK`, including the cut-scoped proof obligations and deterministic quality checks that later define the post-execution validation gate.
-- Hand off to `execution-package-designer.agent.md` only after a `READY` `VALIDATION PACK` exists. That agent owns the ephemeral `EXECUTION PACKAGE`, turning the brief and pack into bounded work packages for specialist coders.
-- `execution-package-designer.agent.md` does not coordinate the round, does not call coders, does not select sequence, and does not replace the orchestrator. It returns package facts; the orchestrator remains the only owner of routing, sequencing, parallelization, retry, stop, and escalation.
-- If `validation-eval-designer.agent.md` emits `NEEDS_DEV_DECISION_HARNESS`, stop the round before execution approval or executor routing. Surface the missing proof basis and route only these DEV choices: add focused SPEC-scoped tests now, accept partial evidence explicitly, or narrow the cut to a harness-supported slice.
-- When DEV resolves `NEEDS_DEV_DECISION_HARNESS`, route only through the canonical owner of the artifact changed by that decision. Never translate the DEV choice directly into execution, execution approval, or executor routing without refreshing the affected artifact first.
-- If DEV chooses focused tests or explicit partial evidence without materially changing the cut, return to `validation-eval-designer.agent.md` so `VALIDATION PACK` records the new proof requirement, accepted limit, missing proof, residual risk, and explicit DEV decision before execution approval can reopen.
-- If DEV narrows, expands, or materially changes the cut, invalidate previous readiness/approval, return to `planner.agent.md` for a refreshed `EXECUTION BRIEF`, then route back to `validation-eval-designer.agent.md`.
-- Recognize conditional risk tracks only when the cut carries material risk in `security`, `performance`, `migration/schema`, or `observability/release safety`.
-- When a conditional risk track is active, surface it explicitly in the round design and handoff so downstream agents can add the relevant proof or review obligations. Do not execute those analyses inside the orchestrator.
+- Route the base gate to `stnl_project_context` in `MODE=BOOTSTRAP` when factual base is missing, or `MODE=RESYNC` when explicit feature delta meets factual drift; do not confuse that with `resync.agent.md`.
+- Canonical preparation order is `planner.agent.md` for `EXECUTION BRIEF`, then `validation-eval-designer.agent.md` for `VALIDATION PACK`, then `execution-package-designer.agent.md` for `EXECUTION PACKAGE` before any coder.
+- If `validation-eval-designer.agent.md` emits `NEEDS_DEV_DECISION_HARNESS`, stop before approval or execution. DEV may choose focused SPEC-scoped tests, explicit partial evidence, or cut narrowing; same cut returns to `validation-eval-designer.agent.md`, changed cut returns to `planner.agent.md` then validation design.
+- Recognize conditional risk tracks only for material `security`, `performance`, `migration/schema`, or `observability/release safety` risk and pass them downstream without executing those analyses in the router.
 - Bring in `designer.agent.md` only for real UX, interaction, accessibility, responsive, or visual-consistency impact; bring in `reviewer.agent.md` only for real semantic or architectural risk.
 - Route web/browser client work to `coder-frontend.agent.md`, real Swift/SwiftUI native iOS work to `coder-ios.agent.md`, and API/service/persistence/auth/job/integration/runtime work to `coder-backend.agent.md`.
-- Hand off to any coder only after the current `EXECUTION PACKAGE` exists and the relevant work package is bounded enough for specialist execution.
-- Hand off to multiple coders only after shared contracts, boundaries, and package work units are stable enough for safe split ownership; do not route `coder-ios.agent.md` as a substitute for `coder-frontend.agent.md`.
-- Decide sequential versus parallel execution only from stabilized package facts such as `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, and `BLOCK_IF`. Do not ask coders to negotiate boundaries themselves.
-- Before handing off to an executor after `APPROVED_EXECUTION` or `SKIP_EXECUTION_APPROVAL`, confirm that the selected agent has the material edit and execution capability the cut requires. If that capability is materially absent, stop with an explicit operational blocker instead of discovering it late inside execution.
-- During execution, accept only two valid executor outcomes: `READY` with evidence of real implementation applied, or `BLOCKED` with the exact missing basis or operational cause.
-- Treat any absent handoff, implicit terminal state, ambiguous status, intermediate progress update, command log, partial-diff narration, analysis, proposal, pseudo-plan, broad re-discovery, or `READY` without applied-change evidence as an explicit invalid handoff such as `EXECUTOR_HANDOFF_INVALID`. In that case, stop the round as an operational problem, do not implement fallback, do not reopen discovery broadly, do not retry the runner, and do not "fix" the executor's work inside the orchestrator.
-- If an executor reports `BLOCKED` after partial editing, require the blockage evidence to preserve objective blocker, touched files, partial work left behind, and whether the state is inspectable/reusable or should be discarded and re-executed. If that preservation is missing, treat the handoff as invalid rather than successful.
-- If the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material change in gate, scope, or authorization, abort the round with an explicit operational error such as `EXECUTOR_LOOP_DETECTED`.
-- Hand off to `validation-runner.agent.md` after implementation only when execution produced a validation-eligible artifact through a valid executor `READY` and no execution owner emitted `BLOCKED`. The canonical next gate after execution is validation of the implemented artifact, including the quality proof required by the pack.
-- Hand off to `reviewer.agent.md` only for a real implemented artifact with explicit `required` or `advisory` classification; it reviews semantic and architectural fit without replacing runner proof or closure.
-- If execution becomes `BLOCKED` before honest validation can run, skip both `validation-runner.agent.md` and `reviewer.agent.md` and hand off directly to `finalizer.agent.md` with the execution-stage blockage evidence and its exact cause.
-- Hand off to `finalizer.agent.md` after the runner verdict and, when routed, after the reviewer output, or after an execution-stage blockage that prevented validation. Do not route an implemented artifact directly to clean closure while pack-required proof is still missing, while a `required` reviewer output is still missing, or while a required review reports unresolved material structural risk.
-- Hand off to `resync.agent.md` only when `finalizer.agent.md` explicitly requests factual sync outside the feature.
+- Activate stack quality guardrails as downstream constraints, not as agents: `stnl_frontend_quality` for web/browser front-end work, `stnl_backend_quality` for server-side/API/service/domain/job/auth/integration/runtime work, `stnl_backend_sql_quality` for persistence/data-access/query/ORM/NoSQL/cache/migration/transaction/index work, and `stnl_mobile_ios_swift_quality` for native Swift/SwiftUI/UIKit iOS work.
+- Pass active stack quality guardrails through the brief, validation pack, execution package, executor handoff, runner, reviewer, and finalizer when relevant; never route a quality guardrail as executor, validator, reviewer, or specialist-agent replacement.
+- Hand off to coders only after the current `EXECUTION PACKAGE` has bounded `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, and `BLOCK_IF`; decide sequencing or parallelization from those package facts.
+- Before executor handoff after `APPROVED_EXECUTION` or `SKIP_EXECUTION_APPROVAL`, confirm real edit and execution capability; missing capability is an operational blocker.
+- During execution, accept only `READY` with evidence of real implementation applied or `BLOCKED` with exact cause. Treat absent handoff, implicit terminal state, ambiguous status, intermediate progress update, command log, partial-diff narration, analysis, pseudo-plan, broad re-discovery, or `READY` without applied-change evidence as `EXECUTOR_HANDOFF_INVALID`; do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success.
+- If partial editing ends in `BLOCKED`, preserve objective blocker, touched files, partial work left behind, and whether that state is reusable; otherwise the handoff is invalid. Re-entering the same executor without applied diff, formal `BLOCKED`, or material gate/scope/authorization change is `EXECUTOR_LOOP_DETECTED`.
+- Hand off to `validation-runner.agent.md` only after a valid executor `READY` artifact exists; hand off to `reviewer.agent.md` only with real implemented artifact plus explicit `required` or `advisory` classification.
+- If execution blocks before honest validation, skip runner and reviewer and hand off to `finalizer.agent.md` with blockage evidence. Otherwise finalizer enters after runner verdict and any routed reviewer output. `resync.agent.md` enters only when `finalizer.agent.md` explicitly requests it.
 
 ## Gate routing logic
 - Apply the gates in protocol order and stop as soon as the truthful next state is known.
@@ -127,6 +115,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 ## Handoff quality rules
 - Every handoff must name the next owner, the active boundary, and the minimum contract note or blocker needed to proceed honestly.
 - Every handoff must also name any materially active conditional risk track, or explicitly leave it absent when no such track is evidenced.
+- Every handoff must preserve materially active stack quality guardrails, or explicitly leave them absent when no known guardrail applies.
 - Every coder handoff must identify the relevant `WORK_PACKAGE_ID` from the current `EXECUTION PACKAGE`.
 - Every executor-to-runner transition must be backed by a terminal `READY` handoff with applied-change evidence. Missing, ambiguous, intermediate, narrative, or evidence-free executor output is `EXECUTOR_HANDOFF_INVALID`, not success.
 - Pass rich artifacts through the handoff itself; keep the main chat delta-only unless DEV explicitly asks for the full artifact.
@@ -187,6 +176,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - coordinates the flow `Base gate -> Planner -> Validation/eval design -> Harness gate -> Execution package design -> Execution approval gate -> Specialist coder execution -> Validation run and pack-defined quality proof -> Reviewer when applicable -> Finalization -> Resync only if requested`
 - applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`, `NEEDS_DEV_DECISION_HARNESS`, `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL`, and `READY`
 - routes the canonical factual-context utility `stnl_project_context` when the base gate or factual drift requires `MODE=BOOTSTRAP` or `MODE=RESYNC`
+- activates the canonical stack quality guardrails `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, and `stnl_mobile_ios_swift_quality` as downstream constraints when the cut surface requires them
 - operates with `routing-minimal` reading and must hand off immediately once gate and owner are clear
 - keeps the main chat `delta-only`, `delegate-first`, and under an explicit `Chat budget` unless DEV asks for more detail
 - decides which agents enter the round and in what order
@@ -281,6 +271,7 @@ Select agents by real ownership, not by convenience:
 - activate conditional risk tracks only when the cut has real evidence of that risk class; do not route generic `security` or `performance` concern by ritual
 - route to `execution-package-designer.agent.md` after validation design and before any coder when execution will enter coders
 - route web/browser client work to `coder-frontend.agent.md`, native Swift/SwiftUI iOS work to `coder-ios.agent.md` only when a real iOS surface exists, and API/service/persistence/integration/runtime work to `coder-backend.agent.md`
+- mark active stack quality guardrails for the selected surfaces: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, and/or `stnl_mobile_ios_swift_quality`
 - use multiple coders only when the cut spans multiple owned surfaces and the current `EXECUTION PACKAGE` has stable work packages, dependency boundaries, and interface ownership
 - required designer or reviewer signals can stop the round; advisory signals inform downstream closure without becoming default blockers
 - send only validation-eligible completed execution to `validation-runner.agent.md`

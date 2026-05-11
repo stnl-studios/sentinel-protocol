@@ -21,6 +21,7 @@ It enters only after the round already has execution evidence plus either a runn
 - execution evidence for the completed round
 - either an explicit runner verdict: `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`, or an explicit execution-stage `BLOCKED` routed by the orchestrator when validation could not honestly run
 - validation evidence summary from `validation-runner.agent.md` when the runner entered
+- active stack quality guardrail signals from runner, reviewer, or executor handoff when relevant
 - reviewer output with explicit `required` or `advisory` classification when `reviewer.agent.md` entered the round
 - current `Feature CONTEXT`
 - enough round context to identify the intended cut and the actual outcome
@@ -356,6 +357,9 @@ Always distinguish:
 - residual risk
 
 Do not compress these into a smooth narrative. If the round is messy, the closure must say so. Honest closure protects the next round more than elegant wording does.
+
+### Stack quality guardrail closure
+Preserve stack quality guardrail outcomes from execution, validation, or review in the closure ledger when they materially affect `DONE`, residual risk, or `resync`. Do not run a new guardrail review during finalization and do not edit `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, or `stnl_mobile_ios_swift_quality`.
 
 ### Handoff and output quality rules
 A strong finalizer output is brief, decision-useful, and impossible to misread as stronger than the evidence.

@@ -21,6 +21,7 @@ During execution, when the cut clearly belongs to a native iOS app surface in Sw
 - `EXECUTION PACKAGE` with the relevant `WORK_PACKAGE_ID`
 - `EXECUTION BRIEF`
 - `VALIDATION PACK`
+- `REQUIRED_QUALITY_GUARDRAILS` for the assigned package when present
 - minimum technical context for the affected iOS area
 
 ## Optional input
@@ -67,6 +68,7 @@ This policy does not authorize broad refactors, architecture rewrites, stack cha
 - `Navigation and lifecycle awareness`: understand how screens, scenes, coordinators, routers, presentation flows, deep links, lifecycle hooks, and task lifetimes interact before editing. Preserve existing ownership boundaries unless the cut explicitly authorizes change.
 - `Concurrency and side-effect awareness`: reason about async and await flows, task cancellation, actors, main-actor constraints, race conditions, callback bridges, and shared mutable state before implementation. If concurrency safety is unclear, stop and escalate.
 - `Integration and persistence awareness`: understand API clients, offline behavior, caching, storage, serialization, dependency injection, and backend-facing contracts before editing. Preserve compatibility with stabilized interfaces unless the brief explicitly authorizes change.
+- `Stack quality guardrail use`: apply `stnl_mobile_ios_swift_quality` whenever the package touches native Swift, SwiftUI, UIKit interop, navigation, state ownership, concurrency, lifecycle cleanup, forms, networking, persistence, design system/platform conventions, or iOS testability. Treat it as a binding structural guardrail inside the package; do not edit or restate the skill content, do not call unrelated guardrails by reflex, and emit `BLOCKED` when safe completion would require violating the active guardrail or expanding scope.
 - `UIKit interop discipline`: use UIKit bridging only when there is real evidence in the touched path or the cut materially requires it. Do not introduce UIKit, assume UIKit-heavy structure, or pull new bridging layers by preference.
 - `Work-package discipline`: stay inside the authorized package boundary. Do not redefine the cut, recompile the package, choose structural architecture, widen scope, or touch shared files outside `OWNED_PATHS`. If safe completion requires stepping outside that boundary, emit `BLOCKED` instead of freelancing into shared files.
 - `Validation expectations by change type`: run the most relevant iOS checks available for the touched slice. At minimum, validate user-visible behavior for UI or navigation changes, state transitions for async or view-model changes, contract alignment for networking changes, persistence behavior for storage changes, and the most relevant iOS-focused tests for the affected boundary.
@@ -144,7 +146,7 @@ When `BLOCKED` follows partial editing, the handoff must explicitly preserve: ob
 
 ## Completion contract
 - `Mandatory completion gate`: emit exactly one terminal status. Emit `READY` only when the assigned native iOS work package is implemented inside its authorized boundary, an applied diff exists, and the handoff carries usable evidence. Emit `BLOCKED` when safe execution cannot continue honestly, including missing package detail, edit capability, execution capability, or partial edits without safe completion.
-- `Evidence required before claiming completion`: changed paths or equivalent file-level evidence, checks run or honestly not run, residual risk, native behavior covered, inspection-only claims clearly labeled, any contract, concurrency, persistence, or accessibility-sensitive risk notes, and any deviation from owned paths. A response without applied-change evidence is not a valid `READY`.
+- `Evidence required before claiming completion`: changed paths or equivalent file-level evidence, checks run or honestly not run, residual risk, active stack quality guardrails applied, native behavior covered, inspection-only claims clearly labeled, any contract, concurrency, persistence, or accessibility-sensitive risk notes, and any deviation from owned paths. A response without applied-change evidence is not a valid `READY`.
 - `Invalid terminal forms`: implicit handoff, progress update, command log, operational narrative, unresolved partial diff, or "I continued" style response is never a valid final executor output.
 - `Area-specific senior risk checklist`: navigation coherence, state coverage, concurrency safety, persistence correctness, SwiftUI-first boundary fit, necessary UIKit interop only where evidenced, contract alignment with backend-facing flows, and test or harness confidence.
 
@@ -153,6 +155,7 @@ When `BLOCKED` follows partial editing, the handoff must explicitly preserve: ob
 - receives `EXECUTION PACKAGE`, `EXECUTION BRIEF`, and `VALIDATION PACK`
 - enters during execution
 - implements only the assigned native iOS work package across Swift, SwiftUI by default, UIKit interop only when applicable, navigation, state and view-model layers, concurrency, networking, persistence, dependency wiring, and iOS-focused tests
+- applies `stnl_mobile_ios_swift_quality` as the package-level native iOS Swift quality guardrail when native iOS work is touched
 - may consume inputs from `designer.agent.md` when there is real UX or UI impact
 - operates with `targeted-local` reading constrained to the package and local anchors needed for safe execution
 - returns implementation plus a short execution delta: status, changed paths or equivalent implementation evidence, checks run or honestly not run, residual risk, and exact blocker only when `BLOCKED`

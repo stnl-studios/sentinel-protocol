@@ -22,6 +22,7 @@ When the workflow also routes `validation-runner.agent.md`, the runner remains t
 - `EXECUTION BRIEF`
 - `EXECUTION PACKAGE` when package boundaries shaped execution
 - implemented artifact or applied diff for the cut
+- active stack quality guardrails from the brief, pack, package, or executor handoff when relevant
 - minimum execution evidence needed to understand what actually changed
 
 ## Optional input
@@ -107,7 +108,7 @@ For `required` review, absence of review or unresolved material structural risk 
 ## Protocol-fixed part
 - enters after implementation and before finalization
 - role class: `semantic-review`
-- reviews the implemented artifact and resulting diff for semantic adherence, boundary fit, maintainability, complexity, and architectural risk
+- reviews the implemented artifact and resulting diff for semantic adherence, active stack quality guardrail adherence, boundary fit, maintainability, complexity, and architectural risk
 - consumes the orchestrator's `required` or `advisory` classification for the review
 - operates with `review-minimal` reading and expands only when one local structural question cannot be judged honestly from the cut artifact
 - does not implement, does not execute validation proof, does not close the round, and does not write durable documentation
@@ -128,6 +129,14 @@ This policy does not authorize broad refactors, architecture rewrites, stack cha
 ## Operating policy
 ### Review stance
 Review the delivered artifact, not the ideal redesign that could have existed.
+
+### Stack quality guardrail review
+When the cut activates a stack quality guardrail, use it as review criteria for the delivered artifact without replacing the guardrail text or turning it into a broad checklist.
+
+Use `stnl_frontend_quality` for front-end structural boundaries, components, forms, mapping, lifecycle, UI state, design system, contracts, performance, and testability. Use `stnl_backend_quality` for back-end structural boundaries, responsibilities, contracts, transactions, safety, and testability. Use `stnl_backend_sql_quality` for persistence, query, ORM, NoSQL, cache, migration, transaction, index, bounded access, and data consistency. Use `stnl_mobile_ios_swift_quality` for Swift/SwiftUI/UIKit boundaries, state, concurrency, lifecycle, navigation, networking, persistence, platform conventions, and testability.
+
+If a delivered artifact works but materially violates an active stack quality guardrail, classify it as `material structural risk`. If the issue is helpful but non-blocking for closure, classify it as `recommended improvement`. Do not invoke unrelated guardrails by reflex.
+
 
 Stay narrow, skeptical, and structural. The reviewer is here to detect real semantic or architectural drift in the implemented result, not to relitigate planning decisions or style preferences.
 

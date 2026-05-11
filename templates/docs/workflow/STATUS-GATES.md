@@ -26,8 +26,15 @@ Fluxo alvo:
 
 ## Artefatos do workflow
 - Os artefatos efêmeros do workflow são `EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE`.
+- As stack quality guardrails ativas são metadados operacionais carregados por esses artefatos; elas não são agents e não substituem planner, package designer, coders, runner, reviewer ou finalizer.
 - `EXECUTION PACKAGE` pertence ao `execution-package-designer`, carrega 1..N work packages executáveis e não substitui o `orchestrator`.
 - A memória durável fica em `DONE`, `Feature CONTEXT` e docs factuais tocadas por Resync.
+
+## Regra de stack quality guardrails
+- O fluxo ativa `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e/ou `stnl_mobile_ios_swift_quality` conforme a superfície real do cut.
+- O `VALIDATION PACK` deve transformar guardrails ativas em checks cut-scoped, sem copiar checklist inteiro nem acionar guardrail irrelevante por reflexo.
+- O `EXECUTION PACKAGE` deve carregar `REQUIRED_QUALITY_GUARDRAILS` por work package quando aplicável.
+- Coders aplicam as guardrails ativas, o runner valida os checks derivados do pack, o reviewer julga aderência estrutural quando entra, e o finalizer preserva o sinal se ele afetar closure.
 
 ## Regra de proof pós-execução
 - O fluxo canônico já contempla proof pós-execução do artifact implementado: prova funcional mais checks determinísticos relevantes ao cut definidos no `VALIDATION PACK`.
