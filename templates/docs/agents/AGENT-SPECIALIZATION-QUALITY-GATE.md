@@ -351,6 +351,22 @@ Hard fails:
 - reviewer deixa de reprovar propagacao desnecessaria de divida tecnica quando ela afeta qualidade ou contrato
 - finalizer transforma divida descoberta em alteracao escondida em vez de follow-up
 
+### 14c. Stack quality guardrail propagation check
+Verificar:
+- as quatro quality guardrails canonicas existem como skills fonte instalaveis: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e `stnl_mobile_ios_swift_quality`
+- `EXECUTION-LIFECYCLE.md`, `STATUS-GATES.md` e este quality gate nomeiam as quatro guardrails canonicas sem transforma-las em agents
+- `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `validation-runner`, `reviewer` e `finalizer` preservam o contrato nominal de ativacao, carregamento, prova, review e closure das guardrails relevantes ao cut
+- coders especializados preservam somente as guardrails compatíveis com sua superficie: front-end para `coder-frontend`, backend e SQL/persistencia para `coder-backend`, iOS Swift para `coder-ios`
+- o `reference/agents/*.agent.md` instalado e os artifacts finais materializados para VS Code/GitHub e Codex preservam os nomes das guardrails aplicáveis no corpo final ou em `developer_instructions`
+- `REQUIRED_QUALITY_GUARDRAILS` permanece metadado operacional por package, nunca lista de agents roteaveis
+- a compactacao, normalizacao ou especializacao local nao remove nome de guardrail ativa nem troca a skill por resumo local que enfraqueca autoridade
+
+Hard fails:
+- alguma quality guardrail fonte `stnl_*_quality` esperada nao esta instalada ou nao e propagada para os bundles de referencia
+- docs canonicos ou artifacts finais omitem uma guardrail canonica aplicavel ao papel
+- target VS Code/GitHub ou Codex materializado transforma quality guardrail em agent roteavel, executor substituto, reviewer substituto ou checklist universal
+- `REQUIRED_QUALITY_GUARDRAILS` desaparece de package ou executor quando a superficie do cut exige uma guardrail ativa
+
 ### 15. Factual fidelity check
 Verificar:
 - TBDs relevantes continuam semanticamente preservados

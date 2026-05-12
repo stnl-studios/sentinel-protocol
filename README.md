@@ -8,6 +8,17 @@ Esta release é a **Sentinel Protocol Alpha Preview**, a primeira alpha externa/
 
 Este repo é a fábrica do Sentinel Protocol: mantém skills, templates, agents base, installer e smoke. Os agents finais são materializados nos projetos alvo.
 
+## Instalação local
+
+Comando oficial único para instalar ou atualizar assets locais:
+
+```sh
+node sentinel.mjs install
+node sentinel.mjs doctor
+```
+
+Use `node sentinel.mjs install --prune` somente quando quiser remover skills `stnl_*` instaladas em targets conhecidos, mas ausentes da versão atual do repo. `init` e `update` seguem disponíveis apenas como aliases de compatibilidade.
+
 ## Para quem é
 
 Sentinel é para mantenedores que querem uma estrutura leve para:

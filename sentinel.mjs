@@ -12,6 +12,7 @@ const ROOT = __dirname;
 const HOME = os.homedir();
 const SOURCE_DIR = path.join(ROOT, "skills");
 const COMMAND = process.argv[2];
+const COMMAND_ARGS = process.argv.slice(3);
 
 const IGNORED_ENTRY_NAMES = new Set([
     ".DS_Store",
@@ -231,6 +232,14 @@ function getSkillInstallManifest(skillName) {
     return SKILL_INSTALL_MANIFESTS[skillName] ?? null;
 }
 
+function listInstalledStaleSkills(target, currentSkills) {
+    const currentSkillSet = new Set(currentSkills);
+
+    return listSkillFolders(target)
+        .filter((skill) => skill.startsWith("stnl_") && !currentSkillSet.has(skill))
+        .sort();
+}
+
 function toManifestPath(relativePath) {
     return relativePath.split(path.sep).join("/");
 }
@@ -340,7 +349,28 @@ function prepareSkillBundles(skillName, installedSkillDir) {
     }));
 }
 
-function installSkills() {
+function pruneStaleManagedSkills(currentSkills) {
+    const pruned = [];
+
+    for (const target of getTargets()) {
+        if (!exists(target)) {
+            continue;
+        }
+
+        for (const skill of listInstalledStaleSkills(target, currentSkills)) {
+            const skillDir = path.join(target, skill);
+            fs.rmSync(skillDir, { recursive: true, force: true });
+            pruned.push(skillDir);
+            console.log(`  pruned stale managed skill: ${skillDir}`);
+        }
+    }
+
+    return pruned;
+}
+
+function installSkills(options = {}) {
+    const { prune = false } = options;
+
     if (!exists(SOURCE_DIR)) {
         throw new Error(`Fonte não encontrada: ${SOURCE_DIR}`);
     }
@@ -383,6 +413,15 @@ function installSkills() {
             }
         }
     }
+
+    if (prune) {
+        console.log("\nPrune stale managed skills:");
+        const pruned = pruneStaleManagedSkills(skills);
+
+        if (pruned.length === 0) {
+            console.log("  nenhuma skill stnl_* obsoleta encontrada");
+        }
+    }
 }
 
 function inspectTarget(target, skills) {
@@ -392,6 +431,7 @@ function inspectTarget(target, skills) {
         exists: targetExists,
         status: targetExists ? "OK" : "SKIPPED",
         skills: [],
+        staleSkills: [],
     };
 
     if (!targetExists) {
@@ -464,13 +504,17 @@ function inspectTarget(target, skills) {
         });
     }
 
+    report.staleSkills = listInstalledStaleSkills(target, skills);
+
     return report;
 }
 
-function runDoctor() {
+function runDoctor(options = {}) {
+    const { sourceOnly = false } = options;
     const sourceExists = exists(SOURCE_DIR);
     const skills = listSkillFolders(SOURCE_DIR);
     let hasIssue = false;
+    let installedTargetCount = 0;
 
     console.log(`Raiz do repo: ${ROOT}`);
     console.log(`Source dir: ${SOURCE_DIR} ${sourceExists ? "OK" : "MISSING"}`);
@@ -502,6 +546,18 @@ function runDoctor() {
 
     console.log("");
 
+    if (sourceOnly) {
+        if (!sourceExists || skills.length === 0) {
+            hasIssue = true;
+        }
+
+        if (hasIssue) {
+            process.exitCode = 1;
+        }
+
+        return;
+    }
+
     for (const target of getTargets()) {
         const report = inspectTarget(target, skills);
         console.log(`Target: ${report.target} ${report.status}`);
@@ -509,6 +565,16 @@ function runDoctor() {
         if (!report.exists) {
             console.log("");
             continue;
+        }
+
+        if (report.skills.some((skillReport) => skillReport.exists)) {
+            installedTargetCount += 1;
+        }
+
+        if (report.staleSkills.length > 0) {
+            hasIssue = true;
+            console.log(`  stale managed skills: ${report.staleSkills.join(", ")}`);
+            console.log("  remediation: node sentinel.mjs install --prune");
         }
 
         for (const skillReport of report.skills) {
@@ -564,6 +630,12 @@ function runDoctor() {
         hasIssue = true;
     }
 
+    if (installedTargetCount === 0) {
+        hasIssue = true;
+        console.log("Nenhuma instalação real encontrada nos targets conhecidos.");
+        console.log("Execute: node sentinel.mjs install");
+    }
+
     if (hasIssue) {
         process.exitCode = 1;
     }
@@ -571,10 +643,13 @@ function runDoctor() {
 
 function printUsage() {
     console.log("Uso:");
-    console.log("  node sentinel.mjs init");
-    console.log("  node sentinel.mjs update");
-    console.log("  node sentinel.mjs doctor");
+    console.log("  node sentinel.mjs install [--prune]");
+    console.log("  node sentinel.mjs doctor [--source-only]");
     console.log("  node sentinel.mjs smoke");
+    console.log("");
+    console.log("Aliases de compatibilidade:");
+    console.log("  node sentinel.mjs init [--prune]");
+    console.log("  node sentinel.mjs update [--prune]");
 }
 
 function isDirectRun() {
@@ -592,14 +667,41 @@ function runSmokeCommand() {
     }
 }
 
-async function main(command = COMMAND) {
+function parseInstallOptions(args) {
+    const allowed = new Set(["--prune"]);
+    const unknown = args.filter((arg) => !allowed.has(arg));
+
+    if (unknown.length > 0) {
+        throw new Error(`Opção desconhecida para install: ${unknown.join(", ")}`);
+    }
+
+    return {
+        prune: args.includes("--prune"),
+    };
+}
+
+function parseDoctorOptions(args) {
+    const allowed = new Set(["--source-only"]);
+    const unknown = args.filter((arg) => !allowed.has(arg));
+
+    if (unknown.length > 0) {
+        throw new Error(`Opção desconhecida para doctor: ${unknown.join(", ")}`);
+    }
+
+    return {
+        sourceOnly: args.includes("--source-only"),
+    };
+}
+
+async function main(command = COMMAND, args = COMMAND_ARGS) {
     switch (command) {
+        case "install":
         case "init":
         case "update":
-            installSkills();
+            installSkills(parseInstallOptions(args));
             break;
         case "doctor":
-            runDoctor();
+            runDoctor(parseDoctorOptions(args));
             break;
         case "smoke":
             runSmokeCommand();
@@ -630,9 +732,11 @@ export {
     getTargets,
     inspectTarget,
     isIgnoredEntry,
+    listInstalledStaleSkills,
     listSkillFolders,
     main,
     parseReferenceManifest,
+    pruneStaleManagedSkills,
     runDoctor,
     installSkills,
     validateReferenceManifestConsistency,

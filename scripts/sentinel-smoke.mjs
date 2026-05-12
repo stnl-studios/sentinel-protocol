@@ -14,9 +14,17 @@ import {
     getTargets,
     inspectTarget,
     isIgnoredEntry,
+    listInstalledStaleSkills,
     listSkillFolders,
     parseReferenceManifest,
 } from "../sentinel.mjs";
+
+const QUALITY_GUARDRAIL_SKILLS = [
+    "stnl_frontend_quality",
+    "stnl_backend_quality",
+    "stnl_backend_sql_quality",
+    "stnl_mobile_ios_swift_quality",
+];
 
 const REQUIRED_BUNDLE_PATHS = [
     ["stnl_project_foundation", "reference/docs", "core/CONTEXT.md"],
@@ -136,6 +144,7 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "Model-policy compatibility check",
             "model_reasoning_effort",
             "Consistency without legacy propagation",
+            "Stack quality guardrail propagation check",
             "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
             "artifact final materializado",
         ],
@@ -149,6 +158,7 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "execution-package-designer -> orchestrator -> coder(s)",
             "REQUIRED_QUALITY_GUARDRAILS",
             "## Contrato das stack quality guardrails",
+            "Toda rodada terminal passa obrigatoriamente pelo `finalizer`",
             "## Regra de closure",
         ],
     },
@@ -159,6 +169,7 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "## Status de decisão e gates",
             "## Regra de stack quality guardrails",
             "REQUIRED_QUALITY_GUARDRAILS",
+            "todos exigem passagem terminal pelo `finalizer`",
             "## Status de validação e fechamento",
         ],
     },
@@ -438,8 +449,8 @@ function assertReferenceManifests() {
     }
 }
 
-function runSentinel(command, env) {
-    const result = spawnSync(process.execPath, [path.join(ROOT, "sentinel.mjs"), command], {
+function runSentinel(command, env, args = []) {
+    const result = spawnSync(process.execPath, [path.join(ROOT, "sentinel.mjs"), command, ...args], {
         cwd: ROOT,
         env,
         encoding: "utf8",
@@ -453,6 +464,22 @@ function runSentinel(command, env) {
             result.stdout.trim(),
             result.stderr.trim(),
         ].filter(Boolean).join("\n")
+    );
+
+    return result;
+}
+
+function runSentinelExpectFailure(command, env, args = []) {
+    const result = spawnSync(process.execPath, [path.join(ROOT, "sentinel.mjs"), command, ...args], {
+        cwd: ROOT,
+        env,
+        encoding: "utf8",
+    });
+
+    assert.notEqual(
+        result.status,
+        0,
+        `Comando deveria falhar: node sentinel.mjs ${command} ${args.join(" ")}`
     );
 
     return result;
@@ -550,6 +577,98 @@ function assertDoctorOutput(output) {
             output.includes(requiredLine),
             `Doctor não reportou a linha esperada: ${requiredLine}`
         );
+    }
+}
+
+function assertQualityGuardrailSourceDefinitions() {
+    for (const skillName of QUALITY_GUARDRAIL_SKILLS) {
+        const skillRoot = path.join(SOURCE_DIR, skillName);
+        const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
+        const openaiContent = fs.readFileSync(path.join(skillRoot, "openai.yaml"), "utf8");
+
+        assert(skillContent.includes("quality guardrail"), `${skillName}/SKILL.md não declara quality guardrail`);
+        assert(openaiContent.includes(`name: "${skillName}"`), `${skillName}/openai.yaml não preserva name`);
+        assert(openaiContent.includes('display_name: "STNL '), `${skillName}/openai.yaml não usa display_name com prefixo STNL`);
+    }
+}
+
+function assertQualityGuardrailsInDocs(docRoot, label) {
+    const lifecycleContent = fs.readFileSync(path.join(docRoot, "workflow", "EXECUTION-LIFECYCLE.md"), "utf8");
+    const statusGatesContent = fs.readFileSync(path.join(docRoot, "workflow", "STATUS-GATES.md"), "utf8");
+    const qualityGateContent = fs.readFileSync(path.join(docRoot, "agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"), "utf8");
+
+    for (const [content, contentLabel] of [
+        [lifecycleContent, `${label}/workflow/EXECUTION-LIFECYCLE.md`],
+        [statusGatesContent, `${label}/workflow/STATUS-GATES.md`],
+        [qualityGateContent, `${label}/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`],
+    ]) {
+        assertContentIncludesAll(content, QUALITY_GUARDRAIL_SKILLS, contentLabel);
+    }
+
+    assert(
+        qualityGateContent.includes("### 14c. Stack quality guardrail propagation check"),
+        `${label}/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md não contém seção canônica de propagação das quality guardrails`
+    );
+}
+
+function assertQualityGuardrailPropagationInAgentSet(agentRoot, label) {
+    const requiredByAgent = {
+        "orchestrator.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "planner.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "validation-eval-designer.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "execution-package-designer.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "validation-runner.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "reviewer.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "finalizer.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "coder-backend.agent.md": ["stnl_backend_quality", "stnl_backend_sql_quality"],
+        "coder-frontend.agent.md": ["stnl_frontend_quality"],
+        "coder-ios.agent.md": ["stnl_mobile_ios_swift_quality"],
+    };
+
+    for (const [fileName, requiredSkills] of Object.entries(requiredByAgent)) {
+        const content = fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+        assertContentIncludesAll(content, requiredSkills, `${label}/${fileName}`);
+    }
+}
+
+function assertQualityGuardrailPropagationInCodexAgentSet(repoRoot, controlledAgentFiles) {
+    const requiredByAgent = {
+        "orchestrator": QUALITY_GUARDRAIL_SKILLS,
+        "planner": QUALITY_GUARDRAIL_SKILLS,
+        "validation-eval-designer": QUALITY_GUARDRAIL_SKILLS,
+        "execution-package-designer": QUALITY_GUARDRAIL_SKILLS,
+        "validation-runner": QUALITY_GUARDRAIL_SKILLS,
+        "reviewer": QUALITY_GUARDRAIL_SKILLS,
+        "finalizer": QUALITY_GUARDRAIL_SKILLS,
+        "coder-backend": ["stnl_backend_quality", "stnl_backend_sql_quality"],
+        "coder-frontend": ["stnl_frontend_quality"],
+        "coder-ios": ["stnl_mobile_ios_swift_quality"],
+    };
+
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const requiredSkills = requiredByAgent[agentName];
+
+        if (!requiredSkills) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+
+        assertContentIncludesAll(parsed.developer_instructions, requiredSkills, `codex/${agentName}`);
+    }
+}
+
+function assertInstalledQualityGuardrailSkills(targetHome) {
+    const targets = getTargets(targetHome);
+
+    for (const target of targets) {
+        for (const skillName of QUALITY_GUARDRAIL_SKILLS) {
+            const installedSkillRoot = path.join(target, skillName);
+            assert(fs.existsSync(path.join(installedSkillRoot, "SKILL.md")), `Quality guardrail ausente em ${target}: ${skillName}`);
+            assert(fs.existsSync(path.join(installedSkillRoot, "openai.yaml")), `openai.yaml ausente em ${target}: ${skillName}`);
+        }
     }
 }
 
@@ -1488,6 +1607,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "valid executor `READY`",
         "Activate stack quality guardrails as downstream constraints",
         "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+        "Every terminal round outcome must pass through `finalizer.agent.md`",
     ], "orchestrator consumer-side rejection");
 
     assertContentIncludesAll(agentContents.get("planner.agent.md"), [
@@ -1590,6 +1710,7 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "finalizer READY` sem `DONE` yes/no explícito ou sem resync yes/no explícito",
         "todo artifact gerenciado materializa `model`",
         "Consistency without legacy propagation check",
+        "Stack quality guardrail propagation check",
         "frases sentinela de consistencia presentes no template/base ou reference agent mas ausentes de `developer_instructions` em Codex",
         "compactacao ou normalizacao remove bloco protocol-fixed para caber no limite de 30.000 caracteres",
     ], "agent specialization quality gate hardening");
@@ -1605,6 +1726,7 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "`finalizer` emite apenas `READY` ou `BLOCKED`",
         "REQUIRED_QUALITY_GUARDRAILS",
         "## Contrato das stack quality guardrails",
+        "Toda rodada terminal passa obrigatoriamente pelo `finalizer`",
         "`finalizer READY` exige closure ledger explícito",
     ], "execution lifecycle hardening");
 }
@@ -1631,6 +1753,7 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
                 "valid executor `READY`",
                 "Activate stack quality guardrails as downstream constraints",
                 "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+                "Every terminal round outcome must pass through `finalizer.agent.md`",
             ], `${fileName} vscode hardening`);
         }
 
@@ -1706,6 +1829,7 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
                 "valid executor `READY`",
                 "Activate stack quality guardrails as downstream constraints",
                 "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+                "Every terminal round outcome must pass through `finalizer.agent.md`",
             ], `${agentName} codex hardening`);
         }
 
@@ -2106,9 +2230,11 @@ function runControlledMaterializationSmoke(targetHome) {
         assertProtocolHardeningInTemplateAgents();
         assertProtocolHardeningInReferenceAgents(agentSkillRoot);
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
+        assertQualityGuardrailsInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertQualityGuardrailPropagationInAgentSet(path.join(vscodeRepoRoot, ".github", "agents"), "vscode materializado");
         assertConsistencyPolicyPropagationToVscodeAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(backendOnlyRepoRoot);
@@ -2125,6 +2251,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexAgentMaterialization(codexRepoRoot, controlledAgentFiles);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertQualityGuardrailPropagationInCodexAgentSet(codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyPropagationToCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyRejectsCodexMaterializationDrift(agentSkillRoot, controlledAgentFiles);
         assertConsistencyPolicyRepairsLegacyCodexMaterialization(agentSkillRoot, controlledAgentFiles);
@@ -2142,6 +2269,9 @@ async function runSentinelSmoke() {
     assertRequiredBundleCoverage();
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();
+    assertQualityGuardrailSourceDefinitions();
+    assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
+    assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
         "templates/agents"
@@ -2157,16 +2287,39 @@ async function runSentinelSmoke() {
     assertNoOperationalArtifactsInSentinelRoot();
     assertNoLegacyDirectoryInSentinelRoot();
 
-    console.log("Smoke Sentinel: init/update/doctor em HOME temporário");
+    console.log("Smoke Sentinel: install/doctor em HOME temporário");
     const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-smoke-"));
 
     try {
         const env = { ...process.env, HOME: tempHome };
+        const emptyDoctor = runSentinelExpectFailure("doctor", env);
+        assert(
+            emptyDoctor.stdout.includes("Nenhuma instalação real encontrada"),
+            "doctor sem instalação real deveria falhar explicitamente"
+        );
+        runSentinel("doctor", env, ["--source-only"]);
+        runSentinel("install", env);
+
+        const staleSkill = path.join(getTargets(tempHome)[0], "stnl_removed_quality");
+        fs.mkdirSync(staleSkill, { recursive: true });
+        assert.deepEqual(
+            listInstalledStaleSkills(getTargets(tempHome)[0], listSkillFolders(SOURCE_DIR)),
+            ["stnl_removed_quality"],
+            "detecção de skill stnl_* stale falhou"
+        );
+        const staleDoctor = runSentinelExpectFailure("doctor", env);
+        assert(
+            staleDoctor.stdout.includes("stale managed skills: stnl_removed_quality"),
+            "doctor não reportou skill stnl_* stale"
+        );
+        runSentinel("install", env, ["--prune"]);
+        assert(!fs.existsSync(staleSkill), "install --prune não removeu skill stnl_* stale");
         runSentinel("init", env);
         runSentinel("update", env);
         const doctor = runSentinel("doctor", env);
 
         assertInstalledArtifactsMatchSources(tempHome);
+        assertInstalledQualityGuardrailSkills(tempHome);
         assertDoctorOutput(doctor.stdout);
         console.log("Smoke Sentinel: materialização controlada");
         runControlledMaterializationSmoke(tempHome);

@@ -19,6 +19,7 @@ Use este arquivo para escolher o launcher correto do Sentinel. Os templates conc
 | Iniciar execução de SPEC | `orchestrator` | `orchestrator-init.md` |
 | Continuar para a próxima slice | `orchestrator` | `orchestrator-next-slice.md` |
 | Executar uma slice | `orchestrator` | `orchestrator-slice.md` |
+| Finalizar uma slice manualmente | `orchestrator` | `orchestrator-finalize-slice.md` |
 
 ## Arquivos em templates/prompts/
 
@@ -33,6 +34,7 @@ Arquivos atuais:
 - `context-tbd-sync.md`
 - `foundation.md`
 - `orchestrator-init.md`
+- `orchestrator-finalize-slice.md`
 - `orchestrator-next-slice.md`
 - `orchestrator-slice.md`
 - `spec-close.md`

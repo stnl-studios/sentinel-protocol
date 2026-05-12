@@ -66,6 +66,7 @@ Fluxo alvo:
 - O `finalizer` consome esses vereditos para consolidar memória durável, mas não os reemite como seus próprios status.
 - O `finalizer` também pode consumir o sinal do `reviewer` quando ele existir, sem absorver review técnico substituto.
 - Quando a execução bloqueia antes do runner, o `orchestrator` roteia o caso direto ao `finalizer` como bloqueio pré-validação, sem inventar veredito do runner nem closure otimista.
+- `PARTIAL`, `FAIL`, `BLOCKED`, bloqueio pré-validação e execução parcial com `BLOCKED` nunca são fim operacional direto da rodada; todos exigem passagem terminal pelo `finalizer` para preservar verdict ou bloqueio, `DONE: yes/no`, resync yes/no e risco residual sem fechar a SPEC inteira.
 - Quando `designer` entra, o `orchestrator` deve classificá-lo como `required` ou `advisory`; só o caso `required` bloqueia a rodada por padrão.
 
 ## Invariantes para especialização por projeto

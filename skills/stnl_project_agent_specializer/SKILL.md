@@ -140,7 +140,7 @@ Contrato obrigatório do bundle interno:
 - não usar fallback em `templates/**`, `skills/**`, `~/.agents/**`, filesystem externo ou qualquer cópia fora do bundle instalado da própria skill
 - se `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
 - se qualquer arquivo obrigatório listado em `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
-- o bloqueio deve reportar a skill `stnl_project_agent_specializer`, o arquivo ausente e a ação sugerida: `node sentinel.mjs update` e `node sentinel.mjs doctor`
+- o bloqueio deve reportar a skill `stnl_project_agent_specializer`, o arquivo ausente e a ação sugerida: `node sentinel.mjs install` e `node sentinel.mjs doctor`
 - nunca reconstruir, adivinhar, simplificar ou procurar substituto para base agent, template ou contrato interno ausente
 
 Referências internas esperadas devem vir do manifest instalado, incluindo:

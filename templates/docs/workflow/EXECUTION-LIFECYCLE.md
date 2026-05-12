@@ -17,7 +17,7 @@ Descrever a ordem operacional canônica do Sentinel com mais precisão que `STAT
 11. O `orchestrator` rejeita handoff ausente, implícito, ambíguo, intermediário, narrativo ou `READY` sem evidência aplicada como `EXECUTOR_HANDOFF_INVALID`; a rodada bloqueia operacionalmente e não entra no `validation-runner`.
 12. `validation-runner` executa o `VALIDATION PACK` sobre o artifact implementado somente quando houver executor `READY` válido. Isso inclui prova funcional, checks determinísticos e checks de stack quality guardrail marcados no pack como relevantes ao cut.
 13. `reviewer` entra quando aplicável para revisar o artifact implementado e o diff resultante em chave semântica, arquitetural e de aderência às stack quality guardrails ativas. O `orchestrator` deve classificá-lo como `required` ou `advisory` antes da handoff.
-14. `finalizer` apenas consolida o resultado do runner, o sinal do reviewer quando existir, ou um bloqueio pré-validação roteado pelo orchestrator. Ele não redesenha prova, não reexecuta checks e não assume ownership de review técnico substituto.
+14. Toda rodada terminal passa obrigatoriamente pelo `finalizer`: `PASS`, `PARTIAL`, `FAIL`, `BLOCKED`, bloqueio pré-validação e execução parcial com `BLOCKED` precisam virar fechamento honesto antes de parar. O `finalizer` apenas consolida o resultado do runner, o sinal do reviewer quando existir, ou um bloqueio pré-validação roteado pelo orchestrator. Ele não redesenha prova, não reexecuta checks e não assume ownership de review técnico substituto.
 15. `resync` entra apenas quando o `finalizer` detecta delta factual fora da feature que precisa ser sincronizado.
 
 Fluxo alvo resumido:
@@ -83,4 +83,5 @@ O `orchestrator` marca as guardrails ativas por superfície, o `planner` preserv
 - Quando houver `reviewer required`, também não existe closure limpa com review pendente ou com risco estrutural material não resolvido.
 - `finalizer` consome essa evidência para fechar a rodada; ele não suaviza falta de prova, não ignora review `required` pendente ou materialmente bloqueado, e não transforma green irrelevante em entrega limpa.
 - O `finalizer` emite apenas `READY` ou `BLOCKED`; verdicts do runner (`PASS`, `PARTIAL`, `FAIL`, `BLOCKED`) são inputs preservados, não status reemitidos.
+- `PARTIAL`, `FAIL`, `BLOCKED` e execução parcial não encerram a rodada diretamente no runner, reviewer, coder ou orchestrator; todos precisam de passagem terminal pelo `finalizer` para registrar verdade atual, `DONE: yes/no`, resync yes/no e risco residual sem fechar a SPEC inteira.
 - `finalizer READY` exige closure ledger explícito: runner verdict preservado ou bloqueio pré-validação preservado, reviewer signal preservado quando houver, artifacts de memória/contexto alterados, `DONE` yes/no com racional, resync yes/no com racional, e delta factual quando resync for necessário.

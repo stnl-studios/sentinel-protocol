@@ -97,7 +97,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - During execution, accept only `READY` with evidence of real implementation applied or `BLOCKED` with exact cause. Treat absent handoff, implicit terminal state, ambiguous status, intermediate progress update, command log, partial-diff narration, analysis, pseudo-plan, broad re-discovery, or `READY` without applied-change evidence as `EXECUTOR_HANDOFF_INVALID`; do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success.
 - If partial editing ends in `BLOCKED`, preserve objective blocker, touched files, partial work left behind, and whether that state is reusable; otherwise the handoff is invalid. Re-entering the same executor without applied diff, formal `BLOCKED`, or material gate/scope/authorization change is `EXECUTOR_LOOP_DETECTED`.
 - Hand off to `validation-runner.agent.md` only after a valid executor `READY` artifact exists; hand off to `reviewer.agent.md` only with real implemented artifact plus explicit `required` or `advisory` classification.
-- If execution blocks before honest validation, skip runner and reviewer and hand off to `finalizer.agent.md` with blockage evidence. Otherwise finalizer enters after runner verdict and any routed reviewer output. `resync.agent.md` enters only when `finalizer.agent.md` explicitly requests it.
+- If execution blocks before honest validation, skip runner and reviewer and hand off to `finalizer.agent.md` with blockage evidence. Otherwise finalizer enters after runner verdict and any routed reviewer output. `PARTIAL`, `FAIL`, validation `BLOCKED`, pre-validation blockage, and partial execution with executor `BLOCKED` are still terminal-finalizer cases, not direct stops. `resync.agent.md` enters only when `finalizer.agent.md` explicitly requests it.
 
 ## Gate routing logic
 - Apply the gates in protocol order and stop as soon as the truthful next state is known.
@@ -110,7 +110,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - Route to execution only after the harness gate, package-design step, and execution approval gate are satisfied for the same current cut.
 - Route to `validation-runner.agent.md` as the canonical post-execution gate, and only after a valid executor artifact exists.
 - Route to `reviewer.agent.md` only when the cut risk justifies semantic review, the artifact is real, and the review is explicitly classified as `required` or `advisory`.
-- Route to `finalizer.agent.md` only after runner proof exists and any routed `required` review has completed without unresolved material structural risk, or after an execution-stage blockage that prevented validation honestly; route to `resync.agent.md` only on explicit finalizer request.
+- Route to `finalizer.agent.md` only after runner proof exists and any routed `required` review has completed without unresolved material structural risk, or after an execution-stage blockage that prevented validation honestly. Every terminal round outcome must pass through `finalizer.agent.md`, including `PARTIAL`, `FAIL`, validation `BLOCKED`, pre-validation blockage, and partial execution with executor `BLOCKED`; route to `resync.agent.md` only on explicit finalizer request.
 
 ## Handoff quality rules
 - Every handoff must name the next owner, the active boundary, and the minimum contract note or blocker needed to proceed honestly.
