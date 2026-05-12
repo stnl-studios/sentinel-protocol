@@ -143,8 +143,9 @@
 
 ## Slice Readiness
 > Fill only when `spec_slices.md` exists.
+> Slice references must use canonical stable IDs only: `S-001`, `S-002`, `S-003`. Do not use `Slice 1`, `S1`, `slice-1`, or title-only references as slice IDs.
 
-### S-001
+### S-001 — [Short slice title]
 - state: Draft | Structured | Execution Ready | Blocked
 - readiness_label: not_ready | ready_for_consumption | blocked
 - covers_spec_dod: [SDOD-001]

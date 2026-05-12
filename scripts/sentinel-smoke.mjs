@@ -449,6 +449,65 @@ function assertReferenceManifests() {
     }
 }
 
+function assertSpecSliceIdentityContract() {
+    const specManagerRoot = path.join(SOURCE_DIR, "stnl_spec_manager");
+    const skillContent = fs.readFileSync(path.join(specManagerRoot, "SKILL.md"), "utf8");
+    const specSlicesContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "spec_slices.md"),
+        "utf8"
+    );
+    const readinessContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "readiness_report.md"),
+        "utf8"
+    );
+    const orchestratorSliceContent = fs.readFileSync(
+        path.join(ROOT, "templates", "prompts", "orchestrator-slice.md"),
+        "utf8"
+    );
+    const orchestratorNextSliceContent = fs.readFileSync(
+        path.join(ROOT, "templates", "prompts", "orchestrator-next-slice.md"),
+        "utf8"
+    );
+
+    assertContentIncludesAll(skillContent, [
+        "`S-001`, `S-002`, `S-003`, sequencial e zero-padded com três dígitos",
+        "`### S-001 — [Short slice title]`",
+        "`dependencies: [S-001, S-002]`",
+        "`Slice 1`, `Slice 2`, `S1`, `slice-1`",
+        "normalizar qualquer label inconsistente de slice para o formato canônico",
+    ], "stnl_spec_manager/SKILL.md slice identity contract");
+
+    assertContentIncludesAll(specSlicesContent, [
+        "## Slice Identity Contract",
+        "canonical_id_format: `S-001`, `S-002`, `S-003`, sequential and zero-padded with three digits",
+        "recommended_heading: `### S-001 — [Short slice title]`",
+        "dependencies_must_use: canonical slice IDs only, for example `dependencies: [S-001, S-002]`",
+        "prohibited_slice_identifiers: `Slice 1`, `Slice 2`, `S1`, `slice-1`, title-only references",
+        "### S-001 — [Short slice title]",
+        "dependencies: [S-001]",
+    ], "spec_slices.md slice identity contract");
+
+    assertContentIncludesAll(readinessContent, [
+        "Slice references must use canonical stable IDs only: `S-001`, `S-002`, `S-003`.",
+        "Do not use `Slice 1`, `S1`, `slice-1`, or title-only references as slice IDs.",
+        "### S-001 — [Short slice title]",
+    ], "readiness_report.md slice identity contract");
+
+    assertContentIncludesAll(orchestratorSliceContent, [
+        "Slice ID canônico:",
+        "<S-00X>",
+    ], "orchestrator-slice prompt slice identity contract");
+
+    assertContentIncludesAll(orchestratorNextSliceContent, [
+        "ID canônico `S-001`, `S-002`, `S-003`",
+    ], "orchestrator-next-slice prompt slice identity contract");
+
+    assert(
+        !/^###\s+(?:Slice\s+\d+|S\d+|slice-\d+)\b/im.test(specSlicesContent),
+        "spec_slices.md não pode usar heading normativo com identificador legado como Slice 1, S1 ou slice-1"
+    );
+}
+
 function runSentinel(command, env, args = []) {
     const result = spawnSync(process.execPath, [path.join(ROOT, "sentinel.mjs"), command, ...args], {
         cwd: ROOT,
@@ -2266,6 +2325,7 @@ async function runSentinelSmoke() {
     console.log("Smoke Sentinel: manifests canônicos");
     assertInstallManifests();
     assertReferenceManifests();
+    assertSpecSliceIdentityContract();
     assertRequiredBundleCoverage();
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();

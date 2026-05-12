@@ -8,6 +8,7 @@ Eles servem para copiar e colar no agente/skill correspondente, sem repetir cont
 
 - Use estes arquivos como interface humana de invocação.
 - Preencha apenas placeholders como `<feature>`, `<feature-path>`, `<S-00X>` e blocos entre colchetes.
+- Para slices, substitua `<S-00X>` por um ID canônico existente como `S-001`; não use labels como `Slice 1`, `S1` ou `slice-1`.
 - Não duplique regras fixas da skill no prompt da rodada.
 - Quando uma regra fixa precisar mudar, altere a skill/base agent correspondente, não este prompt launcher.
 - Quando houver uma exceção real do projeto ou da rodada, registre em `Restrições excepcionais`.

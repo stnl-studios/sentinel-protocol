@@ -3,8 +3,8 @@ Use `orchestrator`.
 SPEC:
 - docs/SPEC/<feature>/
 
-Slice:
-- S-00X
+Slice ID canônico:
+- <S-00X>
 
 Objetivo:
 - rotear a finalizacao desta slice pelo `finalizer`, preservando o verdict ou bloqueio real da rodada.

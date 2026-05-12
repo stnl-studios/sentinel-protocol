@@ -9,13 +9,21 @@
 ## Parent Spec Summary
 [Summarize the overall initiative in 3 to 6 lines.]
 
+## Slice Identity Contract
+- canonical_id_format: `S-001`, `S-002`, `S-003`, sequential and zero-padded with three digits
+- recommended_heading: `### S-001 — [Short slice title]`
+- dependencies_must_use: canonical slice IDs only, for example `dependencies: [S-001, S-002]`
+- prohibited_slice_identifiers: `Slice 1`, `Slice 2`, `S1`, `slice-1`, title-only references
+- id_stability: once assigned, a slice ID must not be renumbered unless the SPEC is explicitly restructured before execution
+- normalization_rule: when reviewing, closing, or resuming a SPEC, normalize any inconsistent slice label to the canonical ID format
+
 ## Slice Dependency Overview
 - S-001 depends_on: []
 - S-002 depends_on: [S-001]
 - S-003 depends_on: [S-001, S-002]
 
 ## Slices
-### S-001
+### S-001 — [Short slice title]
 - title: [Slice title]
 - objective: [What outcome this slice must deliver.]
 - in_scope:
@@ -37,7 +45,7 @@
 - assumptions: [A-001]
 - decisions: [D-001]
 
-### S-002
+### S-002 — [Short slice title]
 - title: [Slice title]
 - objective: [Outcome]
 - in_scope:

@@ -411,6 +411,12 @@ Critérios possíveis:
 - recorte amplo demais para consumo posterior com precisão e governança
 
 Guardrails:
+- todo slice em `spec_slices.md` precisa ter ID canônico estável no formato `S-001`, `S-002`, `S-003`, sequencial e zero-padded com três dígitos
+- o heading recomendado de cada slice é `### S-001 — [Short slice title]`
+- dependências entre slices devem referenciar apenas IDs canônicos, por exemplo `dependencies: [S-001, S-002]`
+- não usar `Slice 1`, `Slice 2`, `S1`, `slice-1` ou referência somente por título como identificador de slice
+- uma vez atribuído, o ID da slice é estável e não deve ser renumerado, exceto quando a SPEC estiver sendo explicitamente reestruturada antes da execução
+- ao revisar, fechar ou retomar uma SPEC, normalizar qualquer label inconsistente de slice para o formato canônico antes de consolidar artefatos
 - cortar por recortes funcionais executáveis
 - não cortar por frontend, backend, testes ou outras camadas técnicas
 - não granularizar demais
