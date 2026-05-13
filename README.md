@@ -61,5 +61,6 @@ Targets suportados para materialização de agents:
 
 - [QUICKSTART.md](QUICKSTART.md)
 - [PROMPTS.md](PROMPTS.md)
+- [Agent Communication Flow](docs/workflow/AGENT-COMMUNICATION-FLOW.md)
 - [CHANGELOG.md](CHANGELOG.md)
 - [LICENSE](LICENSE)
