@@ -76,6 +76,50 @@ Regras:
 - nunca promover `DERIVED` ou `ASSUMPTION` a fato por conveniência
 - toda resposta material do usuário deve atualizar ao menos um artefato canônico
 
+## Intake esparso sem suposição
+O usuário pode trazer apenas uma descrição curta de problema, bug, feature ou iniciativa. A skill não deve exigir template grande de entrada nem devolver questionário amplo antes de tentar entender o mínimo verificável.
+
+Regras:
+- se o input identificar uma iniciativa legítima, criar ou atualizar o bundle da SPEC mesmo que a maturidade fique `Draft` ou `Blocked`
+- se o input for vago demais para identificar sequer a SPEC pretendida, não criar SPEC especulativa; perguntar o mínimo necessário para identificar o recorte
+- investigar `docs/**`, SPECs correlatas e codebase apenas pelo fallback controlado para levantar contexto e evidências que melhorem as perguntas
+- usar evidência para formular perguntas melhores, não para inventar regra de produto
+- não transformar comportamento provável, padrão observado, lacuna documental, inferência técnica ou preferência da IA em requisito confirmado
+- tudo que a IA acha, deduz, considera provável ou não tem certeza deve virar `OPEN_QUESTION` em `open_questions.md`, nunca requisito forte em `feature_spec.md`
+- `assumptions.md` pode registrar hipótese operacional temporária, mas incerteza material associada também precisa existir em `open_questions.md` com ID canônico
+- sugestões podem aparecer nas perguntas, mas `default` deve ser `none` até decisão humana ou evidência factual direta
+- quando uma decisão humana responder pergunta material, registrar a decisão em `decision_log.md` quando ela afetar escopo, contrato, aceite, permissão, persistência, validação, erro, risco ou prontidão
+
+## Open questions como fonte oficial de dúvidas
+`open_questions.md` é a fonte oficial para dúvidas, decisões faltantes e incertezas materiais.
+
+Regras:
+- não criar arquivo paralelo como `open_decisions.md`
+- pergunta aberta não pode ficar apenas em `feature_spec.md`, `readiness_report.md`, saída operacional ou comentário de sessão
+- perguntas podem ser agrupadas por categoria dentro de `open_questions.md`, por exemplo `Blocking Product Decisions`, `Data / Contract Questions`, `UX / Flow Questions`, `Validation Questions` e `Non-blocking Clarifications`
+- cada pergunta deve ter ID canônico, status, categoria, evidência, motivo de impacto, opções sugeridas quando úteis, `default: none` e `do_not_assume: yes`
+- perguntas bloqueantes devem aparecer também na saída operacional em `QUESTIONS FOR USER`
+- pergunta resolvida deve ser compactada e apontar para `decision_log.md` quando houver decisão material associada
+
+## IDs canônicos e estáveis
+Todos os artefatos da SPEC devem usar IDs canônicos estáveis.
+
+Formatos permitidos:
+- perguntas abertas: `Q-001`, `Q-002`, `Q-003`
+- decisões: `D-001`, `D-002`, `D-003`
+- critérios de aceite: `AC-001`, `AC-002`, `AC-003`
+- slices: `SL-001`, `SL-002`, `SL-003`
+- riscos: `R-001`, `R-002`, `R-003`
+- constraints: `C-001`, `C-002`, `C-003`
+
+Regras:
+- o ID deve aparecer no heading e em campo explícito `id:` dentro do item
+- IDs são estáveis: nunca renumerar, nunca reutilizar ID removido e nunca variar formato entre rodadas
+- preservar IDs existentes exatamente como estão
+- nunca referenciar item apenas por título; usar ID canônico em dependências, perguntas, decisões, aceite, riscos e slices
+- se encontrar artefato antigo com formatos misturados, não normalizar silenciosamente; criar plano de migração ou pedir confirmação humana, conforme o modo permitir
+- proibir formatos como `S-001`, `Slice 1`, `SLICE - 001`, `Question 1` e `Decision A`
+
 ## Source of truth e ordem de leitura
 Priorizar evidência nesta ordem:
 
@@ -210,6 +254,16 @@ Regras:
 - não transformar nenhum artefato em dump solto de contexto do projeto
 - os templates do bundle obrigatório são shape contratual, não sugestão opcional
 
+Disciplina de tamanho:
+- a skill pode ser rígida, mas a SPEC persistida deve ser compacta
+- não duplicar a mesma explicação em múltiplos arquivos
+- preferir referência por ID canônico em vez de repetir texto
+- `feature_spec.md` contém a verdade atual, não o histórico inteiro
+- `open_questions.md` foca em perguntas abertas ou recentemente resolvidas que ainda importam
+- `decision_log.md` guarda histórico de decisão de forma compacta
+- `spec_slices.md` deve ser executável e objetivo, sem virar relatório longo
+- evidência expandida só deve permanecer quando reduz risco real de retomada ou execução downstream
+
 Formulações proibidas:
 - "Todos os auxiliares de maturação desta SPEC foram absorvidos neste arquivo"
 - "Nenhum auxiliar adicional foi materializado nesta rodada porque as lacunas cabem no artefato principal"
@@ -283,10 +337,13 @@ Exigir ao menos:
 - hipóteses explicitadas
 - edge cases relevantes mapeados
 - impacto técnico mínimo descrito
-- pendências críticas zeradas ou conscientemente assumidas com condicionalidade explícita
+- pendências críticas zeradas, respondidas por decisão explícita, resolvidas por evidência factual direta, ou reclassificadas como não bloqueantes com justificativa registrada
 - nenhuma dependência externa crítica sem validação
 - nenhuma decisão externa obrigatória ainda pendente
 - nenhuma pergunta bloqueante ainda aberta
+- zero pergunta bloqueante aberta em `open_questions.md`
+- nenhuma decisão crítica de produto, dados, permissão, persistência, validação ou tratamento de erro aberta
+- nenhuma assumption crítica usada como justificativa para `Execution Ready`
 
 ### Virar `Blocked`
 Gatilhos típicos:
@@ -306,11 +363,45 @@ Regras:
 - quando a SPEC estiver consumível mas ainda depender de validação, decisão externa, hipótese material ou restrição operacional não confirmada, manter linguagem condicional explícita em vez de promover certeza teatral
 - categorias fora da taxonomia principal não viram classe primária ad hoc; viram observação, dependência ou nota explicativa
 
+## Readiness Gate universal
+Nenhum modo, fluxo ou artefato da `stnl_spec_manager` pode marcar uma SPEC ou slice como `Execution Ready` enquanto houver pergunta bloqueante aberta.
+
+Essa regra vale para:
+- criação de nova SPEC
+- refinamento em rodada comum
+- `MODE=RESUME`
+- rebuild ou reconstrução de estado
+- sync/update de artefatos
+- split/slicing
+- `MODE=CLOSE`
+- readiness/report generation
+- handoff prompt generation
+
+Uma SPEC ou slice só pode virar `Execution Ready` quando:
+- todas as perguntas bloqueantes foram respondidas, removidas como não bloqueantes por decisão explícita, ou resolvidas por evidência factual direta
+- decisões materiais aplicáveis foram registradas em `decision_log.md`
+- pendência crítica só deixou de bloquear prontidão se foi respondida por decisão explícita, resolvida por evidência factual direta, ou reclassificada como não bloqueante com justificativa registrada
+- nenhuma assumption `ACTIVE` marcada com `must_be_confirmed_by: before execution ready` permanece aberta
+- `feature_spec.md` contém apenas requisitos confirmados
+- critérios de aceite são testáveis
+- nenhuma decisão crítica de produto, dados, permissão, persistência, validação ou erro permanece aberta
+
+Assumption crítica não justifica `Execution Ready`. Se uma assumption material ainda for necessária para produto, dados, permissão, persistência, validação, tratamento de erro, aceite ou execução segura, manter a SPEC ou slice abaixo de `Execution Ready` até a assumption ser confirmada, rejeitada, expirada ou reclassificada por decisão/pergunta relacionada.
+
+Se qualquer condição acima falhar:
+- manter ou rebaixar `state` para `Draft`, `Structured` ou `Blocked`
+- manter `readiness_label` como `not_ready` ou `blocked`
+- não emitir `Optional Manual Handoff Prompt` para execução
+- repetir as perguntas bloqueantes na saída operacional
+
 ## Regras de perguntas
 - ler antes de perguntar
 - perguntar apenas para fechar gap real de maturidade
 - fazer no máximo 5 perguntas por rodada
 - manter perguntas curtas, diretas e orientadas a fechar consumo honesto da SPEC
+- explicar por que cada pergunta muda execução, aceite, escopo, contrato, validação, risco ou prontidão
+- trazer opções sugeridas quando isso reduzir ambiguidade, sempre com opção livre como "Other: describe expected behavior"
+- nunca tratar sugestão como decisão ou default automático
 - não puxar arquitetura cedo demais
 - se a dúvida for sobre classificar itens concretos do recorte, fazer primeiro a rodada factual mínima por item e só então escalar
 - pergunta bloqueante ampla sobre direção técnica, dependência, estratégia ou classe de solução deve vir já estreitada pela evidência observada e pelos itens realmente candidatos
@@ -322,6 +413,7 @@ Regras:
 - a saída operacional deve repetir de forma curta as perguntas pendentes bloqueantes ou críticas
 - nunca declarar maturidade forte quando houver pergunta bloqueante ainda aberta
 - `open_questions.md` deve manter o shape canônico completo por pergunta; não reduzir para resumos soltos do tipo `open/resolved: none`
+- perguntas que bloqueiam `Execution Ready` devem usar `blocking: yes`, `default: none` e `do_not_assume: yes`
 
 Prioridade das perguntas:
 1. problema e objetivo
@@ -344,9 +436,11 @@ Perguntas ruins:
 3. quando houver recorte com itens concretos, fazer discovery factual mínimo item a item para reduzir perguntas abstratas e registrar a matriz factual curta
 4. decidir a localização canônica da SPEC sem chutar ownership de feature
 5. ler primeiro `reference/MANIFEST.md`, carregar apenas os templates listados nele que forem necessários, atualizar `feature_spec.md` com classificação factual explícita e manter o bundle canônico coerente; em criação nova ou fork legítimo, materializar obrigatoriamente todos os arquivos do bundle
-6. quando existir ou for útil, recalcular maturidade em `readiness_report.md` com aderência ao gate canônico, peso real de `classification_strength` e condicionalidades explícitas, sem transferir para ele o papel de referência final
-7. quando fizer sentido para retomada, registrar delta append-only em `session_summary.md`
-8. perguntar apenas o mínimo necessário, até 5 perguntas, ou parar com status operacional honesto e blockers explícitos
+6. verificar IDs canônicos e preservar IDs existentes; se houver formato legado misturado, registrar plano de migração ou perguntar antes de normalizar
+7. quando existir ou for útil, recalcular maturidade em `readiness_report.md` com aderência ao Readiness Gate universal, peso real de `classification_strength` e condicionalidades explícitas, sem transferir para ele o papel de referência final
+8. se houver pergunta bloqueante aberta, impedir `Execution Ready`, impedir handoff de execução e refletir o blocker em `open_questions.md`, `readiness_report.md` e saída operacional
+9. quando fizer sentido para retomada, registrar delta append-only em `session_summary.md`
+10. perguntar apenas o mínimo necessário, até 5 perguntas, ou parar com status operacional honesto e blockers explícitos
 
 Regras:
 - sempre reler `feature_spec.md` e os artefatos auxiliares existentes antes de continuar
@@ -361,6 +455,9 @@ Regras:
 Quando `MODE=RESUME` estiver presente:
 - reler primeiro `feature_spec.md` e depois apenas os artefatos auxiliares existentes que ainda sejam materialmente úteis para retomar a maturação
 - reconstruir o estado atual antes de perguntar
+- preservar readiness de forma conservadora
+- se readiness anterior estiver ausente, inconsistente, desconhecida ou sem suporte por decisões confirmadas, rebaixar para `Draft`, `Structured` ou `Blocked`
+- só promover para `Execution Ready` se reexecutar o Readiness Gate universal e confirmar ausência de perguntas bloqueantes abertas
 - retomar do delta, não do zero
 - não repetir perguntas já resolvidas
 - não reabrir decisão já tomada sem conflito factual novo
@@ -381,6 +478,7 @@ Quando `MODE=CLOSE` estiver presente:
 - exigir SPEC já existente e evidência explícita suficiente para avaliação de fechamento
 - reler primeiro `feature_spec.md` e depois apenas os artefatos auxiliares existentes que tragam evidência material para a reconciliação
 - consumir apenas evidências já existentes e reconciliá-las contra `Acceptance Criteria`, `Spec Definition of Done`, blockers materiais e `Residual Gaps and Conditions`
+- reexecutar o Readiness Gate universal antes de qualquer promoção de maturidade ou fechamento forte
 - concluir somente um destes resultados canônicos de fechamento: `closed`, `closed_with_residuals` ou `not_closed`
 - atualizar `feature_spec.md` com `lifecycle_status`, `closed_at`, `closed_in_session`, decisões finais consolidadas, base de fechamento, evidências usadas e resíduos realmente remanescentes
 - absorver dos artefatos auxiliares apenas a informação final realmente necessária para entendimento futuro da SPEC encerrada, evitando duplicação entre `feature_spec.md` e os auxiliares
@@ -396,6 +494,7 @@ Regras:
 - nunca emitir `PASS`, `PARTIAL` ou `FAIL` como resultado de fechamento
 - nunca escrever `DONE` ou `Feature CONTEXT`
 - se a evidência for insuficiente ou contraditória, manter `lifecycle_status: active`, concluir `not_closed` e nomear claramente as lacunas
+- se houver pergunta bloqueante aberta, não promover para `Execution Ready`; fechamento só pode ser `not_closed` ou, se a SPEC já estava fechável por evidência explícita e os resíduos forem não bloqueantes, `closed_with_residuals`
 - se `MODE=CLOSE` concluir `not_closed`, então `lifecycle_status` deve permanecer `active`, `closed_at` deve ficar `none` e `closed_in_session` deve ficar `none`
 - se `MODE=CLOSE` concluir `not_closed`, não remover auxiliares automaticamente
 - nunca remover um auxiliar que ainda contenha informação única não absorvida por `feature_spec.md`
@@ -411,12 +510,13 @@ Critérios possíveis:
 - recorte amplo demais para consumo posterior com precisão e governança
 
 Guardrails:
-- todo slice em `spec_slices.md` precisa ter ID canônico estável no formato `S-001`, `S-002`, `S-003`, sequencial e zero-padded com três dígitos
-- o heading recomendado de cada slice é `### S-001 — [Short slice title]`
-- dependências entre slices devem referenciar apenas IDs canônicos, por exemplo `dependencies: [S-001, S-002]`
-- não usar `Slice 1`, `Slice 2`, `S1`, `slice-1` ou referência somente por título como identificador de slice
-- uma vez atribuído, o ID da slice é estável e não deve ser renumerado, exceto quando a SPEC estiver sendo explicitamente reestruturada antes da execução
-- ao revisar, fechar ou retomar uma SPEC, normalizar qualquer label inconsistente de slice para o formato canônico antes de consolidar artefatos
+- todo slice em `spec_slices.md` precisa ter ID canônico estável no formato `SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded com três dígitos
+- o heading recomendado de cada slice é `### SL-001 — [Short slice title]`
+- cada slice precisa repetir o ID em campo explícito `id: SL-001`
+- dependências entre slices devem referenciar apenas IDs canônicos, por exemplo `dependencies: [SL-001, SL-002]`
+- não usar `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1` ou referência somente por título como identificador de slice
+- uma vez atribuído, o ID da slice é estável e não deve ser renumerado
+- ao revisar, fechar ou retomar uma SPEC com labels inconsistentes, não normalizar silenciosamente; criar plano de migração ou pedir confirmação humana quando a mudança afetar rastreabilidade
 - cortar por recortes funcionais executáveis
 - não cortar por frontend, backend, testes ou outras camadas técnicas
 - não granularizar demais
@@ -446,6 +546,7 @@ Parar e explicitar o motivo quando:
 - a SPEC estiver `Blocked`
 - houver pergunta bloqueante crítica ainda aberta
 - a SPEC ou um slice estiverem honestamente `Execution Ready` e os artefatos consumíveis já estiverem materializados
+- houver pergunta bloqueante aberta que impeça maturidade mais forte
 
 ## Saída operacional obrigatória
 A saída final da skill deve ser curta, objetiva e sem roteamento automático.
@@ -471,6 +572,7 @@ Regras:
 - se não houver pergunta pendente relevante, declarar `QUESTIONS FOR USER: none`
 - se houver blocker crítico, refletir o blocker também em `QUESTIONS FOR USER` quando depender de resposta humana
 - `CURRENT MATURITY` deve refletir estado, força da classificação e qualquer condicionalidade material
+- `OPTIONAL MANUAL HANDOFF PROMPT` deve ser `none` quando houver pergunta bloqueante aberta ou quando o Readiness Gate universal não sustentar execução
 - quando `MODE=CLOSE` for usado, `SUMMARY` deve declarar `closed`, `closed_with_residuals` ou `not_closed` e nunca usar vocabulário de `validation-runner` ou `finalizer`
 - em colisão sem `MODE=RESUME`, restringir a resposta a esse shape operacional e usar `QUESTIONS FOR USER` apenas para pedir a escolha de lineage
 
@@ -495,6 +597,12 @@ Mensagens proibidas:
 - não alterar o papel do `finalizer` como closure owner canônico
 - não reintroduzir `phase_closure` / `PLAN.md` como lifecycle canônico
 - produzir artefatos canônicos que podem ser consumidos depois pelo restante do workflow
+
+## Privacidade e exemplos
+- usar somente exemplos sintéticos, genéricos e neutros em skill, templates, README, fixtures, smoke tests e snippets de referência
+- não usar nomes reais de cliente, projeto privado, feature real, fluxo de negócio privado, campo real de domínio ou exemplo derivado de conversa privada
+- exemplos aceitáveis devem ser criados do zero, por exemplo `User registration`, `Profile update`, `Order management`, `Document upload`, `External API integration`, `Admin approval flow` ou `Notification settings`
+- se um exemplo precisar de entidade, campo, tela, endpoint ou fluxo, manter nomes genéricos e não rastreáveis a contexto privado
 
 ## Exemplos canônicos
 Criação nova sem colisão:

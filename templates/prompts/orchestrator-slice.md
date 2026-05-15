@@ -4,7 +4,7 @@ SPEC:
 - docs/SPEC/<feature>/
 
 Slice ID canônico:
-- <S-00X>
+- <SL-00X>
 
 Objetivo:
 - iniciar ou retomar exclusivamente este slice conforme o estado real atual.

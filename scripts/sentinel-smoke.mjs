@@ -449,7 +449,7 @@ function assertReferenceManifests() {
     }
 }
 
-function assertSpecSliceIdentityContract() {
+function assertSpecManagerContract() {
     const specManagerRoot = path.join(SOURCE_DIR, "stnl_spec_manager");
     const skillContent = fs.readFileSync(path.join(specManagerRoot, "SKILL.md"), "utf8");
     const specSlicesContent = fs.readFileSync(
@@ -458,6 +458,22 @@ function assertSpecSliceIdentityContract() {
     );
     const readinessContent = fs.readFileSync(
         path.join(specManagerRoot, "reference", "templates", "readiness_report.md"),
+        "utf8"
+    );
+    const featureSpecContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "feature_spec.md"),
+        "utf8"
+    );
+    const openQuestionsContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "open_questions.md"),
+        "utf8"
+    );
+    const assumptionsContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "assumptions.md"),
+        "utf8"
+    );
+    const decisionLogContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "decision_log.md"),
         "utf8"
     );
     const orchestratorSliceContent = fs.readFileSync(
@@ -470,41 +486,88 @@ function assertSpecSliceIdentityContract() {
     );
 
     assertContentIncludesAll(skillContent, [
-        "`S-001`, `S-002`, `S-003`, sequencial e zero-padded com três dígitos",
-        "`### S-001 — [Short slice title]`",
-        "`dependencies: [S-001, S-002]`",
-        "`Slice 1`, `Slice 2`, `S1`, `slice-1`",
-        "normalizar qualquer label inconsistente de slice para o formato canônico",
+        "`SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded com três dígitos",
+        "`### SL-001 — [Short slice title]`",
+        "`dependencies: [SL-001, SL-002]`",
+        "`S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`",
+        "não normalizar silenciosamente",
+        "Readiness Gate universal",
+        "pergunta bloqueante aberta",
+        "`Q-001`, `Q-002`, `Q-003`",
+        "`D-001`, `D-002`, `D-003`",
+        "`AC-001`, `AC-002`, `AC-003`",
+        "`R-001`, `R-002`, `R-003`",
+        "`C-001`, `C-002`, `C-003`",
     ], "stnl_spec_manager/SKILL.md slice identity contract");
 
     assertContentIncludesAll(specSlicesContent, [
         "## Slice Identity Contract",
-        "canonical_id_format: `S-001`, `S-002`, `S-003`, sequential and zero-padded with three digits",
-        "recommended_heading: `### S-001 — [Short slice title]`",
-        "dependencies_must_use: canonical slice IDs only, for example `dependencies: [S-001, S-002]`",
-        "prohibited_slice_identifiers: `Slice 1`, `Slice 2`, `S1`, `slice-1`, title-only references",
-        "### S-001 — [Short slice title]",
-        "dependencies: [S-001]",
+        "canonical_id_format: `SL-001`, `SL-002`, `SL-003`, sequential and zero-padded with three digits",
+        "recommended_heading: `### SL-001 — [Short slice title]`",
+        "id_field_required: every slice must include `id: SL-001`",
+        "dependencies_must_use: canonical slice IDs only, for example `dependencies: [SL-001, SL-002]`",
+        "prohibited_slice_identifiers: `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, title-only references",
+        "### SL-001 — [Short slice title]",
+        "id: SL-001",
+        "dependencies: [SL-001]",
     ], "spec_slices.md slice identity contract");
 
     assertContentIncludesAll(readinessContent, [
-        "Slice references must use canonical stable IDs only: `S-001`, `S-002`, `S-003`.",
-        "Do not use `Slice 1`, `S1`, `slice-1`, or title-only references as slice IDs.",
-        "### S-001 — [Short slice title]",
+        "`Execution Ready` is prohibited while any open question has `blocking: yes`.",
+        "Slice references must use canonical stable IDs only: `SL-001`, `SL-002`, `SL-003`.",
+        "Do not use `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, or title-only references as slice IDs.",
+        "### SL-001 — [Short slice title]",
+        "id: SL-001",
     ], "readiness_report.md slice identity contract");
+
+    assertContentIncludesAll(featureSpecContent, [
+        "Use canonical stable IDs for questions (`Q-001`), decisions (`D-001`), acceptance criteria (`AC-001`), slices (`SL-001`), risks (`R-001`), and constraints (`C-001`).",
+        "#### C-001 — [Constraint title]",
+        "- id: C-001",
+        "### AC-001 — [Acceptance criterion title]",
+        "- id: AC-001",
+        "### R-001 — [Risk title]",
+        "- id: R-001",
+    ], "feature_spec.md canonical ID contract");
+
+    assertContentIncludesAll(openQuestionsContent, [
+        "### Q-001 — [Generic question title]",
+        "- id: Q-001",
+        "- evidence:",
+        "- why_it_matters:",
+        "- suggested_options:",
+        "C) Other: describe expected behavior",
+        "- default: none",
+        "- do_not_assume: yes",
+        "`Execution Ready` is prohibited while any question with `status: OPEN` and `blocking: yes` remains",
+    ], "open_questions.md sparse intake and blocking gate contract");
+
+    assertContentIncludesAll(assumptionsContent, [
+        "Any `ACTIVE` assumption with `must_be_confirmed_by: before execution ready` blocks `Execution Ready`",
+        "Any material assumption about product behavior, data, permission, persistence, validation, or error handling must also be represented in `open_questions.md`",
+        "related_questions: [Q-001, Q-002]",
+        "must_be_confirmed_by: <before structured | before execution ready | before implementation | optional>",
+        "product | data | permission | persistence | validation | error_handling",
+    ], "assumptions.md execution readiness and material assumptions contract");
+
+    assertContentIncludesAll(decisionLogContent, [
+        "### D-001 — [Decision title]",
+        "- id: D-001",
+        "If a direction is still speculative",
+    ], "decision_log.md canonical ID contract");
 
     assertContentIncludesAll(orchestratorSliceContent, [
         "Slice ID canônico:",
-        "<S-00X>",
+        "<SL-00X>",
     ], "orchestrator-slice prompt slice identity contract");
 
     assertContentIncludesAll(orchestratorNextSliceContent, [
-        "ID canônico `S-001`, `S-002`, `S-003`",
+        "ID canônico `SL-001`, `SL-002`, `SL-003`",
     ], "orchestrator-next-slice prompt slice identity contract");
 
     assert(
-        !/^###\s+(?:Slice\s+\d+|S\d+|slice-\d+)\b/im.test(specSlicesContent),
-        "spec_slices.md não pode usar heading normativo com identificador legado como Slice 1, S1 ou slice-1"
+        !/^###\s+(?:S-\d+|Slice\s+\d+|SLICE\s*-\s*\d+|S\d+|slice-\d+)\b/im.test(specSlicesContent),
+        "spec_slices.md não pode usar heading normativo com identificador legado como S-001, Slice 1, SLICE - 001, S1 ou slice-1"
     );
 }
 
@@ -2325,7 +2388,7 @@ async function runSentinelSmoke() {
     console.log("Smoke Sentinel: manifests canônicos");
     assertInstallManifests();
     assertReferenceManifests();
-    assertSpecSliceIdentityContract();
+    assertSpecManagerContract();
     assertRequiredBundleCoverage();
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();

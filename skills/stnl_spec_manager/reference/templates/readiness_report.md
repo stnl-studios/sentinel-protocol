@@ -3,6 +3,8 @@
 > This is an optional working artifact for maturity assessment while the SPEC is still being structured or validated. Preserve every section when this file is used, but do not make future readers depend on it to understand a closed SPEC.
 >
 > Do not let `readiness_score` override blockers, critical gaps, unresolved validation, or explicit conditionality. Any final closure outcome or final decision needed for future understanding must be consolidated into `feature_spec.md`.
+>
+> `Execution Ready` is prohibited while any open question has `blocking: yes`. Rebuild, resume, split, close, handoff, and report-generation flows must rerun this gate instead of preserving stale readiness.
 
 ## Current Status
 - state: Draft | Structured | Execution Ready | Blocked
@@ -72,6 +74,8 @@
 ### Execution Ready Check
 - out_of_scope_defined: yes | no
 - acceptance_criteria_testable: yes | no
+- no_open_blocking_questions: yes | no
+- open_blocking_questions: [Q-001, Q-002]
 - primary_decisions_recorded: yes | no
 - consolidated_direction_consumable: yes | no
 - decision_basis_sustained: yes | no
@@ -79,10 +83,12 @@
 - relevant_edge_cases_mapped: yes | no
 - minimum_technical_impact_described: yes | no
 - critical_dependencies_visible: yes | no
-- critical_pending_items_resolved_or_consciously_accepted: yes | no
-- blocking_or_critical_questions_closed_or_explicitly_conditional: yes | no
-- external_validation_closed_or_explicitly_conditional: yes | no
-- external_decisions_closed_or_explicitly_conditional: yes | no
+- critical_pending_items_resolved_or_explicitly_decided_or_factually_reclassified: yes | no
+- no_execution_ready_blocking_active_assumptions: yes | no
+- blocking_questions_closed_or_reclassified: yes | no
+- critical_questions_handled: yes | no
+- external_validation_closed_or_non_blocking_with_recorded_basis: yes | no
+- external_decisions_closed_or_non_blocking_with_recorded_basis: yes | no
 
 ### Blocked Trigger Check
 - contradictory_objective: yes | no
@@ -143,12 +149,14 @@
 
 ## Slice Readiness
 > Fill only when `spec_slices.md` exists.
-> Slice references must use canonical stable IDs only: `S-001`, `S-002`, `S-003`. Do not use `Slice 1`, `S1`, `slice-1`, or title-only references as slice IDs.
+> Slice references must use canonical stable IDs only: `SL-001`, `SL-002`, `SL-003`. Do not use `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, or title-only references as slice IDs.
 
-### S-001 — [Short slice title]
+### SL-001 — [Short slice title]
+- id: SL-001
 - state: Draft | Structured | Execution Ready | Blocked
 - readiness_label: not_ready | ready_for_consumption | blocked
 - covers_spec_dod: [SDOD-001]
+- open_blocking_questions: [Q-001 or `none`]
 - blockers: [List blockers or `none`]
 - notes: [Optional notes.]
 
