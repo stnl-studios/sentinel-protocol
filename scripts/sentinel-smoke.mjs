@@ -607,6 +607,40 @@ function runSentinelExpectFailure(command, env, args = []) {
     return result;
 }
 
+function assertSourceOnlyDoctorFailsForMissingSourceFile() {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-source-only-"));
+    const missingRelativePath = path.join("templates", "agents", "reviewer.agent.md");
+
+    try {
+        fs.copyFileSync(path.join(ROOT, "sentinel.mjs"), path.join(tempRoot, "sentinel.mjs"));
+        fs.cpSync(path.join(ROOT, "skills"), path.join(tempRoot, "skills"), { recursive: true });
+        fs.cpSync(path.join(ROOT, "templates"), path.join(tempRoot, "templates"), { recursive: true });
+        fs.rmSync(path.join(tempRoot, missingRelativePath));
+
+        const result = spawnSync(
+            process.execPath,
+            [fs.realpathSync(path.join(tempRoot, "sentinel.mjs")), "doctor", "--source-only"],
+            {
+                cwd: tempRoot,
+                env: { ...process.env, HOME: tempRoot },
+                encoding: "utf8",
+            }
+        );
+
+        assert.notEqual(
+            result.status,
+            0,
+            "doctor --source-only deveria falhar quando um arquivo fonte obrigatório está ausente"
+        );
+        assert(
+            result.stdout.includes(`missing source file: ${missingRelativePath}`),
+            `doctor --source-only não reportou o arquivo fonte ausente: ${missingRelativePath}`
+        );
+    } finally {
+        fs.rmSync(tempRoot, { recursive: true, force: true });
+    }
+}
+
 function assertInstalledArtifactsMatchSources(targetHome) {
     const skills = listSkillFolders(SOURCE_DIR);
     const targets = getTargets(targetHome);
@@ -2421,6 +2455,7 @@ async function runSentinelSmoke() {
             "doctor sem instalação real deveria falhar explicitamente"
         );
         runSentinel("doctor", env, ["--source-only"]);
+        assertSourceOnlyDoctorFailsForMissingSourceFile();
         runSentinel("install", env);
 
         const staleSkill = path.join(getTargets(tempHome)[0], "stnl_removed_quality");
