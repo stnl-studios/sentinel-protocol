@@ -52,6 +52,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - a canonical gate requires DEV input before the round may proceed
 - the round depends on a capability materially absent from the available agents
 - the selected executor lacks the material edit or execution capability required for the authorized cut
+- a preparation handoff lacks artifact, explicit status, or exact missing fact/decision
 - an executor returns no handoff, an implicit handoff, an ambiguous handoff, an intermediate progress report, analysis, description, pseudo-plan, or any `READY` response without evidence of applied implementation
 - the same executor is re-entered in the same round without an applied diff, a formal `BLOCKED`, or a material change in gate, scope, or authorization
 - ownership or shared-contract boundaries cannot be stabilized enough for safe execution without exceeding router budget
@@ -88,6 +89,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 ## Handoff
 - Route the base gate to `stnl_project_context` in `MODE=BOOTSTRAP` when factual base is missing, or `MODE=RESYNC` when explicit feature delta meets factual drift; do not confuse that with `resync.agent.md`.
 - Canonical preparation order is `planner.agent.md` for `EXECUTION BRIEF`, then `validation-eval-designer.agent.md` for `VALIDATION PACK`, then `execution-package-designer.agent.md` for `EXECUTION PACKAGE` before any coder.
+- Treat missing artifact, ambiguous status, informal stop, speculative partial artifact, or hidden blocker from preparation as invalid preparation handoff. Do not route forward; ask only for the missing decision/fact.
 - If `validation-eval-designer.agent.md` emits `NEEDS_DEV_DECISION_HARNESS`, stop before approval or execution. DEV may choose focused SPEC-scoped tests, explicit partial evidence, or cut narrowing; same cut returns to `validation-eval-designer.agent.md`, changed cut returns to `planner.agent.md` then validation design.
 - Recognize conditional risk tracks only for material `security`, `performance`, `migration/schema`, or `observability/release safety` risk and pass them downstream without executing those analyses in the router.
 - Bring in `designer.agent.md` only for real UX, interaction, accessibility, responsive, or visual-consistency impact; bring in `reviewer.agent.md` only for real semantic or architectural risk.
@@ -133,6 +135,7 @@ If the correction changes boundary, ownership, `DO_NOT_TOUCH`, expected validati
 
 ## Handoff quality rules
 - Every handoff must name the next owner, the active boundary, and the minimum contract note or blocker needed to proceed honestly.
+- Preparation handoffs need stage artifact plus explicit status. `READY` without the applicable brief, pack, or package is invalid; so is a stop without the exact missing fact/decision.
 - Every handoff must also name any materially active conditional risk track, or explicitly leave it absent when no such track is evidenced.
 - Every handoff must preserve materially active stack quality guardrails, or explicitly leave them absent when no known guardrail applies.
 - Every coder handoff must identify the relevant `WORK_PACKAGE_ID` from the current `EXECUTION PACKAGE`.
@@ -187,7 +190,7 @@ If the correction changes boundary, ownership, `DO_NOT_TOUCH`, expected validati
 
 ## Completion contract
 - `Mandatory completion gate`: emit the truthful current gate status. Emit `READY` only when the next agent has bounded context. For coder routing, require current `EXECUTION PACKAGE` and `WORK_PACKAGE_ID`. For correction routing, require valid `CORRECTION PACK`, remaining budget, and either an explicit decision that the current `EXECUTION PACKAGE` still applies or a route to `execution-package-designer.agent.md` to update it; otherwise route to DEV/finalizer with residual evidence.
-- `Evidence required before claiming completion`: enough evidence to justify route, agents, sequencing, ownership, source of truth, and stop/escalation. For runner/reviewer/finalizer routing, require valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause and partial-edit preservation when needed. Missing/ambiguous/intermediate/evidence-free executor output, missing pack proof, missing required review, or unresolved required-review risk is not clean closure evidence.
+- `Evidence required before claiming completion`: enough evidence to justify route, agents, sequencing, ownership, source of truth, and stop/escalation. For preparation, require artifact plus explicit status, or a compact blocker with the exact missing fact/decision. For runner/reviewer/finalizer routing, require valid executor artifact: `READY` with applied-change evidence or `BLOCKED` with exact cause and partial-edit preservation when needed. Missing/ambiguous/intermediate/evidence-free executor output, missing pack proof, missing required review, or unresolved required-review risk is not clean closure evidence.
 - `Area-specific senior risk checklist`: unresolved source-of-truth conflict, hidden shared-contract volatility, unsafe parallelization, missing capability, approval or harness ambiguity, boundary ownership drift, or router drift into discovery.
 
 ## Protocol-fixed part
@@ -245,23 +248,15 @@ Only surface current status, real blocker, DEV decision, next step/agent, or mat
 - blocker response: at most 10 lines
 - exceed these limits only when DEV explicitly asks for more detail
 
-Silent mode returns only for blocker, factual conflict, DEV decision, closure, or terminal handoff.
-
 ### Delegate-first routing
 Once the current gate and owning agent are known, delegate. Read only enough to choose truthful gate, owner, and boundary; downstream specialists own substantive inspection.
 
 ### Pre-handoff routing budget
-Before the first handoff, keep routing discovery auditable and small.
-
-Budget:
 - DEV request is mandatory and outside local-artifact budget
 - consult at most 2 local artifacts before first handoff
 - at most 1 may be an implementation artifact
 - docs such as `docs/core/*`, `docs/features/*`, or `docs/units/*` are conditional reads, not a checklist
-
-If gate, owner, boundary, or capability is still unclear after that budget:
-- spend at most 1 extra artifact on the unresolved question
-- if still unstable, stop for blocker or DEV instead of continuing to read
+- if gate, owner, boundary, or capability stays unclear, spend at most 1 extra artifact, then stop for blocker or DEV
 
 ### Round triage
 At round entry, identify request type, likely owner, affected surface, active gate, material risk track, and whether the request can be framed truthfully. Do not open implementation by default.
@@ -270,9 +265,8 @@ At round entry, identify request type, likely owner, affected surface, active ga
 Select agents by real ownership, not by convenience:
 - always start with `planner.agent.md` once the base gate is satisfied
 - include `designer.agent.md` only for real interface impact
-- when `designer.agent.md` enters, classify it as `required` or `advisory` for this round
 - include `reviewer.agent.md` only for real semantic or architectural risk
-- when `reviewer.agent.md` enters, classify it as `required` or `advisory` for this round
+- classify `designer.agent.md` and `reviewer.agent.md` as `required` or `advisory` when they enter
 - activate conditional risk tracks only when the cut has real evidence of that risk class; do not route generic `security` or `performance` concern by ritual
 - route to `execution-package-designer.agent.md` after validation design and before any coder when execution will enter coders
 - route web/browser client work to `coder-frontend.agent.md`, real native iOS work to `coder-ios.agent.md`, and API/service/persistence/integration/runtime work to `coder-backend.agent.md`
@@ -293,9 +287,7 @@ Sequence by dependency, contract volatility, and file overlap.
 
 Parallelization here is orchestration policy, not a runtime guarantee.
 
-Singletons are `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `validation-runner`, `finalizer`, `resync`, and routed `reviewer`. Parallelizable roles are only `coder-backend`, `coder-frontend`, `coder-ios`, and `designer`, with at most 3 active instances per role.
-
-Safe parallelization requires bounded packages, path ownership, dependencies, shared-contract risks, merge order, and no unresolved shared file, schema, design, or contract decision. If one task defines truth another consumes, sequence.
+Singletons are `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `validation-runner`, `finalizer`, `resync`, and routed `reviewer`. Parallelizable roles are only `coder-backend`, `coder-frontend`, `coder-ios`, and `designer`, with at most 3 active instances per role. Safe parallelization requires bounded packages, path ownership, dependencies, shared-contract risks, merge order, and no unresolved shared file, schema, design, or contract decision.
 
 ### Router anti-role-drift rules
 - do not read code, contracts, or tests just to feel more confident

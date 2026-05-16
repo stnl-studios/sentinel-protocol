@@ -26,6 +26,11 @@ Descrever a ordem operacional canônica do Sentinel com mais precisão que `STAT
 Fluxo alvo resumido:
 `orchestrator -> planner -> validation-eval-designer -> execution-package-designer -> orchestrator -> coder(s) -> validation-runner -> reviewer quando aplicável -> correction loop quando corrigível e houver budget -> finalizer`
 
+## Contrato de parada na preparação
+Preparação só avança com artifact canônico claro e status explícito. `planner READY` exige `EXECUTION BRIEF` bounded; `validation-eval-designer READY` exige `VALIDATION PACK` honesto para proof e package readiness; `execution-package-designer READY` exige `EXECUTION PACKAGE` seguro para coder.
+
+Quando um preparador não consegue produzir seu artifact sem inventar, inferir demais, esconder conflito, ampliar escopo ou transferir ambiguidade, ele para antes do próximo agente. O handoff de parada deve informar o artifact bloqueado, a decisão ou fato mínimo faltante, por que isso bloqueia o artifact atual, e qual owner precisa destravar. Stop informal, status ambíguo ou artifact parcial especulativo é handoff inválido para o `orchestrator`.
+
 ## Contrato do pacote de execução
 O `EXECUTION PACKAGE` é efêmero, operacional e leve. Ele deve permitir que coders especialistas-executores apliquem a mudança sem reinterpretar arquitetura local.
 

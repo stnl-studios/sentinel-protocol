@@ -31,6 +31,13 @@ Fluxo alvo:
 - `CORRECTION PACK` pertence ao agent que encontrou o problema como evidência de correção solicitada, mas o roteamento, o budget e a decisão de reutilizar ou redesenhar `EXECUTION PACKAGE` pertencem ao `orchestrator`.
 - A memória durável fica em `DONE`, `Feature CONTEXT` e docs factuais tocadas por Resync.
 
+## Regra de handoff de preparação
+- `planner`, `validation-eval-designer` e `execution-package-designer` só podem liberar o próximo passo com artifact canônico claro e status explícito.
+- `READY` do `planner` exige `EXECUTION BRIEF` honesto e bounded; se o cut depender de requisito inventado, decisão de produto/arquitetura, conflito de fonte, escopo ampliado ou dependência não comprovada, o fluxo volta ao `orchestrator` com `NEEDS_DEV_DECISION_BASE` e a decisão/fato mínimo faltante.
+- `READY` do `validation-eval-designer` exige `VALIDATION PACK` honesto o suficiente para orientar proof e package readiness; se a suficiência depender de harness, evidência parcial ou testes, o fluxo para em `NEEDS_DEV_DECISION_HARNESS`, sem esconder prova fraca como readiness limpa.
+- `READY` do `execution-package-designer` exige `EXECUTION PACKAGE` seguro para coder; se boundaries, ownership, `DO_NOT_TOUCH`, guardrails, acceptance checks, riscos, blockers ou atualização de correction package exigirem replanejamento, redesign ou ampliação de escopo, o pacote emite `BLOCKED`.
+- Ausência de artifact claro, status ambíguo ou stop informal de preparação é handoff inválido; o `orchestrator` não roteia adiante e pede só a informação mínima necessária para destravar o artifact atual.
+
 ## Regra de readiness pré-execução
 - Antes do coder iniciar, o `EXECUTION PACKAGE` precisa estar pronto para execução com slice/cut correto, escopo aprovado, arquivos ou superfícies prováveis, guardrails aplicáveis e não aplicáveis com racional, critérios de aceite, validações esperadas, riscos relevantes, o que não pode mudar e blockers conhecidos.
 - Esse gate valida handoff/readiness, não roda teste de código novo e não substitui a proof pós-execução.

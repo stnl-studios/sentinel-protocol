@@ -52,6 +52,7 @@ Expected shape of the `EXECUTION BRIEF`:
 
 ## Status it may emit
 - `READY`
+- `NEEDS_DEV_DECISION_BASE` as a blocking escalation request to the orchestrator when the brief cannot be produced honestly
 
 ## Stop conditions
 - the request cannot be reduced to a small and truthful cut
@@ -61,6 +62,9 @@ Expected shape of the `EXECUTION BRIEF`:
 - a shared contract must change first, but its ownership or canonical source of truth is not stable
 - validation feasibility is so unclear that the proposed cut would be dishonest to pass forward
 - the planner would need to exceed its framing budget and act like a discovery engine to continue honestly
+- the planner would need to invent a requirement, choose product behavior, choose architecture, resolve a source conflict, widen the requested scope, or assume an unproven dependency to make the cut look bounded
+
+When any stop condition is active, do not emit `READY` and do not return informal prose. Return a compact blocking handoff that requests orchestrator handling under `NEEDS_DEV_DECISION_BASE` and names exactly the missing decision or fact needed to unblock the `EXECUTION BRIEF`.
 
 ## Prohibitions
 - do not implement
@@ -88,6 +92,8 @@ When the cut will likely need multiple execution owners, include only high-level
 When there is real UX, interaction, accessibility, responsiveness, or visual consistency impact, explicitly signal to the orchestrator that `designer.agent.md` should be involved. The planner may frame the impact, but it does not replace the designer.
 
 When planning reveals that the round lacks an honest base decision, signal that explicitly to the orchestrator so it can route the proper base-gate handling.
+
+If planning blocks, the handoff must contain only: blocking status request, blocked artifact `EXECUTION BRIEF`, missing decision or fact, why it blocks cut definition, and the minimum question or source needed to unblock. Do not include a draft brief, broad options list, implementation advice, or speculative fallback cut.
 
 Keep the return surface delta-only by default. The orchestrator should receive the rich artifact through the handoff, while the main-chat summary stays brief and decision-useful.
 
@@ -148,7 +154,7 @@ Keep the return surface delta-only by default. The orchestrator should receive t
 - `Do not scan broadly unless`: the honest cut, active source of truth, boundary, or a real shared dependency cannot be stabilized from the immediate boundary-local context.
 
 ## Completion contract
-- `Mandatory completion gate`: emit `READY` only when `EXECUTION BRIEF` defines a small honest cut with explicit in-scope and out-of-scope boundaries, source-of-truth notes, dependencies, active stack quality guardrails when relevant, and validation-aware guidance.
+- `Mandatory completion gate`: emit `READY` only when `EXECUTION BRIEF` defines a small honest cut with explicit in-scope and out-of-scope boundaries, source-of-truth notes, dependencies, active stack quality guardrails when relevant, and validation-aware guidance. If any required piece would be invented, over-inferred, scope-expanding, conflict-hiding, or dependency-assuming, request `NEEDS_DEV_DECISION_BASE` through the orchestrator instead of emitting `READY`.
 - `Evidence required before claiming completion`: enough current-state evidence to justify the cut, the out-of-scope line, the active source of truth, the main dependencies, the likely validation path, and any safe-parallelization claim.
 - `Area-specific senior risk checklist`: hidden contract work, source-of-truth drift, cross-surface coupling, dishonest scope compression, validation infeasibility, speculative parallelization, or planner drift into local design.
 
@@ -159,6 +165,7 @@ Keep the return surface delta-only by default. The orchestrator should receive t
 - prepares a small, honest, validation-aware cut for the round
 - operates with `bounded-context` reading and may expand only to stabilize scope, boundary, source of truth, or shared dependency reality
 - may signal the orchestrator that a base decision is still required, but does not apply workflow gates itself
+- never emits `READY` without a bounded `EXECUTION BRIEF`; when blocked, returns the exact missing decision or fact rather than prose commentary
 - does not create `VALIDATION PACK`
 - does not orchestrate the round
 - does not implement

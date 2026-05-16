@@ -1761,6 +1761,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "EXECUTOR_HANDOFF_INVALID",
         "absent handoff",
         "implicit terminal state",
+        "invalid preparation handoff",
         "intermediate progress update",
         "valid executor `READY`",
         "Activate stack quality guardrails as downstream constraints",
@@ -1778,6 +1779,8 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "Stack quality guardrail detection",
         "Do not rewrite the guardrail content",
         "do not treat guardrails as agents",
+        "NEEDS_DEV_DECISION_BASE",
+        "exactly the missing decision or fact needed to unblock the `EXECUTION BRIEF`",
     ], "planner stack quality guardrail detection");
 
     assertContentIncludesAll(agentContents.get("validation-eval-designer.agent.md"), [
@@ -1785,6 +1788,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "convert only cut-relevant guardrail implications",
         "Do not paste full guardrails or add unrelated ones by reflex",
         "separates pre-execution proof design from post-execution validation",
+        "Do not label weak proof as clean readiness",
     ], "validation-eval-designer stack quality guardrail proof design");
 
     assertContentIncludesAll(agentContents.get("execution-package-designer.agent.md"), [
@@ -1794,6 +1798,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "MUST_NOT_CHANGE",
         "does not run tests against new code",
         "orchestrator-routed `CORRECTION PACK`",
+        "Do not transfer ambiguity to coder",
     ], "execution-package-designer pre-execution readiness");
 
     assertContentIncludesAll(agentContents.get("validation-runner.agent.md"), [

@@ -56,6 +56,9 @@ The `VALIDATION PACK` must define, when relevant:
 - the harness situation is too weak, misleading, or disputed to support a truthful validation design
 - the required proof level depends on a product, risk, cost, or environment decision that belongs to DEV
 - the cut cannot be marked execution-ready without pretending evidence will exist later
+- a proof gap, source conflict, impossible obligation, or harness limit cannot be classified without inventing evidence, weakening proof, or hiding risk
+
+When stopped, do not emit `READY` or informal prose. Emit `NEEDS_DEV_DECISION_HARNESS` when sufficiency depends on DEV harness, partial-evidence, or test-investment choice. If the blocker is upstream cut/source conflict, return a compact blocker naming the stale/invalid artifact and exact fact needed before `VALIDATION PACK` can be honest.
 
 ## Prohibitions
 - do not implement
@@ -84,6 +87,8 @@ If the emitted status is `NEEDS_DEV_DECISION_HARNESS`, the orchestrator must sto
 - add focused tests for the SPEC now
 - accept consciously proceeding without new tests and with partial evidence
 - narrow the cut to a slice the current harness can validate honestly
+
+The `NEEDS_DEV_DECISION_HARNESS` handoff must name blocked artifact `VALIDATION PACK`, unsatisfied proof obligation, why evidence is insufficient or misleading, partial path if any, residual risk, and minimum DEV decision. Do not label weak proof as clean readiness.
 
 When DEV chooses focused SPEC-scoped tests now:
 - update `VALIDATION PACK` so the new focused tests are explicit proof obligations before execution approval can reopen
@@ -130,7 +135,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - `Do not scan broadly unless`: one explicit proof obligation, harness gap, or contract-sensitive risk cannot be assessed from the immediate cut and its local validation surface.
 
 ## Completion contract
-- `Mandatory completion gate`: emit `READY` only when the `VALIDATION PACK` is executable enough for honest execution readiness; emit `NEEDS_DEV_DECISION_HARNESS` when proof strength still depends on a DEV-owned harness decision.
+- `Mandatory completion gate`: emit `READY` only when the `VALIDATION PACK` can guide package readiness and later proof without runner-side guessing; emit `NEEDS_DEV_DECISION_HARNESS` when proof strength still depends on DEV harness, partial-evidence, or test-investment decision. Do not emit `READY` while a proof gap, conflict, impossible obligation, or weak harness would be hidden as clean readiness.
 - `Evidence required before claiming completion`: concrete proof obligations, named evidence mode per obligation, explicit harness trust level, cut-scoped deterministic quality checks with classification, concrete commands or observation paths, package-readiness inputs needed by `execution-package-designer.agent.md`, and a clear readiness judgment.
 - `Area-specific senior risk checklist`: proof obligation drift from the cut, misleading or shallow harnesses, hidden regression risk, manual versus automated evidence mismatch, and silent proof gaps.
 
@@ -146,6 +151,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - separates pre-execution proof design from post-execution validation; post-execution proof remains owned by `validation-runner.agent.md`
 - operates with `targeted-local` reading and expands only around the immediate cut, proof surface, and harness boundary when justified
 - may emit only `READY` or `NEEDS_DEV_DECISION_HARNESS`
+- never emits `READY` by masking weak, missing, disputed, impossible, or unclassified proof as readiness
 - does not implement
 - does not compile the `EXECUTION PACKAGE`
 - does not execute the validation run
@@ -247,22 +253,22 @@ When `docs/core/TESTING.md` exists, use it as the factual base for what the proj
 The proof design must stay tied to the cut. Do not inflate the pack into a broad QA program.
 
 ### Conditional risk tracks
-When the cut materially activates a conditional risk track, extend the `VALIDATION PACK` with cut-scoped proof obligations for that track. Do not invent a track when the cut does not need it, and do not turn the pack into a generic risk registry.
+When the cut materially activates a conditional risk track, add cut-scoped proof obligations. Do not invent tracks or turn the pack into a generic risk registry.
 
 Supported tracks:
-- `security`: require proof such as boundary enforcement, denied or misuse paths, input validation, injection resistance, permission boundaries, secrets handling, or avoidance of sensitive exposure when those risks are part of the cut.
-- `performance`: require evidence such as cost comparison, benchmark, targeted measurement, hot-path smoke, or regression-sensitive observation when the cut can materially change latency, allocation, query cost, rendering cost, or scale behavior.
-- `migration/schema`: require evidence such as compatibility checks, rollout order, existing-data impact, backfill behavior, persisted-contract safety, forward or backward compatibility, and reversibility when the cut changes schema or persisted data shape.
-- `observability/release safety`: require evidence such as logs, metrics, traces, failure detection, rollback path, feature flag, kill switch, or recovery visibility when the cut changes a critical flow or risky rollout surface.
+- `security`: boundary enforcement, denied/misuse paths, input validation, injection resistance, permissions, secrets, or sensitive exposure.
+- `performance`: cost comparison, benchmark, targeted measurement, hot-path smoke, or regression-sensitive observation.
+- `migration/schema`: compatibility, rollout order, existing-data impact, backfill, persisted-contract safety, forward/backward compatibility, and reversibility.
+- `observability/release safety`: logs, metrics, traces, failure detection, rollback, feature flag, kill switch, or recovery visibility.
 
-These tracks add proof obligations inside the pack. They do not replace the pack, do not expand proof beyond the authorized cut, and do not justify copy-pasting a universal checklist into every round.
+These tracks add obligations inside the pack; they do not replace it, expand beyond the cut, or justify universal checklists.
 
 ### Risk-conditioned harness gate
 Classify harness sufficiency from the risk of the authorized cut, not from generic test presence alone.
 
-Lower-risk/local cuts may proceed with honest lightweight evidence such as build, lint, smoke, or focused manual proof when the promised behavior is narrow and low-coupling. Absence of existing tests alone does not block that class.
+Lower-risk/local cuts may proceed with honest lightweight evidence such as build, lint, smoke, or focused manual proof when behavior is narrow and low-coupling. Absence of existing tests alone does not block that class.
 
-Risk-relevant cuts include business logic, state/store/derived state, services/facades/repositories/data access, guards/resolvers/interceptors, shared contracts/libs, auth/security/PIN/token/session behavior, async or multi-step flows, and cross-app or cross-module regression risk.
+Risk-relevant cuts include business logic, state/store/derived state, services/facades/repositories/data access, guards/resolvers/interceptors, shared contracts/libs, auth/security/PIN/token/session behavior, async/multi-step flows, and cross-module regression risk.
 
 For a risk-relevant cut:
 - if no relevant existing tests or other trustworthy harness cover the touched surface and the critical promised flow, emit `NEEDS_DEV_DECISION_HARNESS` before execution
@@ -282,7 +288,7 @@ Do not turn this gate into a mandate to design a repo-wide testing initiative.
 Design deterministic quality proof as part of the pack, not as an afterthought.
 
 ### Stack quality guardrail proof design
-When the brief activates `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, or `stnl_mobile_ios_swift_quality`, record the names and convert only cut-relevant guardrail implications into proof obligations or deterministic checks. Do not paste full guardrails or add unrelated ones by reflex. If a required stack quality check cannot be proven and the risk is material, use the normal harness decision path.
+When the brief activates `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, or `stnl_mobile_ios_swift_quality`, record the names and convert only cut-relevant guardrail implications into proof obligations or deterministic checks. Do not paste full guardrails or add unrelated ones by reflex. If a required stack quality check cannot be proven and risk is material, use the normal harness decision path.
 
 For each cut, classify lint, formatter/prettier, typecheck, build, and minimum touched-surface tests as `required`, `optional`, `not_applicable`, or `blocked_by_harness`.
 
@@ -299,17 +305,17 @@ Rules:
 ### Harness assessment logic
 Assess the harness before trusting it.
 
-A harness is strong enough when it is relevant to the changed behavior, executable, and likely to catch the failure mode that matters. Use `docs/core/TESTING.md` as the factual base for canonical commands, manual paths, prerequisites, and known gaps; keep doc/code conflicts visible. Mark trust as `Sufficient`, `Partial but usable`, `Insufficient`, or `Misleading / not trustworthy`.
+A harness is strong enough when relevant, executable, and likely to catch the failure mode that matters. Use `docs/core/TESTING.md` for canonical commands, manual paths, prerequisites, and known gaps; keep doc/code conflicts visible. Mark trust as `Sufficient`, `Partial but usable`, `Insufficient`, or `Misleading / not trustworthy`.
 
 ### Strategy by change type
 Choose proof strategy according to the dominant risk of the cut.
 
-Behavior/UI proof targets user-visible behavior and important states, not only wiring. API/contract proof targets request/response behavior, schema, compatibility, error paths, and consumers. Persistence proof targets write/read correctness, migration safety, idempotency, and rollback-sensitive behavior. Auth proof targets allowed and denied paths plus boundary enforcement. Async/job/integration proof targets triggers, eventual outcomes, retry/failure behavior, timing, idempotency, and dependency uncertainty. UX/accessibility/responsive proof uses observable criteria such as breakpoint, focus, semantics, labels, announcements, and interaction expectations when applicable.
+Behavior/UI proof targets visible behavior and important states, not only wiring. API/contract proof targets request/response, schema, compatibility, error paths, and consumers. Persistence proof targets read/write correctness, migration safety, idempotency, and rollback-sensitive behavior. Auth proof targets allowed/denied paths and boundary enforcement. Async/job/integration proof targets triggers, outcomes, retry/failure, timing, idempotency, and dependency uncertainty. UX/accessibility/responsive proof uses observable breakpoint, focus, semantics, labels, announcements, and interaction criteria.
 
 ### Manual vs automated evidence policy
 Do not default to automation and do not romanticize manual proof.
 
-Prefer automated proof for deterministic behavior or machine-verifiable contracts when repeatability matters and the harness is trustworthy. Prefer manual proof for judgment-heavy visual, interaction, responsive, accessibility, or UX outcomes when automation would create false confidence. Prefer hybrid proof when automation can prove logic/state/contract but human observation still needs to confirm visual, interaction, timing, or responsive quality. Mark proof insufficient when evidence would be ceremonial or trust-based.
+Prefer automated proof for deterministic behavior or machine-verifiable contracts when repeatability matters and the harness is trustworthy. Prefer manual proof for judgment-heavy visual, interaction, responsive, accessibility, or UX outcomes when automation would create false confidence. Prefer hybrid proof when automation can prove logic/state/contract but human observation must confirm visual, interaction, timing, or responsive quality. Mark proof insufficient when evidence would be ceremonial.
 
 ### Evidence thresholds and confidence policy
 Match proof strength to change risk.

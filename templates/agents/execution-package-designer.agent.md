@@ -90,6 +90,9 @@ The package may contain 1..N `WORK_PACKAGE` entries. Multiple work packages do n
 - a package would require architecture selection, structural design, or scope expansion that upstream artifacts did not authorize
 - the validation pack still needs a DEV harness decision or does not define executable proof obligations
 - producing a usable package would require broad discovery equivalent to implementation
+- package boundaries, ownership, `DO_NOT_TOUCH`, guardrails, acceptance checks, risks, blockers, or correction-package updates cannot be defined without re-planning, redesigning proof, choosing architecture, or widening scope
+
+When any stop condition is active, emit `BLOCKED` and do not return informal prose or a speculative package. The blocker must name the blocked artifact `EXECUTION PACKAGE`, the exact missing boundary, owner, guardrail, acceptance check, risk, blocker, or correction-update fact, and the upstream artifact or DEV decision needed to unblock.
 
 ## Prohibitions
 - do not implement
@@ -116,6 +119,8 @@ The orchestrator uses the package to decide which coder or coders enter, whether
 During a correction loop, enter only when the orchestrator determined the current `EXECUTION PACKAGE` cannot be safely reused. Update the package for the minimum correction boundary only; do not turn correction into re-planning, redesign, broad refactor, or new implementation scope.
 
 If the package is `BLOCKED`, return the exact missing basis to the orchestrator. Do not route directly to planner, validation design, coders, runner, reviewer, finalizer, or DEV.
+
+A `BLOCKED` package handoff must be concise and routeable: status, blocked artifact, affected cut or `WORK_PACKAGE_ID` if known, missing basis, why coder entry would be unsafe, and the minimum upstream artifact refresh or DEV decision required. Do not transfer ambiguity to coder through broad `OWNED_PATHS`, vague `DO_NOT_TOUCH`, generic `BLOCK_IF`, or acceptance checks not mapped to the `VALIDATION PACK`.
 
 ## When to escalate to DEV
 - package compilation exposes a structural, contract, ownership, or risk decision that was not settled by the brief or validation pack
@@ -147,7 +152,7 @@ If the package is `BLOCKED`, return the exact missing basis to the orchestrator.
 - `Do not scan broadly unless`: one package boundary, owned path, dependency edge, run command, or block condition cannot be compiled honestly from the immediate cut and its local anchors.
 
 ## Completion contract
-- `Mandatory completion gate`: emit `READY` only when the `EXECUTION PACKAGE` contains one or more bounded work packages with explicit pre-execution readiness, ownership, anchors, dependency order, run commands, acceptance checks, and block conditions. Emit `BLOCKED` when coders would still need to re-plan, re-architect, or expand scope to execute safely.
+- `Mandatory completion gate`: emit `READY` only when the `EXECUTION PACKAGE` is safe for coder entry and contains one or more bounded work packages with explicit pre-execution readiness, ownership, anchors, dependency order, run commands, acceptance checks, and block conditions. Emit `BLOCKED` when coders would still need to re-plan, re-architect, infer ownership, resolve missing `DO_NOT_TOUCH`, invent acceptance checks, or expand scope to execute safely.
 - `Evidence required before claiming completion`: enough evidence to justify the correct cut, approved scope, likely files/surfaces, applicable and non-applicable guardrails with rationale, acceptance criteria, expected validations, relevant risks, what must not change, known blockers, and each `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, `REQUIRED_QUALITY_GUARDRAILS`, and `BLOCK_IF`.
 - `Area-specific senior risk checklist`: hidden shared-file ownership, unstable contract boundaries, package dependency inversion, missing do-not-touch constraints, acceptance checks not mapped to the validation pack, and package drift into implementation design.
 
