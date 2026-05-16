@@ -32,6 +32,7 @@ Por enquanto, eles são uma biblioteca operacional de copy/paste para reduzir at
 - `agents-codex.md`
 - `agents-vscode-sql-procedure.md`
 - `orchestrator-init.md`
+- `orchestrator-auto-spec.md`
 - `orchestrator-finalize-slice.md`
 - `orchestrator-next-slice.md`
 - `orchestrator-slice.md`
