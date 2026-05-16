@@ -44,6 +44,7 @@ The `VALIDATION PACK` must define, when relevant:
 - cut-relevant deterministic checks, including stack quality guardrail checks, each classified as `required`, `optional`, `not_applicable`, or `blocked_by_harness`
 - concrete checks, scenarios, commands, observation tasks, accepted manual paths, prerequisites, or harness limits for the runner
 - confidence/evidence threshold, execution-readiness judgment, and explicit DEV escalation when harness judgment requires it
+- package-readiness inputs for `execution-package-designer.agent.md`: acceptance criteria, expected validations, applicable guardrail checks, non-applicable guardrail rationale when relevant, harness blockers, and risks that must be visible before coder entry
 
 ## Status it may emit
 - `READY`
@@ -76,6 +77,8 @@ The `VALIDATION PACK` must define, when relevant:
 Hand off the `VALIDATION PACK` to the orchestrator as the canonical validation-design artifact for the cut.
 
 If the emitted status is `READY`, the orchestrator may route next to `execution-package-designer.agent.md`. The pack is the validation source of truth for that package and later for `validation-runner.agent.md`; coders should receive proof expectations through the `EXECUTION PACKAGE` instead of rebuilding them locally.
+
+This is pre-execution validation design, not post-execution proof. It prepares the proof contract and readiness basis before implementation starts. It does not validate new code, issue a runner verdict, or decide whether the implemented artifact passed.
 
 If the emitted status is `NEEDS_DEV_DECISION_HARNESS`, the orchestrator must stop the round and route a narrow explicit decision:
 - add focused tests for the SPEC now
@@ -128,7 +131,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 
 ## Completion contract
 - `Mandatory completion gate`: emit `READY` only when the `VALIDATION PACK` is executable enough for honest execution readiness; emit `NEEDS_DEV_DECISION_HARNESS` when proof strength still depends on a DEV-owned harness decision.
-- `Evidence required before claiming completion`: concrete proof obligations, named evidence mode per obligation, explicit harness trust level, cut-scoped deterministic quality checks with classification, concrete commands or observation paths, and a clear readiness judgment.
+- `Evidence required before claiming completion`: concrete proof obligations, named evidence mode per obligation, explicit harness trust level, cut-scoped deterministic quality checks with classification, concrete commands or observation paths, package-readiness inputs needed by `execution-package-designer.agent.md`, and a clear readiness judgment.
 - `Area-specific senior risk checklist`: proof obligation drift from the cut, misleading or shallow harnesses, hidden regression risk, manual versus automated evidence mismatch, and silent proof gaps.
 
 ## Protocol-fixed part
@@ -140,6 +143,7 @@ Keep the surfaced return delta-only by default: `READY` or gate status, the proo
 - owns the canonical operational recording of DEV harness-compromise decisions inside `VALIDATION PACK`
 - defines the proof required for the cut before package design and execution start
 - judges whether the current harness is sufficient for honest execution readiness
+- separates pre-execution proof design from post-execution validation; post-execution proof remains owned by `validation-runner.agent.md`
 - operates with `targeted-local` reading and expands only around the immediate cut, proof surface, and harness boundary when justified
 - may emit only `READY` or `NEEDS_DEV_DECISION_HARNESS`
 - does not implement

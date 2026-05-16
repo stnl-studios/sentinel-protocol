@@ -11,20 +11,34 @@ Descrever a ordem operacional canônica do Sentinel com mais precisão que `STAT
 5. Se o DEV escolher adicionar testes focados na SPEC agora, a escolha não libera execução por si só: o `validation-eval-designer` atualiza o `VALIDATION PACK` com a nova prova exigida, e quando a decisão alterar materialmente o cut o fluxo reabre `planner -> validation-eval-designer` antes de qualquer approval.
 6. Se o DEV escolher aceitar evidência parcial explicitamente, o fluxo volta ao `validation-eval-designer` para registrar no `VALIDATION PACK` a limitação aceita, a prova faltante, a evidência substituta, o risco residual visível e que o compromisso foi decisão explícita do DEV; só depois disso o fluxo retorna ao gate normal de execução.
 7. Se o DEV escolher reduzir o cut, o cut anterior deixa de valer como base de execução: o fluxo volta obrigatoriamente ao `planner` para um novo `EXECUTION BRIEF`, depois ao `validation-eval-designer` para um novo `VALIDATION PACK`, e readiness ou approval anteriores não sobrevivem automaticamente.
-8. `execution-package-designer` compila `EXECUTION PACKAGE` a partir do `EXECUTION BRIEF` e do `VALIDATION PACK`, com 1..N work packages executáveis e `REQUIRED_QUALITY_GUARDRAILS` por pacote quando aplicável. Ele não coordena coders, não chama agents, não implementa e não substitui o `orchestrator`.
+8. `execution-package-designer` compila `EXECUTION PACKAGE` a partir do `EXECUTION BRIEF` e do `VALIDATION PACK`, com readiness pré-execução explícita, 1..N work packages executáveis e `REQUIRED_QUALITY_GUARDRAILS` por pacote quando aplicável. Ele não coordena coders, não chama agents, não implementa e não substitui o `orchestrator`.
 9. O `orchestrator` consome o `EXECUTION PACKAGE`, decide sequência ou paralelização dos coders, confirma capability e só então roteia os coders especialistas-executores.
 10. Os coders executam apenas o `WORK_PACKAGE_ID` autorizado e aplicam as stack quality guardrails exigidas para o pacote. Execução real devolve handoff terminal explícito: `READY` com artifact aplicável e evidência de alteração aplicada, ou `BLOCKED` com causa objetiva. Resposta descritiva, pacote recompilado localmente, progresso intermediário, log operacional, promessa, diff parcial, status implícito ou scope ampliado não substitui artifact.
 11. O `orchestrator` rejeita handoff ausente, implícito, ambíguo, intermediário, narrativo ou `READY` sem evidência aplicada como `EXECUTOR_HANDOFF_INVALID`; a rodada bloqueia operacionalmente e não entra no `validation-runner`.
 12. `validation-runner` executa o `VALIDATION PACK` sobre o artifact implementado somente quando houver executor `READY` válido. Isso inclui prova funcional, checks determinísticos e checks de stack quality guardrail marcados no pack como relevantes ao cut.
-13. `reviewer` entra quando aplicável para revisar o artifact implementado e o diff resultante em chave semântica, arquitetural e de aderência às stack quality guardrails ativas. O `orchestrator` deve classificá-lo como `required` ou `advisory` antes da handoff.
-14. Toda rodada terminal passa obrigatoriamente pelo `finalizer`: `PASS`, `PARTIAL`, `FAIL`, `BLOCKED`, bloqueio pré-validação e execução parcial com `BLOCKED` precisam virar fechamento honesto antes de parar. O `finalizer` apenas consolida o resultado do runner, o sinal do reviewer quando existir, ou um bloqueio pré-validação roteado pelo orchestrator. Ele não redesenha prova, não reexecuta checks e não assume ownership de review técnico substituto. Em rodada de slice, o `finalizer` também é o owner canônico da declaração pós-slice.
-15. `resync` entra apenas quando o `finalizer` detecta delta factual fora da feature que precisa ser sincronizado.
+13. Se o `validation-runner` encontrar problema corrigível dentro do escopo aprovado e ainda houver budget, ele emite exatamente um bloco formal `CORRECTION PACK` e devolve ao `orchestrator` antes de transformar a rodada em `PARTIAL`, `FAIL` ou `BLOCKED` terminal.
+14. `reviewer` entra quando aplicável para revisar o artifact implementado e o diff resultante em chave semântica, arquitetural e de aderência às stack quality guardrails ativas. O `orchestrator` deve classificá-lo como `required` ou `advisory` antes da handoff.
+15. Se o `reviewer` encontrar problema semântico, arquitetural, de boundary ou guardrail corrigível dentro do escopo aprovado e ainda houver budget, ele emite exatamente um bloco formal `CORRECTION PACK` e devolve ao `orchestrator`; ele não executa a correção.
+16. O `orchestrator` decide o roteamento de cada `CORRECTION PACK`: reutilizar o `EXECUTION PACKAGE` vigente, voltar ao `execution-package-designer`, fazer correção automática mínima dentro do escopo, pedir decisão humana, ou fechar terminalmente pelo `finalizer`.
+17. Toda rodada terminal passa obrigatoriamente pelo `finalizer`: `PASS`, `PARTIAL`, `FAIL`, `BLOCKED`, bloqueio pré-validação, estouro de budget de correção, problema não corrigível automaticamente dentro do escopo, e execução parcial com `BLOCKED` precisam virar fechamento honesto antes de parar. O `finalizer` apenas consolida o resultado do runner, o sinal do reviewer quando existir, o correction pack residual quando existir, ou um bloqueio pré-validação roteado pelo orchestrator. Ele não redesenha prova, não reexecuta checks e não assume ownership de review técnico substituto. Em rodada de slice, o `finalizer` também é o owner canônico da declaração pós-slice.
+18. `resync` entra apenas quando o `finalizer` detecta delta factual fora da feature que precisa ser sincronizado.
 
 Fluxo alvo resumido:
-`orchestrator -> planner -> validation-eval-designer -> execution-package-designer -> orchestrator -> coder(s) -> validation-runner -> reviewer quando aplicável -> finalizer`
+`orchestrator -> planner -> validation-eval-designer -> execution-package-designer -> orchestrator -> coder(s) -> validation-runner -> reviewer quando aplicável -> correction loop quando corrigível e houver budget -> finalizer`
 
 ## Contrato do pacote de execução
 O `EXECUTION PACKAGE` é efêmero, operacional e leve. Ele deve permitir que coders especialistas-executores apliquem a mudança sem reinterpretar arquitetura local.
+
+Antes de qualquer coder iniciar, o pacote precisa passar por readiness pré-execução. Esse gate não testa código novo; ele valida se o handoff está pronto para execução. O pacote deve conter:
+- slice/cut correto
+- escopo aprovado
+- arquivos ou superfícies prováveis
+- guardrails de qualidade aplicáveis e não aplicáveis com racional
+- critérios de aceite
+- validações esperadas
+- riscos relevantes
+- o que não pode mudar
+- blockers conhecidos, se houver
 
 Cada work package deve carregar, no mínimo:
 - `WORK_PACKAGE_ID`
@@ -41,6 +55,34 @@ Cada work package deve carregar, no mínimo:
 - `BLOCK_IF`
 
 O pacote pode conter 1..N work packages. Isso não cria um segundo coordenador: `execution-package-designer` compila o pacote, e o `orchestrator` continua sendo o único owner de routing, sequencing, paralelização e stop/go.
+
+## Contrato do correction loop
+Problemas corrigíveis dentro do escopo aprovado devem voltar ao `orchestrator` antes de virarem fechamento terminal. O objetivo é corrigir agora, em uma rodada mínima, quando isso evita `PARTIAL`, `BLOCKED` ou `FAIL` prematuro sem enfraquecer os gates.
+
+O retorno acontece por exatamente um bloco formal com o marcador literal `CORRECTION PACK`. O bloco deve agrupar todos os problemas corrigíveis conhecidos da passagem atual para evitar erro pingado e conter, no mínimo:
+- `issue_id`
+- `fingerprint` ou `root_cause`
+- evidência objetiva
+- arquivo ou superfície afetada
+- impacto
+- correção esperada
+- guardrail violada, quando aplicável
+- indicação se o problema parece corrigível dentro do escopo aprovado
+
+Não é válido pedir correção por narrativa solta, comentário lateral ou instrução genérica como "corrija os problemas encontrados". Quando runner ou reviewer emitirem `CORRECTION PACK`, não podem emitir verdict/status terminal no mesmo handoff. O bloco precisa ser roteável pelo `orchestrator` sem ele reconstruir a falha a partir de prosa.
+
+Budget:
+- cada slice/rodada pode ter no máximo 2 correction rounds automáticos
+- o mesmo `fingerprint` ou `root_cause` só pode gerar 1 tentativa automática
+- erro novo pode gerar nova correção apenas enquanto ainda houver budget total
+- se o mesmo problema reaparecer após tentativa automática, não repetir automaticamente
+- ao estourar o budget, rotear para fechamento terminal honesto pelo `finalizer`, preservando correction pack residual e evidência
+
+O `orchestrator` pode reutilizar o `EXECUTION PACKAGE` vigente quando a correção couber claramente no mesmo `WORK_PACKAGE_ID`, mesmos boundaries, mesmo ownership, mesmo `DO_NOT_TOUCH`, mesmas validações esperadas, mesmos riscos relevantes, mesmas superfícies prováveis e mesmo escopo de execução.
+
+Se a correção alterar boundary, ownership, `DO_NOT_TOUCH`, validação esperada, risco relevante, arquivos/superfícies prováveis ou escopo de execução, o fluxo volta ao `execution-package-designer` para atualizar o pacote antes do coder. Correção automática não pode virar bypass do package design.
+
+Correction round é correção mínima, não replanejamento, redesign ou refactor amplo. Ele não pode ampliar escopo aprovado, redesenhar arquitetura, fazer refactor amplo, alterar comportamento de produto não autorizado, nem usar correção como limpeza oportunista. Se a correção exigir mudança estrutural maior, decisão de produto/arquitetura ou refactor amplo, o fluxo para para decisão humana ou segue para fechamento terminal honesto conforme o roteamento do `orchestrator`.
 
 ## Contrato das stack quality guardrails
 As 4 skills de qualidade são guardrails de stack, não novos agents do fluxo:
@@ -60,6 +102,7 @@ O `orchestrator` marca as guardrails ativas por superfície, o `planner` preserv
 - `NEEDS_DEV_DECISION_HARNESS` é gate de decisão, não atalho para execução: depois da escolha do DEV, o fluxo sempre volta ao owner do artifact afetado antes de qualquer approval ou handoff para executor.
 - `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL` e qualquer leitura de readiness valem apenas para o conjunto vigente `EXECUTION BRIEF` + `VALIDATION PACK` + `EXECUTION PACKAGE`, nunca para versões anteriores do recorte.
 - O `validation-runner` executa e julga esses checks no escopo do cut. O runner não vira smoke runner genérico repo-wide e não redesenha o pack durante a run.
+- Quando o runner encontra problema corrigível dentro do escopo aprovado e há budget, ele emite `CORRECTION PACK` e devolve ao `orchestrator`; quando não for corrigível automaticamente, preserva a evidência para fechamento terminal via `finalizer`.
 - Falha de check obrigatório, ausência de execução de check obrigatório ou bloqueio real do path de prova afetam formalmente verdict e confidence.
 - Check obrigatório derivado de stack quality guardrail ativa tem o mesmo peso operacional: se falhar, não rodar ou ficar bloqueado por harness, o runner deve refletir isso no verdict e no risco residual.
 

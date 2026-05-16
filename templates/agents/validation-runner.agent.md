@@ -35,7 +35,7 @@ It enters only when there is a concrete implementation to validate, a valid exec
 ## Required output
 - an honest validation evidence summary for the round
 - explicit record of what was executed, what was proved, what failed, what remained partial, and what was blocked
-- one explicit verdict: `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`
+- one explicit verdict: `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`, or exactly one non-terminal `CORRECTION PACK` block to `orchestrator.agent.md` when budget remains
 - concise confidence and impact notes for `finalizer.agent.md`
 
 The evidence summary should make these points clear when relevant:
@@ -70,6 +70,7 @@ The evidence summary should make these points clear when relevant:
 
 ## Prohibitions
 - do not implement, patch, or repair the cut
+- do not request broad refactor, architecture redesign, or product behavior changes as a correction round
 - do not rewrite the `EXECUTION BRIEF`
 - do not rewrite or recompile the `EXECUTION PACKAGE`
 - do not redesign, broaden, narrow, or replace the `VALIDATION PACK`
@@ -86,17 +87,19 @@ The evidence summary should make these points clear when relevant:
 - do not validate an invalid executor handoff; route that condition back as an operational handoff problem instead of inventing a validation target
 
 ## Handoff
-Hand off the validation evidence summary and the explicit verdict to `finalizer.agent.md`.
+Hand off the validation evidence summary and the explicit verdict to `finalizer.agent.md` only when no `CORRECTION PACK` is being routed.
 
-The handoff must preserve, without smoothing over:
-- what was directly proven
-- what is only partially proven
-- what failed under actual execution
-- what could not be proven because validation was blocked
-- which risks remain open and why
-- how much confidence the round deserves based on executed evidence rather than inference
+If validation finds an in-scope corrigible problem and budget remains, hand exactly one formal `CORRECTION PACK` block to `orchestrator.agent.md` instead of terminal `PARTIAL`, `FAIL`, or `BLOCKED`. It is not a runner verdict or closure status.
+
+The block heading must be exactly `CORRECTION PACK`. Group all known corrigible issues from the current validation pass into that one block. Include, at minimum, `issue_id`, `fingerprint` or `root_cause`, objective evidence, affected file or surface, impact, expected correction, violated guardrail when applicable, and whether the issue appears corrigible inside the approved scope.
+
+Do not emit a narrative correction request outside `CORRECTION PACK`. Do not emit generic instructions such as "fix the problems found". Do not drip-feed issues. When emitting `CORRECTION PACK`, do not emit `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED` in the same handoff.
+
+The handoff must preserve what was directly proven, partially proven, failed, blocked, still risky, and how much confidence the executed evidence deserves.
 
 If the executor output is not a validatable artifact, do not emit a synthetic runner verdict for implementation quality. Preserve that the runner could not honestly enter because the executor handoff was invalid.
+
+If the issue is not in-scope automatic correction, needs human decision, repeats an attempted fingerprint/root cause, or budget is exhausted, do not request correction. Hand off terminal evidence through the orchestrator, preserving residual correction pack when present.
 
 ## When to escalate to DEV
 - the `VALIDATION PACK` requires proof that cannot be executed with the real environment or harness available now, and that gap changes the meaning of the verdict
@@ -127,8 +130,8 @@ If the executor output is not a validatable artifact, do not emit a synthetic ru
 - `Do not scan broadly unless`: one explicit pack obligation cannot be executed or interpreted without resolving a local dependency on the immediate validation surface.
 
 ## Completion contract
-- `Mandatory completion gate`: emit exactly one verdict only after every obligation in the `VALIDATION PACK` is accounted for as proved, partially proved, failed, or blocked.
-- `Evidence required before claiming completion`: executed commands or observation paths, direct or partial proof notes, blocked-proof reasons, harness or environment limits, and a verdict rationale that matches the actual evidence.
+- `Mandatory completion gate`: emit exactly one terminal verdict after every pack obligation is proved, partially proved, failed, or blocked and no `CORRECTION PACK` should return. If an in-scope issue should be corrected first, emit exactly one `CORRECTION PACK` block instead.
+- `Evidence required before claiming completion`: executed commands/observations, proof notes, blocked-proof reasons, harness limits, verdict rationale, or correction pack fields with evidence and corrigibility classification.
 - `Entry evidence gate`: require a valid executor `READY` with applied-change evidence before validating. Absent, implicit, ambiguous, intermediate, narrative, or evidence-free executor output is not a validation target.
 - `Area-specific senior risk checklist`: obligation coverage gaps, low-signal or misleading green checks, environment drift, inference disguised as proof, and verdict inflation beyond the executed evidence.
 
@@ -140,6 +143,7 @@ If the executor output is not a validatable artifact, do not emit a synthetic ru
 - consumes `EXECUTION PACKAGE` only to understand executed package boundaries; it does not redesign packages
 - owns validation execution, evidence capture, and the runner verdict for the round
 - emits only `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`
+- may emit a non-terminal `CORRECTION PACK` block to `orchestrator.agent.md` before terminal verdict when validation finds an in-scope corrigible problem and budget remains
 - operates with `minimal-verification` reading and expands only when one local proof obligation cannot otherwise be executed or interpreted honestly
 - does not redesign proof, does not implement, does not re-plan, does not close the round, and does not write durable documentation
 - hands off validation evidence and verdict to `finalizer.agent.md`
@@ -309,6 +313,8 @@ If a required check was not executed and no honest substitute exists, record tha
 ### Verdict logic
 Use verdicts to describe validation reality, not implementation optimism.
 
+Before terminal `PARTIAL`, `FAIL`, or `BLOCKED`, classify failed/missing/partial/blocked obligations as automatic correction, human decision, or terminal. When automatically corrigible and budget remains, emit exactly one `CORRECTION PACK` block to the orchestrator before terminal closure. Do not use correction for broad refactor, redesign, unauthorized behavior, or scope expansion.
+
 Emit `PASS` when:
 - all critical obligations were executed as required
 - all required deterministic quality checks were executed as required and passed
@@ -375,7 +381,7 @@ Confidence must track evidence quality:
 Never present confidence higher than the evidence warrants. Missing, blocked, or failed required checks must lower confidence materially.
 
 ### Handoff quality rules
-The handoff to `finalizer.agent.md` must be decision-useful, not ceremonial.
+The handoff to `finalizer.agent.md` or the `CORRECTION PACK` handoff to `orchestrator.agent.md` must be decision-useful, not ceremonial.
 
 A strong handoff:
 - states the verdict clearly
@@ -384,6 +390,7 @@ A strong handoff:
 - flags blocked paths and failed paths separately
 - calls out contract-sensitive, user-visible, or release-relevant residual risk
 - gives the finalizer enough truth to update documentation honestly without rerunning validation
+- when routing correction, gives the orchestrator enough detail to decide automatic correction, DEV decision, or terminal finalization
 
 Do not hand off only a command list, only a green summary, or only a narrative impression.
 

@@ -158,6 +158,7 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "execution-package-designer -> orchestrator -> coder(s)",
             "REQUIRED_QUALITY_GUARDRAILS",
             "## Contrato das stack quality guardrails",
+            "## Contrato do correction loop",
             "Toda rodada terminal passa obrigatoriamente pelo `finalizer`",
             "## Regra de closure",
         ],
@@ -169,6 +170,7 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "## Status de decisão e gates",
             "## Regra de stack quality guardrails",
             "REQUIRED_QUALITY_GUARDRAILS",
+            "## Regra de correction loop",
             "todos exigem passagem terminal pelo `finalizer`",
             "## Status de validação e fechamento",
         ],
@@ -1762,6 +1764,12 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "intermediate progress update",
         "valid executor `READY`",
         "Activate stack quality guardrails as downstream constraints",
+        "CORRECTION PACK",
+        "each slice or round has at most 2 automatic correction rounds",
+        "the same `fingerprint` or `root_cause` may receive at most 1 automatic correction attempt",
+        "It may reuse the current `EXECUTION PACKAGE` only when the correction clearly remains in the same `WORK_PACKAGE_ID`",
+        "If the correction changes boundary, ownership, `DO_NOT_TOUCH`, expected validation, relevant risk, probable files/surfaces, or execution scope",
+        "Automatic correction cannot bypass package design",
         "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
         "Every terminal round outcome must pass through `finalizer.agent.md`",
     ], "orchestrator consumer-side rejection");
@@ -1776,19 +1784,36 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "Stack quality guardrail proof design",
         "convert only cut-relevant guardrail implications",
         "Do not paste full guardrails or add unrelated ones by reflex",
+        "separates pre-execution proof design from post-execution validation",
     ], "validation-eval-designer stack quality guardrail proof design");
+
+    assertContentIncludesAll(agentContents.get("execution-package-designer.agent.md"), [
+        "PRE_EXECUTION_READINESS",
+        "APPLICABLE_QUALITY_GUARDRAILS",
+        "NON_APPLICABLE_QUALITY_GUARDRAILS",
+        "MUST_NOT_CHANGE",
+        "does not run tests against new code",
+        "orchestrator-routed `CORRECTION PACK`",
+    ], "execution-package-designer pre-execution readiness");
 
     assertContentIncludesAll(agentContents.get("validation-runner.agent.md"), [
         "valid executor `READY` handoff",
         "`Entry evidence gate`",
         "not a validation target",
         "Stack quality guardrail checks",
+        "emit exactly one `CORRECTION PACK` block to the orchestrator before terminal closure",
+        "The block heading must be exactly `CORRECTION PACK`",
+        "Do not emit a narrative correction request outside `CORRECTION PACK`",
+        "When emitting `CORRECTION PACK`, do not emit `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED` in the same handoff",
         "Preserve that the runner could not honestly enter because the executor handoff was invalid",
     ], "validation-runner artifact gate");
 
     assertContentIncludesAll(agentContents.get("reviewer.agent.md"), [
         "Stack quality guardrail review",
         "Do not invoke unrelated guardrails by reflex",
+        "return exactly one formal `CORRECTION PACK` block to `orchestrator.agent.md`",
+        "The block heading must be exactly `CORRECTION PACK`",
+        "When emitting `CORRECTION PACK`, do not emit `READY` or `BLOCKED` in the same handoff",
         "material structural risk",
     ], "reviewer stack quality guardrail review");
 
@@ -1801,6 +1826,8 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "does not mean the runner verdict was `PASS`",
         "Stack quality guardrail closure",
         "`Invalid closure forms`",
+        "residual correction pack",
+        "correction budget exhaustion",
     ], "finalizer explicit closure");
 }
 
@@ -1816,6 +1843,41 @@ function assertProtocolHardeningInTemplateAgents() {
         const content = fs.readFileSync(path.join(templateAgentsRoot, fileName), "utf8");
         assertSingleConsistencyPolicyBlock(content, `${fileName} template consistency policy`);
     }
+}
+
+function assertCorrectionLoopPolicyInTemplateDocs() {
+    const lifecycleContent = fs.readFileSync(
+        path.join(ROOT, "templates", "docs", "workflow", "EXECUTION-LIFECYCLE.md"),
+        "utf8"
+    );
+    const statusGatesContent = fs.readFileSync(
+        path.join(ROOT, "templates", "docs", "workflow", "STATUS-GATES.md"),
+        "utf8"
+    );
+
+    assertContentIncludesAll(lifecycleContent, [
+        "Problemas corrigíveis dentro do escopo aprovado devem voltar ao `orchestrator` antes de virarem fechamento terminal",
+        "marcador literal `CORRECTION PACK`",
+        "não podem emitir verdict/status terminal no mesmo handoff",
+        "cada slice/rodada pode ter no máximo 2 correction rounds automáticos",
+        "mesmo `WORK_PACKAGE_ID`, mesmos boundaries, mesmo ownership",
+        "Se a correção alterar boundary, ownership, `DO_NOT_TOUCH`, validação esperada, risco relevante",
+        "Correção automática não pode virar bypass do package design",
+        "Correction round é correção mínima, não replanejamento, redesign ou refactor amplo",
+        "valida se o handoff está pronto para execução",
+    ], "templates/docs/workflow/EXECUTION-LIFECYCLE.md correction loop");
+
+    assertContentIncludesAll(statusGatesContent, [
+        "bloco formal `CORRECTION PACK`",
+        "nem handoff que combine `CORRECTION PACK` com verdict/status terminal",
+        "O `orchestrator` decide se o `CORRECTION PACK` é corrigível automaticamente dentro do escopo",
+        "O `EXECUTION PACKAGE` vigente só pode ser reutilizado quando a correção permanecer no mesmo `WORK_PACKAGE_ID`",
+        "Se a correção alterar boundary, ownership, `DO_NOT_TOUCH`, validação esperada, risco relevante",
+        "correção automática não pode virar bypass do package design",
+        "refactor amplo",
+        "preservando correction pack residual e evidência",
+        "Esse gate valida handoff/readiness, não roda teste de código novo",
+    ], "templates/docs/workflow/STATUS-GATES.md correction loop");
 }
 
 function assertProtocolHardeningInCanonicalRefs(skillRoot) {
@@ -2428,6 +2490,7 @@ async function runSentinelSmoke() {
     assertExplicitRootEntries();
     assertQualityGuardrailSourceDefinitions();
     assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
+    assertCorrectionLoopPolicyInTemplateDocs();
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
