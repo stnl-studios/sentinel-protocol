@@ -65,6 +65,7 @@ Fluxo alvo:
 - O `reviewer` é owner do review semântico/arquitetural pós-execução quando ele entra na rodada; esse sinal não substitui o ownership de proof do runner.
 - O `finalizer` consome esses vereditos para consolidar memória durável, mas não os reemite como seus próprios status.
 - O `finalizer` também pode consumir o sinal do `reviewer` quando ele existir, sem absorver review técnico substituto.
+- Em rodada de slice, o `finalizer` é o owner canônico da declaração pós-slice: slice trabalhada com ID `SL-001`, `SL-002`, etc., status final `concluida`, `parcial` ou `bloqueada`, evidências, pendências/blockers, necessidade de resync e próxima slice elegível quando aplicável.
 - Quando a execução bloqueia antes do runner, o `orchestrator` roteia o caso direto ao `finalizer` como bloqueio pré-validação, sem inventar veredito do runner nem closure otimista.
 - `PARTIAL`, `FAIL`, `BLOCKED`, bloqueio pré-validação e execução parcial com `BLOCKED` nunca são fim operacional direto da rodada; todos exigem passagem terminal pelo `finalizer` para preservar verdict ou bloqueio, `DONE: yes/no`, resync yes/no e risco residual sem fechar a SPEC inteira.
 - Quando `designer` entra, o `orchestrator` deve classificá-lo como `required` ou `advisory`; só o caso `required` bloqueia a rodada por padrão.

@@ -73,6 +73,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - do not run execution validation as a replacement for `validation-runner.agent.md`
 - do not run semantic or architectural review as a replacement for `reviewer.agent.md`
 - do not close the round as a replacement for `finalizer.agent.md`
+- do not declare slice closure state as a replacement for `finalizer.agent.md`; for slice-scoped rounds, preserve the canonical `SL-001` style ID and route final status declaration to the finalizer
 - do not write durable documentation
 - do not "correct", finish, or patch executor work after an invalid executor handoff
 - do not reopen broad discovery after an invalid executor handoff or executor loop
@@ -97,7 +98,7 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - During execution, accept only `READY` with evidence of real implementation applied or `BLOCKED` with exact cause. Treat absent handoff, implicit terminal state, ambiguous status, intermediate progress update, command log, partial-diff narration, analysis, pseudo-plan, broad re-discovery, or `READY` without applied-change evidence as `EXECUTOR_HANDOFF_INVALID`; do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success.
 - If partial editing ends in `BLOCKED`, preserve objective blocker, touched files, partial work left behind, and whether that state is reusable; otherwise the handoff is invalid. Re-entering the same executor without applied diff, formal `BLOCKED`, or material gate/scope/authorization change is `EXECUTOR_LOOP_DETECTED`.
 - Hand off to `validation-runner.agent.md` only after a valid executor `READY` artifact exists; hand off to `reviewer.agent.md` only with real implemented artifact plus explicit `required` or `advisory` classification.
-- If execution blocks before honest validation, skip runner and reviewer and hand off to `finalizer.agent.md` with blockage evidence. Otherwise finalizer enters after runner verdict and any routed reviewer output. `PARTIAL`, `FAIL`, validation `BLOCKED`, pre-validation blockage, and partial execution with executor `BLOCKED` are still terminal-finalizer cases, not direct stops. `resync.agent.md` enters only when `finalizer.agent.md` explicitly requests it.
+- If execution blocks before honest validation, skip runner and reviewer and hand off to `finalizer.agent.md` with blockage evidence. Otherwise finalizer enters after runner verdict and any routed reviewer output. `PARTIAL`, `FAIL`, validation `BLOCKED`, pre-validation blockage, and partial execution with executor `BLOCKED` are still terminal-finalizer cases, not direct stops. For slice-scoped rounds, preserve the canonical slice ID and require the finalizer to declare `slice_id`, final slice status, evidence, pending work or blockers, resync need, and next eligible slice when applicable. `resync.agent.md` enters only when `finalizer.agent.md` explicitly requests it.
 
 ## Gate routing logic
 - Apply the gates in protocol order and stop as soon as the truthful next state is known.
@@ -277,6 +278,7 @@ Select agents by real ownership, not by convenience:
 - send only validation-eligible completed execution to `validation-runner.agent.md`
 - send only real implemented artifacts with explicit review classification to `reviewer.agent.md`
 - always route closure through `finalizer.agent.md`
+- for slice-scoped rounds, route post-slice status declaration through `finalizer.agent.md`; the orchestrator may choose the next eligible slice only after that closure record exists
 - call `resync.agent.md` only on explicit finalizer request
 
 If the round materially needs a capability that is not represented in the runtime, keep that gap visible and stop or narrow the round instead of pretending ownership exists.

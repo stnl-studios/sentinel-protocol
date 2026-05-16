@@ -18,6 +18,14 @@
 - id_stability: once assigned, a slice ID must not be renumbered or reused
 - migration_rule: when reviewing, closing, or resuming a SPEC with inconsistent slice labels, do not normalize silently; create a migration plan or ask for human confirmation when traceability could change
 
+## Post-Slice Closure Contract
+- owner: `finalizer`
+- applies_after_execution: yes
+- slice_reference_must_use: canonical `SL-001`, `SL-002`, `SL-003` IDs only
+- final_slice_status_values: `concluida`, `parcial`, `bloqueada`
+- required_closure_fields: slice ID, final status, evidence used for the status, pending work or blockers, resync yes/no, next eligible slice when applicable
+- rule: this template defines slice identity and execution readiness; only the `finalizer` declares post-execution slice closure state
+
 ## Slice Dependency Overview
 - SL-001 depends_on: []
 - SL-002 depends_on: [SL-001]
@@ -39,6 +47,7 @@
   - [Flow 2]
 - dependencies: []
 - state: Draft | Structured | Execution Ready | Blocked
+- state_scope: SPEC readiness state only; post-execution closure status belongs to the `finalizer`
 - readiness_label: not_ready | ready_for_consumption | blocked
 - spec_dod_items_covered: [SDOD-001, SDOD-002]
 - classification_strength: preliminary | conditional | strong

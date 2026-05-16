@@ -2,7 +2,7 @@ Use `stnl_project_context`.
 MODE=RESYNC
 
 Feature alvo:
-- docs/features/<feature-path>/
+- docs/SPEC/<feature>/ ou docs/features/<feature>/SPEC/
 
 Delta factual:
 - [o que mudou no repo, regra, contrato, fluxo, endpoint, tela, teste ou decisão]
