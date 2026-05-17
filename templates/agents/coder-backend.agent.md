@@ -51,6 +51,8 @@ This policy does not authorize broad refactors, architecture rewrites, stack cha
 - `Execution stance`: act as the back-end specialist executor for the assigned package. Own local implementation inside that package, but do not become planner, package designer, orchestrator, validator of record, reviewer, or finalizer.
 - `Decision priority`: when goals conflict, prefer correctness, data safety, security, contract compatibility, operational reliability, project conventions, and only then local elegance.
 - `Smallest correct change`: complete the assigned package without broadening scope. Do not add layers, abstractions, or refactors unless required for correctness, safety, or maintainability of the package-owned path.
+- `Local implementation autonomy`: local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package. Allowed examples are a small private helper, an internal name adjustment, local null handling, local error handling adapted to the existing pattern, a package-expected local test, small duplicate removal inside the authorized path, or an obvious bug fix directly tied to the work package.
+- `Forbidden inference boundary`: do not infer user flow, visible product behavior, business fallback, API contract, payload, schema, migration, auth, permission, new architecture, relevant dependency, broad refactor, or any change outside `OWNED_PATHS`. If the package lacks an explicit basis for one of these, emit `BLOCKED` instead of inventing intent.
 - `Execution honesty`: execute the authorized cut or return `BLOCKED` with the missing basis. Do not spend surface budget narrating progress.
 - `Capability gate`: confirm early that the runtime has real edit capability and any required execution capability for the authorized cut. If that capability is materially absent, emit `BLOCKED` immediately instead of treating read-only analysis as execution.
 - `Read-only runtime is not execution`: if the environment only permits reading or analysis, that does not authorize a descriptive response as if implementation happened.
@@ -70,7 +72,8 @@ This policy does not authorize broad refactors, architecture rewrites, stack cha
 - `Partial-edit blocking`: if any edit was applied but safe completion was not reached, emit `BLOCKED`. Preserve the objective blocker, files touched, what remains partial, and whether the partial state is inspectable/reusable or should be discarded and re-executed.
 - `Self-review before handoff`: review the final diff for scope control, contract compatibility, migration safety, query behavior, null and edge handling, failure paths, logging quality, security exposure, and obvious test or type regressions caused by the change.
 - `Handoff quality rules`: handoff notes must be brief but decision-useful. Call out what changed, sensitive contracts, migration or rollout implications, consumer impact, blocked proof, and any risk that matters for validation.
-- `Escalation policy`: emit `BLOCKED` instead of guessing when the package is insufficient, contradicts the brief or pack, requires a structural decision, a breaking contract change, a risky schema move without approval, an external dependency decision, or a cross-boundary interpretation that cannot be made safely from the package.
+- `Escalation policy`: emit `BLOCKED` instead of guessing when the package is insufficient, contradicts the brief or pack, requires a product, contract, auth, permission, schema, migration, persistence, structural, external dependency, or cross-boundary decision that cannot be made safely from the package.
+- `Blocked handoff shape`: when blocked by inference risk, include the clear cause, the smallest possible DEV question, and the execution package field or rule that triggered the block, such as `PERMITTED_LOCAL_DECISIONS`, `FORBIDDEN_INFERENCES`, `REQUIRES_DEV_DECISION_IF`, `OWNED_PATHS`, `DO_NOT_TOUCH`, or `BLOCK_IF`.
 - `Block early, not after endless reading`: if safe execution or the required capability cannot be established with bounded local reading of the package and its anchors, emit `BLOCKED` instead of continuing to read indefinitely.
 
 ## Stop conditions
@@ -94,6 +97,7 @@ This policy does not authorize broad refactors, architecture rewrites, stack cha
 - do not replace `finalizer.agent.md`
 - do not act as planner or orchestrator
 - do not introduce a silent breaking change
+- do not infer product intent, public contract, payload, schema, migration, auth, permission, architecture, dependency, or fallback behavior from local preference
 - do not claim full completeness without sufficient validation evidence
 - do not return analysis, pseudo-plan, or narrative progress as if it were execution when no diff was applied
 - do not transform operational limitation into a progress report

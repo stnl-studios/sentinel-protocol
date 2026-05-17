@@ -70,6 +70,9 @@ WORK_PACKAGE:
 - DEPENDS_ON: <work package ids or upstream artifacts>
 - DO_NOT_TOUCH: <paths, contracts, files, or surfaces outside the package>
 - CHANGE_RULES: <bounded implementation constraints, invariants, style/pattern guardrails>
+- PERMITTED_LOCAL_DECISIONS: <mechanical, local, reversible decisions allowed inside OWNED_PATHS>
+- FORBIDDEN_INFERENCES: <product, contract, architecture, auth, schema, persistence, or scope decisions the coder must not infer>
+- REQUIRES_DEV_DECISION_IF: <conditions where the coder must emit BLOCKED instead of guessing>
 - RUN_COMMANDS: <package-local commands the coder should run when available>
 - ACCEPTANCE_CHECKS: <package-local checks mapped to VALIDATION PACK obligations>
 - REQUIRED_QUALITY_GUARDRAILS: <active stack quality guardrail names for this package, or `none`>
@@ -237,6 +240,9 @@ Rules:
 - `DEPENDS_ON` must make sequential needs explicit
 - `DO_NOT_TOUCH` must include shared files, contracts, or surfaces that would create coordination risk
 - `CHANGE_RULES` must state constraints, not implementation prose
+- `PERMITTED_LOCAL_DECISIONS` must explicitly allow only mechanical, local, reversible decisions inside `OWNED_PATHS`, such as a small private helper, local error handling aligned to existing pattern, local null or undefined guard, focused package-expected test, internal naming adaptation, or small mechanical duplicate removal
+- `FORBIDDEN_INFERENCES` must explicitly forbid deciding new user flow, visible product behavior, business fallback, public contract, API payload, required or optional fields, new architecture layer, relevant dependency, auth or permission, schema, migration, persistence, or scope outside the approved package
+- `REQUIRES_DEV_DECISION_IF` must make early blockage concrete when there is more than one valid flow interpretation, the SPEC omits expected behavior, code contradicts the SPEC, implementation requires edits outside `OWNED_PATHS`, validation depends on an absent or insufficient harness for real risk, the coder would need to change contract, API, payload, schema, or auth, or the solution needs a product or architecture decision
 - `RUN_COMMANDS` should be cut-local and runnable when the project exposes them
 - `ACCEPTANCE_CHECKS` must map back to the `VALIDATION PACK`
 - `BLOCK_IF` must prefer early blockage over scope expansion

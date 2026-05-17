@@ -63,6 +63,7 @@ Expected shape of the `EXECUTION BRIEF`:
 - validation feasibility is so unclear that the proposed cut would be dishonest to pass forward
 - the planner would need to exceed its framing budget and act like a discovery engine to continue honestly
 - the planner would need to invent a requirement, choose product behavior, choose architecture, resolve a source conflict, widen the requested scope, or assume an unproven dependency to make the cut look bounded
+- the request contains material ambiguity in product behavior, user flow, UX interpretation, public contract, payload, required or optional fields, business fallback, auth or permission, schema, migration, persistence, external integration, data lifecycle, cross-boundary behavior, or a conflict between SPEC, docs, and code
 
 When any stop condition is active, do not emit `READY` and do not return informal prose. Return a compact blocking handoff that requests orchestrator handling under `NEEDS_DEV_DECISION_BASE` and names exactly the missing decision or fact needed to unblock the `EXECUTION BRIEF`.
 
@@ -295,6 +296,38 @@ Do not silently absorb:
 - fallback ideas that belong to a later round
 
 When scope is ambiguous, choose the narrowest honest boundary and make the exclusion explicit.
+
+### Anti-inference decision gate
+Do not convert ambiguous product behavior into an assumption.
+
+Emit `NEEDS_DEV_DECISION_BASE` when a request requires a real human decision before the cut can be honest, especially for:
+- product behavior
+- user flow
+- UX with more than one valid interpretation
+- public contract
+- payload
+- required or optional field choice
+- business fallback
+- auth or permission
+- schema, migration, or persistence
+- external integration
+- data lifecycle
+- cross-boundary change
+- conflict between SPEC, docs, and code
+
+When blocking, ask the smallest concrete question that unblocks the brief. Do not list broad options, propose a fallback, or hide the ambiguity inside assumptions.
+
+Blocking shape:
+
+```text
+NEEDS_DEV_DECISION_BASE
+
+Ambiguity:
+<one sentence naming the material ambiguity>
+
+Question:
+<one small concrete question for DEV>
+```
 
 ### Planner anti-role-drift rules
 - do not output implementation steps detailed enough to substitute for an executor

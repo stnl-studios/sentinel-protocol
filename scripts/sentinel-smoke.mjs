@@ -818,6 +818,123 @@ function assertQualityGuardrailPropagationInCodexAgentSet(repoRoot, controlledAg
     }
 }
 
+function assertRound1AntiInferenceHardeningInAgentSet(agentRoot, label) {
+    const requiredByAgent = {
+        "planner.agent.md": [
+            "Do not convert ambiguous product behavior into an assumption.",
+            "NEEDS_DEV_DECISION_BASE",
+            "required or optional field choice",
+            "conflict between SPEC, docs, and code",
+            "When blocking, ask the smallest concrete question",
+        ],
+        "execution-package-designer.agent.md": [
+            "PERMITTED_LOCAL_DECISIONS",
+            "FORBIDDEN_INFERENCES",
+            "REQUIRES_DEV_DECISION_IF",
+            "mechanical, local, reversible decisions inside `OWNED_PATHS`",
+            "the SPEC omits expected behavior",
+        ],
+        "coder-backend.agent.md": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "PERMITTED_LOCAL_DECISIONS",
+        ],
+        "coder-frontend.agent.md": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "FORBIDDEN_INFERENCES",
+        ],
+        "coder-ios.agent.md": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "REQUIRES_DEV_DECISION_IF",
+        ],
+        "reviewer.agent.md": [
+            "Anti-inference review",
+            "unauthorized inference",
+            "product-decision leakage",
+            "passes tests but violates the SPEC",
+            "Do not make reviewer routing mandatory globally",
+        ],
+    };
+
+    for (const [fileName, requiredSnippets] of Object.entries(requiredByAgent)) {
+        const content = fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+        assertContentIncludesAll(content, requiredSnippets, `${label}/${fileName} round 1 anti-inference hardening`);
+    }
+}
+
+function assertRound1AntiInferenceHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
+    const requiredByAgent = {
+        "planner": [
+            "Do not convert ambiguous product behavior into an assumption.",
+            "NEEDS_DEV_DECISION_BASE",
+            "required or optional field choice",
+            "conflict between SPEC, docs, and code",
+            "When blocking, ask the smallest concrete question",
+        ],
+        "execution-package-designer": [
+            "PERMITTED_LOCAL_DECISIONS",
+            "FORBIDDEN_INFERENCES",
+            "REQUIRES_DEV_DECISION_IF",
+            "mechanical, local, reversible decisions inside `OWNED_PATHS`",
+            "the SPEC omits expected behavior",
+        ],
+        "coder-backend": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "PERMITTED_LOCAL_DECISIONS",
+        ],
+        "coder-frontend": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "FORBIDDEN_INFERENCES",
+        ],
+        "coder-ios": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "REQUIRES_DEV_DECISION_IF",
+        ],
+        "reviewer": [
+            "Anti-inference review",
+            "unauthorized inference",
+            "product-decision leakage",
+            "passes tests but violates the SPEC",
+            "Do not make reviewer routing mandatory globally",
+        ],
+    };
+
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const requiredSnippets = requiredByAgent[agentName];
+
+        if (!requiredSnippets) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+
+        assertContentIncludesAll(
+            parsed.developer_instructions,
+            requiredSnippets,
+            `codex/${agentName} round 1 anti-inference hardening`
+        );
+    }
+}
+
 function assertInstalledQualityGuardrailSkills(targetHome) {
     const targets = getTargets(targetHome);
 
@@ -2452,11 +2569,19 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledReferenceDocs(agentSkillRoot);
         assertProtocolHardeningInTemplateAgents();
         assertProtocolHardeningInReferenceAgents(agentSkillRoot);
+        assertRound1AntiInferenceHardeningInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
         assertQualityGuardrailsInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertRound1AntiInferenceHardeningInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
         assertQualityGuardrailPropagationInAgentSet(path.join(vscodeRepoRoot, ".github", "agents"), "vscode materializado");
         assertConsistencyPolicyPropagationToVscodeAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
 
@@ -2474,6 +2599,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexAgentMaterialization(codexRepoRoot, controlledAgentFiles);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertQualityGuardrailPropagationInCodexAgentSet(codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyPropagationToCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyRejectsCodexMaterializationDrift(agentSkillRoot, controlledAgentFiles);
@@ -2497,6 +2623,7 @@ async function runSentinelSmoke() {
     assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCorrectionLoopPolicyInTemplateDocs();
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertRound1AntiInferenceHardeningInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
         "templates/agents"
