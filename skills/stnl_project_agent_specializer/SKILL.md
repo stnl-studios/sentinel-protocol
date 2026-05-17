@@ -217,7 +217,8 @@ Effort por target:
   - `low`: `proof-execution`, `closure`, `sync`
 - `vscode` e GitHub custom agents devem serializar `model` no frontmatter `.agent.md`
 - `vscode` e GitHub custom agents não devem serializar `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter; qualquer guidance de effort para esse target deve ser texto não operacional e apenas quando necessário
-- `.agent.md` gerenciado para VS Code/GitHub deve respeitar o limite documentado de 30.000 caracteres no prompt Markdown do agent; se a especialização não couber sem enfraquecer blocos protocol-fixed, bloquear ou reduzir conteúdo local especializável, nunca remover hardening obrigatório
+- base agents canônicos fonte em `templates/agents/*.agent.md` devem ficar com no máximo 28.000 caracteres antes de qualquer especialização local
+- `.agent.md` gerenciado para VS Code/GitHub continua respeitando o limite documentado de 30.000 caracteres no prompt Markdown do agent; se a especialização não couber, bloquear ou reduzir conteúdo local especializável, nunca remover blocos protocol-fixed ou hardening obrigatório
 - `handoffs` em VS Code/GitHub é suporte opcional futuro; não implementar por default sem uso Sentinel claro e gate seguro
 - `hooks` não devem ser gerados por default; se algum dia forem mencionados, devem permanecer opt-in explícito porque executam comandos
 - marcas gerenciadas de `codex` devem preferir comentário/header TOML, como `# Sentinel managed artifact: true`, em vez de campo runtime desconhecido; se essa marca não puder ser preservada com segurança, registrar follow-up e não improvisar chave operacional
@@ -927,6 +928,7 @@ Verificar:
 - shape canônico consistente com `agent-contract-shape`
 - quando `target=vscode`, artifacts de agents estão em `.github/agents/*.agent.md`, headings e seções obrigatórias do base agent existem com naming canônico, e o frontmatter contém `target`, `tools`, `model`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
 - quando `target=vscode`, o frontmatter contém `model` e não contém campos operacionais de effort como `reasoning_effort`, `thinking_effort` ou `model_reasoning_effort`
+- base agents canônicos em `templates/agents/*.agent.md` respeitam 28.000 caracteres; esse limite não substitui o limite de materialização
 - quando `target=vscode`, cada `.agent.md` gerenciado respeita o limite de 30.000 caracteres do prompt Markdown do agent, sem sacrificar blocos protocol-fixed
 - quando `target=codex`, artifacts de agents estão em `.codex/agents/*.toml`, cada TOML contém `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`, e `AGENTS.md` foi gerado a partir do template interno da skill
 - quando `target=codex`, `developer_instructions` preserva a missão, role class, ownership, gates, sequencing, handoffs e regras operacionais do specialized que em `vscode` ficariam no corpo Markdown

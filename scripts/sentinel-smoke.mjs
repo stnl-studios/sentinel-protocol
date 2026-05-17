@@ -231,6 +231,7 @@ const CONSISTENCY_POLICY_CANONICAL_HEADING = "## Consistency without legacy prop
 const CONSISTENCY_POLICY_LEGACY_MARKER = "Consistency without legacy propagation:";
 
 const CODEX_AGENTS_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "AGENTS.md");
+const BASE_AGENT_TEMPLATE_CHAR_LIMIT = 28000;
 const VSCODE_AGENT_MARKDOWN_CHAR_LIMIT = 30000;
 const CONTROLLED_ALLOWED_MODELS = [
     "sentinel-strong-model",
@@ -2159,6 +2160,30 @@ function assertProtocolHardeningInTemplateAgents() {
     }
 }
 
+function assertBaseAgentTemplateSizeLimit() {
+    const templateAgentsRoot = path.join(ROOT, "templates", "agents");
+    const oversizedAgents = listRelativeFiles(templateAgentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort()
+        .map((relativePath) => {
+            const templatePath = path.join(templateAgentsRoot, relativePath);
+            return {
+                relativePath: path.join("templates", "agents", relativePath),
+                size: fs.readFileSync(templatePath, "utf8").length,
+            };
+        })
+        .filter((entry) => entry.size > BASE_AGENT_TEMPLATE_CHAR_LIMIT);
+
+    assert.equal(
+        oversizedAgents.length,
+        0,
+        [
+            `Base agent template excede ${BASE_AGENT_TEMPLATE_CHAR_LIMIT} caracteres:`,
+            ...oversizedAgents.map((entry) => `${entry.relativePath}: ${entry.size}`),
+        ].join("\n")
+    );
+}
+
 function assertCorrectionLoopPolicyInTemplateDocs() {
     const lifecycleContent = fs.readFileSync(
         path.join(ROOT, "templates", "docs", "workflow", "EXECUTION-LIFECYCLE.md"),
@@ -2832,6 +2857,7 @@ async function runSentinelSmoke() {
     assertQualityGuardrailSourceDefinitions();
     assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCorrectionLoopPolicyInTemplateDocs();
+    assertBaseAgentTemplateSizeLimit();
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound1AntiInferenceHardeningInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound2OperationalAxesInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");

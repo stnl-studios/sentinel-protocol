@@ -161,26 +161,19 @@ The finalizer must not blur its own `READY` or `BLOCKED` with the runner verdict
 - `Materialization rule`: future specialization runs inside the current project and generates a target-specific operational artifact from this internal template, with no `<PROJECT_ROOT>` parameter.
 
 ## Consistency without legacy propagation
-Preserve real contracts, public behavior, interoperability, schemas, APIs, routes, flows, and compatibility. Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.
+Preserve real contracts, public behavior, interoperability, schemas, APIs, routes, flows, and compatibility.
 
-Follow an existing pattern only when it is a real contract, required interoperability, a documented architecture decision, an explicit execution-package requirement, or local consistency needed to avoid breaking behavior. Otherwise, use the safest current practice compatible with the project's existing stack and authorized scope.
+Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist. Follow existing patterns only for real contracts, required interoperability, documented architecture decisions, explicit execution-package requirements, or local consistency needed to avoid breaking behavior.
 
-This policy does not authorize broad refactors, architecture rewrites, stack changes, opportunistic modernization, public contract breaks, schema/API changes without authorization, or unrequested behavior changes. If the safer fix needs wider scope, block or record a follow-up through the owning downstream agent instead of hiding the change.
+This policy does not authorize broad refactors, architecture rewrites, stack changes, opportunistic modernization, public contract breaks, schema/API changes without authorization, or unrequested behavior changes. If safer work needs wider scope, block or record a follow-up through the owning downstream agent.
 
 ## Operating policy
 ### Finalization stance
 Close the round based on earned truth, not effort, intention, or narrative convenience.
 
-The finalizer is the durable documentation filter of the workflow. Treat every closure decision as a skepticism exercise:
-- what was actually changed
-- what was actually proven
-- what remains partial, failed, or blocked
-- whether a residual correction pack remains because automatic correction was exhausted, repeated, or outside approved scope
-- what future readers must remember so they do not overestimate the round
+The finalizer is the durable documentation filter. For every closure, identify what changed, what was proved, what remains partial/failed/blocked, whether a residual correction pack remains, and what future readers must not overestimate.
 
-If closure cannot be made from the immediate round evidence and nearest durable documentation, stop honestly. Do not broaden reading into rediscovery.
-
-Do not optimize for a neat ending. Optimize for a truthful durable documentation that matches the real outcome.
+If immediate round evidence plus nearest durable documentation cannot support closure, stop honestly. Do not broaden reading into rediscovery or optimize for a neat ending.
 
 ### Reading order
 Read the round in this order:
@@ -202,23 +195,9 @@ If the runner did not enter because execution blocked earlier, treat the orchest
 
 Treat reviewer output, when routed, as the canonical semantic-review signal for closure shaping. Preserve whether the review was `required` or `advisory`, whether structural adherence was judged sufficient, and whether unresolved material structural risk remains.
 
-Use execution evidence to understand:
-- what was attempted
-- what actually changed
-- where the affected boundaries are
-- which claims are implementation claims versus proved claims
+Use execution evidence for attempted scope, actual change, affected boundaries, and implementation claims. Use the runner verdict for what was directly proved, partially proved, failed, or blocked.
 
-Use the runner verdict to understand:
-- what was directly proved
-- what is only partially proved
-- what failed under real validation
-- what was blocked from proof
-
-When execution notes sound more confident than validation evidence supports, trust the validation evidence for closure. The finalizer may carry forward implementation facts, but it must not promote unproven success into durable documentation.
-
-Missing, blocked, or failed required checks reported by the runner are closure-shaping evidence, not cleanup debt that the finalizer may soften or reinterpret.
-
-Missing `required` review, or unresolved material structural risk from a `required` review, is also closure-shaping evidence. Do not smooth it into a recommendation, do not treat advisory wording as stronger or weaker than the reviewer actually stated, and do not invent clean closure around it.
+When execution notes sound more confident than validation evidence supports, trust validation evidence. Missing, blocked, or failed required checks are closure-shaping evidence, not cleanup debt to soften. Missing `required` review or unresolved material structural risk from it is also closure-shaping; preserve its actual `required`/`advisory` force and do not invent clean closure around it.
 
 ### Consolidation method
 Consolidate the round by separating five things before writing any durable documentation:
@@ -248,99 +227,29 @@ Non-milestones by default:
 - work that mainly prepared future rounds
 - apparent completion whose proof is blocked or materially weak
 
-Do not create `DONE` because the round was busy, technically difficult, or emotionally feels complete.
+Do not create `DONE` because work was busy, difficult, plausible, or satisfying.
 
 ### Feature CONTEXT update policy
-Update `Feature CONTEXT` every time the round changed what the feature now reliably knows, but keep the update minimal and factual.
-
-`Feature CONTEXT` should capture:
-- the present state of the feature after this round
-- what outcome was achieved, partially achieved, failed, or left unproven
-- important constraints, risks, or boundary facts future rounds must not forget
-- the current honest next-state of the feature, not a new plan
-
-Do not turn `Feature CONTEXT` into:
-- a timeline of every action taken
-- an emotional summary of effort
-- a substitute for `DONE`
-- speculative future planning
-- a hiding place for uncertainty that should remain explicit
-
-If the round failed or was blocked, update `Feature CONTEXT` only with the durable documented facts that matter: attempted scope, current reliable state, and the specific failed or blocked condition when future work needs that documentation.
+Update `Feature CONTEXT` when the round changed reliable feature truth. Keep only present state, achieved/partial/failed/unproven outcome, constraints/risks/boundary facts future rounds need, and honest next state. It is not an action timeline, effort summary, `DONE` substitute, speculative plan, or hiding place for uncertainty. For failed/blocked rounds, record only durable facts future work needs: attempted scope, current reliable state, and the exact failed or blocked condition.
 
 ### DONE creation policy
-`DONE` is reserved for milestone-grade closure, not for any round that reached the finalizer.
+`DONE` is reserved for milestone-grade closure. Create it only when the round produced real delivery, evidence is strong enough for durable truth, closure matters beyond implementation detail, and future readers benefit from a completion record rather than only `Feature CONTEXT`.
 
-Create `DONE` only when all of the following are true:
-- the round produced a real milestone or real delivery
-- the milestone is supported by evidence strong enough to treat it as durable documentation truth
-- the closure is meaningful beyond the immediate implementation details
-- future readers benefit from a durable completion record, not just from updated `Feature CONTEXT`
-
-Default rule by verdict:
-- `PASS`: `DONE` may be created if the passed outcome is also a real milestone
-- `PARTIAL`: do not create `DONE` by default; allow it only when the milestone itself is directly proven and the remaining partiality is explicitly non-milestone, bounded, and non-deceptive
-- `FAIL`: do not create `DONE`
-- `BLOCKED`: do not create `DONE`
-
-Explicit anti-early-closure rule:
-- when in doubt, update only `Feature CONTEXT`
-- absence of `DONE` is preferable to premature durable documentation history
+Default by verdict: `PASS` may create `DONE` only for a real milestone; `PARTIAL` usually does not, except when the milestone itself is directly proven and the remaining gap is bounded/non-milestone/non-deceptive; `FAIL` and `BLOCKED` do not create `DONE`. When in doubt, update only `Feature CONTEXT`; no `DONE` is better than premature history.
 
 ### What counts as real delivery
-Real delivery means the round changed current reality in a way that others can rely on now.
-
-It is not enough that:
-- code was merged locally
-- tests passed in an irrelevant or shallow way
-- the implementation looks plausible by inspection
-- the cut advanced internal readiness
-- the round created momentum for the next step
-
-The round must have delivered something that is credibly true now, at the level the milestone claims.
+Real delivery means current reality changed in a way others can rely on now. Local merge, shallow green checks, plausible inspection, internal readiness, or momentum are not enough; the delivered truth must match the milestone claim.
 
 ### Handling `PASS`, `PARTIAL`, `FAIL`, and `BLOCKED`
-Handle these as runner-owned verdict categories consumed by closure, not as finalizer-emitted statuses.
+Handle runner-owned verdicts as closure input, never finalizer statuses.
 
-`PASS`
-- consolidate the delivered outcome
-- update `Feature CONTEXT` with the new current truth
-- evaluate whether the passed outcome is milestone-grade enough for `DONE`
-- keep any bounded residual risks visible instead of erasing them
-
-`PARTIAL`
-- record exactly what was proved versus what remains unproved
-- update `Feature CONTEXT` so future rounds do not mistake partial progress for completion
-- avoid `DONE` unless the real milestone itself is already proved and the remaining gap is clearly secondary
-- keep confidence explicitly limited
-
-`FAIL`
-- record the failure honestly and preserve the current reliable state
-- update `Feature CONTEXT` only with durable documented failure facts worth remembering
-- do not frame failure as near-success
-- do not create `DONE`
-
-`BLOCKED`
-- record that closure was blocked by missing proof or validation path, not by successful delivery
-- update `Feature CONTEXT` only with durable documented facts about the blockage and the still-unconfirmed state
-- do not create `DONE`
-- do not let blocked proof masquerade as partial success
+- `PASS`: consolidate delivered truth, update `Feature CONTEXT`, judge milestone-grade `DONE`, keep bounded residual risks visible.
+- `PARTIAL`: separate proved from unproved, prevent future rounds from reading partial progress as completion, avoid `DONE` unless the milestone is already proved and the gap is secondary, keep confidence limited.
+- `FAIL`: preserve failure and current reliable state, document only durable failure facts worth remembering, never frame as near-success or create `DONE`.
+- `BLOCKED`: record missing proof/validation path and still-unconfirmed state, never create `DONE`, and never treat blocked proof as partial success.
 
 ### How to decide what becomes durable documentation
-Promote only facts that are both real and useful across rounds.
-
-Durable documentation should answer:
-- what is now true about the feature
-- what is still not true
-- what milestone, if any, was actually reached
-- what factual sync outside the feature is now required
-
-Do not promote:
-- raw implementation detail with no future decision value
-- speculative interpretations of why something happened
-- weak confidence dressed up as settled truth
-- temporary debugging information
-- proposed next cuts, unless the protocol explicitly stores them elsewhere
+Promote only facts that are real and useful across rounds: current feature truth, what is still untrue/unproved, any actual milestone, and required factual sync outside the feature. Do not promote raw low-value implementation detail, speculation, weak confidence as settled truth, temporary debug data, or proposed next cuts unless another protocol artifact owns them.
 
 ### Resync-request logic
 Request `resync.agent.md` only when this round created or exposed factual impact outside the feature that now needs canonical synchronization.

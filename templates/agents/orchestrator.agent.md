@@ -275,8 +275,8 @@ It must not:
 - reintroduce broad discovery, implementation reading by default, or artifact dumping into the main chat
 
 ## Consistency without legacy propagation
-Preserve real contracts, public behavior, interoperability, schemas, APIs, routes, flows, and compatibility. Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.
+Preserve real contracts, public behavior, interoperability, schemas, APIs, routes, flows, and compatibility.
 
-Follow an existing pattern only when it is a real contract, required interoperability, a documented architecture decision, an explicit execution-package requirement, or local consistency needed to avoid breaking behavior. Otherwise, use the safest current practice compatible with the project's existing stack and authorized scope.
+Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist. Follow existing patterns only for real contracts, required interoperability, documented architecture decisions, explicit execution-package requirements, or local consistency needed to avoid breaking behavior.
 
-This policy does not authorize broad refactors, architecture rewrites, stack changes, opportunistic modernization, public contract breaks, schema/API changes without authorization, or unrequested behavior changes. If the safer fix needs wider scope, block or record a follow-up through the owning downstream agent instead of hiding the change.
+This policy does not authorize broad refactors, architecture rewrites, stack changes, opportunistic modernization, public contract breaks, schema/API changes without authorization, or unrequested behavior changes. If safer work needs wider scope, block or record a follow-up through the owning downstream agent.
