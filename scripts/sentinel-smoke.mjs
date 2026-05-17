@@ -1056,6 +1056,44 @@ function assertRound2OperationalAxesInCodexAgents(repoRoot, controlledAgentFiles
     }
 }
 
+const ROUND3_ORCHESTRATOR_LADDER_SNIPPETS = [
+    "## Decision ladder",
+    "1. Detect `RUN`.",
+    "2. Detect `MODE`.",
+    "3. Detect `FLOW`.",
+    "4. Apply defaults: `MODE=standard`, `FLOW=supervised`, `RUN=execute`.",
+    "5. Identify the current gate.",
+    "6. Check the required artifact for that gate.",
+    "7. Check handoff validity.",
+    "8. Route to the owning agent.",
+    "9. Stop if DEV decision is needed.",
+    "10. Never perform downstream work locally.",
+    "`MODE=compact`: format-only; shorter artifacts and chat, same gates, safety, blockers, proof requirements, and handoff validity.",
+    "`MODE=strict`: requires reviewer plus stronger proof",
+    "`FLOW=supervised`: no approval between every handoff",
+    "`FLOW=autonomous`: safe cycles, no product/contract/schema/auth decisions",
+    "`RUN=plan`: stops at execution-package-designer; no coder/final completion/slice completion",
+    "do not call coders",
+    "do not let `finalizer.agent.md` conclude a slice",
+    "never implements, never closes durable documentation, never absorbs `stnl_project_context`, and never replaces planner, validation design, execution package design, runner, reviewer, finalizer, or resync",
+];
+
+function assertRound3OrchestratorLadderInAgentSet(agentRoot, label) {
+    const content = fs.readFileSync(path.join(agentRoot, "orchestrator.agent.md"), "utf8");
+    assertContentIncludesAll(content, ROUND3_ORCHESTRATOR_LADDER_SNIPPETS, `${label}/orchestrator round 3 decision ladder`);
+}
+
+function assertRound3OrchestratorLadderInCodexAgents(repoRoot) {
+    const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", "orchestrator.toml"), "utf8");
+    const parsed = parseToml(content, "orchestrator.toml");
+
+    assertContentIncludesAll(
+        parsed.developer_instructions,
+        ROUND3_ORCHESTRATOR_LADDER_SNIPPETS,
+        "codex/orchestrator round 3 decision ladder"
+    );
+}
+
 function assertInstalledQualityGuardrailSkills(targetHome) {
     const targets = getTargets(targetHome);
 
@@ -2731,6 +2769,10 @@ function runControlledMaterializationSmoke(targetHome) {
             path.join(agentSkillRoot, "reference", "agents"),
             "reference/agents instalado"
         );
+        assertRound3OrchestratorLadderInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
         assertQualityGuardrailsInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
@@ -2741,6 +2783,10 @@ function runControlledMaterializationSmoke(targetHome) {
             "vscode materializado"
         );
         assertRound2OperationalAxesInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
+        assertRound3OrchestratorLadderInAgentSet(
             path.join(vscodeRepoRoot, ".github", "agents"),
             "vscode materializado"
         );
@@ -2763,6 +2809,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound2OperationalAxesInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertRound3OrchestratorLadderInCodexAgents(codexRepoRoot);
         assertQualityGuardrailPropagationInCodexAgentSet(codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyPropagationToCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyRejectsCodexMaterializationDrift(agentSkillRoot, controlledAgentFiles);
@@ -2788,6 +2835,7 @@ async function runSentinelSmoke() {
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound1AntiInferenceHardeningInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound2OperationalAxesInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertRound3OrchestratorLadderInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
         "templates/agents"
