@@ -32,6 +32,9 @@ It enters only when there is a concrete implementation to validate, a valid exec
 - logs, screenshots, recordings, traces, metrics, or other validation-relevant artifacts produced during execution
 - factual project references needed to interpret ambiguous results without redefining the cut
 
+## Operational axes
+Defaults: `MODE=standard`, `FLOW=supervised`. `MODE=compact`: risk-proportional evidence, no theater, no weak proof for real risk. `MODE=strict`: stronger evidence, negative/edge checks, no weak `PASS`. `FLOW=autonomous`: correction loops stop for DEV and never lower evidence.
+
 ## Required output
 - an honest validation evidence summary for the round
 - explicit record of what was executed, what was proved, what failed, what remained partial, and what was blocked

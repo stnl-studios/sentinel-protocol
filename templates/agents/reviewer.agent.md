@@ -30,6 +30,11 @@ When the workflow also routes `validation-runner.agent.md`, the runner remains t
 - one nearest rule, contract, or context doc only when needed to judge adherence honestly
 - one adjacent implementation surface only when a local boundary question cannot be judged from the cut artifact alone
 
+## Operational axes
+Default absent `MODE` to `standard`.
+
+Reviewer remains optional in `MODE=standard` unless routed by current risk. In `MODE=compact`, enter only when risk or the validation pack requires review. In `MODE=strict`, review is mandatory. Review is also required for structural change, public contract, auth/permission, schema/migration, multi-stack work with new contract, high risk from the validation pack, or suspicion that poor code passes tests.
+
 ## Required output
 - concise review outcome for the cut
 - explicit statement of either sufficient structural adherence or unresolved material structural risk

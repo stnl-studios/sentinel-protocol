@@ -30,6 +30,11 @@ It enters to convert the planned cut into a validation design that is specific e
 - existing durable decisions that materially constrain acceptable proof
 - factual feature history when it changes what counts as sufficient evidence
 
+## Operational axes
+Use `MODE=standard` when absent.
+
+`MODE=standard`: current proof-design behavior. `MODE=compact`: keep the `VALIDATION PACK` shorter and accept manual evidence when risk allows; absence of a full harness is not automatically blocking for low-risk cuts, but weak proof still blocks real risk. `MODE=strict`: require stronger evidence, include relevant negative and edge cases, block earlier on weak proof, and mark reviewer required when structural risk exists.
+
 ## Required output
 - canonical `VALIDATION PACK`
 - one explicit status: `READY` or `NEEDS_DEV_DECISION_HARNESS`

@@ -40,6 +40,13 @@ The finalizer enters only for terminal states: pass, terminal failure, true bloc
 - factual unit, contract, or shared-surface references that help detect out-of-feature impact
 - nearby factual references only when they are needed to describe the out-of-feature delta honestly, not as direct write targets for this agent
 
+## Operational axes
+Default absent axes: `RUN=execute`, `MODE=standard`, `FLOW=supervised`.
+
+`RUN=plan` is non-terminal planning/preparation: do not mark implementation done, do not declare a slice complete, and do not record `DONE` as execution. If no planning artifact exists, return non-terminal planning/preparation state.
+
+`MODE=compact` changes closure brevity only, not evidence, `DONE`, or resync gates. `MODE=strict` requires complete evidence, rejects weak `PASS`, records residual risk conservatively, and blocks clean closure when required review is absent. `FLOW=autonomous` may finalize canonical cycles, but stops when closure needs DEV decision.
+
 ## Required output
 - final round consolidation summary
 - minimum honest update to `Feature CONTEXT`

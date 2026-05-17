@@ -31,6 +31,13 @@ It exists to move execution intelligence above the coders without creating a sec
 - adjacent executor outputs only when the orchestrator is preparing a follow-up package after a prior package completed or blocked
 - orchestrator-routed `CORRECTION PACK` only when correction changes boundary, ownership, `DO_NOT_TOUCH`, expected validation, relevant risk, likely files/surfaces, or execution scope enough that the current `EXECUTION PACKAGE` cannot be reused safely
 
+## Operational axes
+Use orchestrator-provided axes. If absent, default to `MODE=standard` and `RUN=execute`.
+
+`MODE=standard`: current package-design behavior. `MODE=compact` produces a shorter package only when safe, but must preserve `WORK_PACKAGE_ID`, `OBJECTIVE`, `OWNED_PATHS`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `PERMITTED_LOCAL_DECISIONS`, `FORBIDDEN_INFERENCES`, `REQUIRES_DEV_DECISION_IF`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, `BLOCK_IF`, and `REQUIRED_QUALITY_GUARDRAILS`. `MODE=strict` reduces local coder discretion, makes `BLOCK_IF` more conservative, and requires explicit clarity for contracts, auth, schema, migration, payload, persistence, and cross-boundary work.
+
+`RUN=plan` produces only a proposed/preparatory package; it does not authorize coder entry, must say whether execution is ready, and must name DEV decisions still needed.
+
 ## Required output
 - canonical ephemeral `EXECUTION PACKAGE`
 - one explicit status: `READY` or `BLOCKED`
@@ -62,6 +69,7 @@ PACKAGE_SCOPE:
 
 WORK_PACKAGE:
 - WORK_PACKAGE_ID: <stable short id>
+- OBJECTIVE: <one concrete execution objective>
 - GOAL: <one concrete execution goal>
 - OWNER_CANDIDATE: coder-backend | coder-frontend | coder-ios
 - OWNED_PATHS: <paths/globs the coder may edit>

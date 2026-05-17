@@ -935,6 +935,127 @@ function assertRound1AntiInferenceHardeningInCodexAgents(repoRoot, controlledAge
     }
 }
 
+function assertRound2OperationalAxesInAgentSet(agentRoot, label) {
+    const requiredByAgent = {
+        "orchestrator.agent.md": [
+            "defaults `MODE=standard`, `FLOW=supervised`, `RUN=execute` preserve current flow",
+            "MODE_COMPACT_REJECTED",
+            "`MODE=compact`: format-only",
+            "`MODE=strict`: requires reviewer plus stronger proof",
+            "`FLOW=supervised`: no approval between every handoff",
+            "`FLOW=autonomous`: safe cycles, no product/contract/schema/auth decisions",
+            "`RUN=plan`: stops at execution-package-designer; no coder/final completion/slice completion",
+        ],
+        "planner.agent.md": [
+            "`MODE=compact`: shorter `EXECUTION BRIEF`",
+            "`MODE=strict`: reduce inference",
+            "`RUN=plan`: plan only",
+            "`ready_to_execute: yes|no`",
+        ],
+        "validation-eval-designer.agent.md": [
+            "`MODE=compact`: keep the `VALIDATION PACK` shorter",
+            "weak proof still blocks real risk",
+            "`MODE=strict`: require stronger evidence",
+        ],
+        "execution-package-designer.agent.md": [
+            "`MODE=compact` produces a shorter package",
+            "`OBJECTIVE`",
+            "`RUN=plan` produces only a proposed/preparatory package",
+            "it does not authorize coder entry",
+        ],
+        "validation-runner.agent.md": [
+            "`MODE=compact`: risk-proportional evidence",
+            "no weak proof for real risk",
+            "`FLOW=autonomous`: correction loops stop for DEV",
+        ],
+        "reviewer.agent.md": [
+            "Reviewer remains optional in `MODE=standard`",
+            "In `MODE=strict`, review is mandatory",
+            "public contract",
+            "schema/migration",
+        ],
+        "finalizer.agent.md": [
+            "`RUN=plan` is non-terminal planning/preparation",
+            "do not declare a slice complete",
+            "`MODE=compact` changes closure brevity only",
+            "`MODE=strict` requires complete evidence",
+            "`FLOW=autonomous` may finalize canonical cycles",
+        ],
+    };
+
+    for (const [fileName, requiredSnippets] of Object.entries(requiredByAgent)) {
+        const content = fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+        assertContentIncludesAll(content, requiredSnippets, `${label}/${fileName} round 2 operational axes`);
+    }
+}
+
+function assertRound2OperationalAxesInCodexAgents(repoRoot, controlledAgentFiles) {
+    const requiredByAgent = {
+        "orchestrator": [
+            "defaults `MODE=standard`, `FLOW=supervised`, `RUN=execute` preserve current flow",
+            "MODE_COMPACT_REJECTED",
+            "`MODE=compact`: format-only",
+            "`MODE=strict`: requires reviewer plus stronger proof",
+            "`FLOW=supervised`: no approval between every handoff",
+            "`FLOW=autonomous`: safe cycles, no product/contract/schema/auth decisions",
+            "`RUN=plan`: stops at execution-package-designer; no coder/final completion/slice completion",
+        ],
+        "planner": [
+            "`MODE=compact`: shorter `EXECUTION BRIEF`",
+            "`MODE=strict`: reduce inference",
+            "`RUN=plan`: plan only",
+            "`ready_to_execute: yes|no`",
+        ],
+        "validation-eval-designer": [
+            "`MODE=compact`: keep the `VALIDATION PACK` shorter",
+            "weak proof still blocks real risk",
+            "`MODE=strict`: require stronger evidence",
+        ],
+        "execution-package-designer": [
+            "`MODE=compact` produces a shorter package",
+            "`OBJECTIVE`",
+            "`RUN=plan` produces only a proposed/preparatory package",
+            "it does not authorize coder entry",
+        ],
+        "validation-runner": [
+            "`MODE=compact`: risk-proportional evidence",
+            "no weak proof for real risk",
+            "`FLOW=autonomous`: correction loops stop for DEV",
+        ],
+        "reviewer": [
+            "Reviewer remains optional in `MODE=standard`",
+            "In `MODE=strict`, review is mandatory",
+            "public contract",
+            "schema/migration",
+        ],
+        "finalizer": [
+            "`RUN=plan` is non-terminal planning/preparation",
+            "do not declare a slice complete",
+            "`MODE=compact` changes closure brevity only",
+            "`MODE=strict` requires complete evidence",
+            "`FLOW=autonomous` may finalize canonical cycles",
+        ],
+    };
+
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const requiredSnippets = requiredByAgent[agentName];
+
+        if (!requiredSnippets) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+
+        assertContentIncludesAll(
+            parsed.developer_instructions,
+            requiredSnippets,
+            `codex/${agentName} round 2 operational axes`
+        );
+    }
+}
+
 function assertInstalledQualityGuardrailSkills(targetHome) {
     const targets = getTargets(targetHome);
 
@@ -1401,7 +1522,10 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, 
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = readControlledAgentSourceContent(skillRoot, fileName, options);
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
-        const normalizedBody = normalizeProtocolFixedConsistencyHeading(body);
+        const normalizedBody = fitControlledVscodeFixtureBody(
+            normalizeProtocolFixedConsistencyHeading(body),
+            fileName
+        );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
             fileName,
@@ -1415,13 +1539,40 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, 
     }
 }
 
+function fitControlledVscodeFixtureBody(body, fileName) {
+    if (fileName !== "orchestrator.agent.md") {
+        return body;
+    }
+
+    return stripMarkdownSection(
+        stripMarkdownSection(body, "## Specialization boundaries"),
+        "## Project-specializable part"
+    );
+}
+
+function fitBackendOnlyVscodeFixtureBody(body, fileName) {
+    const fittedBody = fitControlledVscodeFixtureBody(body, fileName);
+
+    if (fittedBody.includes("## Project-specializable part")) {
+        return stripMarkdownSection(fittedBody, "## Project-specializable part");
+    }
+
+    return fittedBody;
+}
+
+function stripMarkdownSection(content, heading) {
+    const start = content.indexOf(heading);
+    assert(start >= 0, `Fixture sem seção esperada para remover: ${heading}`);
+
+    const nextHeading = content.indexOf("\n## ", start + heading.length);
+    const end = nextHeading >= 0 ? nextHeading + 1 : content.length;
+    return content.slice(0, start) + content.slice(end);
+}
+
 function renderBackendOnlySpecializedBody(body, fileName) {
     const localSpecialization = [
         "## Project specialization",
-        "- Fixture specialization: backend-only Node.js/TypeScript service.",
-        "- Canonical implementation surface: `src/backend/**`.",
-        "- Canonical lightweight proof: focused backend checks or explicit harness limitation from `docs/core/TESTING.md`.",
-        "- Frontend, iOS and design agents are intentionally not materialized for this fixture.",
+        "backend-only Node.js/TypeScript service.",
         "",
     ].join("\n");
 
@@ -1434,7 +1585,10 @@ function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
-        const normalizedBody = normalizeProtocolFixedConsistencyHeading(body);
+        const normalizedBody = fitBackendOnlyVscodeFixtureBody(
+            normalizeProtocolFixedConsistencyHeading(body),
+            fileName
+        );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
             fileName,
@@ -2573,12 +2727,20 @@ function runControlledMaterializationSmoke(targetHome) {
             path.join(agentSkillRoot, "reference", "agents"),
             "reference/agents instalado"
         );
+        assertRound2OperationalAxesInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
         assertQualityGuardrailsInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
         assertRound1AntiInferenceHardeningInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
+        assertRound2OperationalAxesInAgentSet(
             path.join(vscodeRepoRoot, ".github", "agents"),
             "vscode materializado"
         );
@@ -2600,6 +2762,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertRound2OperationalAxesInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertQualityGuardrailPropagationInCodexAgentSet(codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyPropagationToCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyRejectsCodexMaterializationDrift(agentSkillRoot, controlledAgentFiles);
@@ -2624,6 +2787,7 @@ async function runSentinelSmoke() {
     assertCorrectionLoopPolicyInTemplateDocs();
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound1AntiInferenceHardeningInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertRound2OperationalAxesInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
         "templates/agents"

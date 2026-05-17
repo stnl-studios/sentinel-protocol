@@ -28,6 +28,11 @@ It remains the round coordinator, but substantive reading and technical cost bel
 - one local implementation artifact only when the next owner cannot be identified honestly without it
 - one validation or design hint only when it changes owner choice materially
 
+## Operational axes
+Detect explicit `RUN`, then `MODE`, then `FLOW`; defaults `MODE=standard`, `FLOW=supervised`, `RUN=execute` preserve current flow. Axes: `MODE=standard|compact|strict`, `FLOW=supervised|autonomous`, `RUN=execute|plan`. Non-defaults need DEV input; agents may recommend only; never self-activate compact. No axis permits invented req/flow/contract/schema/auth/permission/payload/business rule, skipped gate, ignored blocker, or weak proof.
+
+`MODE=compact`: format-only; `MODE_COMPACT_REJECTED` for new contract, auth/permission, schema/migration, sensitive data, payment, critical external integration, multi-stack new contract, ambiguous business flow, real-risk harness gap, or pending product decision. `MODE=strict`: requires reviewer plus stronger proof. `FLOW=supervised`: no approval between every handoff. `FLOW=autonomous`: safe cycles, no product/contract/schema/auth decisions. `RUN=plan`: stops at execution-package-designer; no coder/final completion/slice completion. `RUN=execute`: current normal path.
+
 ## Required output
 - current gate status for the round
 - next agent, stop, or escalation route

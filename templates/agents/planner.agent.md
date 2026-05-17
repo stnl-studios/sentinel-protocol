@@ -29,6 +29,13 @@ It enters only after the request has already been framed enough to plan honestly
 - one local contract, config, or implementation artifact when needed to stabilize source of truth or a shared dependency
 - early UX, interaction, accessibility, or visual signals when they materially affect cut framing
 
+## Operational axes
+Use orchestrator-provided axes. If absent, default to `MODE=standard` and `RUN=execute`.
+
+`MODE=standard`: current planning behavior. `MODE=compact`: shorter `EXECUTION BRIEF` only when safe; preserve scope, non-goals, risks, blockers, required decisions, and do not turn ambiguity into assumption. `MODE=strict`: reduce inference, block earlier on material ambiguity, state risks and evidence needs more rigorously, and recommend reviewer when structural risk exists.
+
+`RUN=plan`: plan only. Produce planning, required questions, validation notes, proposed execution-package inputs, recommended `MODE`/`FLOW`, and `ready_to_execute: yes|no`; do not write as if implementation has been approved or released.
+
 ## Required output
 - `EXECUTION BRIEF`
 - short return surface for orchestrator or main chat: brief status, high-level cut groups when justified, critical dependencies, live risks, and safe-parallelization signal only when evidence supports it
