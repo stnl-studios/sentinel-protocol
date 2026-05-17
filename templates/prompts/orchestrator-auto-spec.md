@@ -4,60 +4,38 @@ SPEC:
 - docs/SPEC/<feature>/ ou docs/features/<feature>/SPEC/
 
 Modo:
-- execução auto-guiada e bounded da SPEC até o próximo gate legítimo, bloqueio real ou prontidão honesta para teste humano/manual.
+- MODE=standard
+- FLOW=autonomous
+- RUN=execute
 
 Objetivo:
-- ler a SPEC inteira;
-- identificar o que já está implementado;
-- validar o que já existe;
-- identificar o que ainda falta;
-- escolher autonomamente o próximo recorte executável;
-- rotear os agentes necessários;
-- validar e finalizar cada rodada pelo fluxo Sentinel;
-- continuar o loop sem pedir aprovação do DEV após cada slice.
-- manter o `orchestrator` como roteador canônico, sem absorver planejamento, execução, validação ou fechamento.
+- executar a SPEC de forma auto-guiada e bounded até o próximo gate canônico, blocker real ou prontidão honesta para teste humano/manual.
+- identificar estado real da SPEC, slices concluídas/pendentes e próxima slice elegível.
+- rotear os agentes necessários sem o `orchestrator` absorver planejamento, package design, execução, validação, review ou fechamento.
+- para cada rodada, preservar o fluxo Sentinel: `EXECUTION BRIEF`, `VALIDATION PACK`, `EXECUTION PACKAGE`, execução por coder, validação, review quando aplicável e fechamento pelo `finalizer`.
+- continuar sem pedir aprovação do DEV após cada slice quando não houver gate/blocker legítimo.
 
 Regras:
-- não pare após concluir apenas uma slice quando houver próxima slice elegível e nenhum gate canônico bloqueante;
-- depois de cada rodada finalizada pelo `finalizer`, retome a orquestração;
-- inspecione o escopo restante da SPEC;
-- selecione o próximo recorte executável;
-- continue até a SPEC inteira estar honestamente pronta para teste humano/manual ou até surgir blocker real;
-- não altere o escopo aprovado da SPEC;
-- não invente comportamento fora da SPEC;
-- não crie status fora do conjunto canônico do protocolo;
-- não feche slice, rodada ou SPEC sem passagem terminal pelo `finalizer`;
-- não marque trabalho como pronto sem evidência e validação compatíveis com o cut;
-- não entre em loop autônomo infinito: após cada fechamento, avance apenas para a próxima slice elegível ou pare no gate canônico/blocker real;
-- quando possível, infira decisões seguras a partir da SPEC, do código existente e das convenções do projeto.
+- não pare após concluir apenas uma slice quando houver próxima slice elegível e nenhum gate canônico bloqueante.
+- depois de cada rodada finalizada pelo `finalizer`, retome a orquestração a partir do estado real.
+- não altere o escopo aprovado da SPEC.
+- não crie status fora do conjunto canônico do protocolo.
+- não feche slice, rodada ou SPEC sem passagem terminal pelo `finalizer`.
+- não marque trabalho como pronto sem evidência e validação compatíveis com o cut.
+- não entre em loop autônomo infinito: avance apenas para a próxima slice elegível ou pare no gate canônico/blocker real.
+- todo handoff para coder deve preservar `EXECUTION PACKAGE` e `WORK_PACKAGE_ID`.
 
-Regra de autonomia e parada:
-- avance sozinho quando a decisão for reversível, inferível pelo contexto, já coberta pela SPEC/docs/contratos ou de baixa consequência;
-- tente resolver lacunas usando contratos, docs, SPEC, artifacts do fluxo e convenções existentes antes de pedir input;
-- pare somente quando houver blocker real, risco de inventar requisito, conflito entre fontes, ausência de informação obrigatória ou decisão de produto/arquitetura não inferível;
-- quando parar, peça apenas a informação mínima necessária para destravar o próximo gate legítimo;
+Autonomia e parada:
+- avance sozinho apenas em decisões locais, reversíveis, inferíveis pelo escopo aprovado e de baixo risco.
+- não inferir produto, contrato, schema, auth, arquitetura, persistência, payload, permissão ou regra de negócio.
+- em ambiguidade material, conflito entre fontes ou ausência de informação obrigatória, pare no gate canônico e peça somente a informação mínima necessária.
 - se não houver blocker real, avance até o próximo gate canônico que realmente exija DEV, validação, finalização ou resync.
 
 Restrições de ambiente:
-- não aplique nada em emulator, ambiente remoto, produção ou serviços externos;
-- não execute ações destrutivas;
-- use apenas validações locais seguras disponíveis no projeto, como lint, typecheck, testes unitários, smoke tests ou comandos equivalentes;
+- não usar emulator, ambiente remoto, produção ou serviços externos.
+- não executar ações destrutivas.
+- usar apenas validações locais seguras disponíveis no projeto, como lint, typecheck, testes unitários, smoke tests ou comandos equivalentes.
 - o DEV fará os testes manuais/emulator somente depois que a SPEC estiver concluída e as validações locais possíveis estiverem passando.
-
-Critérios de parada:
-
-Declare prontidão para teste humano/manual somente quando:
-- a SPEC inteira estiver implementada;
-- o que já existia tiver sido validado;
-- os recortes pendentes tiverem sido concluídos;
-- as validações locais seguras tiverem passado ou qualquer validação pulada estiver explicitamente justificada;
-- a SPEC estiver pronta para teste humano/manual.
-
-Use `BLOCKED` somente quando:
-- houver blocker real;
-- houver decisão crítica de produto impossível de inferir;
-- houver dependência ausente que impeça avanço seguro;
-- continuar exigiria inventar escopo fora da SPEC.
 
 Formato final obrigatório:
 

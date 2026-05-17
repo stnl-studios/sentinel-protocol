@@ -7,9 +7,11 @@ Slice ID canônico:
 - <SL-00X>
 
 Objetivo:
-- rotear a finalizacao desta slice pelo `finalizer`, preservando o verdict ou bloqueio real da rodada.
-- exigir que o fechamento declare `slice_id`, status final da slice (`concluida`, `parcial` ou `bloqueada`), evidencias usadas, pendencias/blockers, necessidade de resync e proxima slice elegivel quando aplicavel.
+- rotear a finalização desta slice pelo `finalizer`, preservando o verdict ou bloqueio real da rodada.
+- preservar o ID canônico da slice no fechamento.
+- exigir que o fechamento declare `slice_id`, status final da slice (`concluida`, `parcial` ou `bloqueada`), evidências usadas, pendências/blockers, necessidade de resync e próxima slice elegível quando aplicável.
+- não substituir o `finalizer` por resumo manual do `orchestrator`.
 
-Observacao:
-- launcher manual auxiliar; nao substitui a regra automatica de que toda rodada terminal passa pelo `finalizer`.
-- o `orchestrator` apenas roteia este fechamento; o `finalizer` e o owner canonico da declaracao final da rodada de slice.
+Observação:
+- launcher manual auxiliar; não substitui a regra automática de que toda rodada terminal passa pelo `finalizer`.
+- o `orchestrator` apenas roteia este fechamento; o `finalizer` é o owner canônico da declaração final da rodada de slice.
