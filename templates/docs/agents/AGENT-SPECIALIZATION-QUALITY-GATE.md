@@ -49,7 +49,8 @@ O gate deve primeiro classificar cada specialized em uma role class canonica:
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
 - `execution-package-design`: `execution-package-designer`
-- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
+- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`
+- `design-contributor`: `designer`
 - `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
 - `closure`: `finalizer`
@@ -194,7 +195,7 @@ Hard fails:
 - o specialized permite `READY`, approval ou execucao direta apos a escolha do DEV sem brief ou pack coerentes
 
 ### 8. Executor ownership check
-Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
+Verificar em `coder-backend`, `coder-frontend`, `coder-ios` e equivalentes de coder executor:
 - coders recebem e executam `EXECUTION PACKAGE` com `WORK_PACKAGE_ID`
 - coders continuam especialistas por stack/projeto, mas nao sao solucionadores locais nem compiladores de pacote
 - leitura local e suficiente para executar o pacote substitui broad discovery como custo normal

@@ -1411,6 +1411,27 @@ function assertContentExcludesAll(content, snippets, label) {
     }
 }
 
+function assertCanonicalDesignerRoleClassInDocs(docRoot, label) {
+    const checkedDocs = [
+        path.join("agents", "AGENT-CONTRACT-SHAPE.md"),
+        path.join("agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+    ];
+
+    for (const relativePath of checkedDocs) {
+        const content = fs.readFileSync(path.join(docRoot, relativePath), "utf8");
+        const contentLabel = `${label}/${relativePath}`;
+
+        assertContentIncludesAll(content, [
+            "- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`",
+            "- `design-contributor`: `designer`",
+        ], contentLabel);
+        assertContentExcludesAll(content, [
+            ["- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, ", "`designer`"].join(""),
+            ["`executor`: `coder-backend`, `coder-frontend`, `coder-ios`, ", "`designer`"].join(""),
+        ], contentLabel);
+    }
+}
+
 function countOccurrences(content, snippet) {
     return content.split(snippet).length - 1;
 }
@@ -2820,6 +2841,7 @@ function runControlledMaterializationSmoke(targetHome) {
         );
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
         assertQualityGuardrailsInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
+        assertCanonicalDesignerRoleClassInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
@@ -2876,6 +2898,7 @@ async function runSentinelSmoke() {
     assertExplicitRootEntries();
     assertQualityGuardrailSourceDefinitions();
     assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
+    assertCanonicalDesignerRoleClassInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCorrectionLoopPolicyInTemplateDocs();
     assertBaseAgentTemplateSizeLimit();
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");

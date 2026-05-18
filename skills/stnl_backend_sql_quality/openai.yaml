@@ -1,8 +1,8 @@
 interface:
   name: "stnl_backend_sql_quality"
   display_name: "STNL Backend SQL Quality Guardrail"
-  version: "2026.4.1-alpha.1"
-  protocol_release: "2026.4"
+  version: "2026.5.0-alpha.1"
+  protocol_release: "2026.5"
   status: "active"
   short_description: "Backend data persistence quality guardrail for SQL, ORM, NoSQL, cache, migrations, transactions, and query safety."
 policy:

@@ -25,7 +25,7 @@ Exemplo conceitual:
 ---
 name: Orchestrator
 description: ...
-agent_version: 2026.4.1
+agent_version: 2026.5.0
 reading_scope_class: routing-minimal
 ---
 ```
@@ -38,7 +38,8 @@ Mapeamento canonico:
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
 - `execution-package-design`: `execution-package-designer`
-- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
+- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`
+- `design-contributor`: `designer`
 - `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
 - `closure`: `finalizer`
@@ -210,7 +211,7 @@ Exemplo conceitual:
 ---
 name: Orchestrator
 description: ...
-base_agent_version: 2026.4.1
+base_agent_version: 2026.5.0
 specialization_revision: 1
 managed_artifact: true
 ---

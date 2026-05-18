@@ -1023,7 +1023,7 @@ Hard fails:
 - o specialized permite `READY`, approval ou execução direta após a escolha do DEV sem brief ou pack coerentes
 
 ### Executor ownership check
-Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
+Verificar em `coder-backend`, `coder-frontend`, `coder-ios` e equivalentes de coder executor:
 - coders recebem e executam `EXECUTION PACKAGE` com `WORK_PACKAGE_ID`
 - coders aplicam `REQUIRED_QUALITY_GUARDRAILS` quando presentes: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e/ou `stnl_mobile_ios_swift_quality`
 - coders continuam especialistas por stack/projeto, mas não são solucionadores locais nem compiladores de pacote
@@ -1198,7 +1198,7 @@ agents:
   - finalizer
   - resync
 model: <default-model>
-base_agent_version: "2026.4"
+base_agent_version: "2026.5.0"
 specialization_revision: 1
 managed_artifact: true
 ---
@@ -1216,7 +1216,7 @@ tools:
   - edit
   - execute
 model: <coding-model>
-base_agent_version: "2026.4"
+base_agent_version: "2026.5.0"
 specialization_revision: 1
 managed_artifact: true
 ---
