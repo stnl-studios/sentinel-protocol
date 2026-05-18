@@ -7,7 +7,8 @@ Eles servem para copiar e colar no agente/skill correspondente, sem repetir cont
 ## Regra de uso
 
 - Use estes arquivos como interface humana de invocação.
-- Preencha apenas placeholders como `<feature>`, `<feature-path>`, `<S-00X>` e blocos entre colchetes.
+- Preencha apenas placeholders como `<feature>`, `<feature-path>`, `<SL-00X>` e blocos entre colchetes.
+- Para slices, substitua `<SL-00X>` por um ID canônico existente como `SL-001`; não use labels como `S-001`, `Slice 1`, `SLICE - 001`, `S1` ou `slice-1`.
 - Não duplique regras fixas da skill no prompt da rodada.
 - Quando uma regra fixa precisar mudar, altere a skill/base agent correspondente, não este prompt launcher.
 - Quando houver uma exceção real do projeto ou da rodada, registre em `Restrições excepcionais`.
@@ -31,5 +32,7 @@ Por enquanto, eles são uma biblioteca operacional de copy/paste para reduzir at
 - `agents-codex.md`
 - `agents-vscode-sql-procedure.md`
 - `orchestrator-init.md`
+- `orchestrator-auto-spec.md`
+- `orchestrator-finalize-slice.md`
 - `orchestrator-next-slice.md`
 - `orchestrator-slice.md`

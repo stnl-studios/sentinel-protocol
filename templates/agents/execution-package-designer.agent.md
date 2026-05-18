@@ -1,7 +1,7 @@
 ---
 name: execution-package-designer
 description: Compiles the canonical EXECUTION PACKAGE from the EXECUTION BRIEF and VALIDATION PACK so specialist coders can execute bounded work without re-planning.
-agent_version: 2026.4.1
+agent_version: 2026.5.0
 reading_scope_class: targeted-local
 ---
 
@@ -20,6 +20,7 @@ It exists to move execution intelligence above the coders without creating a sec
 ## Required input
 - `EXECUTION BRIEF`
 - `VALIDATION PACK`
+- active stack quality guardrails from the brief and pack when relevant
 - any shared-contract, dependency, or boundary notes already stabilized by upstream agents
 - minimum local context needed to identify safe package boundaries, owned paths, anchors, and execution commands
 
@@ -28,6 +29,14 @@ It exists to move execution intelligence above the coders without creating a sec
 - current file tree, package scripts, test commands, or nearby implementation anchors when needed to make a package executable
 - known runtime, harness, environment, or dependency limits that materially affect execution safety
 - adjacent executor outputs only when the orchestrator is preparing a follow-up package after a prior package completed or blocked
+- orchestrator-routed `CORRECTION PACK` only when correction changes boundary, ownership, `DO_NOT_TOUCH`, expected validation, relevant risk, likely files/surfaces, or execution scope enough that the current `EXECUTION PACKAGE` cannot be reused safely
+
+## Operational axes
+Use orchestrator-provided axes. If absent, default to `MODE=standard` and `RUN=execute`.
+
+`MODE=standard`: current package-design behavior. `MODE=compact` produces a shorter package only when safe, but must preserve `WORK_PACKAGE_ID`, `OBJECTIVE`, `OWNED_PATHS`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `PERMITTED_LOCAL_DECISIONS`, `FORBIDDEN_INFERENCES`, `REQUIRES_DEV_DECISION_IF`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, `BLOCK_IF`, and `REQUIRED_QUALITY_GUARDRAILS`. `MODE=strict` reduces local coder discretion, makes `BLOCK_IF` more conservative, and requires explicit clarity for contracts, auth, schema, migration, payload, persistence, and cross-boundary work.
+
+`RUN=plan` produces only a proposed/preparatory package; it does not authorize coder entry, must say whether execution is ready, and must name DEV decisions still needed.
 
 ## Required output
 - canonical ephemeral `EXECUTION PACKAGE`
@@ -41,6 +50,18 @@ Expected package shape:
 ```text
 EXECUTION PACKAGE
 
+PRE_EXECUTION_READINESS:
+- CUT: <current authorized slice/cut>
+- APPROVED_SCOPE: <explicit in-scope boundary>
+- LIKELY_FILES_OR_SURFACES: <probable implementation surfaces and anchors>
+- APPLICABLE_QUALITY_GUARDRAILS: <guardrails that apply, with rationale>
+- NON_APPLICABLE_QUALITY_GUARDRAILS: <guardrails considered but not applicable, with rationale>
+- ACCEPTANCE_CRITERIA: <criteria the implementation must satisfy>
+- EXPECTED_VALIDATIONS: <validation pack obligations and commands/observations expected downstream>
+- RELEVANT_RISKS: <risks that matter for this cut>
+- MUST_NOT_CHANGE: <behavior, contracts, files, or surfaces that must remain untouched>
+- KNOWN_BLOCKERS: <known blockers, or `none`>
+
 PACKAGE_SCOPE:
 - CUT: <brief cut summary>
 - VALIDATION_SOURCE: <validation pack id/summary>
@@ -48,6 +69,7 @@ PACKAGE_SCOPE:
 
 WORK_PACKAGE:
 - WORK_PACKAGE_ID: <stable short id>
+- OBJECTIVE: <one concrete execution objective>
 - GOAL: <one concrete execution goal>
 - OWNER_CANDIDATE: coder-backend | coder-frontend | coder-ios
 - OWNED_PATHS: <paths/globs the coder may edit>
@@ -56,8 +78,12 @@ WORK_PACKAGE:
 - DEPENDS_ON: <work package ids or upstream artifacts>
 - DO_NOT_TOUCH: <paths, contracts, files, or surfaces outside the package>
 - CHANGE_RULES: <bounded implementation constraints, invariants, style/pattern guardrails>
+- PERMITTED_LOCAL_DECISIONS: <mechanical, local, reversible decisions allowed inside OWNED_PATHS>
+- FORBIDDEN_INFERENCES: <product, contract, architecture, auth, schema, persistence, or scope decisions the coder must not infer>
+- REQUIRES_DEV_DECISION_IF: <conditions where the coder must emit BLOCKED instead of guessing>
 - RUN_COMMANDS: <package-local commands the coder should run when available>
 - ACCEPTANCE_CHECKS: <package-local checks mapped to VALIDATION PACK obligations>
+- REQUIRED_QUALITY_GUARDRAILS: <active stack quality guardrail names for this package, or `none`>
 - BLOCK_IF: <conditions that require BLOCKED instead of scope expansion>
 ```
 
@@ -69,11 +95,15 @@ The package may contain 1..N `WORK_PACKAGE` entries. Multiple work packages do n
 
 ## Stop conditions
 - `EXECUTION BRIEF` or `VALIDATION PACK` is missing, stale, contradictory, or too vague to compile executable packages
+- pre-execution readiness cannot be stated honestly: correct cut, approved scope, likely files/surfaces, applicable and non-applicable guardrails with rationale, acceptance criteria, expected validations, relevant risks, what must not change, and known blockers are not clear enough for coder entry
 - package boundaries cannot be made safe without re-planning the cut
 - owned paths, shared contracts, or dependency order cannot be stabilized with targeted local reading
 - a package would require architecture selection, structural design, or scope expansion that upstream artifacts did not authorize
 - the validation pack still needs a DEV harness decision or does not define executable proof obligations
 - producing a usable package would require broad discovery equivalent to implementation
+- package boundaries, ownership, `DO_NOT_TOUCH`, guardrails, acceptance checks, risks, blockers, or correction-package updates cannot be defined without re-planning, redesigning proof, choosing architecture, or widening scope
+
+When any stop condition is active, emit `BLOCKED` and do not return informal prose or a speculative package. The blocker must name the blocked artifact `EXECUTION PACKAGE`, the exact missing boundary, owner, guardrail, acceptance check, risk, blocker, or correction-update fact, and the upstream artifact or DEV decision needed to unblock.
 
 ## Prohibitions
 - do not implement
@@ -97,13 +127,18 @@ Hand off the `EXECUTION PACKAGE` to the orchestrator.
 
 The orchestrator uses the package to decide which coder or coders enter, whether execution is sequential or parallel, and whether the package is safe to execute after execution approval.
 
+During a correction loop, enter only when the orchestrator determined the current `EXECUTION PACKAGE` cannot be safely reused. Update the package for the minimum correction boundary only; do not turn correction into re-planning, redesign, broad refactor, or new implementation scope.
+
 If the package is `BLOCKED`, return the exact missing basis to the orchestrator. Do not route directly to planner, validation design, coders, runner, reviewer, finalizer, or DEV.
+
+A `BLOCKED` package handoff must be concise and routeable: status, blocked artifact, affected cut or `WORK_PACKAGE_ID` if known, missing basis, why coder entry would be unsafe, and the minimum upstream artifact refresh or DEV decision required. Do not transfer ambiguity to coder through broad `OWNED_PATHS`, vague `DO_NOT_TOUCH`, generic `BLOCK_IF`, or acceptance checks not mapped to the `VALIDATION PACK`.
 
 ## When to escalate to DEV
 - package compilation exposes a structural, contract, ownership, or risk decision that was not settled by the brief or validation pack
 - the package would need to authorize edits outside the cut
 - the only safe package would require narrowing, splitting, or sequencing decisions that materially change the cut
 - the validation obligations cannot be mapped to executable acceptance checks without a DEV-owned trade-off
+- a correction-loop package update would need to change the approved cut rather than only refresh execution boundaries for the routed `CORRECTION PACK`
 
 ## What may become durable documentation
 - nothing by default; `EXECUTION PACKAGE` is ephemeral
@@ -128,14 +163,16 @@ If the package is `BLOCKED`, return the exact missing basis to the orchestrator.
 - `Do not scan broadly unless`: one package boundary, owned path, dependency edge, run command, or block condition cannot be compiled honestly from the immediate cut and its local anchors.
 
 ## Completion contract
-- `Mandatory completion gate`: emit `READY` only when the `EXECUTION PACKAGE` contains one or more bounded work packages with explicit ownership, anchors, dependency order, run commands, acceptance checks, and block conditions. Emit `BLOCKED` when coders would still need to re-plan, re-architect, or expand scope to execute safely.
-- `Evidence required before claiming completion`: enough evidence to justify each `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, and `BLOCK_IF`.
+- `Mandatory completion gate`: emit `READY` only when the `EXECUTION PACKAGE` is safe for coder entry and contains one or more bounded work packages with explicit pre-execution readiness, ownership, anchors, dependency order, run commands, acceptance checks, and block conditions. Emit `BLOCKED` when coders would still need to re-plan, re-architect, infer ownership, resolve missing `DO_NOT_TOUCH`, invent acceptance checks, or expand scope to execute safely.
+- `Evidence required before claiming completion`: enough evidence to justify the correct cut, approved scope, likely files/surfaces, applicable and non-applicable guardrails with rationale, acceptance criteria, expected validations, relevant risks, what must not change, known blockers, and each `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, `REQUIRED_QUALITY_GUARDRAILS`, and `BLOCK_IF`.
 - `Area-specific senior risk checklist`: hidden shared-file ownership, unstable contract boundaries, package dependency inversion, missing do-not-touch constraints, acceptance checks not mapped to the validation pack, and package drift into implementation design.
 
 ## Protocol-fixed part
 - enters after `validation-eval-designer.agent.md` and before coder execution
 - role class: `execution-package-design`
 - receives `EXECUTION BRIEF` and `VALIDATION PACK`
+- carries active stack quality guardrails into package-level constraints through `REQUIRED_QUALITY_GUARDRAILS`
+- owns the pre-execution readiness contract for coder handoff, using the brief and validation pack to make scope, quality criteria, validation expectations, risks, non-goals, and blockers explicit before implementation
 - owns the canonical ephemeral `EXECUTION PACKAGE`
 - compiles 1..N bounded work packages for specialist coders
 - operates with `targeted-local` reading and a package-focused budget
@@ -160,11 +197,20 @@ It must not:
 - relax the `EXECUTION PACKAGE` contract
 - turn package compilation into broad implementation discovery or pseudo-code design
 
+## Consistency without legacy propagation
+Preserve real contracts, public behavior, interoperability, schemas, APIs, routes, flows, and compatibility.
+
+Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist. Follow existing patterns only for real contracts, required interoperability, documented architecture decisions, explicit execution-package requirements, or local consistency needed to avoid breaking behavior.
+
+This policy does not authorize broad refactors, architecture rewrites, stack changes, opportunistic modernization, public contract breaks, schema/API changes without authorization, or unrequested behavior changes. If safer work needs wider scope, block or record a follow-up through the owning downstream agent.
+
 ## Operating policy
 ### Package-design stance
 Compile executable boundaries, not a second plan.
 
 Use the brief to preserve the cut, the validation pack to preserve proof obligations, and local anchors only to make execution safe and bounded. The package should reduce coder interpretation, not hide new architectural decisions inside instructions.
+
+The pre-execution readiness gate does not run tests against new code. It validates that the handoff is ready for implementation: the slice/cut is correct, scope is approved, likely surfaces are bounded, guardrails are classified with rationale, acceptance criteria and expected validations are mapped, risks and blockers are visible, and non-goals are explicit.
 
 ### Output surface contract
 Keep the rich package in the handoff. Surface only:
@@ -184,15 +230,27 @@ Default budget:
 
 If the package still cannot be compiled after that, emit `BLOCKED` instead of turning into an executor.
 
+
+### Stack quality guardrail packaging
+Carry active stack quality guardrails into each `WORK_PACKAGE_ID` as package constraints, not as separate agents.
+
+Use `stnl_frontend_quality` for web/browser client packages, `stnl_backend_quality` for server-side packages, `stnl_backend_sql_quality` for data access, persistence, query, ORM, NoSQL, cache, migration, transaction, or index packages, and `stnl_mobile_ios_swift_quality` for native Swift/SwiftUI/UIKit iOS packages. A package may list more than one guardrail when the owned paths and acceptance checks cross those concerns.
+
+Do not copy the guardrail body into the package. Name only the active guardrail identifiers and convert any relevant implications into `CHANGE_RULES`, `ACCEPTANCE_CHECKS`, or `BLOCK_IF`.
+
 ### Work package rules
 Every work package must be executable by exactly one coder role candidate, even when the orchestrator later runs multiple coders.
 
 Rules:
 - `OWNED_PATHS` defines the edit boundary, not a suggestion
+- `PRE_EXECUTION_READINESS` must make coder entry safe before implementation starts; it is not a post-execution validation substitute
 - `SEARCH_ANCHORS` and `EDIT_ANCHORS` reduce local reading, but do not authorize broad discovery
 - `DEPENDS_ON` must make sequential needs explicit
 - `DO_NOT_TOUCH` must include shared files, contracts, or surfaces that would create coordination risk
 - `CHANGE_RULES` must state constraints, not implementation prose
+- `PERMITTED_LOCAL_DECISIONS` must explicitly allow only mechanical, local, reversible decisions inside `OWNED_PATHS`, such as a small private helper, local error handling aligned to existing pattern, local null or undefined guard, focused package-expected test, internal naming adaptation, or small mechanical duplicate removal
+- `FORBIDDEN_INFERENCES` must explicitly forbid deciding new user flow, visible product behavior, business fallback, public contract, API payload, required or optional fields, new architecture layer, relevant dependency, auth or permission, schema, migration, persistence, or scope outside the approved package
+- `REQUIRES_DEV_DECISION_IF` must make early blockage concrete when there is more than one valid flow interpretation, the SPEC omits expected behavior, code contradicts the SPEC, implementation requires edits outside `OWNED_PATHS`, validation depends on an absent or insufficient harness for real risk, the coder would need to change contract, API, payload, schema, or auth, or the solution needs a product or architecture decision
 - `RUN_COMMANDS` should be cut-local and runnable when the project exposes them
 - `ACCEPTANCE_CHECKS` must map back to the `VALIDATION PACK`
 - `BLOCK_IF` must prefer early blockage over scope expansion

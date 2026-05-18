@@ -1,7 +1,16 @@
 Use `orchestrator`.
 
 SPEC:
-- docs/SPEC/<feature>/
+- docs/SPEC/<feature>/ ou docs/features/<feature>/SPEC/
+
+Modo:
+- MODE=standard
+- FLOW=supervised
+- RUN=execute
 
 Objetivo:
-- retomar a execução a partir do próximo slice elegível.
+- retomar a execução a partir da próxima slice elegível com ID canônico `SL-001`, `SL-002`, `SL-003`, etc.
+- usar o último fechamento do `finalizer` como fonte para slice trabalhada, status final, evidências, pendências/blockers, necessidade de resync e próxima slice elegível quando houver.
+- se o fechamento anterior não passou pelo `finalizer`, rotear primeiro para o `finalizer`; não escolher próxima slice a partir de estado implícito.
+- preservar o fluxo Sentinel completo para a próxima slice: `EXECUTION BRIEF`, `VALIDATION PACK`, `EXECUTION PACKAGE`, execução por coder, validação, review quando aplicável e fechamento pelo `finalizer`.
+- não inferir próxima slice quando houver conflito, blocker, dependência pendente ou estado insuficiente.

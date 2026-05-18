@@ -24,7 +24,7 @@ O smoke valida estrutura local e wiring. Ele não prova qualidade semântica em 
 Prepare as skills/assets locais do Sentinel:
 
 ```sh
-node sentinel.mjs init
+node sentinel.mjs install
 ```
 
 Depois verifique a instalação local:
@@ -32,6 +32,8 @@ Depois verifique a instalação local:
 ```sh
 node sentinel.mjs doctor
 ```
+
+Use `node sentinel.mjs doctor --source-only` quando quiser validar apenas o repo fonte, sem exigir instalação em `HOME`. `init` e `update` continuam aliases de compatibilidade para `install`.
 
 ## Primeiro uso: repo existente
 

@@ -41,8 +41,8 @@ Esta skill é um utilitário global. Ela não é um agent do workflow do projeto
 - artifacts gerenciados já existentes no output do `target`, quando existirem, para revisão de drift, coerência operacional, metadata e stale artifacts
 - a codebase do repo alvo apenas quando os docs precisarem de confirmação, complemento ou desempate factual
 - manifests de stack, scripts, testes, configs e entrypoints reais quando forem necessários para especializar comandos, provas, boundaries ou superfícies
-- `allowed_models` opcional quando o uso da skill quiser restringir a escolha de `model` dos agents especializados
-- `model_policy` opcional para governar a preferência de `model` por agent, role fina ou defaults de compatibilidade:
+- `allowed_models` opcional quando o uso da skill quiser restringir ou ordenar a escolha de `model` dos agents especializados; quando houver mais de um item, tratar a ordem como mais forte/mais capaz primeiro e mais econômico/objetivo por último, salvo override explícito
+- `model_policy` opcional e avançado para governar a preferência de `model` por agent, role fina ou defaults de compatibilidade:
   - `reasoning_default`
   - `coding_default`
   - `execution_default`
@@ -140,7 +140,7 @@ Contrato obrigatório do bundle interno:
 - não usar fallback em `templates/**`, `skills/**`, `~/.agents/**`, filesystem externo ou qualquer cópia fora do bundle instalado da própria skill
 - se `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
 - se qualquer arquivo obrigatório listado em `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
-- o bloqueio deve reportar a skill `stnl_project_agent_specializer`, o arquivo ausente e a ação sugerida: `node sentinel.mjs update` e `node sentinel.mjs doctor`
+- o bloqueio deve reportar a skill `stnl_project_agent_specializer`, o arquivo ausente e a ação sugerida: `node sentinel.mjs install` e `node sentinel.mjs doctor`
 - nunca reconstruir, adivinhar, simplificar ou procurar substituto para base agent, template ou contrato interno ausente
 
 Referências internas esperadas devem vir do manifest instalado, incluindo:
@@ -165,10 +165,15 @@ Regras:
 - a serialização final varia por target, mas a geração deve sempre partir dos templates internos da skill e das referências canônicas
 - `vscode` usa o shape Markdown com frontmatter operacional em `.github/agents/*.agent.md`
 - `codex` usa arquivos TOML em `.codex/agents/*.toml` com o shape próprio de custom agent do Codex, não como espelho do frontmatter endurecido de `vscode`
-- o shape mínimo obrigatório nativo do custom agent TOML para `codex` contém:
+- o shape mínimo obrigatório Sentinel para custom agent TOML `codex` contém:
   - `name`
   - `description`
+  - `model`
+  - `model_reasoning_effort`
+  - `sandbox_mode`
   - `developer_instructions`
+- `model` é obrigatório em todo custom agent Codex gerenciado; herdar modelo da sessão, picker ou default implícito do runtime não é aceitável para artifacts Sentinel materializados
+- `model_reasoning_effort` é obrigatório em todo custom agent Codex gerenciado e deve ser derivado da criticidade da role class
 - `sandbox_mode` é campo opcional documentado do runtime Codex; por política Sentinel, todo custom agent Codex materializado deve serializar `sandbox_mode`
 - `sandbox_mode` deve ser derivado da role class e da capability real do agent:
   - `read-only` para agents que apenas leem, analisam, roteiam, revisam ou desenham
@@ -176,13 +181,81 @@ Regras:
 - `workspace-write` só libera a capacidade técnica mínima exigida pelo papel; não autoriza absorver responsabilidade fora da role
 - `validation-runner` usa `workspace-write` por necessidade de execução local de checks, mas suas `developer_instructions` continuam proibindo edição, fix, redesign de prova, replanning ou closure
 - `finalizer` e `resync` usam `workspace-write` porque o contrato atual permite `edit` para durable documentation em canonical docs under `docs/**`
-- `tools`, `agents`, `target`, `model`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não fazem parte do shape mínimo obrigatório nativo de `codex`
+- `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não fazem parte do shape mínimo obrigatório nativo de `codex`
 - qualquer campo adicional em `.codex/agents/*.toml` só pode ser emitido quando for opcional, compatível com a configuração suportada pelo runtime Codex e explicitamente separado do shape mínimo nativo
 - se o Sentinel preservar metadata própria para `codex`, essa metadata é convenção interna opcional do protocolo, nunca requisito nativo do runtime Codex, e deve ser omitida quando houver risco de incompatibilidade com o runtime
 - `codex` usa também `AGENTS.md` como instrução de workspace do runtime Codex
 - `AGENTS.md` do target `codex` deve nascer do template interno `reference/templates/codex/AGENTS.md`; nunca criar ou manter um `AGENTS.md` final no repo Sentinel como source paralela
 - referências internas entre agents devem usar o identificador lógico do agent e ser serializadas no formato físico do `target`; não fixar `.agent.md` quando `target=codex`
 - target desconhecido deve bloquear a materialização antes de qualquer escrita
+
+## Contrato operacional de `model` e effort
+Todo agent gerenciado materializado pela skill deve receber `model` operacional explícito.
+
+Regras comuns:
+- nunca entregar agent gerenciado sem `model`
+- nunca tratar texto em `developer_instructions` como substituto do campo operacional `model`
+- `model_policy` é override opcional avançado; ausência de `model_policy` não impede materialização quando `allowed_models`, target e role class bastam para resolver a escolha
+- se `allowed_models` existir, todo `model` materializado deve vir dessa lista
+- se `allowed_models` trouxer um único modelo, usar esse modelo em todos os agents e ajustar apenas `model_reasoning_effort` em `codex` conforme a role
+- se `allowed_models` trouxer múltiplos modelos, interpretar a ordem como mais forte/mais capaz primeiro e mais econômico/objetivo por último, salvo `model_policy` explícita compatível
+- não inventar nomes de modelos fora de `allowed_models` nem hardcodar modelos comerciais específicos na skill
+- se nem `allowed_models` nem `model_policy` fornecerem base concreta suficiente para serializar `model`, bloquear com falta de input de resolução de modelo; não omitir `model` e não herdar picker/default implícito
+
+Resolução default sem `model_policy`:
+- `router`, `planning`, `proof-design`, `execution-package-design` e `semantic-review` usam o modelo mais forte disponível dentro de `allowed_models`
+- `executor` e `design-contributor` podem usar modelo mais econômico quando a role e o pacote forem objetivos; com lista ordenada, usar o último modelo seguro da lista
+- `proof-execution`, `closure` e `sync` podem usar modelo mais econômico quando a função for objetiva e o contrato estiver delimitado
+- quando a lista tiver apenas um modelo, todos usam esse modelo
+- quando a lista tiver múltiplos modelos mas a diferença de capacidade não estiver clara pela ordem fornecida, bloquear em vez de adivinhar ranking
+
+Effort por target:
+- `codex` deve serializar `model_reasoning_effort` em todo `.codex/agents/*.toml` gerenciado
+- effort Codex default por role class:
+  - `high`: `router`, `planning`, `proof-design`, `execution-package-design`, `semantic-review`
+  - `medium`: `executor`, `design-contributor`
+  - `low`: `proof-execution`, `closure`, `sync`
+- `vscode` e GitHub custom agents devem serializar `model` no frontmatter `.agent.md`
+- `vscode` e GitHub custom agents não devem serializar `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter; qualquer guidance de effort para esse target deve ser texto não operacional e apenas quando necessário
+- base agents canônicos fonte em `templates/agents/*.agent.md` devem ficar com no máximo 28.000 caracteres antes de qualquer especialização local
+- `.agent.md` gerenciado para VS Code/GitHub continua respeitando o limite documentado de 30.000 caracteres no prompt Markdown do agent; se a especialização não couber, bloquear ou reduzir conteúdo local especializável, nunca remover blocos protocol-fixed ou hardening obrigatório
+- `handoffs` em VS Code/GitHub é suporte opcional futuro; não implementar por default sem uso Sentinel claro e gate seguro
+- `hooks` não devem ser gerados por default; se algum dia forem mencionados, devem permanecer opt-in explícito porque executam comandos
+- marcas gerenciadas de `codex` devem preferir comentário/header TOML, como `# Sentinel managed artifact: true`, em vez de campo runtime desconhecido; se essa marca não puder ser preservada com segurança, registrar follow-up e não improvisar chave operacional
+
+## Consistency without legacy propagation
+Seguir o padrão do projeto não significa copiar dívida técnica.
+
+Todo specialized deve preservar contratos, comportamento público, interoperabilidade, schema, APIs, rotas, fluxos e compatibilidade. Código novo deve usar a melhor prática segura compatível com a versão atual da stack, framework e bibliotecas já usadas no projeto.
+
+Padrões existentes só devem ser seguidos quando forem:
+- contrato real
+- interoperabilidade necessária
+- decisão arquitetural documentada
+- requisito explícito do pacote de execução
+- consistência local necessária para não quebrar comportamento
+
+Padrões claramente ruins, frágeis, duplicados, inseguros, acidentais ou legados não devem ser propagados em código novo apenas porque existem no repo.
+
+Essa política não autoriza:
+- refactor amplo
+- reescrita arquitetural
+- troca de stack
+- modernização oportunista fora do escopo
+- quebra de contrato público
+- alteração de schema/API sem autorização
+- mudança de comportamento não solicitada
+
+Aplicação por role:
+- `orchestrator`: impedir que a rodada vire refactor oportunista, rotear/fatiar quando a solução correta exigir mudança maior, e não tratar legado acidental como source of truth
+- `planner`: diferenciar contrato real, padrão intencional e legado acidental; nunca planejar "faça igual ao arquivo X" sem qualificar se aquilo é contrato ou referência
+- `validation-eval-designer`: validar comportamento e contrato sem exigir copiar desordem existente; identificar falta de harness ou decisão para melhorar sem quebrar
+- `execution-package-designer`: declarar `OWNED_PATHS`, contratos preservados e limites contra refactor amplo; permitir implementação local melhor quando segura; bloquear quando a melhoria correta exigir escopo maior
+- `coder-backend`, `coder-frontend`, `coder-ios`: executar apenas o pacote autorizado, escrever código novo com boa prática compatível com a stack atual, não copiar dívida técnica sem necessidade, e bloquear quando a solução segura exigir path ou contrato fora do pacote
+- `validation-runner`: provar contrato, build, test, lint e typecheck conforme disponível; não transformar preferência estética em falha; apontar dívida nova óbvia quando afetar qualidade ou contrato
+- `reviewer`: reprovar propagação desnecessária de dívida técnica e refactor amplo escondido; separar blocker real de preferência estética
+- `finalizer`: registrar follow-up quando a solução ideal exigir refactor fora do escopo; não transformar dívida descoberta em alteração escondida
+- `resync`: atualizar docs apenas quando houver decisão real consolidada; não documentar acidente local como novo padrão canônico
 
 ## Princípios
 - especializar por evidência, não por simetria
@@ -275,15 +348,18 @@ Regras operacionais:
   - `target`
   - `tools`
   - `agents` no `orchestrator`
-  - `model` quando aplicável
+  - `model`
   - `base_agent_version`
   - `specialization_revision`
   - `managed_artifact: true`
-- para `codex`, preservar o shape mínimo nativo próprio do runtime:
+- para `codex`, preservar o shape Sentinel obrigatório adotado para o runtime:
   - `name`
   - `description`
+  - `model`
+  - `model_reasoning_effort`
+  - `sandbox_mode`
   - `developer_instructions`
-- para `codex`, o shape Sentinel materializado adiciona obrigatoriamente `sandbox_mode` como campo opcional suportado pelo runtime e obrigatório por política Sentinel
+- para `codex`, o shape Sentinel materializado adiciona obrigatoriamente `model`, `model_reasoning_effort` e `sandbox_mode` como campos suportados pelo runtime e obrigatórios por política Sentinel
 - em `codex`, `developer_instructions` é o lugar obrigatório para carregar a missão especializada, role class, ownership, gates, sequencing, handoffs, disciplina de superfície, limites de leitura e regras operacionais derivadas dos base agents e do modelo factual intermediário
 - em `vscode`, `specialization_revision` começa em `1` na primeira materialização gerenciada do repo alvo
 - em `vscode`, `managed_artifact: true` é a marca de overwrite seguro e da deleção segura de artifacts gerenciados
@@ -295,11 +371,13 @@ Regras operacionais:
 - `## Tools` só pode permanecer por ordem humana explícita e com justificativa humana clara
 - mesmo quando `## Tools` permanecer como exceção explícita, ele nunca pode ser tratado como source of truth, requisito operacional, critério de validação ou base para drift detection
 - todo specialized `vscode` materializado deve conter `name`, `description`, `target`, `tools`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
+- todo specialized `vscode` materializado deve conter `model`
+- nenhum specialized `vscode` materializado deve conter `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter operacional
 - todo specialized `vscode` materializado deve serializar `name` a partir da mesma fonte de verdade usada para o nome físico do arquivo; exemplo: `.github/agents/planner.agent.md` deve conter `name: planner`
 - o `orchestrator` em `vscode` deve conter adicionalmente `agents`
 - `agents` no frontmatter operacional é reservado ao `orchestrator` em `vscode` e deve listar apenas os `frontmatter.name` canônicos dos subagents realmente materializados no output de agents do mesmo target
 - em `codex`, `agents` não é campo obrigatório do TOML do `orchestrator`; o conjunto de subagents e o roteamento devem aparecer em `developer_instructions` e no `AGENTS.md` gerado, salvo suporte explícito do runtime para campo equivalente opcional
-- `model` na metadata operacional é suportado como string única ou lista priorizada quando houver justificativa operacional clara, política explícita, restrição por `allowed_models` e compatibilidade com o target
+- `model` na metadata operacional é obrigatório como string única; lista priorizada só deve ser usada quando o target suportar explicitamente esse shape, houver justificativa operacional clara e todos os itens respeitarem `allowed_models`
 - qualquer campo fora do shape mínimo nativo ou dos campos opcionais suportados e adotados pela política Sentinel do target deve ser tratado como ausente por default e removido na normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
 - `agent_version` deve ser removido da metadata operacional final por default; não faz parte do shape endurecido preservado por esta skill nem do shape mínimo de `codex`
 - se qualquer campo obrigatório faltar no artifact final, a skill ainda não está done
@@ -316,7 +394,7 @@ Regras operacionais:
   - `target`
   - `tools`
   - `agents` no `orchestrator`
-  - `model` quando aplicável
+  - `model`
   - `base_agent_version`
   - `specialization_revision`
   - `managed_artifact: true`
@@ -324,6 +402,8 @@ Regras operacionais:
 - o custom agent TOML final normalizado de `codex` contém obrigatoriamente:
   - `name`
   - `description`
+  - `model`
+  - `model_reasoning_effort`
   - `sandbox_mode`
   - `developer_instructions`
 - `sandbox_mode` é obrigatório por política Sentinel no TOML Codex final, não por fazer parte do shape mínimo nativo Codex
@@ -331,7 +411,10 @@ Regras operacionais:
 - convenções internas opcionais do Sentinel em `codex`, quando existirem, devem ser claramente classificadas como internas e removíveis sem quebrar o custom agent TOML mínimo
 - qualquer campo fora do shape do target deve ser tratado como legado residual e removido durante a normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
 - em `vscode`, o corpo especializado final deve preservar headings e seções canônicas do base agent, inclusive `## Handoff`, sem variantes frouxas de naming ou shape
-- em `codex`, `developer_instructions` deve preservar a semântica operacional dessas seções sem exigir headings Markdown no TOML
+- em `codex`, `developer_instructions` deve preservar a semântica operacional dessas seções e deve preservar headings Markdown quando eles forem marcadores protocol-fixed exigidos por gate
+- antes de escrever qualquer artifact final, aplicar normalização protocol-fixed limitada ao marcador `Consistency without legacy propagation`: se a fonte trouxer uma linha isolada `Consistency without legacy propagation:`, reparar essa linha para `## Consistency without legacy propagation`; se o heading canônico já existir, remover somente essa linha legada com `:` para não duplicar o marcador
+- a normalização protocol-fixed não pode reescrever o bloco inteiro, não pode alterar `model`, `model_reasoning_effort`, `sandbox_mode`, não pode adicionar campos TOML e não pode mexer em metadata operacional fora do marcador fixo
+- o artifact final normalizado deve conter exatamente uma ocorrência de `## Consistency without legacy propagation` e zero ocorrências da linha legada `Consistency without legacy propagation:`
 - a normalização final deve eliminar duplicação entre source of truth operacional do target e texto legado residual
 
 ## Blocos protocol-fixed non-compressible
@@ -343,6 +426,7 @@ Os blocos abaixo são parte fixa do protocolo, não são conteúdo local do proj
 - validation-runner entry evidence gate, incluindo `Entry evidence gate`, exigência de valid executor `READY` handoff com evidência aplicada, e preservação de que output inválido não é validation target
 - finalizer closure ledger, incluindo `closure ledger`, `DONE: yes` ou `DONE: no`, racional da decisão de `DONE`, `resync: yes` ou `resync: no`, racional da decisão de resync, delta factual quando resync for necessário, e `Invalid closure forms`
 - separação explícita entre status terminal do finalizer (`READY`/`BLOCKED`) e verdict do runner (`PASS`/`PARTIAL`/`FAIL`/`BLOCKED`), preservando o verdict como input e sem transformar `DONE` em obrigatório; obrigatória é a decisão explícita `DONE: yes` ou `DONE: no`
+- consistency without legacy propagation, incluindo `Consistency without legacy propagation`, `Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.` e `This policy does not authorize broad refactors`
 
 Estratégia obrigatória de especialização:
 - a skill pode especializar stack, paths, docs, models, TBDs, targets, constraints locais, comandos canônicos, owners e leitura local
@@ -350,14 +434,18 @@ Estratégia obrigatória de especialização:
 - a materialização deve copiar o bloco fixo do template/base agent ou preservá-lo semanticamente de forma verificável pelos marcadores obrigatórios acima
 - em `vscode`, os marcadores protocol-fixed devem permanecer no corpo final do agent materializado
 - em `codex`, os marcadores protocol-fixed devem permanecer em `developer_instructions`
+- o marcador `Consistency without legacy propagation` deve permanecer como heading canônico exato `## Consistency without legacy propagation`; nunca substituir por `Consistency without legacy propagation:`, título solto, bullet, resumo ou heading de outro nível
+- se a fonte instalada ou artifact gerenciado existente trouxer a variante legada `Consistency without legacy propagation:`, a geração deve reparar somente esse marcador para `## Consistency without legacy propagation` antes da validação final
+- o repair automático desse marcador é permitido antes do gate porque é normalização protocol-fixed por construção; o gate continua obrigatório e deve falhar se o artifact final ainda contiver a variante com `:` ou contiver zero/mais de uma ocorrência do heading canônico
+- a propagação protocol-fixed deve ser validada comparando template/base agent canônico, `reference/agents/*.agent.md` instalado e artifact final materializado do target; se a fonte contém um bloco protocol-fixed e o artifact final não contém as frases sentinela correspondentes, a rodada deve falhar
 - se um invariant protocol-fixed obrigatório não couber no formato final, a skill deve bloquear a materialização antes de escrever ou reparar imediatamente o artifact e revalidar; nunca entregar agent fraco com hardening resumido
 - se uma regra local do projeto entrar em tensão com bloco protocol-fixed, a regra local perde; se a tensão impedir materialização honesta, bloquear em vez de relaxar o protocolo
 
 O quality gate final deve validar os artifacts materializados finais contra esses invariantes protocol-fixed. Validar só frontmatter, shape, `model`, tools, ausência de TODO ou referências a agents ausentes não basta.
 
 ## Política de `allowed_models` e `model_policy`
-- a skill aceita uma entrada opcional `allowed_models`
-- a skill aceita uma entrada opcional `model_policy` granular e compatível
+- a skill aceita uma entrada opcional `allowed_models`; quando presente, ela é a lista autorizada e ordenada de modelos que podem ser materializados
+- a skill aceita uma entrada opcional `model_policy` granular e compatível como override avançado, não como requisito diário
 - chaves novas aceitas:
   - `agents`: mapa por agent lógico, por exemplo `coder-backend`
   - `roles`: mapa por role fina, por exemplo `specialist_executor`, `proof_execution`, `closure`
@@ -367,7 +455,7 @@ O quality gate final deve validar os artifacts materializados finais contra esse
   - `execution_default`
 - se `allowed_models` for fornecido, toda escolha de `model` para specializeds deve ficar restrita a essa lista
 - a skill não pode materializar `model` fora de `allowed_models`
-- se `model_policy` for fornecido, ele tem precedência sobre heurística implícita
+- se `model_policy` for fornecido, ele tem precedência sobre heurística implícita, mas nunca substitui a obrigação de serializar o campo final `model`
 - precedência de resolução:
   1. `model_policy.agents[agent_name]`
   2. `model_policy.roles[fine_role]`
@@ -384,16 +472,20 @@ O quality gate final deve validar os artifacts materializados finais contra esse
   - `proof_execution`: `validation-runner`
   - `closure`: `finalizer`
   - `sync`: `resync`
-- fallback de compatibilidade:
+- defaults de compatibilidade:
   - `reasoning_default`: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `reviewer`, e `designer` quando materializado como contributor de direção UX/design
   - `coding_default`: `coder-backend`, `coder-frontend`, `coder-ios`
   - `execution_default`: `validation-runner`, `finalizer`, `resync`
 - se `model_policy` indicar valor fora de `allowed_models`, a skill deve bloquear ou escolher alternativa segura explicitando isso no output
-- quando só `allowed_models` existir, preferir política conservadora: usar um modelo padrão único para o conjunto ou variar por papel apenas quando houver justificativa operacional clara
-- se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` na metadata operacional e deixar o runtime usar o model picker atual
-- não afirmar que um modelo é "o melhor" sem política explícita
+- quando só `allowed_models` existir, aplicar a política interna por role class:
+  - roles de orquestração, planejamento, proof design, package design e review usam o primeiro modelo da lista ordenada
+  - coders e funções objetivas podem usar o último modelo seguro da lista ordenada quando a role permitir
+  - validation-runner, finalizer e resync podem usar o último modelo seguro quando o trabalho estiver objetivamente delimitado
+- se `allowed_models` tiver apenas um modelo, todos os agents usam esse modelo
+- se não existir `allowed_models` nem `model_policy` com valores concretos de modelo, bloquear a materialização e reportar falta de input de resolução; não omitir `model` e não deixar o runtime usar picker/default implícito
+- não afirmar que um modelo é "o melhor" sem policy explícita ou ordenação fornecida
 - não inventar ranking universal, fallback complexo, matriz excessiva por provider ou policy especulativa de modelos
-- lista priorizada de `model` só deve ser usada quando houver justificativa operacional real, ordem explícita e todos os itens estiverem contidos em `allowed_models` quando essa entrada existir
+- lista priorizada de `model` só deve ser usada quando o target suportar explicitamente esse shape, houver justificativa operacional real, ordem explícita e todos os itens estiverem contidos em `allowed_models` quando essa entrada existir
 
 ## Procedimento operacional
 1. Validar as pré-condições e confirmar que o repo alvo realmente já passou por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`.
@@ -408,8 +500,8 @@ O quality gate final deve validar os artifacts materializados finais contra esse
    - `managed but obsolete`
    - `unmanaged / ambiguous`
 8. Decidir o conjunto alvo mínimo e coerente de agents para o repo usando o modelo factual intermediário, não completude estética.
-9. Decidir a política de `model` para a rodada atual, aplicando `model_policy` quando existir e respeitando `allowed_models` quando essa entrada existir.
-10. Gerar ou atualizar os specializeds necessários a partir do modelo factual intermediário e dos invariantes da role class, com metadata operacional coerente e shape final normalizado para o `target`.
+9. Resolver o `model` operacional de cada agent, aplicando `model_policy` quando existir, respeitando `allowed_models` quando essa entrada existir, e bloqueando se não houver base concreta para serializar `model`.
+10. Gerar ou atualizar os specializeds necessários a partir do modelo factual intermediário e dos invariantes da role class, com metadata operacional coerente e shape final normalizado para o `target`; antes de escrever o artifact final, aplicar a normalização protocol-fixed limitada que preserva `## Consistency without legacy propagation` e repara somente a variante legada com `:`.
 11. Quando `target=codex`, gerar ou atualizar `AGENTS.md` do repo alvo a partir do template interno e do conjunto final de agents materializados.
 12. Deletar artifacts gerenciados obsoletos e qualquer referência local quebrada deixada por eles.
 13. Reescrever ou ajustar o `orchestrator` por último, para que ele reflita apenas o conjunto final realmente materializado e respeite o budget de router.
@@ -656,7 +748,8 @@ Regras:
 - após execução, o próximo gate canônico é `validation-runner`, com prova do artifact implementado e quality proof definido no `VALIDATION PACK`
 - o `validation-runner` só pode entrar quando existir artifact validável do executor; promessa de mudança não basta
 - o `orchestrator` deve reconhecer quando o cut ativa trilha material de `security`, `performance`, `migration/schema` ou `observability/release safety` e explicitá-la no handoff
-- o `orchestrator` não pode inventar trilha por reflexo nem transformar todo cut em `high risk` por default
+- o `orchestrator` deve marcar stack quality guardrails ativas conforme a superfície real do cut: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e/ou `stnl_mobile_ios_swift_quality`; essas guardrails não viram agents nem substituem coders, runner, reviewer ou finalizer
+- o `orchestrator` não pode inventar trilha ou guardrail por reflexo nem transformar todo cut em `high risk` por default
 - o `reviewer` só pode entrar com artifact implementado real e classificação explícita `required` ou `advisory`
 - o `reviewer` não substitui a verdade de proof do `validation-runner`; ele agrega review semântico/arquitetural antes do fechamento
 - ausência de `reviewer` `required` ou risco estrutural material não resolvido impede closure limpa
@@ -684,14 +777,14 @@ Checks obrigatórios de materialização:
 Aplicação por papel:
 - `orchestrator`: status router only; devolver apenas status atual, blocker real, decisão DEV necessária, próximo agent ou passo, delta novo realmente relevante, e trilhas condicionais de risco quando materialmente ativas; nunca absorver implementação, rejeitar handoff descritivo do executor, não auto-empurrar execução quando houver `NEEDS_DEV_DECISION_HARNESS`, e só liberar runner com artifact validável
 - `planner`: manter `EXECUTION BRIEF` rico, mas devolver só status do brief, grupos de cut em alto nível quando aplicável, dependências críticas, riscos vivos e sinal de paralelização segura
-- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos relevantes ao cut e classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC, registrar operacionalmente no pack qualquer compromisso explícito do DEV sobre evidência parcial, refletir no pack a exigência de testes focados antes da execução, e exigir retorno ao `planner` quando a decisão do DEV alterar materialmente o recorte
-- `execution-package-designer`: manter `EXECUTION PACKAGE` rico no handoff, mas devolver só `READY` ou `BLOCKED`, ids de pacotes, ordem/dependência, elegibilidade de paralelização e causa exata de bloqueio; não coordenar coders, não chamar agents, não implementar e não virar planner
-- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, e risco residual; executar apenas o `WORK_PACKAGE_ID` autorizado, com leitura local suficiente para segurança. Quando faltar capacidade real de editar ou executar, quando o pacote for insuficiente, ou quando o cut não puder ser implementado com segurança dentro de `OWNED_PATHS`, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
+- `validation-eval-designer`: manter `VALIDATION PACK` rico, mas devolver só `READY` ou gate, obrigações de prova abertas e decisão DEV necessária se existir; o pack deve classificar a suficiência do harness pelo risco do cut, carregar checks determinísticos e checks derivados de stack quality guardrails ativas, classificá-los como `required`, `optional`, `not_applicable` ou `blocked_by_harness`, converter trilhas condicionais materialmente ativas em prova cut-scoped, emitir `NEEDS_DEV_DECISION_HARNESS` quando uma superfície de risco relevante ficar sem cobertura mínima para a SPEC, registrar operacionalmente no pack qualquer compromisso explícito do DEV sobre evidência parcial, refletir no pack a exigência de testes focados antes da execução, e exigir retorno ao `planner` quando a decisão do DEV alterar materialmente o recorte
+- `execution-package-designer`: manter `EXECUTION PACKAGE` rico no handoff, mas devolver só `READY` ou `BLOCKED`, ids de pacotes, ordem/dependência, elegibilidade de paralelização e causa exata de bloqueio; carregar `REQUIRED_QUALITY_GUARDRAILS` por package quando aplicável; não coordenar coders, não chamar agents, não implementar e não virar planner
+- `coder-backend`, `coder-frontend` e `coder-ios`: devolver só `READY` com paths alterados ou evidência equivalente, checks rodados ou explicitamente não rodados, stack quality guardrails aplicadas quando ativas, e risco residual; executar apenas o `WORK_PACKAGE_ID` autorizado, com leitura local suficiente para segurança. Quando faltar capacidade real de editar ou executar, quando o pacote for insuficiente, ou quando o cut não puder ser implementado com segurança dentro de `OWNED_PATHS`, devolver `BLOCKED` cedo com causa exata. No caso de `coder-ios`, o default deve permanecer Swift + SwiftUI, com `UIKit interop` apenas como capacidade condicional baseada em evidência real
 - terminal handoff de executor nunca pode ser implícito: progresso intermediário, log de comando, narrativa operacional, promessa de mudança, diff parcial ou resposta sem status terminal claro não conta como `READY` nem como `BLOCKED`
 - quando um executor editou parcialmente mas não concluiu com segurança, `BLOCKED` é obrigatório e deve preservar motivo objetivo, arquivos tocados, o que ficou parcial, e se o estado parcial é inspecionável/reaproveitável ou deve ser descartado/reexecutado
 - `reviewer`: devolver review curto e delta-only do artifact implementado, distinguindo risco estrutural material, melhoria recomendada não-bloqueante e observação cosmética; reconhecer quando trilha material de risco foi ignorada, sem virar especialista dedicado; não reimplementar, não redesenhar o plano, não rerodar proof, e não transformar preferência subjetiva em bloqueio duro sem risco técnico real
-- `validation-runner`: executar e julgar a prova funcional e os checks determinísticos do pack no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
-- `finalizer`: consumir evidência e verdict do runner para closure; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`; preservar o verdict do runner como input e emitir somente `READY` ou `BLOCKED` próprios
+- `validation-runner`: executar e julgar a prova funcional, os checks determinísticos e os checks derivados de stack quality guardrails ativas no escopo do cut; distinguir falha validada, bloqueio de harness, check obrigatório ausente e green irrelevante; check obrigatório ausente ou falho nunca vira detalhe cosmético
+- `finalizer`: consumir evidência e verdict do runner para closure, preservando sinais de stack quality guardrail quando afetarem `DONE`, risco residual ou resync; não fazer review técnico substituto, rerun de checks, nem julgamento substituto do `validation-runner`; preservar o verdict do runner como input e emitir somente `READY` ou `BLOCKED` próprios
 - `finalizer` só pode fechar `READY` com closure ledger explícito: runner verdict preservado ou bloqueio pré-validação preservado, reviewer signal preservado quando houver, artifacts de documentation/context alterados, `DONE` yes/no com racional, resync yes/no com racional, e delta factual quando resync for necessário
 
 Se o specialized reabrir verbosity, execution log ou narrativa operacional como comportamento default, a materialização falhou.
@@ -798,17 +891,19 @@ Incluir `web` apenas quando o contexto do projeto indicar dependência real de c
 
 ## Como escolher `model`
 - usar `docs/**`, o modelo factual intermediário e o papel do agent para inferir o tipo de trabalho, não para prometer "o melhor modelo"
-- se `model_policy` existir, aplicá-la com precedência sobre heurística implícita
+- todo agent gerenciado precisa de `model` materializado; a resolução de modelo só termina quando o campo final puder ser serializado
+- se `model_policy` existir, aplicá-la com precedência sobre heurística implícita, respeitando `allowed_models` quando existir
 - aplicar a precedência granular: agent override, role override, defaults de compatibilidade, heurística conservadora
 - usar `model_policy.agents` para exceções explícitas por agent
 - usar `model_policy.roles` para grupos finos como `round_coordinator`, `cut_planning`, `proof_design`, `execution_package_design`, `specialist_executor`, `semantic_review`, `proof_execution`, `closure` e `sync`
 - preservar compatibilidade com `reasoning_default`, `coding_default` e `execution_default`
-- se `model_policy` não existir mas `allowed_models` existir, preferir uma política conservadora com modelo padrão único ou pequena variação por papel com justificativa operacional clara
-- se não existir `allowed_models` nem `model_policy`, `model` pode ser omitido quando o target suportar essa omissão
-- `model` pode ser string única ou lista priorizada
-- usar lista priorizada apenas quando houver justificativa operacional real e sem criar fallback complexo por imaginação
+- se `model_policy` não existir mas `allowed_models` existir, escolher por role class usando a ordem da lista autorizada
+- se não existir `allowed_models` nem `model_policy` com valores concretos, bloquear com falta de input de resolução de modelo
+- `model` deve ser string única por default
+- usar lista priorizada apenas quando o target suportar explicitamente esse formato, houver justificativa operacional real e sem criar fallback complexo por imaginação
 - se `model` for lista priorizada, manter ordem explícita e compatível com `allowed_models` quando essa entrada existir
-- em `codex`, só serializar `model` no TOML se esse campo for suportado pelo runtime; caso contrário, tratar a escolha de modelo como política externa ao shape mínimo obrigatório
+- em `codex`, serializar `model` e `model_reasoning_effort` no TOML gerenciado
+- em `vscode`, serializar `model` no frontmatter e não serializar campos operacionais de effort
 - não justificar `model` com texto genérico como "adequado para engenharia"
 - não prometer escolha ótima, universal ou provider-agnostic sem política explícita
 
@@ -831,9 +926,14 @@ Checks obrigatórios:
 Verificar:
 - metadata ou campos obrigatórios do target presentes e completos
 - shape canônico consistente com `agent-contract-shape`
-- quando `target=vscode`, artifacts de agents estão em `.github/agents/*.agent.md`, headings e seções obrigatórias do base agent existem com naming canônico, e o frontmatter contém `target`, `tools`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
-- quando `target=codex`, artifacts de agents estão em `.codex/agents/*.toml`, cada TOML contém `name`, `description`, `sandbox_mode` e `developer_instructions`, e `AGENTS.md` foi gerado a partir do template interno da skill
+- quando `target=vscode`, artifacts de agents estão em `.github/agents/*.agent.md`, headings e seções obrigatórias do base agent existem com naming canônico, e o frontmatter contém `target`, `tools`, `model`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
+- quando `target=vscode`, o frontmatter contém `model` e não contém campos operacionais de effort como `reasoning_effort`, `thinking_effort` ou `model_reasoning_effort`
+- base agents canônicos em `templates/agents/*.agent.md` respeitam 28.000 caracteres; esse limite não substitui o limite de materialização
+- quando `target=vscode`, cada `.agent.md` gerenciado respeita o limite de 30.000 caracteres do prompt Markdown do agent, sem sacrificar blocos protocol-fixed
+- quando `target=codex`, artifacts de agents estão em `.codex/agents/*.toml`, cada TOML contém `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`, e `AGENTS.md` foi gerado a partir do template interno da skill
 - quando `target=codex`, `developer_instructions` preserva a missão, role class, ownership, gates, sequencing, handoffs e regras operacionais do specialized que em `vscode` ficariam no corpo Markdown
+- para qualquer target, blocos protocol-fixed existentes no template/base agent e no `reference/agents/*.agent.md` usado pela skill aparecem no artifact final materializado com frases sentinela verificáveis
+- em especial, `Consistency without legacy propagation`, `Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.` e `This policy does not authorize broad refactors` aparecem no corpo final de `.github/agents/*.agent.md` e em `developer_instructions` de `.codex/agents/*.toml`
 - quando `target=codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não são tratados como campos obrigatórios do TOML
 - quando `target=codex`, `sandbox_mode` é tratado como obrigatório pela política Sentinel e não como requisito nativo mínimo do Codex; qualquer outro campo opcional é compatível com o runtime e não é apresentado como requisito nativo do Codex
 - remoção de campos legados não permitidos, incluindo `agent_version`
@@ -860,7 +960,7 @@ Hard fails:
 ### Execution-package-design check
 Verificar no `execution-package-designer`:
 - role class `execution-package-design` preservada
-- `EXECUTION PACKAGE` contém contrato leve e operacional com `WORK_PACKAGE_ID`, `GOAL`, `OWNED_PATHS`, `SEARCH_ANCHORS`, `EDIT_ANCHORS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS` e `BLOCK_IF`
+- `EXECUTION PACKAGE` contém contrato leve e operacional com `WORK_PACKAGE_ID`, `GOAL`, `OWNED_PATHS`, `SEARCH_ANCHORS`, `EDIT_ANCHORS`, `DEPENDS_ON`, `DO_NOT_TOUCH`, `CHANGE_RULES`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, `REQUIRED_QUALITY_GUARDRAILS` e `BLOCK_IF`
 - pacote suporta 1..N work packages sem criar segundo orchestrator
 - ausência de tools excessivas herdadas por acidente
 - leitura local menor que executor e voltada só a anchors, paths, comandos e boundaries do pacote
@@ -883,7 +983,7 @@ Verificar no `orchestrator`:
 - regra explícita de handoff imediato quando o owner já está claro
 - regra explícita de parar para blocker ou DEV em vez de continuar lendo indefinidamente
 - reconhecimento explícito de trilhas condicionais de `security`, `performance`, `migration/schema` e `observability/release safety` apenas quando houver risco material
-- trilha material ausente no handoff é tratada como defeito de roteamento, sem universalizar `high risk` por default
+- trilha material ou stack quality guardrail materialmente aplicável ausente no handoff é tratada como defeito de roteamento, sem universalizar `high risk` por default
 - handoff canônico para `execution-package-designer` depois de `VALIDATION PACK READY` e antes de coders
 - decisão de sequência/paralelização de coders só depois de `EXECUTION PACKAGE` estável
 
@@ -914,6 +1014,7 @@ Verificar no `validation-eval-designer`:
 - quando a decisão do DEV altera materialmente o cut, o specialized reabre `planner -> validation-eval-designer` em vez de improvisar novo cut localmente
 - `READY` só reaparece depois que o `VALIDATION PACK` estiver coerente com a escolha do DEV e com o cut vigente
 - trilhas condicionais ativas viram obrigações cut-scoped de prova para `security`, `performance`, `migration/schema` e `observability/release safety` quando houver risco material
+- stack quality guardrails ativas viram checks cut-scoped de prova sem copiar checklist inteiro nem acionar guardrail irrelevante por reflexo
 - ausência de checklist burocrático universal de trilhas de risco quando o cut não pedir
 
 Hard fails:
@@ -922,8 +1023,9 @@ Hard fails:
 - o specialized permite `READY`, approval ou execução direta após a escolha do DEV sem brief ou pack coerentes
 
 ### Executor ownership check
-Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
+Verificar em `coder-backend`, `coder-frontend`, `coder-ios` e equivalentes de coder executor:
 - coders recebem e executam `EXECUTION PACKAGE` com `WORK_PACKAGE_ID`
+- coders aplicam `REQUIRED_QUALITY_GUARDRAILS` quando presentes: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e/ou `stnl_mobile_ios_swift_quality`
 - coders continuam especialistas por stack/projeto, mas não são solucionadores locais nem compiladores de pacote
 - leitura local suficiente para executar o pacote substitui broad discovery como custo normal
 - `targeted-local` preservado
@@ -1015,12 +1117,20 @@ Hard fails:
 
 ### Model-policy compatibility check
 Verificar:
-- precedência clara: `model_policy.agents[agent]`, depois `model_policy.roles[role]`, depois defaults de compatibilidade
+- todo artifact gerenciado materializa `model`
+- `codex` materializa também `model_reasoning_effort`
+- `vscode` não materializa campo operacional de effort no frontmatter
+- precedência clara: `model_policy.agents[agent]`, depois `model_policy.roles[role]`, depois defaults de compatibilidade, depois regra interna por role class com `allowed_models`
 - compatibilidade mantida com `reasoning_default`, `coding_default` e `execution_default`
 - defaults de compatibilidade mapeiam roles fortes para reasoning, coders para coding, e runner/finalizer/resync para execution quando não houver override granular
 - `allowed_models`, quando fornecido, continua restringindo qualquer escolha por agent, role ou default
+- ausência de `model_policy` não é falha quando `allowed_models` e role/target bastam para resolver `model`
+- ausência de base concreta para escolher `model` bloqueia a materialização, em vez de herdar picker/default
 
 Hard fails:
+- agent gerenciado sem `model`
+- Codex agent gerenciado sem `model_reasoning_effort`
+- VS Code/GitHub agent gerenciado com `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter
 - policy granular sem fallback de compatibilidade
 - conflito ou ambiguidade entre agent override, role override e defaults de compatibilidade
 
@@ -1088,7 +1198,7 @@ agents:
   - finalizer
   - resync
 model: <default-model>
-base_agent_version: "2026.4"
+base_agent_version: "2026.5.0"
 specialization_revision: 1
 managed_artifact: true
 ---
@@ -1105,10 +1215,8 @@ tools:
   - search
   - edit
   - execute
-model:
-  - <coding-model>
-  - <shared-default-model>
-base_agent_version: "2026.4"
+model: <coding-model>
+base_agent_version: "2026.5.0"
 specialization_revision: 1
 managed_artifact: true
 ---
@@ -1118,8 +1226,11 @@ managed_artifact: true
 
 #### `.codex/agents/orchestrator.toml`
 ```toml
+# Sentinel managed artifact: true
 name = "orchestrator"
 description = "Orquestra o fluxo local do projeto usando apenas os agents realmente materializados."
+model = "<reasoning-model>"
+model_reasoning_effort = "high"
 sandbox_mode = "read-only"
 developer_instructions = '''
 Coordinate the local Sentinel workflow as a lightweight router.
@@ -1134,8 +1245,11 @@ Keep the main chat surface short: return only the current gate, next owner, bloc
 
 #### `.codex/agents/coder-backend.toml`
 ```toml
+# Sentinel managed artifact: true
 name = "coder-backend"
 description = "Implementa mudanças backend do projeto respeitando arquitetura, contratos e harness local."
+model = "<coding-model>"
+model_reasoning_effort = "medium"
 sandbox_mode = "workspace-write"
 developer_instructions = '''
 Execute the authorized server-side work package from the Sentinel execution package, execution brief, and validation pack.
@@ -1150,14 +1264,14 @@ Report only the execution delta needed downstream: changed paths or equivalent i
 
 Notas para os exemplos:
 - os valores acima são apenas exemplos de shape, não prescrição fixa de provider ou modelo
-- em `vscode`, `model` pode ser string única ou lista priorizada
+- em `vscode`, `model` deve ser serializado por default como string única
 - em `vscode`, o valor real de `model` deve respeitar `allowed_models` quando essa entrada existir
 - quando `model_policy` existir, ele governa a preferência de escolha por agent, role fina ou default de compatibilidade
-- se não existir `allowed_models` nem `model_policy`, a skill pode omitir `model` quando o target suportar esse comportamento e deixar o runtime usar o model picker atual
-- em `codex`, o shape mínimo nativo continua sendo `name`, `description` e `developer_instructions`
+- se não existir `allowed_models` nem `model_policy` com valores concretos de modelo, a skill deve bloquear a materialização em vez de omitir `model`
+- em `codex`, o shape Sentinel obrigatório contém `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`
 - em `codex`, `sandbox_mode` aparece nos exemplos porque é campo opcional suportado pelo runtime e obrigatório pela política Sentinel para agents materializados
 - em `codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision` e `managed_artifact` não aparecem nos exemplos porque não fazem parte do shape mínimo nativo do custom agent TOML nem da política Sentinel de serialização Codex
-- em `codex`, qualquer campo adicional além de `sandbox_mode` só pode ser usado como opcional compatível com o runtime ou convenção interna opcional do Sentinel, nunca como requisito nativo mínimo
+- em `codex`, qualquer campo adicional além de `model`, `model_reasoning_effort` e `sandbox_mode` só pode ser usado como opcional compatível com o runtime ou convenção interna opcional do Sentinel, nunca como requisito nativo mínimo
 - os exemplos representam o artifact final normalizado, sem `## Tools` no corpo e sem campos legados como `agent_version`
 - os exemplos de shape não substituem o contrato operacional especializado; `orchestrator` e executors continuam obrigados a explicitar capability gate, validade do handoff e regra de runner só com artifact validável
 - no target `codex`, `AGENTS.md` do repo alvo deve ser gerado a partir de `reference/templates/codex/AGENTS.md` e deve apontar para o conjunto real de `.codex/agents/*.toml`
@@ -1182,7 +1296,7 @@ Notas para os exemplos:
 - artifacts finais normalizados no shape canônico vigente
 - `target=vscode` materializa agents em `.github/agents/*.agent.md` com `target` correto no frontmatter operacional
 - em `vscode`, para cada agent materializado, `basename` do arquivo sem `.agent.md`, `frontmatter.name` e qualquer item correspondente em `orchestrator.agents` são exatamente o mesmo ID canônico em kebab-case
-- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description`, `sandbox_mode` e `developer_instructions`, e materializa `AGENTS.md` na raiz do repo alvo
+- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`, e materializa `AGENTS.md` na raiz do repo alvo
 - `AGENTS.md` do target `codex` deriva do template interno `reference/templates/codex/AGENTS.md`
 - em `vscode`, `tools` presente no frontmatter operacional de todos os specializeds materializados
 - em `vscode`, `agents` presente no artifact do `orchestrator`
@@ -1190,7 +1304,8 @@ Notas para os exemplos:
 - em `vscode`, `agent` presente em `tools` do `orchestrator` quando `agents` for usado
 - em `codex`, `developer_instructions` de cada agent preserva missão, ownership, gates, role class, sequencing, handoffs e política de tools sem exigir campo TOML `tools`
 - em `codex`, `developer_instructions` e `AGENTS.md` refletem o conjunto roteável sem exigir campo TOML `agents` no `orchestrator`
-- `model` coerente com `allowed_models`, `model_policy` e compatibilidade do target quando essas entradas tiverem sido fornecidas
+- `model` materializado em todo agent e coerente com `allowed_models`, `model_policy` e compatibilidade do target quando essas entradas tiverem sido fornecidas
+- `model_reasoning_effort` materializado nos agents Codex e ausente do frontmatter VS Code/GitHub
 - role class canônica respeitada em todos os specializeds materializados
 - `orchestrator` materializado com `routing-minimal` e sem tools indevidas
 - `planner` materializado com `bounded-context` e sem wording de broad discovery por default

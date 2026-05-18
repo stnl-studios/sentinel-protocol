@@ -10,11 +10,11 @@ Codex sandbox policy:
 - não serializar `tools` nos TOMLs Codex
 
 allowed_models:
-- GPT-5.5
-- GPT-5.4
-- GPT-5.4 Mini
-- GPT-5.3-Codex
-- GPT-5.2
+- gpt-5.5
+- gpt-5.4
+- gpt-5.4-mini
+- gpt-5.3-codex
+- gpt-5.2
 
 Preferência de custo:
 - usar modelos mais baratos para execução mecânica, sync local, fechamento simples e validação objetiva

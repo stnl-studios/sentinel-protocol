@@ -12,6 +12,13 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter `allow_implicit_invocation: false`
 - manter `docs/**` como source of truth primária e codebase apenas como fallback controlado
 - manter a regra central: nenhuma lacuna vira requisito silenciosamente
+- manter intake esparso: o usuário pode trazer descrição curta, sem preencher template grande
+- manter `open_questions.md` como fonte oficial de dúvidas; não criar `open_decisions.md`
+- manter o Readiness Gate universal: nenhuma SPEC ou slice vira `Execution Ready` com pergunta bloqueante aberta
+- manter IDs canônicos estáveis: `Q-001`, `D-001`, `AC-001`, `SL-001`, `R-001` e `C-001`
+- preservar IDs existentes e nunca normalizar formatos mistos silenciosamente
+- manter artefatos finais compactos, com referência por ID em vez de repetição longa
+- usar somente exemplos sintéticos e genéricos; nunca usar contexto privado, cliente real, projeto real ou feature real
 - manter a taxonomia `FACT / DERIVED / ASSUMPTION / OPEN_QUESTION / DECISION` operacional e visível
 - manter apenas `MODE=RESUME` e `MODE=CLOSE` como modos públicos explícitos
 - manter `FORK_NEW_SPEC`, `SUPERSEDE_EXISTING_SPEC` e `RESUME_EXISTING_SPEC` apenas como tokens de decisão humana de lineage em colisão, nunca como modos públicos ou interface paralela a `MODE=*`

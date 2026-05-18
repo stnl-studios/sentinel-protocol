@@ -1,5 +1,26 @@
 # Changelog
 
+## v2026.5.0-alpha.1
+
+Release de capacidade da linha Alpha Preview.
+
+### Adicionado
+
+- Quality guardrails por stack como capacidades oficiais do fluxo Sentinel.
+- Propagação operacional das guardrails entre planejamento, package design, execução, validação, review e fechamento quando aplicável.
+
+### Alterado
+
+- Refatorada a semântica operacional dos agents base.
+- Melhorada a portabilidade, autoridade e clareza operacional das skills.
+- Reforçado o fluxo com `execution-package-designer`, gates de validação, finalização e correção.
+- Atualizadas documentações canônicas para refletir o comportamento atual do workflow.
+
+### Corrigido
+
+- Reduzido drift documental introduzido por mudanças recentes em agents, skills e quality guardrails.
+- Alinhada a classificação do `designer` como `design-contributor`, não como executor.
+
 ## v2026.4.1-alpha.1
 
 Correcao de contrato/guarda da especializacao de agents.

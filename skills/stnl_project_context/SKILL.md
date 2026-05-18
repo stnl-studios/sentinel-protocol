@@ -43,7 +43,7 @@ Esta skill é um utilitário global. Ela não é um agent de workflow e deve con
 - não usar fallback em `templates/**`, `skills/**`, `~/.agents/**`, filesystem externo ou qualquer cópia fora do bundle instalado da própria skill
 - se `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
 - se qualquer arquivo obrigatório listado em `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
-- o bloqueio deve reportar a skill `stnl_project_context`, o arquivo ausente e a ação sugerida: `node sentinel.mjs update` e `node sentinel.mjs doctor`
+- o bloqueio deve reportar a skill `stnl_project_context`, o arquivo ausente e a ação sugerida: `node sentinel.mjs install` e `node sentinel.mjs doctor`
 - nunca reconstruir, adivinhar, simplificar ou procurar substituto para template interno ausente
 
 ## Modelo documental alvo

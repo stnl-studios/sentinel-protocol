@@ -10,7 +10,8 @@
 - high_reversal_cost_decisions: <0>
 
 ## Decisions
-### D-001
+### D-001 — [Decision title]
+- id: D-001
 - status: ACTIVE | SUPERSEDED
 - decided_in_session: <1>
 - decision_scope: global | item-specific
@@ -35,7 +36,8 @@
 - reversal_notes: [Why reversal cost has this level.]
 - notes: [Optional notes, evidence pointer, or bounded comparison detail.]
 
-### D-002
+### D-002 — [Decision title]
+- id: D-002
 - status: ACTIVE | SUPERSEDED
 - decided_in_session: <1>
 - decision_scope: global | item-specific

@@ -19,6 +19,8 @@ Aplicar este gate depois da geracao ou atualizacao dos specializeds e antes da c
 
 O gate valida:
 - o conjunto materializado de `.github/agents/*.agent.md`
+- o conjunto materializado de `.codex/agents/*.toml` quando `target=codex`
+- o `AGENTS.md` materializado quando `target=codex`
 - o alinhamento com os base agents canonicos
 - o alinhamento com `AGENT-CONTRACT-SHAPE.md`
 - o alinhamento com o modelo factual intermediario derivado de `docs/**`
@@ -47,7 +49,8 @@ O gate deve primeiro classificar cada specialized em uma role class canonica:
 - `planning`: `planner`
 - `proof-design`: `validation-eval-designer`
 - `execution-package-design`: `execution-package-designer`
-- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`
+- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`
+- `design-contributor`: `designer`
 - `semantic-review`: `reviewer`
 - `proof-execution`: `validation-runner`
 - `closure`: `finalizer`
@@ -62,7 +65,11 @@ Verificar:
 - frontmatter obrigatorio
 - headings e secoes obrigatorias com naming canonico
 - shape compativel com `AGENT-CONTRACT-SHAPE.md`
-- `target: vscode`, `tools`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
+- `target: vscode`, `tools`, `model`, `agents` no `orchestrator`, `base_agent_version`, `specialization_revision` e `managed_artifact: true`
+- ausencia de `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter VS Code/GitHub
+- limite de 30.000 caracteres respeitado para cada prompt Markdown `.agent.md` gerenciado de VS Code/GitHub
+- para `target=codex`, cada TOML gerenciado contem `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`
+- para `target=codex`, `tools` nao e serializado no TOML controlado
 - remocao de campos legados nao permitidos
 - remocao de `## Tools` residual quando o frontmatter ja e a source of truth
 - existencia de `output surface contract` claro quando o papel puder poluir o chat principal
@@ -188,7 +195,7 @@ Hard fails:
 - o specialized permite `READY`, approval ou execucao direta apos a escolha do DEV sem brief ou pack coerentes
 
 ### 8. Executor ownership check
-Verificar em `coder-backend`, `coder-frontend`, `coder-ios`, `designer` e equivalentes:
+Verificar em `coder-backend`, `coder-frontend`, `coder-ios` e equivalentes de coder executor:
 - coders recebem e executam `EXECUTION PACKAGE` com `WORK_PACKAGE_ID`
 - coders continuam especialistas por stack/projeto, mas nao sao solucionadores locais nem compiladores de pacote
 - leitura local e suficiente para executar o pacote substitui broad discovery como custo normal
@@ -297,17 +304,69 @@ Hard fails:
 
 ### 14. Model-policy compatibility check
 Verificar:
+- todo artifact gerenciado materializa `model`
+- todo Codex agent gerenciado materializa `model_reasoning_effort`
+- VS Code/GitHub agents nao materializam campos operacionais de effort no frontmatter
 - `model_policy` aceita configuracao nova por agent ou por papel fino
-- precedencia esta explicita: `model_policy.agents[agent]` primeiro, depois `model_policy.roles[role]`, depois defaults de compatibilidade
+- precedencia esta explicita: `model_policy.agents[agent]` primeiro, depois `model_policy.roles[role]`, depois defaults de compatibilidade, depois regra interna por role class baseada em `allowed_models`
 - defaults de compatibilidade `reasoning_default`, `coding_default` e `execution_default` continuam aceitos
 - policy nova permite modelos fortes para `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer` e `reviewer`
 - policy nova permite modelos mais baratos para `coder-backend`, `coder-frontend` e `coder-ios`
 - `validation-runner` e `finalizer` podem ficar em faixa intermediaria ou explicitamente definidos
 - qualquer valor escolhido continua subordinado a `allowed_models` quando essa entrada existir
+- ausencia de `model_policy` nao bloqueia quando `allowed_models`, target e role class bastam para resolver o modelo
+- se nao houver base concreta para escolher `model`, o fluxo bloqueia; nao herda picker/default implicito
 
 Hard fails:
+- artifact gerenciado sem `model`
+- Codex agent gerenciado sem `model_reasoning_effort`
+- VS Code/GitHub agent com `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter
 - model policy nova sem fallback compativel com `reasoning_default`, `coding_default` e `execution_default`
 - precedencia ambigua entre configuracao por agent, por role e defaults de compatibilidade
+
+### 14b. Consistency without legacy propagation check
+Verificar:
+- o bloco `## Consistency without legacy propagation` existe no template/base agent canonico, no `reference/agents/*.agent.md` usado pela skill e no artifact final materializado do target
+- o artifact final materializado contem exatamente uma ocorrencia de `## Consistency without legacy propagation`
+- o artifact final materializado nao contem a variante legada `Consistency without legacy propagation:`
+- o artifact final materializado contem as frases sentinela `Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.` e `This policy does not authorize broad refactors`
+- em `target=codex`, essas frases sentinela estao dentro de `developer_instructions`, nao apenas em fonte intermediaria
+- em `target=vscode` ou GitHub, essas frases sentinela estao no corpo final de `.github/agents/*.agent.md`
+- antes do gate final, a geracao/materializacao deve aplicar normalizacao protocol-fixed limitada: converter uma linha isolada `Consistency without legacy propagation:` em `## Consistency without legacy propagation`, sem reescrever o bloco, sem duplicar heading, sem alterar metadata ou campos TOML operacionais
+- compactacao para limite de 30.000 caracteres remove ou reduz apenas conteudo local repetitivo/explicativo; nunca remove bloco protocol-fixed
+- o specialized preserva contratos, comportamento publico, interoperabilidade, schema, APIs, rotas, fluxos e compatibilidade
+- codigo novo e instrucoes de execucao favorecem melhor pratica segura compativel com a stack atual do projeto
+- padroes existentes so sao tratados como normativos quando forem contrato real, interoperabilidade necessaria, decisao arquitetural documentada, requisito explicito do pacote ou consistencia local necessaria para nao quebrar comportamento
+- padroes ruins, frageis, duplicados, inseguros, acidentais ou legados nao sao propagados so porque existem no repo
+- o guidance nao autoriza refactor amplo, reescrita arquitetural, troca de stack, modernizacao oportunista, quebra de contrato publico, alteracao de schema/API sem autorizacao ou mudanca de comportamento nao solicitada
+
+Hard fails:
+- bloco `Consistency without legacy propagation` presente na fonte canonica mas ausente do artifact final materializado
+- artifact final materializado com zero ou mais de uma ocorrencia de `## Consistency without legacy propagation`
+- artifact final materializado contendo a variante legada `Consistency without legacy propagation:`
+- frases sentinela de consistencia presentes no template/base ou reference agent mas ausentes de `developer_instructions` em Codex
+- frases sentinela de consistencia presentes no template/base ou reference agent mas ausentes do corpo final VS Code/GitHub
+- compactacao ou normalizacao remove bloco protocol-fixed para caber no limite de 30.000 caracteres
+- specialized instrui copiar um padrao ruim ou legado sem necessidade de contrato
+- specialized transforma melhoria local segura em refactor amplo escondido
+- reviewer deixa de reprovar propagacao desnecessaria de divida tecnica quando ela afeta qualidade ou contrato
+- finalizer transforma divida descoberta em alteracao escondida em vez de follow-up
+
+### 14c. Stack quality guardrail propagation check
+Verificar:
+- as quatro quality guardrails canonicas existem como skills fonte instalaveis: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e `stnl_mobile_ios_swift_quality`
+- `EXECUTION-LIFECYCLE.md`, `STATUS-GATES.md` e este quality gate nomeiam as quatro guardrails canonicas sem transforma-las em agents
+- `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `validation-runner`, `reviewer` e `finalizer` preservam o contrato nominal de ativacao, carregamento, prova, review e closure das guardrails relevantes ao cut
+- coders especializados preservam somente as guardrails compatíveis com sua superficie: front-end para `coder-frontend`, backend e SQL/persistencia para `coder-backend`, iOS Swift para `coder-ios`
+- o `reference/agents/*.agent.md` instalado e os artifacts finais materializados para VS Code/GitHub e Codex preservam os nomes das guardrails aplicáveis no corpo final ou em `developer_instructions`
+- `REQUIRED_QUALITY_GUARDRAILS` permanece metadado operacional por package, nunca lista de agents roteaveis
+- a compactacao, normalizacao ou especializacao local nao remove nome de guardrail ativa nem troca a skill por resumo local que enfraqueca autoridade
+
+Hard fails:
+- alguma quality guardrail fonte `stnl_*_quality` esperada nao esta instalada ou nao e propagada para os bundles de referencia
+- docs canonicos ou artifacts finais omitem uma guardrail canonica aplicavel ao papel
+- target VS Code/GitHub ou Codex materializado transforma quality guardrail em agent roteavel, executor substituto, reviewer substituto ou checklist universal
+- `REQUIRED_QUALITY_GUARDRAILS` desaparece de package ou executor quando a superficie do cut exige uma guardrail ativa
 
 ### 15. Factual fidelity check
 Verificar:

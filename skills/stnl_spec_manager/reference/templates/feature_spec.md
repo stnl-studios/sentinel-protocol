@@ -23,6 +23,8 @@
 > Keep this file directly consumable, but do not turn it into an execution plan or an early implementation prescription. Detailed investigation or temporary working notes may live elsewhere while the SPEC matures, but no auxiliary artifact should be required to understand the final business scope, rules, acceptance, decisions, or closure captured here.
 >
 > `state` tracks maturity and consumability. `lifecycle_status` tracks whether this SPEC artifact remains active or has been closed after explicit reconciliation against existing evidence.
+>
+> Use canonical stable IDs for questions (`Q-001`), decisions (`D-001`), acceptance criteria (`AC-001`), slices (`SL-001`), risks (`R-001`), and constraints (`C-001`). Every identified item must include the ID in its heading and an explicit `id:` field. Do not renumber, reuse removed IDs, or convert uncertainty into requirements.
 
 ## Executive Summary
 [Describe in 3 to 6 lines what must be implemented, why it must exist, and what final outcome this spec authorizes.]
@@ -111,16 +113,31 @@
 - [Validation rule 2]
 
 ### Product / UX Constraints
-- [Constraint 1]
-- [Constraint 2]
+#### C-001 — [Constraint title]
+- id: C-001
+- category: product_ux
+- constraint: [Constraint]
+- source: [Confirmed source, decision ID, or `pending`]
+
+#### C-002 — [Constraint title]
+- id: C-002
+- category: product_ux
+- constraint: [Constraint]
+- source: [Confirmed source, decision ID, or `pending`]
 
 ### Technical / Operational Constraints
-- [Constraint 1]
-- [Constraint 2]
+#### C-003 — [Constraint title]
+- id: C-003
+- category: technical_operational
+- constraint: [Constraint]
+- source: [Confirmed source, decision ID, or `pending`]
 
 ### Security / Privacy / Compliance
-- [Constraint 1]
-- [Constraint 2]
+#### C-004 — [Constraint title]
+- id: C-004
+- category: security_privacy_compliance
+- constraint: [Constraint]
+- source: [Confirmed source, decision ID, or `pending`]
 
 ### Non-Functional Requirements
 - [Performance / reliability / observability requirement 1]
@@ -153,17 +170,20 @@
 - [Dependency 3]
 
 ## Acceptance Criteria
-### AC-001
+### AC-001 — [Acceptance criterion title]
+- id: AC-001
 **Given** [context]
 **When** [action]
 **Then** [expected result]
 
-### AC-002
+### AC-002 — [Acceptance criterion title]
+- id: AC-002
 **Given** [context]
 **When** [action]
 **Then** [expected result]
 
-### AC-003
+### AC-003 — [Acceptance criterion title]
+- id: AC-003
 **Given** [context]
 **When** [action]
 **Then** [expected result]
@@ -191,9 +211,17 @@
 - primary_evidence: [Evidence source.]
 
 ## Risks
-- [Risk 1]
-- [Risk 2]
-- [Risk 3]
+### R-001 — [Risk title]
+- id: R-001
+- risk: [Risk]
+- impact: low | medium | high
+- mitigation: [Mitigation, decision ID, or `pending`]
+
+### R-002 — [Risk title]
+- id: R-002
+- risk: [Risk]
+- impact: low | medium | high
+- mitigation: [Mitigation, decision ID, or `pending`]
 
 ## Residual Gaps and Conditions
 - [Residual gap, pending validation, or condition that still matters for honest reading of this SPEC. Use `none` when there are no material residuals.]
@@ -208,13 +236,13 @@
 - residuals_after_closure:
   - [Residual item or `none`]
 
-## Optional Working Artifacts
-> List only supporting artifacts that materially helped maturation or may help resume context. They are optional and must never be required to understand the final SPEC captured above.
+## Supporting Working Artifacts
+> Track supporting artifacts that materially helped maturation or may help resume context. In new SPEC creation or legitimate fork, canonical bundle artifacts are required by the bundle contract; conditional artifacts are generated only when applicable. Supporting artifacts become removable or dispensable only under closure and residual-value rules, and must never be the only place to understand final scope, acceptance, decision, or closure.
 
-- `open_questions.md` (optional)
-- `assumptions.md` (optional)
-- `decision_log.md` (optional)
-- `readiness_report.md` (optional)
-- `session_summary.md` (optional)
-- `spec_slices.md` (only when split is needed)
-- `qa_checklist.md` (only when approaching execution readiness)
+- `open_questions.md` (canonical bundle artifact)
+- `assumptions.md` (canonical bundle artifact)
+- `decision_log.md` (canonical bundle artifact)
+- `readiness_report.md` (canonical bundle artifact)
+- `session_summary.md` (canonical bundle artifact)
+- `spec_slices.md` (conditional: only when split is needed)
+- `qa_checklist.md` (conditional: only when approaching execution readiness)

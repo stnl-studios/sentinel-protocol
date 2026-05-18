@@ -14,9 +14,17 @@ import {
     getTargets,
     inspectTarget,
     isIgnoredEntry,
+    listInstalledStaleSkills,
     listSkillFolders,
     parseReferenceManifest,
 } from "../sentinel.mjs";
+
+const QUALITY_GUARDRAIL_SKILLS = [
+    "stnl_frontend_quality",
+    "stnl_backend_quality",
+    "stnl_backend_sql_quality",
+    "stnl_mobile_ios_swift_quality",
+];
 
 const REQUIRED_BUNDLE_PATHS = [
     ["stnl_project_foundation", "reference/docs", "core/CONTEXT.md"],
@@ -134,6 +142,11 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "execution-package-designer",
             "todo` nao entra por default em `coder-backend`, `coder-frontend`, `coder-ios` ou `validation-runner`",
             "Model-policy compatibility check",
+            "model_reasoning_effort",
+            "Consistency without legacy propagation",
+            "Stack quality guardrail propagation check",
+            "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
+            "artifact final materializado",
         ],
     },
     {
@@ -143,6 +156,10 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "## Ordem do fluxo",
             "## Contrato do pacote de execução",
             "execution-package-designer -> orchestrator -> coder(s)",
+            "REQUIRED_QUALITY_GUARDRAILS",
+            "## Contrato das stack quality guardrails",
+            "## Contrato do correction loop",
+            "Toda rodada terminal passa obrigatoriamente pelo `finalizer`",
             "## Regra de closure",
         ],
     },
@@ -151,6 +168,10 @@ const AGENT_REFERENCE_DOC_SPECS = [
         requiredSnippets: [
             "# Status e Gates Canônicos",
             "## Status de decisão e gates",
+            "## Regra de stack quality guardrails",
+            "REQUIRED_QUALITY_GUARDRAILS",
+            "## Regra de correction loop",
+            "todos exigem passagem terminal pelo `finalizer`",
             "## Status de validação e fechamento",
         ],
     },
@@ -192,19 +213,42 @@ const BACKEND_ONLY_SPECIALIZED_AGENT_FILES = [
     "validation-runner.agent.md",
     "finalizer.agent.md",
 ];
+const LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE = "coder-backend.agent.md";
 
 const REQUIRED_AGENT_BODY_SNIPPETS = [
     "## Mission",
     "## Handoff",
     "## Reading contract",
+    "## Consistency without legacy propagation",
 ];
 
+const CONSISTENCY_WITHOUT_LEGACY_PROPAGATION_SNIPPETS = [
+    "## Consistency without legacy propagation",
+    "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
+    "This policy does not authorize broad refactors",
+];
+const CONSISTENCY_POLICY_CANONICAL_HEADING = "## Consistency without legacy propagation";
+const CONSISTENCY_POLICY_LEGACY_MARKER = "Consistency without legacy propagation:";
+
 const CODEX_AGENTS_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "AGENTS.md");
+const BASE_AGENT_TEMPLATE_CHAR_LIMIT = 28000;
+const VSCODE_AGENT_MARKDOWN_CHAR_LIMIT = 30000;
+const CONTROLLED_ALLOWED_MODELS = [
+    "sentinel-strong-model",
+    "sentinel-economy-model",
+];
 const SENTINEL_CODEX_TOML_KEYS = [
     "name",
     "description",
+    "model",
+    "model_reasoning_effort",
     "sandbox_mode",
     "developer_instructions",
+];
+const OPERATIONAL_EFFORT_FRONTMATTER_KEYS = [
+    "reasoning_effort",
+    "thinking_effort",
+    "model_reasoning_effort",
 ];
 const EXPECTED_CODEX_AGENT_SANDBOX_MODE = {
     "orchestrator": "read-only",
@@ -219,6 +263,20 @@ const EXPECTED_CODEX_AGENT_SANDBOX_MODE = {
     "validation-runner": "workspace-write",
     "finalizer": "workspace-write",
     "resync": "workspace-write",
+};
+const EXPECTED_CODEX_AGENT_REASONING_EFFORT = {
+    "orchestrator": "high",
+    "planner": "high",
+    "validation-eval-designer": "high",
+    "execution-package-designer": "high",
+    "reviewer": "high",
+    "designer": "medium",
+    "coder-backend": "medium",
+    "coder-frontend": "medium",
+    "coder-ios": "medium",
+    "validation-runner": "low",
+    "finalizer": "low",
+    "resync": "low",
 };
 
 const EXTERNAL_MEMORY_HARD_BANS = [
@@ -394,8 +452,130 @@ function assertReferenceManifests() {
     }
 }
 
-function runSentinel(command, env) {
-    const result = spawnSync(process.execPath, [path.join(ROOT, "sentinel.mjs"), command], {
+function assertSpecManagerContract() {
+    const specManagerRoot = path.join(SOURCE_DIR, "stnl_spec_manager");
+    const skillContent = fs.readFileSync(path.join(specManagerRoot, "SKILL.md"), "utf8");
+    const specSlicesContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "spec_slices.md"),
+        "utf8"
+    );
+    const readinessContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "readiness_report.md"),
+        "utf8"
+    );
+    const featureSpecContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "feature_spec.md"),
+        "utf8"
+    );
+    const openQuestionsContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "open_questions.md"),
+        "utf8"
+    );
+    const assumptionsContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "assumptions.md"),
+        "utf8"
+    );
+    const decisionLogContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "decision_log.md"),
+        "utf8"
+    );
+    const orchestratorSliceContent = fs.readFileSync(
+        path.join(ROOT, "templates", "prompts", "orchestrator-slice.md"),
+        "utf8"
+    );
+    const orchestratorNextSliceContent = fs.readFileSync(
+        path.join(ROOT, "templates", "prompts", "orchestrator-next-slice.md"),
+        "utf8"
+    );
+
+    assertContentIncludesAll(skillContent, [
+        "`SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded com três dígitos",
+        "`### SL-001 — [Short slice title]`",
+        "`dependencies: [SL-001, SL-002]`",
+        "`S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`",
+        "não normalizar silenciosamente",
+        "Readiness Gate universal",
+        "pergunta bloqueante aberta",
+        "`Q-001`, `Q-002`, `Q-003`",
+        "`D-001`, `D-002`, `D-003`",
+        "`AC-001`, `AC-002`, `AC-003`",
+        "`R-001`, `R-002`, `R-003`",
+        "`C-001`, `C-002`, `C-003`",
+    ], "stnl_spec_manager/SKILL.md slice identity contract");
+
+    assertContentIncludesAll(specSlicesContent, [
+        "## Slice Identity Contract",
+        "canonical_id_format: `SL-001`, `SL-002`, `SL-003`, sequential and zero-padded with three digits",
+        "recommended_heading: `### SL-001 — [Short slice title]`",
+        "id_field_required: every slice must include `id: SL-001`",
+        "dependencies_must_use: canonical slice IDs only, for example `dependencies: [SL-001, SL-002]`",
+        "prohibited_slice_identifiers: `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, title-only references",
+        "### SL-001 — [Short slice title]",
+        "id: SL-001",
+        "dependencies: [SL-001]",
+    ], "spec_slices.md slice identity contract");
+
+    assertContentIncludesAll(readinessContent, [
+        "`Execution Ready` is prohibited while any open question has `blocking: yes`.",
+        "Slice references must use canonical stable IDs only: `SL-001`, `SL-002`, `SL-003`.",
+        "Do not use `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, or title-only references as slice IDs.",
+        "### SL-001 — [Short slice title]",
+        "id: SL-001",
+    ], "readiness_report.md slice identity contract");
+
+    assertContentIncludesAll(featureSpecContent, [
+        "Use canonical stable IDs for questions (`Q-001`), decisions (`D-001`), acceptance criteria (`AC-001`), slices (`SL-001`), risks (`R-001`), and constraints (`C-001`).",
+        "#### C-001 — [Constraint title]",
+        "- id: C-001",
+        "### AC-001 — [Acceptance criterion title]",
+        "- id: AC-001",
+        "### R-001 — [Risk title]",
+        "- id: R-001",
+    ], "feature_spec.md canonical ID contract");
+
+    assertContentIncludesAll(openQuestionsContent, [
+        "### Q-001 — [Generic question title]",
+        "- id: Q-001",
+        "- evidence:",
+        "- why_it_matters:",
+        "- suggested_options:",
+        "C) Other: describe expected behavior",
+        "- default: none",
+        "- do_not_assume: yes",
+        "`Execution Ready` is prohibited while any question with `status: OPEN` and `blocking: yes` remains",
+    ], "open_questions.md sparse intake and blocking gate contract");
+
+    assertContentIncludesAll(assumptionsContent, [
+        "Any `ACTIVE` assumption with `must_be_confirmed_by: before execution ready` blocks `Execution Ready`",
+        "Any material assumption about product behavior, data, permission, persistence, validation, or error handling must also be represented in `open_questions.md`",
+        "related_questions: [Q-001, Q-002]",
+        "must_be_confirmed_by: <before structured | before execution ready | before implementation | optional>",
+        "product | data | permission | persistence | validation | error_handling",
+    ], "assumptions.md execution readiness and material assumptions contract");
+
+    assertContentIncludesAll(decisionLogContent, [
+        "### D-001 — [Decision title]",
+        "- id: D-001",
+        "If a direction is still speculative",
+    ], "decision_log.md canonical ID contract");
+
+    assertContentIncludesAll(orchestratorSliceContent, [
+        "Slice ID canônico:",
+        "<SL-00X>",
+    ], "orchestrator-slice prompt slice identity contract");
+
+    assertContentIncludesAll(orchestratorNextSliceContent, [
+        "ID canônico `SL-001`, `SL-002`, `SL-003`",
+    ], "orchestrator-next-slice prompt slice identity contract");
+
+    assert(
+        !/^###\s+(?:S-\d+|Slice\s+\d+|SLICE\s*-\s*\d+|S\d+|slice-\d+)\b/im.test(specSlicesContent),
+        "spec_slices.md não pode usar heading normativo com identificador legado como S-001, Slice 1, SLICE - 001, S1 ou slice-1"
+    );
+}
+
+function runSentinel(command, env, args = []) {
+    const result = spawnSync(process.execPath, [path.join(ROOT, "sentinel.mjs"), command, ...args], {
         cwd: ROOT,
         env,
         encoding: "utf8",
@@ -412,6 +592,56 @@ function runSentinel(command, env) {
     );
 
     return result;
+}
+
+function runSentinelExpectFailure(command, env, args = []) {
+    const result = spawnSync(process.execPath, [path.join(ROOT, "sentinel.mjs"), command, ...args], {
+        cwd: ROOT,
+        env,
+        encoding: "utf8",
+    });
+
+    assert.notEqual(
+        result.status,
+        0,
+        `Comando deveria falhar: node sentinel.mjs ${command} ${args.join(" ")}`
+    );
+
+    return result;
+}
+
+function assertSourceOnlyDoctorFailsForMissingSourceFile() {
+    const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-source-only-"));
+    const missingRelativePath = path.join("templates", "agents", "reviewer.agent.md");
+
+    try {
+        fs.copyFileSync(path.join(ROOT, "sentinel.mjs"), path.join(tempRoot, "sentinel.mjs"));
+        fs.cpSync(path.join(ROOT, "skills"), path.join(tempRoot, "skills"), { recursive: true });
+        fs.cpSync(path.join(ROOT, "templates"), path.join(tempRoot, "templates"), { recursive: true });
+        fs.rmSync(path.join(tempRoot, missingRelativePath));
+
+        const result = spawnSync(
+            process.execPath,
+            [fs.realpathSync(path.join(tempRoot, "sentinel.mjs")), "doctor", "--source-only"],
+            {
+                cwd: tempRoot,
+                env: { ...process.env, HOME: tempRoot },
+                encoding: "utf8",
+            }
+        );
+
+        assert.notEqual(
+            result.status,
+            0,
+            "doctor --source-only deveria falhar quando um arquivo fonte obrigatório está ausente"
+        );
+        assert(
+            result.stdout.includes(`missing source file: ${missingRelativePath}`),
+            `doctor --source-only não reportou o arquivo fonte ausente: ${missingRelativePath}`
+        );
+    } finally {
+        fs.rmSync(tempRoot, { recursive: true, force: true });
+    }
 }
 
 function assertInstalledArtifactsMatchSources(targetHome) {
@@ -506,6 +736,374 @@ function assertDoctorOutput(output) {
             output.includes(requiredLine),
             `Doctor não reportou a linha esperada: ${requiredLine}`
         );
+    }
+}
+
+function assertQualityGuardrailSourceDefinitions() {
+    for (const skillName of QUALITY_GUARDRAIL_SKILLS) {
+        const skillRoot = path.join(SOURCE_DIR, skillName);
+        const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
+        const openaiContent = fs.readFileSync(path.join(skillRoot, "openai.yaml"), "utf8");
+
+        assert(skillContent.includes("quality guardrail"), `${skillName}/SKILL.md não declara quality guardrail`);
+        assert(openaiContent.includes(`name: "${skillName}"`), `${skillName}/openai.yaml não preserva name`);
+        assert(openaiContent.includes('display_name: "STNL '), `${skillName}/openai.yaml não usa display_name com prefixo STNL`);
+    }
+}
+
+function assertQualityGuardrailsInDocs(docRoot, label) {
+    const lifecycleContent = fs.readFileSync(path.join(docRoot, "workflow", "EXECUTION-LIFECYCLE.md"), "utf8");
+    const statusGatesContent = fs.readFileSync(path.join(docRoot, "workflow", "STATUS-GATES.md"), "utf8");
+    const qualityGateContent = fs.readFileSync(path.join(docRoot, "agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"), "utf8");
+
+    for (const [content, contentLabel] of [
+        [lifecycleContent, `${label}/workflow/EXECUTION-LIFECYCLE.md`],
+        [statusGatesContent, `${label}/workflow/STATUS-GATES.md`],
+        [qualityGateContent, `${label}/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`],
+    ]) {
+        assertContentIncludesAll(content, QUALITY_GUARDRAIL_SKILLS, contentLabel);
+    }
+
+    assert(
+        qualityGateContent.includes("### 14c. Stack quality guardrail propagation check"),
+        `${label}/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md não contém seção canônica de propagação das quality guardrails`
+    );
+}
+
+function assertQualityGuardrailPropagationInAgentSet(agentRoot, label) {
+    const requiredByAgent = {
+        "orchestrator.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "planner.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "validation-eval-designer.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "execution-package-designer.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "validation-runner.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "reviewer.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "finalizer.agent.md": QUALITY_GUARDRAIL_SKILLS,
+        "coder-backend.agent.md": ["stnl_backend_quality", "stnl_backend_sql_quality"],
+        "coder-frontend.agent.md": ["stnl_frontend_quality"],
+        "coder-ios.agent.md": ["stnl_mobile_ios_swift_quality"],
+    };
+
+    for (const [fileName, requiredSkills] of Object.entries(requiredByAgent)) {
+        const content = fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+        assertContentIncludesAll(content, requiredSkills, `${label}/${fileName}`);
+    }
+}
+
+function assertQualityGuardrailPropagationInCodexAgentSet(repoRoot, controlledAgentFiles) {
+    const requiredByAgent = {
+        "orchestrator": QUALITY_GUARDRAIL_SKILLS,
+        "planner": QUALITY_GUARDRAIL_SKILLS,
+        "validation-eval-designer": QUALITY_GUARDRAIL_SKILLS,
+        "execution-package-designer": QUALITY_GUARDRAIL_SKILLS,
+        "validation-runner": QUALITY_GUARDRAIL_SKILLS,
+        "reviewer": QUALITY_GUARDRAIL_SKILLS,
+        "finalizer": QUALITY_GUARDRAIL_SKILLS,
+        "coder-backend": ["stnl_backend_quality", "stnl_backend_sql_quality"],
+        "coder-frontend": ["stnl_frontend_quality"],
+        "coder-ios": ["stnl_mobile_ios_swift_quality"],
+    };
+
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const requiredSkills = requiredByAgent[agentName];
+
+        if (!requiredSkills) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+
+        assertContentIncludesAll(parsed.developer_instructions, requiredSkills, `codex/${agentName}`);
+    }
+}
+
+function assertRound1AntiInferenceHardeningInAgentSet(agentRoot, label) {
+    const requiredByAgent = {
+        "planner.agent.md": [
+            "Do not convert ambiguous product behavior into an assumption.",
+            "NEEDS_DEV_DECISION_BASE",
+            "required or optional field choice",
+            "conflict between SPEC, docs, and code",
+            "When blocking, ask the smallest concrete question",
+        ],
+        "execution-package-designer.agent.md": [
+            "PERMITTED_LOCAL_DECISIONS",
+            "FORBIDDEN_INFERENCES",
+            "REQUIRES_DEV_DECISION_IF",
+            "mechanical, local, reversible decisions inside `OWNED_PATHS`",
+            "the SPEC omits expected behavior",
+        ],
+        "coder-backend.agent.md": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "PERMITTED_LOCAL_DECISIONS",
+        ],
+        "coder-frontend.agent.md": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "FORBIDDEN_INFERENCES",
+        ],
+        "coder-ios.agent.md": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "REQUIRES_DEV_DECISION_IF",
+        ],
+        "reviewer.agent.md": [
+            "Anti-inference review",
+            "unauthorized inference",
+            "product-decision leakage",
+            "passes tests but violates the SPEC",
+            "Do not make reviewer routing mandatory globally",
+        ],
+    };
+
+    for (const [fileName, requiredSnippets] of Object.entries(requiredByAgent)) {
+        const content = fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+        assertContentIncludesAll(content, requiredSnippets, `${label}/${fileName} round 1 anti-inference hardening`);
+    }
+}
+
+function assertRound1AntiInferenceHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
+    const requiredByAgent = {
+        "planner": [
+            "Do not convert ambiguous product behavior into an assumption.",
+            "NEEDS_DEV_DECISION_BASE",
+            "required or optional field choice",
+            "conflict between SPEC, docs, and code",
+            "When blocking, ask the smallest concrete question",
+        ],
+        "execution-package-designer": [
+            "PERMITTED_LOCAL_DECISIONS",
+            "FORBIDDEN_INFERENCES",
+            "REQUIRES_DEV_DECISION_IF",
+            "mechanical, local, reversible decisions inside `OWNED_PATHS`",
+            "the SPEC omits expected behavior",
+        ],
+        "coder-backend": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "PERMITTED_LOCAL_DECISIONS",
+        ],
+        "coder-frontend": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "FORBIDDEN_INFERENCES",
+        ],
+        "coder-ios": [
+            "`Local implementation autonomy`",
+            "local implementation decisions are allowed only when they are mechanical, local, reversible, and inside the execution package",
+            "`Forbidden inference boundary`",
+            "`Blocked handoff shape`",
+            "REQUIRES_DEV_DECISION_IF",
+        ],
+        "reviewer": [
+            "Anti-inference review",
+            "unauthorized inference",
+            "product-decision leakage",
+            "passes tests but violates the SPEC",
+            "Do not make reviewer routing mandatory globally",
+        ],
+    };
+
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const requiredSnippets = requiredByAgent[agentName];
+
+        if (!requiredSnippets) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+
+        assertContentIncludesAll(
+            parsed.developer_instructions,
+            requiredSnippets,
+            `codex/${agentName} round 1 anti-inference hardening`
+        );
+    }
+}
+
+function assertRound2OperationalAxesInAgentSet(agentRoot, label) {
+    const requiredByAgent = {
+        "orchestrator.agent.md": [
+            "defaults `MODE=standard`, `FLOW=supervised`, `RUN=execute` preserve current flow",
+            "MODE_COMPACT_REJECTED",
+            "`MODE=compact`: format-only",
+            "`MODE=strict`: requires reviewer plus stronger proof",
+            "`FLOW=supervised`: no approval between every handoff",
+            "`FLOW=autonomous`: safe cycles, no product/contract/schema/auth decisions",
+            "`RUN=plan`: stops at execution-package-designer; no coder/final completion/slice completion",
+        ],
+        "planner.agent.md": [
+            "`MODE=compact`: shorter `EXECUTION BRIEF`",
+            "`MODE=strict`: reduce inference",
+            "`RUN=plan`: plan only",
+            "`ready_to_execute: yes|no`",
+        ],
+        "validation-eval-designer.agent.md": [
+            "`MODE=compact`: keep the `VALIDATION PACK` shorter",
+            "weak proof still blocks real risk",
+            "`MODE=strict`: require stronger evidence",
+        ],
+        "execution-package-designer.agent.md": [
+            "`MODE=compact` produces a shorter package",
+            "`OBJECTIVE`",
+            "`RUN=plan` produces only a proposed/preparatory package",
+            "it does not authorize coder entry",
+        ],
+        "validation-runner.agent.md": [
+            "`MODE=compact`: risk-proportional evidence",
+            "no weak proof for real risk",
+            "`FLOW=autonomous`: correction loops stop for DEV",
+        ],
+        "reviewer.agent.md": [
+            "Reviewer remains optional in `MODE=standard`",
+            "In `MODE=strict`, review is mandatory",
+            "public contract",
+            "schema/migration",
+        ],
+        "finalizer.agent.md": [
+            "`RUN=plan` is non-terminal planning/preparation",
+            "do not declare a slice complete",
+            "`MODE=compact` changes closure brevity only",
+            "`MODE=strict` requires complete evidence",
+            "`FLOW=autonomous` may finalize canonical cycles",
+        ],
+    };
+
+    for (const [fileName, requiredSnippets] of Object.entries(requiredByAgent)) {
+        const content = fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+        assertContentIncludesAll(content, requiredSnippets, `${label}/${fileName} round 2 operational axes`);
+    }
+}
+
+function assertRound2OperationalAxesInCodexAgents(repoRoot, controlledAgentFiles) {
+    const requiredByAgent = {
+        "orchestrator": [
+            "defaults `MODE=standard`, `FLOW=supervised`, `RUN=execute` preserve current flow",
+            "MODE_COMPACT_REJECTED",
+            "`MODE=compact`: format-only",
+            "`MODE=strict`: requires reviewer plus stronger proof",
+            "`FLOW=supervised`: no approval between every handoff",
+            "`FLOW=autonomous`: safe cycles, no product/contract/schema/auth decisions",
+            "`RUN=plan`: stops at execution-package-designer; no coder/final completion/slice completion",
+        ],
+        "planner": [
+            "`MODE=compact`: shorter `EXECUTION BRIEF`",
+            "`MODE=strict`: reduce inference",
+            "`RUN=plan`: plan only",
+            "`ready_to_execute: yes|no`",
+        ],
+        "validation-eval-designer": [
+            "`MODE=compact`: keep the `VALIDATION PACK` shorter",
+            "weak proof still blocks real risk",
+            "`MODE=strict`: require stronger evidence",
+        ],
+        "execution-package-designer": [
+            "`MODE=compact` produces a shorter package",
+            "`OBJECTIVE`",
+            "`RUN=plan` produces only a proposed/preparatory package",
+            "it does not authorize coder entry",
+        ],
+        "validation-runner": [
+            "`MODE=compact`: risk-proportional evidence",
+            "no weak proof for real risk",
+            "`FLOW=autonomous`: correction loops stop for DEV",
+        ],
+        "reviewer": [
+            "Reviewer remains optional in `MODE=standard`",
+            "In `MODE=strict`, review is mandatory",
+            "public contract",
+            "schema/migration",
+        ],
+        "finalizer": [
+            "`RUN=plan` is non-terminal planning/preparation",
+            "do not declare a slice complete",
+            "`MODE=compact` changes closure brevity only",
+            "`MODE=strict` requires complete evidence",
+            "`FLOW=autonomous` may finalize canonical cycles",
+        ],
+    };
+
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const requiredSnippets = requiredByAgent[agentName];
+
+        if (!requiredSnippets) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+
+        assertContentIncludesAll(
+            parsed.developer_instructions,
+            requiredSnippets,
+            `codex/${agentName} round 2 operational axes`
+        );
+    }
+}
+
+const ROUND3_ORCHESTRATOR_LADDER_SNIPPETS = [
+    "## Decision ladder",
+    "1. Detect `RUN`.",
+    "2. Detect `MODE`.",
+    "3. Detect `FLOW`.",
+    "4. Apply defaults: `MODE=standard`, `FLOW=supervised`, `RUN=execute`.",
+    "5. Identify the current gate.",
+    "6. Check the required artifact for that gate.",
+    "7. Check handoff validity.",
+    "8. Route to the owning agent.",
+    "9. Stop if DEV decision is needed.",
+    "10. Never perform downstream work locally.",
+    "`MODE=compact`: format-only; shorter artifacts and chat, same gates, safety, blockers, proof requirements, and handoff validity.",
+    "`MODE=strict`: requires reviewer plus stronger proof",
+    "`FLOW=supervised`: no approval between every handoff",
+    "`FLOW=autonomous`: safe cycles, no product/contract/schema/auth decisions",
+    "`RUN=plan`: stops at execution-package-designer; no coder/final completion/slice completion",
+    "do not call coders",
+    "do not let `finalizer.agent.md` conclude a slice",
+    "never implements, never closes durable documentation, never absorbs `stnl_project_context`, and never replaces planner, validation design, execution package design, runner, reviewer, finalizer, or resync",
+];
+
+function assertRound3OrchestratorLadderInAgentSet(agentRoot, label) {
+    const content = fs.readFileSync(path.join(agentRoot, "orchestrator.agent.md"), "utf8");
+    assertContentIncludesAll(content, ROUND3_ORCHESTRATOR_LADDER_SNIPPETS, `${label}/orchestrator round 3 decision ladder`);
+}
+
+function assertRound3OrchestratorLadderInCodexAgents(repoRoot) {
+    const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", "orchestrator.toml"), "utf8");
+    const parsed = parseToml(content, "orchestrator.toml");
+
+    assertContentIncludesAll(
+        parsed.developer_instructions,
+        ROUND3_ORCHESTRATOR_LADDER_SNIPPETS,
+        "codex/orchestrator round 3 decision ladder"
+    );
+}
+
+function assertInstalledQualityGuardrailSkills(targetHome) {
+    const targets = getTargets(targetHome);
+
+    for (const target of targets) {
+        for (const skillName of QUALITY_GUARDRAIL_SKILLS) {
+            const installedSkillRoot = path.join(target, skillName);
+            assert(fs.existsSync(path.join(installedSkillRoot, "SKILL.md")), `Quality guardrail ausente em ${target}: ${skillName}`);
+            assert(fs.existsSync(path.join(installedSkillRoot, "openai.yaml")), `openai.yaml ausente em ${target}: ${skillName}`);
+        }
     }
 }
 
@@ -671,6 +1269,27 @@ function renderFrontmatter(data) {
     return lines.join("\n");
 }
 
+function getControlledModelForAgent(agentName) {
+    if ([
+        "orchestrator",
+        "planner",
+        "validation-eval-designer",
+        "execution-package-designer",
+        "reviewer",
+    ].includes(agentName)) {
+        return CONTROLLED_ALLOWED_MODELS[0];
+    }
+
+    return CONTROLLED_ALLOWED_MODELS.at(-1);
+}
+
+function assertValidControlledModel(model, label) {
+    assert(
+        CONTROLLED_ALLOWED_MODELS.includes(model),
+        `${label} materializou model fora de allowed_models controlado: ${model}`
+    );
+}
+
 function parseTomlScalar(rawValue, label) {
     const value = rawValue.trim();
 
@@ -741,14 +1360,18 @@ function renderTomlScalar(value) {
 }
 
 function renderCodexAgentToml(data, label) {
-    assert(!data.developer_instructions.includes("'''"), `developer_instructions incompatível com literal TOML: ${label}`);
+    const developerInstructions = normalizeProtocolFixedConsistencyHeading(data.developer_instructions);
+    assert(!developerInstructions.includes("'''"), `developer_instructions incompatível com literal TOML: ${label}`);
 
     return [
+        "# Sentinel managed artifact: true",
         `name = ${renderTomlScalar(data.name)}`,
         `description = ${renderTomlScalar(data.description)}`,
+        `model = ${renderTomlScalar(data.model)}`,
+        `model_reasoning_effort = ${renderTomlScalar(data.model_reasoning_effort)}`,
         `sandbox_mode = ${renderTomlScalar(data.sandbox_mode)}`,
         "developer_instructions = '''",
-        data.developer_instructions.trim(),
+        developerInstructions.trim(),
         "'''",
         "",
     ].join("\n");
@@ -777,6 +1400,99 @@ function assertContentIncludesAll(content, snippets, label) {
             `${label} não contém o invariante esperado: ${snippet}`
         );
     }
+}
+
+function assertContentExcludesAll(content, snippets, label) {
+    for (const snippet of snippets) {
+        assert(
+            !content.includes(snippet),
+            `${label} contém o invariante proibido: ${snippet}`
+        );
+    }
+}
+
+function assertCanonicalDesignerRoleClassInDocs(docRoot, label) {
+    const checkedDocs = [
+        path.join("agents", "AGENT-CONTRACT-SHAPE.md"),
+        path.join("agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+    ];
+
+    for (const relativePath of checkedDocs) {
+        const content = fs.readFileSync(path.join(docRoot, relativePath), "utf8");
+        const contentLabel = `${label}/${relativePath}`;
+
+        assertContentIncludesAll(content, [
+            "- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`",
+            "- `design-contributor`: `designer`",
+        ], contentLabel);
+        assertContentExcludesAll(content, [
+            ["- `executor`: `coder-backend`, `coder-frontend`, `coder-ios`, ", "`designer`"].join(""),
+            ["`executor`: `coder-backend`, `coder-frontend`, `coder-ios`, ", "`designer`"].join(""),
+        ], contentLabel);
+    }
+}
+
+function countOccurrences(content, snippet) {
+    return content.split(snippet).length - 1;
+}
+
+function assertSingleConsistencyPolicyBlock(content, label) {
+    assertContentIncludesAll(content, CONSISTENCY_WITHOUT_LEGACY_PROPAGATION_SNIPPETS, label);
+    assert.equal(
+        countOccurrences(content, CONSISTENCY_POLICY_CANONICAL_HEADING),
+        1,
+        `${label} deve conter exatamente um bloco Consistency without legacy propagation`
+    );
+    assert(
+        !new RegExp(`^\\s*${escapeRegExp(CONSISTENCY_POLICY_LEGACY_MARKER)}\\s*$`, "m").test(content),
+        `${label} não pode conter marcador legado com dois-pontos`
+    );
+}
+
+function stripConsistencyPolicyBlock(content, label) {
+    const heading = CONSISTENCY_POLICY_CANONICAL_HEADING;
+    const start = content.indexOf(heading);
+    assert(start >= 0, `Fixture negativa sem bloco de consistência para remover: ${label}`);
+
+    const nextHeading = content.indexOf("\n## ", start + heading.length);
+    const end = nextHeading >= 0 ? nextHeading + 1 : content.length;
+    return content.slice(0, start) + content.slice(end);
+}
+
+function escapeRegExp(value) {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function normalizeProtocolFixedConsistencyHeading(content) {
+    const lineBreak = content.includes("\r\n") ? "\r\n" : "\n";
+    const lines = content.split(/\r?\n/);
+    const hasCanonicalHeading = lines.some((line) => line.trim() === CONSISTENCY_POLICY_CANONICAL_HEADING);
+    let repairedLegacyHeading = false;
+
+    const normalizedLines = [];
+
+    for (const line of lines) {
+        if (line.trim() !== CONSISTENCY_POLICY_LEGACY_MARKER) {
+            normalizedLines.push(line);
+            continue;
+        }
+
+        if (!hasCanonicalHeading && !repairedLegacyHeading) {
+            normalizedLines.push(CONSISTENCY_POLICY_CANONICAL_HEADING);
+            repairedLegacyHeading = true;
+        }
+    }
+
+    return normalizedLines.join(lineBreak);
+}
+
+function withLegacyConsistencyHeadingFixture(content) {
+    assert(
+        content.includes(CONSISTENCY_POLICY_CANONICAL_HEADING),
+        "Fixture de variante legada não encontrou heading canônico para substituir"
+    );
+
+    return content.replace(CONSISTENCY_POLICY_CANONICAL_HEADING, CONSISTENCY_POLICY_LEGACY_MARKER);
 }
 
 function assertNoExternalMemoryTermsInText(content, label) {
@@ -829,6 +1545,7 @@ function buildSpecializedFrontmatter(baseFrontmatter, fileName, controlledAgentF
         description: baseFrontmatter.description,
         target: "vscode",
         tools: CONTROLLED_AGENT_TOOLSETS[fileName],
+        model: getControlledModelForAgent(agentName),
         base_agent_version: String(baseFrontmatter.agent_version),
         specialization_revision: 1,
         managed_artifact: true,
@@ -858,11 +1575,26 @@ function getCodexAgentsTemplatePath(agentSkillRoot) {
     return installedTemplatePath;
 }
 
-function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles) {
+function readControlledAgentSourceContent(skillRoot, fileName, options = {}) {
+    const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
+    const sourceContent = fs.readFileSync(sourcePath, "utf8");
+
+    if (options.legacyConsistencyHeadingFile === fileName) {
+        return withLegacyConsistencyHeadingFixture(sourceContent);
+    }
+
+    return sourceContent;
+}
+
+function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
     for (const fileName of controlledAgentFiles) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
-        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const sourceContent = readControlledAgentSourceContent(skillRoot, fileName, options);
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const normalizedBody = fitControlledVscodeFixtureBody(
+            normalizeProtocolFixedConsistencyHeading(body),
+            fileName
+        );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
             fileName,
@@ -871,18 +1603,45 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles) 
 
         writeFile(
             path.join(repoRoot, ".github", "agents", fileName),
-            renderFrontmatter(specializedFrontmatter) + body
+            renderFrontmatter(specializedFrontmatter) + normalizedBody
         );
     }
+}
+
+function fitControlledVscodeFixtureBody(body, fileName) {
+    if (fileName !== "orchestrator.agent.md") {
+        return body;
+    }
+
+    return stripMarkdownSection(
+        stripMarkdownSection(body, "## Specialization boundaries"),
+        "## Project-specializable part"
+    );
+}
+
+function fitBackendOnlyVscodeFixtureBody(body, fileName) {
+    const fittedBody = fitControlledVscodeFixtureBody(body, fileName);
+
+    if (fittedBody.includes("## Project-specializable part")) {
+        return stripMarkdownSection(fittedBody, "## Project-specializable part");
+    }
+
+    return fittedBody;
+}
+
+function stripMarkdownSection(content, heading) {
+    const start = content.indexOf(heading);
+    assert(start >= 0, `Fixture sem seção esperada para remover: ${heading}`);
+
+    const nextHeading = content.indexOf("\n## ", start + heading.length);
+    const end = nextHeading >= 0 ? nextHeading + 1 : content.length;
+    return content.slice(0, start) + content.slice(end);
 }
 
 function renderBackendOnlySpecializedBody(body, fileName) {
     const localSpecialization = [
         "## Project specialization",
-        "- Fixture specialization: backend-only Node.js/TypeScript service.",
-        "- Canonical implementation surface: `src/backend/**`.",
-        "- Canonical lightweight proof: focused backend checks or explicit harness limitation from `docs/core/TESTING.md`.",
-        "- Frontend, iOS and design agents are intentionally not materialized for this fixture.",
+        "backend-only Node.js/TypeScript service.",
         "",
     ].join("\n");
 
@@ -895,6 +1654,10 @@ function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const normalizedBody = fitBackendOnlyVscodeFixtureBody(
+            normalizeProtocolFixedConsistencyHeading(body),
+            fileName
+        );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
             fileName,
@@ -905,7 +1668,7 @@ function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
 
         writeFile(
             path.join(repoRoot, ".github", "agents", fileName),
-            renderFrontmatter(specializedFrontmatter) + renderBackendOnlySpecializedBody(body, fileName)
+            renderFrontmatter(specializedFrontmatter) + renderBackendOnlySpecializedBody(normalizedBody, fileName)
         );
     }
 }
@@ -953,22 +1716,27 @@ function renderCodexAgentsIndex(template, agentNames) {
         .replace("{{LOCAL_NOTES}}", "- Smoke fixture for controlled Codex materialization.");
 }
 
-function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles) {
+function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
     const agentNames = controlledAgentFiles.map((fileName) => canonicalAgentIdFromFileName(fileName));
 
     for (const fileName of controlledAgentFiles) {
         const agentName = canonicalAgentIdFromFileName(fileName);
         const sandboxMode = EXPECTED_CODEX_AGENT_SANDBOX_MODE[agentName];
+        const modelReasoningEffort = EXPECTED_CODEX_AGENT_REASONING_EFFORT[agentName];
         assert(sandboxMode, `Sandbox Codex esperado não mapeado para agent controlado: ${agentName}`);
+        assert(modelReasoningEffort, `Effort Codex esperado não mapeado para agent controlado: ${agentName}`);
 
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
-        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const sourceContent = readControlledAgentSourceContent(skillRoot, fileName, options);
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const normalizedBody = normalizeProtocolFixedConsistencyHeading(body);
         const tomlContent = renderCodexAgentToml({
             name: agentName,
             description: baseFrontmatter.description,
+            model: getControlledModelForAgent(agentName),
+            model_reasoning_effort: modelReasoningEffort,
             sandbox_mode: sandboxMode,
-            developer_instructions: body,
+            developer_instructions: normalizedBody,
         }, sourcePath);
 
         writeFile(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), tomlContent);
@@ -1103,6 +1871,20 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
             "vscode",
             `Agent especializado sem target canônico: ${materializedPath}`
         );
+        assertValidControlledModel(
+            materializedFrontmatter.model,
+            `vscode agent ${materializedPath}`
+        );
+        for (const effortKey of OPERATIONAL_EFFORT_FRONTMATTER_KEYS) {
+            assert(
+                !Object.hasOwn(materializedFrontmatter, effortKey),
+                `Agent VS Code/GitHub não deve serializar effort operacional no frontmatter (${effortKey}): ${materializedPath}`
+            );
+        }
+        assert(
+            materializedContent.length <= VSCODE_AGENT_MARKDOWN_CHAR_LIMIT,
+            `Agent VS Code/GitHub excede ${VSCODE_AGENT_MARKDOWN_CHAR_LIMIT} caracteres: ${materializedPath}`
+        );
         assert.deepEqual(
             materializedFrontmatter.tools,
             CONTROLLED_AGENT_TOOLSETS[fileName],
@@ -1142,6 +1924,7 @@ function assertControlledAgentMaterialization(skillRoot, repoRoot, controlledAge
             "description",
             "target",
             "tools",
+            "model",
             "base_agent_version",
             "specialization_revision",
             "managed_artifact",
@@ -1185,6 +1968,7 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
         "EXECUTION PACKAGE",
         "WORK_PACKAGE_ID",
         "OWNED_PATHS",
+        "REQUIRED_QUALITY_GUARDRAILS",
         "BLOCK_IF",
         "does not coordinate",
     ]);
@@ -1255,6 +2039,7 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
         assert(content.includes("WORK_PACKAGE_ID"), `${coderFile} não exige WORK_PACKAGE_ID`);
         assert(content.includes("do not redefine the cut"), `${coderFile} não bloqueia redefinição do cut`);
         assert(content.includes("do not rewrite, recompile, or reinterpret the `EXECUTION PACKAGE`"), `${coderFile} não bloqueia recompilação do pacote`);
+        assert(content.includes("Stack quality guardrail use"), `${coderFile} não aplica stack quality guardrails`);
         assert(
             !CONTROLLED_AGENT_TOOLSETS[coderFile].includes("todo"),
             `${coderFile} não deve receber todo por default`
@@ -1285,12 +2070,20 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
 }
 
 function assertProtocolHardeningInReferenceAgents(skillRoot) {
+    const referenceAgentsRoot = path.join(skillRoot, "reference", "agents");
+    const referenceAgentFiles = listRelativeFiles(referenceAgentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort();
     const agentContents = new Map(
-        REQUIRED_CONTROLLED_AGENT_FILES.map((fileName) => [
+        referenceAgentFiles.map((fileName) => [
             fileName,
-            fs.readFileSync(path.join(skillRoot, "reference", "agents", fileName), "utf8"),
+            fs.readFileSync(path.join(referenceAgentsRoot, fileName), "utf8"),
         ])
     );
+
+    for (const [fileName, content] of agentContents.entries()) {
+        assertSingleConsistencyPolicyBlock(content, `${fileName} reference consistency policy`);
+    }
 
     for (const coderFile of ["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"]) {
         assertContentIncludesAll(agentContents.get(coderFile), [
@@ -1308,17 +2101,66 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "EXECUTOR_HANDOFF_INVALID",
         "absent handoff",
         "implicit terminal state",
+        "invalid preparation handoff",
         "intermediate progress update",
         "valid executor `READY`",
+        "Activate stack quality guardrails as downstream constraints",
+        "CORRECTION PACK",
+        "each slice or round has at most 2 automatic correction rounds",
+        "the same `fingerprint` or `root_cause` may receive at most 1 automatic correction attempt",
+        "It may reuse the current `EXECUTION PACKAGE` only when the correction clearly remains in the same `WORK_PACKAGE_ID`",
+        "If the correction changes boundary, ownership, `DO_NOT_TOUCH`, expected validation, relevant risk, probable files/surfaces, or execution scope",
+        "Automatic correction cannot bypass package design",
         "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+        "Every terminal round outcome must pass through `finalizer.agent.md`",
     ], "orchestrator consumer-side rejection");
+
+    assertContentIncludesAll(agentContents.get("planner.agent.md"), [
+        "Stack quality guardrail detection",
+        "Do not rewrite the guardrail content",
+        "do not treat guardrails as agents",
+        "NEEDS_DEV_DECISION_BASE",
+        "exactly the missing decision or fact needed to unblock the `EXECUTION BRIEF`",
+    ], "planner stack quality guardrail detection");
+
+    assertContentIncludesAll(agentContents.get("validation-eval-designer.agent.md"), [
+        "Stack quality guardrail proof design",
+        "convert only cut-relevant guardrail implications",
+        "Do not paste full guardrails or add unrelated ones by reflex",
+        "separates pre-execution proof design from post-execution validation",
+        "Do not label weak proof as clean readiness",
+    ], "validation-eval-designer stack quality guardrail proof design");
+
+    assertContentIncludesAll(agentContents.get("execution-package-designer.agent.md"), [
+        "PRE_EXECUTION_READINESS",
+        "APPLICABLE_QUALITY_GUARDRAILS",
+        "NON_APPLICABLE_QUALITY_GUARDRAILS",
+        "MUST_NOT_CHANGE",
+        "does not run tests against new code",
+        "orchestrator-routed `CORRECTION PACK`",
+        "Do not transfer ambiguity to coder",
+    ], "execution-package-designer pre-execution readiness");
 
     assertContentIncludesAll(agentContents.get("validation-runner.agent.md"), [
         "valid executor `READY` handoff",
         "`Entry evidence gate`",
         "not a validation target",
+        "Stack quality guardrail checks",
+        "emit exactly one `CORRECTION PACK` block to the orchestrator before terminal closure",
+        "The block heading must be exactly `CORRECTION PACK`",
+        "Do not emit a narrative correction request outside `CORRECTION PACK`",
+        "When emitting `CORRECTION PACK`, do not emit `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED` in the same handoff",
         "Preserve that the runner could not honestly enter because the executor handoff was invalid",
     ], "validation-runner artifact gate");
+
+    assertContentIncludesAll(agentContents.get("reviewer.agent.md"), [
+        "Stack quality guardrail review",
+        "Do not invoke unrelated guardrails by reflex",
+        "return exactly one formal `CORRECTION PACK` block to `orchestrator.agent.md`",
+        "The block heading must be exactly `CORRECTION PACK`",
+        "When emitting `CORRECTION PACK`, do not emit `READY` or `BLOCKED` in the same handoff",
+        "material structural risk",
+    ], "reviewer stack quality guardrail review");
 
     assertContentIncludesAll(agentContents.get("finalizer.agent.md"), [
         "closure ledger",
@@ -1327,13 +2169,100 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "`resync: yes/no`",
         "`resync: yes` or `resync: no`",
         "does not mean the runner verdict was `PASS`",
+        "Stack quality guardrail closure",
         "`Invalid closure forms`",
+        "residual correction pack",
+        "correction budget exhaustion",
     ], "finalizer explicit closure");
+}
+
+function assertProtocolHardeningInTemplateAgents() {
+    const templateAgentsRoot = path.join(ROOT, "templates", "agents");
+    const templateAgentFiles = listRelativeFiles(templateAgentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort();
+
+    assert(templateAgentFiles.length > 0, "Nenhum template agent encontrado para validar policy protocol-fixed");
+
+    for (const fileName of templateAgentFiles) {
+        const content = fs.readFileSync(path.join(templateAgentsRoot, fileName), "utf8");
+        assertSingleConsistencyPolicyBlock(content, `${fileName} template consistency policy`);
+    }
+
+    const designerContent = fs.readFileSync(path.join(templateAgentsRoot, "designer.agent.md"), "utf8");
+    assertContentIncludesAll(designerContent, [
+        "role class: `design-contributor`",
+    ], "templates/agents/designer.agent.md role class");
+    assertContentExcludesAll(designerContent, [
+        "role class: `executor`",
+        "role class: executor",
+        "executor-class specialist",
+    ], "templates/agents/designer.agent.md role class drift");
+}
+
+function assertBaseAgentTemplateSizeLimit() {
+    const templateAgentsRoot = path.join(ROOT, "templates", "agents");
+    const oversizedAgents = listRelativeFiles(templateAgentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort()
+        .map((relativePath) => {
+            const templatePath = path.join(templateAgentsRoot, relativePath);
+            return {
+                relativePath: path.join("templates", "agents", relativePath),
+                size: fs.readFileSync(templatePath, "utf8").length,
+            };
+        })
+        .filter((entry) => entry.size > BASE_AGENT_TEMPLATE_CHAR_LIMIT);
+
+    assert.equal(
+        oversizedAgents.length,
+        0,
+        [
+            `Base agent template excede ${BASE_AGENT_TEMPLATE_CHAR_LIMIT} caracteres:`,
+            ...oversizedAgents.map((entry) => `${entry.relativePath}: ${entry.size}`),
+        ].join("\n")
+    );
+}
+
+function assertCorrectionLoopPolicyInTemplateDocs() {
+    const lifecycleContent = fs.readFileSync(
+        path.join(ROOT, "templates", "docs", "workflow", "EXECUTION-LIFECYCLE.md"),
+        "utf8"
+    );
+    const statusGatesContent = fs.readFileSync(
+        path.join(ROOT, "templates", "docs", "workflow", "STATUS-GATES.md"),
+        "utf8"
+    );
+
+    assertContentIncludesAll(lifecycleContent, [
+        "Problemas corrigíveis dentro do escopo aprovado devem voltar ao `orchestrator` antes de virarem fechamento terminal",
+        "marcador literal `CORRECTION PACK`",
+        "não podem emitir verdict/status terminal no mesmo handoff",
+        "cada slice/rodada pode ter no máximo 2 correction rounds automáticos",
+        "mesmo `WORK_PACKAGE_ID`, mesmos boundaries, mesmo ownership",
+        "Se a correção alterar boundary, ownership, `DO_NOT_TOUCH`, validação esperada, risco relevante",
+        "Correção automática não pode virar bypass do package design",
+        "Correction round é correção mínima, não replanejamento, redesign ou refactor amplo",
+        "valida se o handoff está pronto para execução",
+    ], "templates/docs/workflow/EXECUTION-LIFECYCLE.md correction loop");
+
+    assertContentIncludesAll(statusGatesContent, [
+        "bloco formal `CORRECTION PACK`",
+        "nem handoff que combine `CORRECTION PACK` com verdict/status terminal",
+        "O `orchestrator` decide se o `CORRECTION PACK` é corrigível automaticamente dentro do escopo",
+        "O `EXECUTION PACKAGE` vigente só pode ser reutilizado quando a correção permanecer no mesmo `WORK_PACKAGE_ID`",
+        "Se a correção alterar boundary, ownership, `DO_NOT_TOUCH`, validação esperada, risco relevante",
+        "correção automática não pode virar bypass do package design",
+        "refactor amplo",
+        "preservando correction pack residual e evidência",
+        "Esse gate valida handoff/readiness, não roda teste de código novo",
+    ], "templates/docs/workflow/STATUS-GATES.md correction loop");
 }
 
 function assertProtocolHardeningInCanonicalRefs(skillRoot) {
     const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
     assertContentIncludesAll(skillContent, [
+        "- `design-contributor`: `designer`",
         "nenhum `target` (`vscode` ou `codex`) pode relaxar executor `READY/BLOCKED`",
         "Blocos protocol-fixed non-compressible",
         "não podem ser resumidos, removidos, enfraquecidos, reescritos do zero prático",
@@ -1351,6 +2280,16 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "finalizer` só pode fechar `READY` com closure ledger explícito",
         "`DONE` yes/no com racional",
         "resync yes/no com racional",
+        "Contrato operacional de `model` e effort",
+        "nunca entregar agent gerenciado sem `model`",
+        "`model_reasoning_effort` é obrigatório",
+        "Consistency without legacy propagation",
+        "Seguir o padrão do projeto não significa copiar dívida técnica",
+        "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
+        "a propagação protocol-fixed deve ser validada comparando template/base agent canônico, `reference/agents/*.agent.md` instalado e artifact final materializado do target",
+        "REQUIRED_QUALITY_GUARDRAILS",
+        "stnl_frontend_quality",
+        "stnl_backend_sql_quality",
     ], "stnl_project_agent_specializer anti-drift");
 
     const qualityGateContent = fs.readFileSync(
@@ -1367,6 +2306,11 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "validation-runner` só entra com artifact validável de executor `READY` válido",
         "finalizer` não confunde status próprio (`READY`/`BLOCKED`) com verdict do runner",
         "finalizer READY` sem `DONE` yes/no explícito ou sem resync yes/no explícito",
+        "todo artifact gerenciado materializa `model`",
+        "Consistency without legacy propagation check",
+        "Stack quality guardrail propagation check",
+        "frases sentinela de consistencia presentes no template/base ou reference agent mas ausentes de `developer_instructions` em Codex",
+        "compactacao ou normalizacao remove bloco protocol-fixed para caber no limite de 30.000 caracteres",
     ], "agent specialization quality gate hardening");
 
     const lifecycleContent = fs.readFileSync(
@@ -1378,6 +2322,9 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "não entra no `validation-runner`",
         "somente quando houver executor `READY` válido",
         "`finalizer` emite apenas `READY` ou `BLOCKED`",
+        "REQUIRED_QUALITY_GUARDRAILS",
+        "## Contrato das stack quality guardrails",
+        "Toda rodada terminal passa obrigatoriamente pelo `finalizer`",
         "`finalizer READY` exige closure ledger explícito",
     ], "execution lifecycle hardening");
 }
@@ -1386,12 +2333,15 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
     for (const fileName of controlledAgentFiles) {
         const content = fs.readFileSync(path.join(repoRoot, ".github", "agents", fileName), "utf8");
 
+        assertSingleConsistencyPolicyBlock(content, `${fileName} vscode consistency policy`);
+
         if (["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"].includes(fileName)) {
             assertContentIncludesAll(content, [
                 "No other terminal handoff is valid.",
                 "`Terminal handoff contract`",
                 "`Partial-edit blocking`",
                 "`Invalid terminal forms`",
+                "Stack quality guardrail use",
             ], `${fileName} vscode hardening`);
         }
 
@@ -1399,7 +2349,25 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
             assertContentIncludesAll(content, [
                 "EXECUTOR_HANDOFF_INVALID",
                 "valid executor `READY`",
+                "Activate stack quality guardrails as downstream constraints",
                 "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+                "Every terminal round outcome must pass through `finalizer.agent.md`",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "planner.agent.md") {
+            assertContentIncludesAll(content, [
+                "Stack quality guardrail detection",
+                "Do not rewrite the guardrail content",
+                "do not treat guardrails as agents",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "validation-eval-designer.agent.md") {
+            assertContentIncludesAll(content, [
+                "Stack quality guardrail proof design",
+                "convert only cut-relevant guardrail implications",
+                "Do not paste full guardrails or add unrelated ones by reflex",
             ], `${fileName} vscode hardening`);
         }
 
@@ -1408,6 +2376,15 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
                 "valid executor `READY` handoff",
                 "`Entry evidence gate`",
                 "not a validation target",
+                "Stack quality guardrail checks",
+            ], `${fileName} vscode hardening`);
+        }
+
+        if (fileName === "reviewer.agent.md") {
+            assertContentIncludesAll(content, [
+                "Stack quality guardrail review",
+                "Do not invoke unrelated guardrails by reflex",
+                "material structural risk",
             ], `${fileName} vscode hardening`);
         }
 
@@ -1418,6 +2395,7 @@ function assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFi
                 "`DONE: yes` or `DONE: no`",
                 "`resync: yes/no`",
                 "`resync: yes` or `resync: no`",
+                "Stack quality guardrail closure",
                 "`Invalid closure forms`",
             ], `${fileName} vscode hardening`);
         }
@@ -1431,12 +2409,15 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
         const parsed = parseToml(content, `${agentName}.toml`);
         const instructions = parsed.developer_instructions;
 
+        assertSingleConsistencyPolicyBlock(instructions, `${agentName} codex developer_instructions consistency policy`);
+
         if (["coder-backend", "coder-frontend", "coder-ios"].includes(agentName)) {
             assertContentIncludesAll(instructions, [
                 "No other terminal handoff is valid.",
                 "`Terminal handoff contract`",
                 "`Partial-edit blocking`",
                 "`Invalid terminal forms`",
+                "Stack quality guardrail use",
             ], `${agentName} codex hardening`);
         }
 
@@ -1444,7 +2425,25 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
             assertContentIncludesAll(instructions, [
                 "EXECUTOR_HANDOFF_INVALID",
                 "valid executor `READY`",
+                "Activate stack quality guardrails as downstream constraints",
                 "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
+                "Every terminal round outcome must pass through `finalizer.agent.md`",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "planner") {
+            assertContentIncludesAll(instructions, [
+                "Stack quality guardrail detection",
+                "Do not rewrite the guardrail content",
+                "do not treat guardrails as agents",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "validation-eval-designer") {
+            assertContentIncludesAll(instructions, [
+                "Stack quality guardrail proof design",
+                "convert only cut-relevant guardrail implications",
+                "Do not paste full guardrails or add unrelated ones by reflex",
             ], `${agentName} codex hardening`);
         }
 
@@ -1453,6 +2452,15 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
                 "valid executor `READY` handoff",
                 "`Entry evidence gate`",
                 "not a validation target",
+                "Stack quality guardrail checks",
+            ], `${agentName} codex hardening`);
+        }
+
+        if (agentName === "reviewer") {
+            assertContentIncludesAll(instructions, [
+                "Stack quality guardrail review",
+                "Do not invoke unrelated guardrails by reflex",
+                "material structural risk",
             ], `${agentName} codex hardening`);
         }
 
@@ -1463,9 +2471,45 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
                 "`DONE: yes` or `DONE: no`",
                 "`resync: yes/no`",
                 "`resync: yes` or `resync: no`",
+                "Stack quality guardrail closure",
                 "`Invalid closure forms`",
             ], `${agentName} codex hardening`);
         }
+    }
+}
+
+function assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const templatePath = path.join(ROOT, "templates", "agents", fileName);
+        const referencePath = path.join(skillRoot, "reference", "agents", fileName);
+        const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
+        const templateContent = fs.readFileSync(templatePath, "utf8");
+        const referenceContent = fs.readFileSync(referencePath, "utf8");
+        const materializedContent = fs.readFileSync(materializedPath, "utf8");
+
+        assertSingleConsistencyPolicyBlock(templateContent, `${fileName} template consistency policy`);
+        assertSingleConsistencyPolicyBlock(referenceContent, `${fileName} reference consistency policy`);
+        assertSingleConsistencyPolicyBlock(materializedContent, `${fileName} vscode materialized consistency policy`);
+    }
+}
+
+function assertConsistencyPolicyPropagationToCodexAgents(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const templatePath = path.join(ROOT, "templates", "agents", fileName);
+        const referencePath = path.join(skillRoot, "reference", "agents", fileName);
+        const materializedPath = path.join(repoRoot, ".codex", "agents", `${agentName}.toml`);
+        const templateContent = fs.readFileSync(templatePath, "utf8");
+        const referenceContent = fs.readFileSync(referencePath, "utf8");
+        const materializedContent = fs.readFileSync(materializedPath, "utf8");
+        const parsed = parseToml(materializedContent, materializedPath);
+
+        assertSingleConsistencyPolicyBlock(templateContent, `${fileName} template consistency policy`);
+        assertSingleConsistencyPolicyBlock(referenceContent, `${fileName} reference consistency policy`);
+        assertSingleConsistencyPolicyBlock(
+            parsed.developer_instructions,
+            `${agentName} codex developer_instructions consistency policy`
+        );
     }
 }
 
@@ -1497,6 +2541,20 @@ function assertBackendOnlySpecializedMaterialization(repoRoot) {
             2,
             `Especialização backend-only deve simular revision 2: ${materializedPath}`
         );
+        assertValidControlledModel(
+            materializedFrontmatter.model,
+            `backend-only vscode agent ${materializedPath}`
+        );
+        for (const effortKey of OPERATIONAL_EFFORT_FRONTMATTER_KEYS) {
+            assert(
+                !Object.hasOwn(materializedFrontmatter, effortKey),
+                `Backend-only VS Code/GitHub não deve serializar effort operacional no frontmatter (${effortKey}): ${materializedPath}`
+            );
+        }
+        assert(
+            content.length <= VSCODE_AGENT_MARKDOWN_CHAR_LIMIT,
+            `Backend-only VS Code/GitHub excede ${VSCODE_AGENT_MARKDOWN_CHAR_LIMIT} caracteres: ${materializedPath}`
+        );
     }
 
     assertVscodeOperationalIdentity(
@@ -1519,6 +2577,100 @@ function assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(skill
         );
     } finally {
         fs.rmSync(weakRepoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertConsistencyPolicyRejectsVscodeMaterializationDrift(skillRoot, controlledAgentFiles) {
+    const weakRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-no-consistency-"));
+
+    try {
+        createControlledFixtureRepo(weakRepoRoot);
+        materializeControlledAgents(skillRoot, weakRepoRoot, controlledAgentFiles);
+
+        const driftFileName = "coder-backend.agent.md";
+        const driftPath = path.join(weakRepoRoot, ".github", "agents", driftFileName);
+        const driftContent = fs.readFileSync(driftPath, "utf8");
+        writeFile(driftPath, stripConsistencyPolicyBlock(driftContent, driftPath));
+
+        assert.throws(
+            () => assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, weakRepoRoot, controlledAgentFiles),
+            /não contém o invariante esperado/,
+            "Validação protocol-fixed deveria rejeitar VS Code/GitHub final sem Consistency without legacy propagation"
+        );
+    } finally {
+        fs.rmSync(weakRepoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertConsistencyPolicyRejectsCodexMaterializationDrift(skillRoot, controlledAgentFiles) {
+    const weakRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-no-consistency-"));
+
+    try {
+        createControlledFixtureRepo(weakRepoRoot);
+        materializeControlledCodexAgents(skillRoot, weakRepoRoot, controlledAgentFiles);
+
+        const driftAgentName = "coder-backend";
+        const driftPath = path.join(weakRepoRoot, ".codex", "agents", `${driftAgentName}.toml`);
+        const driftContent = fs.readFileSync(driftPath, "utf8");
+        const parsed = parseToml(driftContent, driftPath);
+        writeFile(driftPath, renderCodexAgentToml({
+            ...parsed,
+            developer_instructions: stripConsistencyPolicyBlock(parsed.developer_instructions, driftPath),
+        }, driftPath));
+
+        assert.throws(
+            () => assertConsistencyPolicyPropagationToCodexAgents(skillRoot, weakRepoRoot, controlledAgentFiles),
+            /não contém o invariante esperado/,
+            "Validação protocol-fixed deveria rejeitar Codex final sem Consistency without legacy propagation em developer_instructions"
+        );
+    } finally {
+        fs.rmSync(weakRepoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertConsistencyPolicyRepairsLegacyVscodeMaterialization(skillRoot, controlledAgentFiles) {
+    const repairedRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-legacy-consistency-"));
+
+    try {
+        createControlledFixtureRepo(repairedRepoRoot);
+        materializeControlledAgents(skillRoot, repairedRepoRoot, controlledAgentFiles, {
+            legacyConsistencyHeadingFile: LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE,
+        });
+
+        const repairedPath = path.join(repairedRepoRoot, ".github", "agents", LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE);
+        const repairedContent = fs.readFileSync(repairedPath, "utf8");
+
+        assertSingleConsistencyPolicyBlock(
+            repairedContent,
+            `${LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE} vscode legacy consistency repair`
+        );
+        assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, repairedRepoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repairedRepoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertConsistencyPolicyRepairsLegacyCodexMaterialization(skillRoot, controlledAgentFiles) {
+    const repairedRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-legacy-consistency-"));
+
+    try {
+        createControlledFixtureRepo(repairedRepoRoot);
+        materializeControlledCodexAgents(skillRoot, repairedRepoRoot, controlledAgentFiles, {
+            legacyConsistencyHeadingFile: LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE,
+        });
+
+        const agentName = canonicalAgentIdFromFileName(LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE);
+        const repairedPath = path.join(repairedRepoRoot, ".codex", "agents", `${agentName}.toml`);
+        const repairedContent = fs.readFileSync(repairedPath, "utf8");
+        const parsed = parseToml(repairedContent, repairedPath);
+
+        assertSingleConsistencyPolicyBlock(
+            parsed.developer_instructions,
+            `${agentName} codex legacy consistency repair`
+        );
+        assertConsistencyPolicyPropagationToCodexAgents(skillRoot, repairedRepoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repairedRepoRoot, { recursive: true, force: true });
     }
 }
 
@@ -1545,6 +2697,7 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
         const parsed = parseToml(content, materializedPath);
         const agentName = relativePath.replace(/\.toml$/, "");
         const expectedSandboxMode = EXPECTED_CODEX_AGENT_SANDBOX_MODE[agentName];
+        const expectedReasoningEffort = EXPECTED_CODEX_AGENT_REASONING_EFFORT[agentName];
 
         assert.deepEqual(
             Object.keys(parsed).sort(),
@@ -1559,6 +2712,20 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
             );
         }
 
+        assert(
+            content.startsWith("# Sentinel managed artifact: true\n"),
+            `Agent codex gerenciado deve usar comentario/header seguro, não campo runtime desconhecido: ${materializedPath}`
+        );
+        assertValidControlledModel(
+            parsed.model,
+            `codex agent ${materializedPath}`
+        );
+        assert(expectedReasoningEffort, `Effort Codex esperado não mapeado para agent materializado: ${agentName}`);
+        assert.equal(
+            parsed.model_reasoning_effort,
+            expectedReasoningEffort,
+            `Agent codex com model_reasoning_effort divergente: ${materializedPath}`
+        );
         assert(expectedSandboxMode, `Sandbox Codex esperado não mapeado para agent materializado: ${agentName}`);
         assert.equal(
             parsed.sandbox_mode,
@@ -1574,6 +2741,12 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
             !Object.hasOwn(parsed, "tools"),
             `Agent codex não deve serializar tools no TOML: ${materializedPath}`
         );
+        for (const forbiddenKey of ["reasoning_effort", "thinking_effort"]) {
+            assert(
+                !Object.hasOwn(parsed, forbiddenKey),
+                `Agent codex não deve inventar campo operacional de effort (${forbiddenKey}): ${materializedPath}`
+            );
+        }
         assert(
             !content.includes("danger-full-access"),
             `Agent codex contém danger-full-access no TOML: ${materializedPath}`
@@ -1592,6 +2765,8 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         "## Runtime Hardening",
         "## Managed Agents",
         ".codex/agents/",
+        "`model`",
+        "`model_reasoning_effort`",
         "`sandbox_mode`",
         "`read-only`",
         "`workspace-write`",
@@ -1650,17 +2825,48 @@ function runControlledMaterializationSmoke(targetHome) {
 
         assertControlledContextMaterialization(vscodeRepoRoot);
         assertControlledReferenceDocs(agentSkillRoot);
+        assertProtocolHardeningInTemplateAgents();
         assertProtocolHardeningInReferenceAgents(agentSkillRoot);
+        assertRound1AntiInferenceHardeningInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
+        assertRound2OperationalAxesInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
+        assertRound3OrchestratorLadderInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
+        assertQualityGuardrailsInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
+        assertCanonicalDesignerRoleClassInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertRound1AntiInferenceHardeningInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
+        assertRound2OperationalAxesInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
+        assertRound3OrchestratorLadderInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
+        assertQualityGuardrailPropagationInAgentSet(path.join(vscodeRepoRoot, ".github", "agents"), "vscode materializado");
+        assertConsistencyPolicyPropagationToVscodeAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(backendOnlyRepoRoot);
         materializeControlledContextDocs(contextSkillRoot, backendOnlyRepoRoot);
         materializeBackendOnlySpecializedAgents(agentSkillRoot, backendOnlyRepoRoot);
         assertBackendOnlySpecializedMaterialization(backendOnlyRepoRoot);
         assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(agentSkillRoot);
+        assertConsistencyPolicyRejectsVscodeMaterializationDrift(agentSkillRoot, controlledAgentFiles);
+        assertConsistencyPolicyRepairsLegacyVscodeMaterialization(agentSkillRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(codexRepoRoot);
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
@@ -1668,6 +2874,13 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexAgentMaterialization(codexRepoRoot, controlledAgentFiles);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertRound2OperationalAxesInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertRound3OrchestratorLadderInCodexAgents(codexRepoRoot);
+        assertQualityGuardrailPropagationInCodexAgentSet(codexRepoRoot, controlledAgentFiles);
+        assertConsistencyPolicyPropagationToCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
+        assertConsistencyPolicyRejectsCodexMaterializationDrift(agentSkillRoot, controlledAgentFiles);
+        assertConsistencyPolicyRepairsLegacyCodexMaterialization(agentSkillRoot, controlledAgentFiles);
     } finally {
         fs.rmSync(vscodeRepoRoot, { recursive: true, force: true });
         fs.rmSync(backendOnlyRepoRoot, { recursive: true, force: true });
@@ -1679,9 +2892,19 @@ async function runSentinelSmoke() {
     console.log("Smoke Sentinel: manifests canônicos");
     assertInstallManifests();
     assertReferenceManifests();
+    assertSpecManagerContract();
     assertRequiredBundleCoverage();
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();
+    assertQualityGuardrailSourceDefinitions();
+    assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
+    assertCanonicalDesignerRoleClassInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
+    assertCorrectionLoopPolicyInTemplateDocs();
+    assertBaseAgentTemplateSizeLimit();
+    assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertRound1AntiInferenceHardeningInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertRound2OperationalAxesInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertRound3OrchestratorLadderInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
         "templates/agents"
@@ -1697,16 +2920,40 @@ async function runSentinelSmoke() {
     assertNoOperationalArtifactsInSentinelRoot();
     assertNoLegacyDirectoryInSentinelRoot();
 
-    console.log("Smoke Sentinel: init/update/doctor em HOME temporário");
+    console.log("Smoke Sentinel: install/doctor em HOME temporário");
     const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-smoke-"));
 
     try {
         const env = { ...process.env, HOME: tempHome };
+        const emptyDoctor = runSentinelExpectFailure("doctor", env);
+        assert(
+            emptyDoctor.stdout.includes("Nenhuma instalação real encontrada"),
+            "doctor sem instalação real deveria falhar explicitamente"
+        );
+        runSentinel("doctor", env, ["--source-only"]);
+        assertSourceOnlyDoctorFailsForMissingSourceFile();
+        runSentinel("install", env);
+
+        const staleSkill = path.join(getTargets(tempHome)[0], "stnl_removed_quality");
+        fs.mkdirSync(staleSkill, { recursive: true });
+        assert.deepEqual(
+            listInstalledStaleSkills(getTargets(tempHome)[0], listSkillFolders(SOURCE_DIR)),
+            ["stnl_removed_quality"],
+            "detecção de skill stnl_* stale falhou"
+        );
+        const staleDoctor = runSentinelExpectFailure("doctor", env);
+        assert(
+            staleDoctor.stdout.includes("stale managed skills: stnl_removed_quality"),
+            "doctor não reportou skill stnl_* stale"
+        );
+        runSentinel("install", env, ["--prune"]);
+        assert(!fs.existsSync(staleSkill), "install --prune não removeu skill stnl_* stale");
         runSentinel("init", env);
         runSentinel("update", env);
         const doctor = runSentinel("doctor", env);
 
         assertInstalledArtifactsMatchSources(tempHome);
+        assertInstalledQualityGuardrailSkills(tempHome);
         assertDoctorOutput(doctor.stdout);
         console.log("Smoke Sentinel: materialização controlada");
         runControlledMaterializationSmoke(tempHome);

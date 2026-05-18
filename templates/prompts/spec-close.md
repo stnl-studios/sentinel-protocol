@@ -2,7 +2,7 @@ Use `stnl_spec_manager`.
 MODE=CLOSE
 
 SPEC alvo:
-- docs/SPEC/<feature>/
+- docs/SPEC/<feature>/ ou docs/features/<feature>/SPEC/
 
 Evidências disponíveis para fechamento:
 - [validação automatizada]

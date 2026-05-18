@@ -2,7 +2,7 @@ Use `stnl_spec_manager`.
 MODE=RESUME
 
 SPEC alvo:
-- docs/SPEC/<feature>/
+- docs/SPEC/<feature>/ ou docs/features/<feature>/SPEC/
 
 Objetivo desta rodada:
 - [o que precisa ser retomado, corrigido ou consolidado]

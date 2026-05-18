@@ -72,7 +72,7 @@ Esta skill prepara `docs/**` no padrao Sentinel para consumo posterior por human
 - nao usar fallback em `templates/**`, `skills/**`, `~/.agents/**`, filesystem externo ou qualquer copia fora do bundle instalado da propria skill
 - se `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
 - se qualquer arquivo obrigatorio listado em `reference/MANIFEST.md` estiver ausente, bloquear com `BLOCKED_REFERENCE_BUNDLE_MISSING`
-- o bloqueio deve reportar a skill `stnl_project_foundation`, o arquivo ausente e a acao sugerida: `node sentinel.mjs update` e `node sentinel.mjs doctor`
+- o bloqueio deve reportar a skill `stnl_project_foundation`, o arquivo ausente e a acao sugerida: `node sentinel.mjs install` e `node sentinel.mjs doctor`
 - nunca reconstruir, adivinhar, simplificar ou procurar substituto para template interno ausente
 
 ## Classes de proveniencia e confianca
