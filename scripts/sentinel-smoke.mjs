@@ -1402,6 +1402,15 @@ function assertContentIncludesAll(content, snippets, label) {
     }
 }
 
+function assertContentExcludesAll(content, snippets, label) {
+    for (const snippet of snippets) {
+        assert(
+            !content.includes(snippet),
+            `${label} contém o invariante proibido: ${snippet}`
+        );
+    }
+}
+
 function countOccurrences(content, snippet) {
     return content.split(snippet).length - 1;
 }
@@ -2158,6 +2167,16 @@ function assertProtocolHardeningInTemplateAgents() {
         const content = fs.readFileSync(path.join(templateAgentsRoot, fileName), "utf8");
         assertSingleConsistencyPolicyBlock(content, `${fileName} template consistency policy`);
     }
+
+    const designerContent = fs.readFileSync(path.join(templateAgentsRoot, "designer.agent.md"), "utf8");
+    assertContentIncludesAll(designerContent, [
+        "role class: `design-contributor`",
+    ], "templates/agents/designer.agent.md role class");
+    assertContentExcludesAll(designerContent, [
+        "role class: `executor`",
+        "role class: executor",
+        "executor-class specialist",
+    ], "templates/agents/designer.agent.md role class drift");
 }
 
 function assertBaseAgentTemplateSizeLimit() {
@@ -2222,6 +2241,7 @@ function assertCorrectionLoopPolicyInTemplateDocs() {
 function assertProtocolHardeningInCanonicalRefs(skillRoot) {
     const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
     assertContentIncludesAll(skillContent, [
+        "- `design-contributor`: `designer`",
         "nenhum `target` (`vscode` ou `codex`) pode relaxar executor `READY/BLOCKED`",
         "Blocos protocol-fixed non-compressible",
         "não podem ser resumidos, removidos, enfraquecidos, reescritos do zero prático",
