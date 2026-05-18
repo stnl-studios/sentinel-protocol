@@ -1,6 +1,6 @@
 # Agent Communication Flow
 
-![Sentinel agent communication flow](assets/agent-communication-flow.png)
+![Sentinel agent communication flow](../../assets/agent-communication-flow.png)
 
 This diagram shows the possible communication cycles between Sentinel agents, with `orchestrator` as the single routing owner.
 
