@@ -239,10 +239,10 @@ Regras:
 - `tools` nao deve ser serializado no TOML Codex controlado quando a politica vigente preserva tools semanticamente em `developer_instructions` e por hardening de `sandbox_mode`.
 - `reasoning_effort`, `thinking_effort` ou equivalentes fora de `model_reasoning_effort` nao devem ser inventados.
 - marcas gerenciadas devem preferir comentario/header TOML, nao campo runtime desconhecido.
-- `.codex/config.toml` deve conter `[agents].max_depth = 2` para permitir `root -> orchestrator -> downstream custom agent`.
-- `AGENTS.md` deve declarar native Codex custom subagent spawning por nome exato e bloquear emulacao com `codex exec`, shell, subprocesso, script ou continuacao local.
-- `orchestrator` deve carregar hardening contra `codex exec`, shell/subprocess/script/local continuation, role absorption e runtime sem spawn nativo, com bloqueio `ROUTING_RUNTIME_BLOCKED`.
-- agents nao-orchestrator nao devem spawnar downstream Sentinel agents; devem retornar artifact/status/formal handoff signal ao parent orchestrator.
+- `.codex/config.toml` deve conter `[agents].max_depth = 2` como limite controlado de roteamento nativo, inclusive fallback explicito via `orchestrator`, sem transformar nesting em caminho visual padrao.
+- `AGENTS.md` deve declarar a main/root Codex session como default visual entrypoint, aplicar o Sentinel orchestrator boundary na sessao principal, declarar native Codex custom subagent spawning direto do owner por nome exato e bloquear emulacao com `codex exec`, shell, subprocesso, script ou continuacao local.
+- `orchestrator` deve existir como agent especializado disponivel, fallback explicito e referencia de boundary, mas nao como primeiro task visual padrao; quando invocado explicitamente, deve carregar hardening contra `codex exec`, shell/subprocess/script/local continuation, role absorption e runtime sem spawn nativo, com bloqueio `ROUTING_RUNTIME_BLOCKED`.
+- agents nao-orchestrator nao devem spawnar downstream Sentinel agents; devem retornar artifact/status/formal handoff signal ao parent controller/orchestrator.
 - quality guardrails continuam skills/constraints, nao agents roteaveis.
 
 ## Finalidade auditavel desses metadados

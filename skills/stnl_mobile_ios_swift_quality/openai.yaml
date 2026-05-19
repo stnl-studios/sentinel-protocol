@@ -1,7 +1,7 @@
 interface:
   name: "stnl_mobile_ios_swift_quality"
   display_name: "STNL iOS Swift Quality Guardrail"
-  version: "2026.5.0-alpha.2"
+  version: "2026.5.0-alpha.3"
   protocol_release: "2026.5"
   status: "active"
   short_description: "Structural iOS Swift quality guardrail for implementation and review."

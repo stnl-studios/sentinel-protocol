@@ -1,5 +1,13 @@
 # Changelog
 
+## v2026.5.0-alpha.3
+
+Correção do entrypoint visual Codex na linha Alpha Preview.
+
+### Corrigido
+
+- Corrigido o entrypoint visual do target Codex para manter a main/root session como controller Sentinel e spawnar owners especialistas diretamente, evitando background tasks aninhados dentro de um único `orchestrator`.
+
 ## v2026.5.0-alpha.2
 
 Correção de contrato Codex na linha Alpha Preview.

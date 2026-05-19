@@ -13,6 +13,8 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
   - `codex` -> `.codex/agents/*.toml`
   - `codex` -> `.codex/config.toml`
   - `codex` -> `AGENTS.md` na raiz do repo alvo
+- no target `codex`, manter a main/root Codex session como default visual entrypoint do Sentinel, para que background tasks dos owners especialistas apareçam no chat principal
+- manter `orchestrator.toml` materializado em `codex` como agent disponível, fallback explícito e referência de boundary, mas nunca orientar spawn automático dele como primeiro task por default
 - nunca materializar artifacts finais no repo Sentinel Protocol; este repo mantém somente source of truth, templates internos, installer e smoke
 - manter os templates internos do target `codex` em `reference/templates/codex/AGENTS.md` e `reference/templates/codex/config.toml`; esses templates não são artifacts operacionais do repo Sentinel
 - nunca criar `.codex/config.toml` final na raiz do repo Sentinel; esse arquivo só deve existir como template interno ou como artifact final no repo alvo materializado
