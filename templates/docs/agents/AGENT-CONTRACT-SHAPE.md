@@ -177,7 +177,7 @@ A especializacao por projeto nunca pode alterar:
 ## Regras de especializacao por projeto
 - a futura especializacao sempre roda ja dentro do projeto atual
 - a especializacao nao recebe parametro `<PROJECT_ROOT>`
-- a materializacao especializada acontece em `./.github/agents/` do projeto atual
+- a materializacao especializada acontece no output do `target`: `./.github/agents/` para VS Code/GitHub ou `.codex/agents/*.toml`, `.codex/config.toml` e `AGENTS.md` para Codex
 - a especializacao so pode preencher os slots explicitos do contrato
 - a especializacao nao pode usar contexto local para relaxar guardrails centrais de tool, leitura, budget ou anti-role-drift
 
@@ -220,6 +220,11 @@ managed_artifact: true
 ## Shape esperado para Codex
 Artifacts Codex gerenciados em `.codex/agents/*.toml` usam contrato operacional proprio e nao espelham o frontmatter VS Code.
 
+O conjunto gerenciado esperado para `target=codex` e:
+- `.codex/agents/*.toml`
+- `.codex/config.toml`
+- `AGENTS.md`
+
 Campos Sentinel obrigatorios no TOML Codex:
 - `name`
 - `description`
@@ -234,6 +239,11 @@ Regras:
 - `tools` nao deve ser serializado no TOML Codex controlado quando a politica vigente preserva tools semanticamente em `developer_instructions` e por hardening de `sandbox_mode`.
 - `reasoning_effort`, `thinking_effort` ou equivalentes fora de `model_reasoning_effort` nao devem ser inventados.
 - marcas gerenciadas devem preferir comentario/header TOML, nao campo runtime desconhecido.
+- `.codex/config.toml` deve conter `[agents].max_depth = 2` para permitir `root -> orchestrator -> downstream custom agent`.
+- `AGENTS.md` deve declarar native Codex custom subagent spawning por nome exato e bloquear emulacao com `codex exec`, shell, subprocesso, script ou continuacao local.
+- `orchestrator` deve carregar hardening contra `codex exec`, shell/subprocess/script/local continuation, role absorption e runtime sem spawn nativo, com bloqueio `ROUTING_RUNTIME_BLOCKED`.
+- agents nao-orchestrator nao devem spawnar downstream Sentinel agents; devem retornar artifact/status/formal handoff signal ao parent orchestrator.
+- quality guardrails continuam skills/constraints, nao agents roteaveis.
 
 ## Finalidade auditavel desses metadados
 Esses metadados existem para:

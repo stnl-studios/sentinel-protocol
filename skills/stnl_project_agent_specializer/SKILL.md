@@ -146,6 +146,7 @@ Contrato obrigatório do bundle interno:
 Referências internas esperadas devem vir do manifest instalado, incluindo:
 - base agents canônicos em `reference/agents/`
 - template Codex em `reference/templates/codex/AGENTS.md`
+- template Codex de runtime config em `reference/templates/codex/config.toml`
 - contratos de agent em `reference/docs/agents/`
 - contratos de workflow em `reference/docs/workflow/`
 
@@ -154,7 +155,7 @@ Referências internas esperadas devem vir do manifest instalado, incluindo:
 
 Targets suportados:
 - `vscode`: comportamento compatível com a v1 atual; materializa agents em `.github/agents/*.agent.md`
-- `codex`: materializa agents em `.codex/agents/*.toml` e materializa também `AGENTS.md` na raiz do repo alvo
+- `codex`: materializa agents em `.codex/agents/*.toml`, materializa `.codex/config.toml` e materializa também `AGENTS.md` na raiz do repo alvo
 
 Regras:
 - quando `target` for omitido, usar `vscode`
@@ -186,8 +187,22 @@ Regras:
 - se o Sentinel preservar metadata própria para `codex`, essa metadata é convenção interna opcional do protocolo, nunca requisito nativo do runtime Codex, e deve ser omitida quando houver risco de incompatibilidade com o runtime
 - `codex` usa também `AGENTS.md` como instrução de workspace do runtime Codex
 - `AGENTS.md` do target `codex` deve nascer do template interno `reference/templates/codex/AGENTS.md`; nunca criar ou manter um `AGENTS.md` final no repo Sentinel como source paralela
+- `.codex/config.toml` do target `codex` deve nascer do template interno `reference/templates/codex/config.toml`; nunca criar ou manter uma `.codex/config.toml` final no repo Sentinel como source paralela
+- `.codex/config.toml` deve preservar `[agents].max_depth = 2`; essa profundidade existe para permitir `root -> orchestrator -> downstream custom agent`, não para ampliar arbitrariamente a cadeia de roteamento
 - referências internas entre agents devem usar o identificador lógico do agent e ser serializadas no formato físico do `target`; não fixar `.agent.md` quando `target=codex`
 - target desconhecido deve bloquear a materialização antes de qualquer escrita
+
+## Contrato de roteamento Codex
+Quando `target=codex`, a semântica de handoff Sentinel é runtime-native:
+- In Codex target, Sentinel handoff means native Codex custom subagent spawning by exact custom agent name.
+- The parent must wait for the subagent result before deciding the next gate.
+- Never emulate handoff with `codex exec`, `codex`, shell, subprocesses, scripts, local CLI calls, or local continuation of another Sentinel role.
+- If native subagent spawning is unavailable, blocked by depth/config, or the named custom agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.
+- `ROUTING_RUNTIME_BLOCKED` must include attempted owner, current gate, missing runtime capability or config, and minimum DEV action needed.
+- Non-orchestrator agents must not spawn downstream Sentinel agents.
+- Non-orchestrator agents must return their owned artifact/status/formal handoff signal to the parent orchestrator.
+- Any phrase like "handoff to X" in a non-orchestrator agent means "return a formal handoff signal for orchestrator routing", not direct spawning.
+- Quality guardrails remain skills/constraints and must not become routeable agents.
 
 ## Contrato operacional de `model` e effort
 Todo agent gerenciado materializado pela skill deve receber `model` operacional explícito.
@@ -330,7 +345,7 @@ Regras operacionais:
 ## Modelo de materialização local
 - output canônico depende de `target`
 - `vscode`: output de agents em `.github/agents/*.agent.md`
-- `codex`: output de agents em `.codex/agents/*.toml` e output complementar em `AGENTS.md`
+- `codex`: output de agents em `.codex/agents/*.toml`, runtime config em `.codex/config.toml` e output complementar em `AGENTS.md`
 - naming lógico: preservar o ID canônico do base agent, derivado do basename físico do arquivo, nunca o display label nem nome humanizado
 - naming físico:
   - `vscode`: `<agent>.agent.md`
@@ -377,6 +392,8 @@ Regras operacionais:
 - o `orchestrator` em `vscode` deve conter adicionalmente `agents`
 - `agents` no frontmatter operacional é reservado ao `orchestrator` em `vscode` e deve listar apenas os `frontmatter.name` canônicos dos subagents realmente materializados no output de agents do mesmo target
 - em `codex`, `agents` não é campo obrigatório do TOML do `orchestrator`; o conjunto de subagents e o roteamento devem aparecer em `developer_instructions` e no `AGENTS.md` gerado, salvo suporte explícito do runtime para campo equivalente opcional
+- em `codex`, o `orchestrator` deve explicitar em `developer_instructions` native Codex custom subagent spawning, exact custom agent name, wait for the subagent result, never use `codex exec`, never use shell/subprocess/script/local continuation to simulate handoff, never absorb downstream Sentinel roles locally e `ROUTING_RUNTIME_BLOCKED`
+- em `codex`, todo agent não-orchestrator deve explicitar em `developer_instructions`: must not spawn downstream Sentinel agents, must not call `codex exec` for handoff, must not use shell/subprocess/script to perform handoff, return owned artifact/status/formal handoff signal to the parent orchestrator, e que "handoff to X" means a formal signal for orchestrator routing, not direct spawning
 - `model` na metadata operacional é obrigatório como string única; lista priorizada só deve ser usada quando o target suportar explicitamente esse shape, houver justificativa operacional clara e todos os itens respeitarem `allowed_models`
 - qualquer campo fora do shape mínimo nativo ou dos campos opcionais suportados e adotados pela política Sentinel do target deve ser tratado como ausente por default e removido na normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
 - `agent_version` deve ser removido da metadata operacional final por default; não faz parte do shape endurecido preservado por esta skill nem do shape mínimo de `codex`
@@ -399,6 +416,7 @@ Regras operacionais:
   - `specialization_revision`
   - `managed_artifact: true`
   - `reading_scope_class` apenas quando fizer sentido e continuar compatível com o contrato
+- o target `codex` final normalizado contém `.codex/agents/*.toml`, `.codex/config.toml` e `AGENTS.md`
 - o custom agent TOML final normalizado de `codex` contém obrigatoriamente:
   - `name`
   - `description`
@@ -407,6 +425,7 @@ Regras operacionais:
   - `sandbox_mode`
   - `developer_instructions`
 - `sandbox_mode` é obrigatório por política Sentinel no TOML Codex final, não por fazer parte do shape mínimo nativo Codex
+- `.codex/config.toml` final normalizado deve ser gerado a partir do template interno, conter comentário gerenciado, conter `[agents]`, conter `max_threads = 6` e conter exatamente `max_depth = 2`
 - o custom agent TOML final normalizado de `codex` pode conter campos opcionais adicionais somente quando forem suportados pelo runtime e não confundidos com requisito nativo mínimo
 - convenções internas opcionais do Sentinel em `codex`, quando existirem, devem ser claramente classificadas como internas e removíveis sem quebrar o custom agent TOML mínimo
 - qualquer campo fora do shape do target deve ser tratado como legado residual e removido durante a normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
@@ -493,7 +512,7 @@ O quality gate final deve validar os artifacts materializados finais contra esse
 3. Fazer discovery sério de `docs/**`, com prioridade para `docs/INDEX.md`, `docs/core/*`, `docs/TBDS.md` quando existir, e os `units` ou `features` relevantes.
 4. Construir o modelo factual intermediário normalizado, classificando claims, escopo, evidência e agents impactados.
 5. Classificar cada agent canônico em sua role class e carregar os invariantes obrigatórios dessa classe antes de gerar qualquer specialized.
-6. Ler primeiro `reference/MANIFEST.md`; depois ler apenas os templates/base agents canônicos, o template `reference/templates/codex/AGENTS.md` quando `target=codex`, e as referências `agent-contract-shape`, `agent-specialization-quality-gate`, `execution-lifecycle` e `status-gates` que estiverem listados no manifest e forem necessários para a rodada.
+6. Ler primeiro `reference/MANIFEST.md`; depois ler apenas os templates/base agents canônicos, os templates `reference/templates/codex/AGENTS.md` e `reference/templates/codex/config.toml` quando `target=codex`, e as referências `agent-contract-shape`, `agent-specialization-quality-gate`, `execution-lifecycle` e `status-gates` que estiverem listados no manifest e forem necessários para a rodada.
 7. Revisar o output atual do `target`, classificando cada artifact local como:
    - `managed and current`
    - `managed but drifted`
@@ -502,7 +521,7 @@ O quality gate final deve validar os artifacts materializados finais contra esse
 8. Decidir o conjunto alvo mínimo e coerente de agents para o repo usando o modelo factual intermediário, não completude estética.
 9. Resolver o `model` operacional de cada agent, aplicando `model_policy` quando existir, respeitando `allowed_models` quando essa entrada existir, e bloqueando se não houver base concreta para serializar `model`.
 10. Gerar ou atualizar os specializeds necessários a partir do modelo factual intermediário e dos invariantes da role class, com metadata operacional coerente e shape final normalizado para o `target`; antes de escrever o artifact final, aplicar a normalização protocol-fixed limitada que preserva `## Consistency without legacy propagation` e repara somente a variante legada com `:`.
-11. Quando `target=codex`, gerar ou atualizar `AGENTS.md` do repo alvo a partir do template interno e do conjunto final de agents materializados.
+11. Quando `target=codex`, gerar ou atualizar `.codex/config.toml` a partir do template interno e gerar ou atualizar `AGENTS.md` do repo alvo a partir do template interno e do conjunto final de agents materializados.
 12. Deletar artifacts gerenciados obsoletos e qualquer referência local quebrada deixada por eles.
 13. Reescrever ou ajustar o `orchestrator` por último, para que ele reflita apenas o conjunto final realmente materializado e respeite o budget de router.
 14. Executar um quality gate pós-geração separado do framing da geração.
@@ -913,6 +932,7 @@ Após gerar ou atualizar os specializeds, executar um quality gate independente 
 O gate consome:
 - o conjunto materializado no output de agents do `target`
 - `AGENTS.md` materializado no repo alvo quando `target=codex`
+- `.codex/config.toml` materializado no repo alvo quando `target=codex`
 - o modelo factual intermediário
 - os base agents canônicos e o contrato `agent-contract-shape`
 - a referência `agent-specialization-quality-gate`
@@ -930,7 +950,11 @@ Verificar:
 - quando `target=vscode`, o frontmatter contém `model` e não contém campos operacionais de effort como `reasoning_effort`, `thinking_effort` ou `model_reasoning_effort`
 - base agents canônicos em `templates/agents/*.agent.md` respeitam 28.000 caracteres; esse limite não substitui o limite de materialização
 - quando `target=vscode`, cada `.agent.md` gerenciado respeita o limite de 30.000 caracteres do prompt Markdown do agent, sem sacrificar blocos protocol-fixed
-- quando `target=codex`, artifacts de agents estão em `.codex/agents/*.toml`, cada TOML contém `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`, e `AGENTS.md` foi gerado a partir do template interno da skill
+- quando `target=codex`, artifacts gerenciados estão em `.codex/agents/*.toml`, `.codex/config.toml` e `AGENTS.md`; cada TOML contém `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`; `AGENTS.md` e `.codex/config.toml` foram gerados a partir dos templates internos da skill
+- quando `target=codex`, `.codex/config.toml` contém `[agents].max_depth = 2` e não aumenta a profundidade de roteamento acima desse limite
+- quando `target=codex`, `AGENTS.md` contém o contrato de native Codex custom subagent spawning por nome exato e o bloqueio de emulação por `codex exec`, shell, subprocesso, script ou continuação local
+- quando `target=codex`, `orchestrator` contém hardening contra `codex exec`, shell/subprocess/script/local continuation, role absorption e falta de runtime nativo, reportando `ROUTING_RUNTIME_BLOCKED`
+- quando `target=codex`, agents não-orchestrator não podem spawnar downstream Sentinel agents e devem retornar artifact/status/formal handoff signal ao parent orchestrator
 - quando `target=codex`, `developer_instructions` preserva a missão, role class, ownership, gates, sequencing, handoffs e regras operacionais do specialized que em `vscode` ficariam no corpo Markdown
 - para qualquer target, blocos protocol-fixed existentes no template/base agent e no `reference/agents/*.agent.md` usado pela skill aparecem no artifact final materializado com frases sentinela verificáveis
 - em especial, `Consistency without legacy propagation`, `Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.` e `This policy does not authorize broad refactors` aparecem no corpo final de `.github/agents/*.agent.md` e em `developer_instructions` de `.codex/agents/*.toml`
@@ -1224,6 +1248,17 @@ managed_artifact: true
 
 ### `target=codex`
 
+#### `.codex/config.toml`
+```toml
+# Sentinel managed artifact: true
+# target: codex
+# source_template: stnl_project_agent_specializer/reference/templates/codex/config.toml
+
+[agents]
+max_threads = 6
+max_depth = 2
+```
+
 #### `.codex/agents/orchestrator.toml`
 ```toml
 # Sentinel managed artifact: true
@@ -1238,6 +1273,8 @@ Coordinate the local Sentinel workflow as a lightweight router.
 Preserve the canonical gate order, role class `router`, ownership boundaries, handoff validity, and status sequencing defined by the specialized Sentinel contract.
 
 Route only to agents that are actually materialized for Codex in `.codex/agents/` and reflected in the generated `AGENTS.md`. Do not implement, do not absorb execution, do not write validation packs or execution packages, and do not treat absent agents as available.
+
+For Codex, handoff means native Codex custom subagent spawning by exact custom agent name. Wait for the subagent result before deciding the next gate. Never use `codex exec`, shell, subprocesses, scripts, local CLI calls, local continuation, or local role absorption to simulate downstream Sentinel work. If native spawning is unavailable, blocked by `.codex/config.toml`, or the target custom agent is missing, stop with `ROUTING_RUNTIME_BLOCKED`.
 
 Keep the main chat surface short: return only the current gate, next owner, blocker, DEV decision need, or routing delta that matters.
 '''
@@ -1258,6 +1295,8 @@ Preserve role class `executor`, targeted-local reading constrained to package an
 
 Do not become planner, execution-package-designer, orchestrator, validation runner, reviewer, or finalizer. Do not redefine the cut, recompile the package, choose structural architecture, widen scope, or return analysis as if implementation happened.
 
+Do not spawn downstream Sentinel agents, do not call `codex exec` for handoff, and do not use shell/subprocess/script to perform handoff. Return your owned artifact/status/formal handoff signal to the parent orchestrator; "handoff to X" means a formal signal for orchestrator routing, not direct spawning.
+
 Report only the execution delta needed downstream: changed paths or equivalent implementation evidence, checks run or not run, residual risk, and exact blocker when blocked.
 '''
 ```
@@ -1274,6 +1313,7 @@ Notas para os exemplos:
 - em `codex`, qualquer campo adicional além de `model`, `model_reasoning_effort` e `sandbox_mode` só pode ser usado como opcional compatível com o runtime ou convenção interna opcional do Sentinel, nunca como requisito nativo mínimo
 - os exemplos representam o artifact final normalizado, sem `## Tools` no corpo e sem campos legados como `agent_version`
 - os exemplos de shape não substituem o contrato operacional especializado; `orchestrator` e executors continuam obrigados a explicitar capability gate, validade do handoff e regra de runner só com artifact validável
+- no target `codex`, `.codex/config.toml` do repo alvo deve ser gerado a partir de `reference/templates/codex/config.toml` com `[agents].max_depth = 2`
 - no target `codex`, `AGENTS.md` do repo alvo deve ser gerado a partir de `reference/templates/codex/AGENTS.md` e deve apontar para o conjunto real de `.codex/agents/*.toml`
 - não inventar campos extras fora do necessário
 
@@ -1285,6 +1325,7 @@ Notas para os exemplos:
 - explicitar quando houve remoção de `## Tools`
 - explicitar quando houve remoção de campos legados, incluindo `agent_version`, quando aplicável
 - quando `target=codex`, explicitar se `AGENTS.md` do repo alvo foi criado ou atualizado a partir do template interno
+- quando `target=codex`, explicitar se `.codex/config.toml` do repo alvo foi criado ou atualizado a partir do template interno e confirmar `max_depth = 2`
 - informar o verdict final do quality gate e, se houve repair, quais arquivos ele sinalizou
 - nomear qualquer exceção humana explícita que tenha mantido resíduo legado por decisão consciente
 - se houver bloqueio, separar claramente o que foi normalizado do que ficou pendente
@@ -1296,8 +1337,9 @@ Notas para os exemplos:
 - artifacts finais normalizados no shape canônico vigente
 - `target=vscode` materializa agents em `.github/agents/*.agent.md` com `target` correto no frontmatter operacional
 - em `vscode`, para cada agent materializado, `basename` do arquivo sem `.agent.md`, `frontmatter.name` e qualquer item correspondente em `orchestrator.agents` são exatamente o mesmo ID canônico em kebab-case
-- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`, e materializa `AGENTS.md` na raiz do repo alvo
+- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`, materializa `.codex/config.toml` com `[agents].max_depth = 2`, e materializa `AGENTS.md` na raiz do repo alvo
 - `AGENTS.md` do target `codex` deriva do template interno `reference/templates/codex/AGENTS.md`
+- `.codex/config.toml` do target `codex` deriva do template interno `reference/templates/codex/config.toml`
 - em `vscode`, `tools` presente no frontmatter operacional de todos os specializeds materializados
 - em `vscode`, `agents` presente no artifact do `orchestrator`
 - em `vscode`, `agents` do `orchestrator` bate exatamente com o conjunto real de subagents materializados
@@ -1350,7 +1392,7 @@ Notas para os exemplos:
 - não usar `web` como source of truth factual do projeto
 - não tratar artifacts gerenciados de agents como a fonte factual principal do repo
 - não materializar `agent-contract-shape`, `agent-specialization-quality-gate` e `status-gates` no repo alvo na v1
-- não criar artifacts finais no repo Sentinel Protocol; `AGENTS.md`, `.codex/agents/` e `.github/agents/` finais pertencem somente ao repo alvo
+- não criar artifacts finais no repo Sentinel Protocol; `AGENTS.md`, `.codex/agents/`, `.codex/config.toml` e `.github/agents/` finais pertencem somente ao repo alvo
 - não criar docs do repo alvo por imaginação
 - não espalhar `tools` em dois lugares como source of truth
 - não perpetuar `## Tools` no corpo por inércia quando `tools` já estiver na metadata operacional suportada pelo target

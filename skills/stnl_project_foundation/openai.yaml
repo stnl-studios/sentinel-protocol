@@ -1,7 +1,7 @@
 interface:
   name: "stnl_project_foundation"
   display_name: "STNL Project Foundation"
-  version: "2026.5.0-alpha.1"
+  version: "2026.5.0-alpha.2"
   protocol_release: "2026.5"
   status: "active"
   short_description: "Estrutura a fundacao documental Sentinel de projetos greenfield a partir de documentacao bruta e decisoes explicitas, sem inventar fatos de codebase."

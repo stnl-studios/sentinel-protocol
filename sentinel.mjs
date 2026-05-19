@@ -112,6 +112,7 @@ const SKILL_BUNDLE_MANIFESTS = {
             targetRoot: path.join("reference", "templates"),
             files: [
                 "codex/AGENTS.md",
+                "codex/config.toml",
             ],
         },
     ],
