@@ -20,3 +20,4 @@ Required files:
 - `reference/docs/workflow/EXECUTION-LIFECYCLE.md`
 - `reference/docs/workflow/STATUS-GATES.md`
 - `reference/templates/codex/AGENTS.md`
+- `reference/templates/codex/config.toml`

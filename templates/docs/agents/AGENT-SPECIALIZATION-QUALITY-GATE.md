@@ -20,6 +20,7 @@ Aplicar este gate depois da geracao ou atualizacao dos specializeds e antes da c
 O gate valida:
 - o conjunto materializado de `.github/agents/*.agent.md`
 - o conjunto materializado de `.codex/agents/*.toml` quando `target=codex`
+- o `.codex/config.toml` materializado quando `target=codex`
 - o `AGENTS.md` materializado quando `target=codex`
 - o alinhamento com os base agents canonicos
 - o alinhamento com `AGENT-CONTRACT-SHAPE.md`
@@ -69,6 +70,11 @@ Verificar:
 - ausencia de `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter VS Code/GitHub
 - limite de 30.000 caracteres respeitado para cada prompt Markdown `.agent.md` gerenciado de VS Code/GitHub
 - para `target=codex`, cada TOML gerenciado contem `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`
+- para `target=codex`, o conjunto gerenciado esperado contem `.codex/agents/*.toml`, `.codex/config.toml` e `AGENTS.md`
+- para `target=codex`, `.codex/config.toml` contem `[agents].max_depth = 2`
+- para `target=codex`, `AGENTS.md` contem contrato de native custom subagent spawning por exact agent name e bloqueio de emulacao com `codex exec`, shell, subprocesso, script ou continuacao local
+- para `target=codex`, `orchestrator` contem hardening contra `codex exec`, shell/subprocess/script/local continuation, role absorption e runtime sem spawn nativo, bloqueando com `ROUTING_RUNTIME_BLOCKED`
+- para `target=codex`, agents nao-orchestrator nao spawnam downstream Sentinel agents e retornam artifact/status/formal handoff signal ao parent orchestrator
 - para `target=codex`, `tools` nao e serializado no TOML controlado
 - remocao de campos legados nao permitidos
 - remocao de `## Tools` residual quando o frontmatter ja e a source of truth
@@ -118,6 +124,10 @@ Hard fails:
 - `orchestrator` permitindo entrada do `validation-runner` sem artifact validável de executor
 - specialized tratando handoff de executor ausente, implícito, intermediário ou narrativo como sucesso
 - artifact final materializado sem bloco protocol-fixed aplicavel ao papel
+- target Codex sem `.codex/config.toml` com `[agents].max_depth = 2`
+- target Codex cujo `AGENTS.md` permita emular handoff via `codex exec`, shell, subprocesso, script ou continuacao local
+- `orchestrator` Codex sem `ROUTING_RUNTIME_BLOCKED` para falta de native custom subagent spawning, depth/config bloqueado ou agent nomeado ausente
+- agent nao-orchestrator Codex que tente spawnar downstream Sentinel agents diretamente em vez de retornar formal handoff signal ao parent orchestrator
 
 ### 4. Surface discipline check
 Verificar no minimo:

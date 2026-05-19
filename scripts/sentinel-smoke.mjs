@@ -37,6 +37,7 @@ const REQUIRED_BUNDLE_PATHS = [
     ["stnl_project_agent_specializer", "reference/docs", "agents/AGENT-CONTRACT-SHAPE.md"],
     ["stnl_project_agent_specializer", "reference/docs", "agents/AGENT-SPECIALIZATION-QUALITY-GATE.md"],
     ["stnl_project_agent_specializer", "reference/templates", "codex/AGENTS.md"],
+    ["stnl_project_agent_specializer", "reference/templates", "codex/config.toml"],
     ["stnl_project_context", "reference/docs", "core/TESTING.md"],
 ];
 
@@ -231,6 +232,7 @@ const CONSISTENCY_POLICY_CANONICAL_HEADING = "## Consistency without legacy prop
 const CONSISTENCY_POLICY_LEGACY_MARKER = "Consistency without legacy propagation:";
 
 const CODEX_AGENTS_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "AGENTS.md");
+const CODEX_CONFIG_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "config.toml");
 const BASE_AGENT_TEMPLATE_CHAR_LIMIT = 28000;
 const VSCODE_AGENT_MARKDOWN_CHAR_LIMIT = 30000;
 const CONTROLLED_ALLOWED_MODELS = [
@@ -1575,6 +1577,17 @@ function getCodexAgentsTemplatePath(agentSkillRoot) {
     return installedTemplatePath;
 }
 
+function getCodexConfigTemplatePath(agentSkillRoot) {
+    const installedTemplatePath = path.join(agentSkillRoot, CODEX_CONFIG_TEMPLATE_RELATIVE_PATH);
+
+    assert(
+        fs.existsSync(installedTemplatePath),
+        `Template config.toml do target codex não instalado no bundle da skill: ${installedTemplatePath}`
+    );
+
+    return installedTemplatePath;
+}
+
 function readControlledAgentSourceContent(skillRoot, fileName, options = {}) {
     const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
     const sourceContent = fs.readFileSync(sourcePath, "utf8");
@@ -1716,6 +1729,29 @@ function renderCodexAgentsIndex(template, agentNames) {
         .replace("{{LOCAL_NOTES}}", "- Smoke fixture for controlled Codex materialization.");
 }
 
+function withCodexRoutingRuntimeHardening(agentName, body) {
+    const hardening = agentName === "orchestrator"
+        ? [
+            "## Codex routing runtime",
+            "Use native Codex custom subagent spawning by exact custom agent name for Sentinel handoff.",
+            "The parent must wait for the subagent result before deciding the next gate.",
+            "You must never use `codex exec`, `codex`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff.",
+            "Never absorb downstream Sentinel roles locally.",
+            "If native custom subagent spawning is unavailable, depth/config blocks routing, or the named custom agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.",
+            "`ROUTING_RUNTIME_BLOCKED` must include attempted owner, current gate, missing runtime capability or config, and minimum DEV action needed.",
+        ]
+        : [
+            "## Codex routing runtime",
+            "You must not spawn downstream Sentinel agents.",
+            "You must not call `codex exec` for handoff.",
+            "You must not use shell/subprocess/script to perform handoff.",
+            "You must return owned artifact/status/formal handoff signal to the parent orchestrator.",
+            "\"handoff to X\" means a formal signal for orchestrator routing, not direct spawning.",
+        ];
+
+    return `${hardening.join("\n")}\n\n${body}`;
+}
+
 function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
     const agentNames = controlledAgentFiles.map((fileName) => canonicalAgentIdFromFileName(fileName));
 
@@ -1729,7 +1765,10 @@ function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFi
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = readControlledAgentSourceContent(skillRoot, fileName, options);
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
-        const normalizedBody = normalizeProtocolFixedConsistencyHeading(body);
+        const normalizedBody = withCodexRoutingRuntimeHardening(
+            agentName,
+            normalizeProtocolFixedConsistencyHeading(body)
+        );
         const tomlContent = renderCodexAgentToml({
             name: agentName,
             description: baseFrontmatter.description,
@@ -1745,6 +1784,10 @@ function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFi
     const templatePath = getCodexAgentsTemplatePath(skillRoot);
     const template = fs.readFileSync(templatePath, "utf8");
     writeFile(path.join(repoRoot, "AGENTS.md"), renderCodexAgentsIndex(template, agentNames));
+
+    const configTemplatePath = getCodexConfigTemplatePath(skillRoot);
+    const configTemplate = fs.readFileSync(configTemplatePath, "utf8");
+    writeFile(path.join(repoRoot, ".codex", "config.toml"), configTemplate);
 }
 
 function assertControlledContextMaterialization(repoRoot) {
@@ -2411,6 +2454,26 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
 
         assertSingleConsistencyPolicyBlock(instructions, `${agentName} codex developer_instructions consistency policy`);
 
+        if (agentName === "orchestrator") {
+            assertContentIncludesAll(instructions, [
+                "native Codex custom subagent spawning",
+                "exact custom agent name",
+                "wait for the subagent result",
+                "never use `codex exec`",
+                "shell/subprocess/script/local continuation",
+                "Never absorb downstream Sentinel roles locally.",
+                "ROUTING_RUNTIME_BLOCKED",
+            ], `${agentName} codex routing runtime hardening`);
+        } else {
+            assertContentIncludesAll(instructions, [
+                "must not spawn downstream Sentinel agents",
+                "must not call `codex exec` for handoff",
+                "must not use shell/subprocess/script to perform handoff",
+                "return owned artifact/status/formal handoff signal to the parent orchestrator",
+                "\"handoff to X\" means a formal signal for orchestrator routing, not direct spawning",
+            ], `${agentName} codex routing runtime hardening`);
+        }
+
         if (["coder-backend", "coder-frontend", "coder-ios"].includes(agentName)) {
             assertContentIncludesAll(instructions, [
                 "No other terminal handoff is valid.",
@@ -2754,6 +2817,24 @@ function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFile
     }
 }
 
+function assertControlledCodexRuntimeConfig(repoRoot) {
+    const configPath = path.join(repoRoot, ".codex", "config.toml");
+    assertFileHasRequiredShape(configPath, [
+        "# Sentinel managed artifact: true",
+        "# target: codex",
+        "# source_template: stnl_project_agent_specializer/reference/templates/codex/config.toml",
+        "[agents]",
+        "max_threads = 6",
+        "max_depth = 2",
+    ]);
+
+    const content = fs.readFileSync(configPath, "utf8");
+    assert(
+        !content.includes("max_depth = 3") && !content.includes("max_depth = 4"),
+        `Config Codex controlada não deve elevar max_depth acima de 2: ${configPath}`
+    );
+}
+
 function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
     const agentsIndexPath = path.join(repoRoot, "AGENTS.md");
     const expectedAgentNames = controlledAgentFiles
@@ -2765,6 +2846,12 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         "## Runtime Hardening",
         "## Managed Agents",
         ".codex/agents/",
+        ".codex/config.toml",
+        "native custom subagent spawn",
+        "exact agent name",
+        "never emulate handoff with `codex exec`",
+        "ROUTING_RUNTIME_BLOCKED",
+        "max_depth = 2",
         "`model`",
         "`model_reasoning_effort`",
         "`sandbox_mode`",
@@ -2794,6 +2881,7 @@ function assertNoOperationalArtifactsInSentinelRoot() {
     for (const relativePath of [
         "AGENTS.md",
         path.join(".codex", "agents"),
+        path.join(".codex", "config.toml"),
         path.join(".github", "agents"),
     ]) {
         assert(
@@ -2872,6 +2960,7 @@ function runControlledMaterializationSmoke(targetHome) {
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
 
         assertControlledCodexAgentMaterialization(codexRepoRoot, controlledAgentFiles);
+        assertControlledCodexRuntimeConfig(codexRepoRoot);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);

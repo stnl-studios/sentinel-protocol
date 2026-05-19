@@ -1,6 +1,6 @@
 # Sentinel Protocol
 
-**Status:** Alpha Preview - `v2026.5.0-alpha.1`
+**Status:** Alpha Preview - `v2026.5.0-alpha.2`
 
 Sentinel Protocol é um kit pessoal e não oficial de protocolo para organizar trabalho de software assistido por IA em torno de contexto explícito de projeto, SPECs, agents especializados e execução controlada.
 
@@ -61,7 +61,7 @@ Para projeto novo ou greenfield:
 Targets suportados para materialização de agents:
 
 - `vscode` -> `.github/agents/`
-- `codex` -> `.codex/agents/` + `AGENTS.md`
+- `codex` -> `.codex/agents/` + `.codex/config.toml` + `AGENTS.md`
 
 ## Comece aqui
 

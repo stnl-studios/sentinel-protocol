@@ -11,11 +11,13 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter a skill ancorada nos outputs do repo alvo, nunca no repo Sentinel:
   - `vscode` -> `.github/agents/*.agent.md`
   - `codex` -> `.codex/agents/*.toml`
+  - `codex` -> `.codex/config.toml`
   - `codex` -> `AGENTS.md` na raiz do repo alvo
 - nunca materializar artifacts finais no repo Sentinel Protocol; este repo mantém somente source of truth, templates internos, installer e smoke
-- manter o template interno de `AGENTS.md` do target `codex` em `reference/templates/codex/AGENTS.md`; esse template não é o `AGENTS.md` operacional do Sentinel
+- manter os templates internos do target `codex` em `reference/templates/codex/AGENTS.md` e `reference/templates/codex/config.toml`; esses templates não são artifacts operacionais do repo Sentinel
+- nunca criar `.codex/config.toml` final na raiz do repo Sentinel; esse arquivo só deve existir como template interno ou como artifact final no repo alvo materializado
 - `reference/templates/codex/` é a menor estrutura interna nova para templates que não são base agents canônicos
-- lembrar que o smoke valida `vscode` e `codex` em fixtures efêmeras; `AGENTS.md`, `.codex/agents/` e `.github/agents/` finais pertencem somente ao repo alvo materializado
+- lembrar que o smoke valida `vscode` e `codex` em fixtures efêmeras; `AGENTS.md`, `.codex/agents/`, `.codex/config.toml` e `.github/agents/` finais pertencem somente ao repo alvo materializado
 - manter `docs/**` como source of truth e exigir discovery sério antes de qualquer geração
 - manter claro que agents Sentinel não usam storage persistente externo; durable documentation vive somente em canonical docs under `docs/**`
 - impedir que templates, reference agents ou agents materializados criem, atualizem, dependam ou mencionem canais externos de fatos fora de `docs/**`

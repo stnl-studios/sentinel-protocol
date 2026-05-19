@@ -13,8 +13,9 @@ Sentinel-managed agent system is being regenerated.
 This repository uses Sentinel Protocol agents materialized for Codex.
 
 The managed agent definitions live in `.codex/agents/`.
+The managed runtime config lives in `.codex/config.toml`.
 
-Use `orchestrator` as the entry point for Sentinel-governed work unless the human request explicitly names a narrower agent or bypasses the workflow.
+For Sentinel-governed work, start with the custom subagent named `orchestrator` when native subagent spawning is available.
 
 ## Runtime Hardening
 Sentinel-managed Codex agents must declare `model`, `model_reasoning_effort`, and `sandbox_mode` in their `.codex/agents/*.toml` definitions.
@@ -24,6 +25,10 @@ Use `read-only` for roles that only read, analyze, route, review, or design. Use
 The sandbox is a runtime capability boundary, not a role boundary replacement. Agents must not absorb responsibility from another Sentinel role because their sandbox technically permits an action.
 
 `model` and `model_reasoning_effort` are operational configuration. Text inside agent instructions is not a substitute for those fields.
+
+In Codex, Sentinel handoff means native custom subagent spawn by exact agent name. You must never emulate handoff with `codex exec`, shell, subprocesses, scripts, or local continuation. If native spawning is unavailable, depth/config blocks routing, or the target agent is missing, stop with `ROUTING_RUNTIME_BLOCKED`.
+
+Quality guardrails are skills/constraints, not routeable agents. `.codex/config.toml` must preserve `[agents].max_depth = 2`.
 
 ## Managed Agents
 {{AGENT_LIST}}

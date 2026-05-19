@@ -1,5 +1,13 @@
 # Changelog
 
+## v2026.5.0-alpha.2
+
+Correção de contrato Codex na linha Alpha Preview.
+
+### Corrigido
+
+- Corrigido o contrato de materialização Codex para exigir handoff via native custom subagent spawning, bloquear emulação com `codex exec`/shell e gerar configuração `.codex/config.toml` com profundidade controlada.
+
 ## v2026.5.0-alpha.1
 
 Release de capacidade da linha Alpha Preview.
