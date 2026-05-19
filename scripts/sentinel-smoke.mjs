@@ -1733,20 +1733,22 @@ function withCodexRoutingRuntimeHardening(agentName, body) {
     const hardening = agentName === "orchestrator"
         ? [
             "## Codex routing runtime",
-            "Use native Codex custom subagent spawning by exact custom agent name for Sentinel handoff.",
-            "The parent must wait for the subagent result before deciding the next gate.",
+            "If explicitly invoked as a custom subagent, perform Sentinel routing within your runtime boundary.",
+            "Use native Codex custom subagent spawning by exact custom agent name for Sentinel handoff when available.",
+            "Wait for the subagent result before deciding the next gate.",
             "You must never use `codex exec`, `codex`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff.",
             "Never absorb downstream Sentinel roles locally.",
-            "If native custom subagent spawning is unavailable, depth/config blocks routing, or the named custom agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.",
+            "If nested routing causes runtime/UI/depth limitations, native custom subagent spawning is unavailable, depth/config blocks routing, or the named custom agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.",
             "`ROUTING_RUNTIME_BLOCKED` must include attempted owner, current gate, missing runtime capability or config, and minimum DEV action needed.",
+            "Do not claim that invoking `orchestrator` as a subagent is the default UI path.",
         ]
         : [
             "## Codex routing runtime",
             "You must not spawn downstream Sentinel agents.",
             "You must not call `codex exec` for handoff.",
             "You must not use shell/subprocess/script to perform handoff.",
-            "You must return owned artifact/status/formal handoff signal to the parent orchestrator.",
-            "\"handoff to X\" means a formal signal for orchestrator routing, not direct spawning.",
+            "You must return owned artifact/status/formal handoff signal to the parent controller/orchestrator.",
+            "\"handoff to X\" means a formal signal for parent controller/orchestrator routing, not direct spawning.",
         ];
 
     return `${hardening.join("\n")}\n\n${body}`;
@@ -2456,21 +2458,29 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
 
         if (agentName === "orchestrator") {
             assertContentIncludesAll(instructions, [
+                "If explicitly invoked as a custom subagent",
                 "native Codex custom subagent spawning",
                 "exact custom agent name",
-                "wait for the subagent result",
+                "Wait for the subagent result",
                 "never use `codex exec`",
                 "shell/subprocess/script/local continuation",
+                "nested routing causes runtime/UI/depth limitations",
                 "Never absorb downstream Sentinel roles locally.",
                 "ROUTING_RUNTIME_BLOCKED",
+                "Do not claim that invoking `orchestrator` as a subagent is the default UI path.",
             ], `${agentName} codex routing runtime hardening`);
+            assertContentExcludesAll(instructions, [
+                "start with the custom subagent named `orchestrator`",
+                "always the first",
+                "default first task",
+            ], `${agentName} codex routing runtime default entrypoint regression`);
         } else {
             assertContentIncludesAll(instructions, [
                 "must not spawn downstream Sentinel agents",
                 "must not call `codex exec` for handoff",
                 "must not use shell/subprocess/script to perform handoff",
-                "return owned artifact/status/formal handoff signal to the parent orchestrator",
-                "\"handoff to X\" means a formal signal for orchestrator routing, not direct spawning",
+                "return owned artifact/status/formal handoff signal to the parent controller/orchestrator",
+                "\"handoff to X\" means a formal signal for parent controller/orchestrator routing, not direct spawning",
             ], `${agentName} codex routing runtime hardening`);
         }
 
@@ -2847,8 +2857,12 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         "## Managed Agents",
         ".codex/agents/",
         ".codex/config.toml",
+        "main/root Codex session is the visual entrypoint",
+        "apply the Sentinel orchestrator boundary itself",
+        "spawn the next owner directly",
         "native custom subagent spawn",
         "exact agent name",
+        "Do not spawn `orchestrator` as the default first task",
         "never emulate handoff with `codex exec`",
         "ROUTING_RUNTIME_BLOCKED",
         "max_depth = 2",
@@ -2858,6 +2872,13 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         "`read-only`",
         "`workspace-write`",
     ]);
+    assertContentIncludesAll(content, [
+        "The `orchestrator` custom subagent exists as an available specialist, explicit fallback, and role-boundary reference.",
+        "The root/main session must spawn the current canonical owner directly.",
+    ], "AGENTS.md codex visual entrypoint contract");
+    assertContentExcludesAll(content, [
+        "start with the custom subagent named `orchestrator`",
+    ], "AGENTS.md codex must not default to orchestrator task");
     const linkedAgentNames = [...content.matchAll(/\.codex\/agents\/([A-Za-z0-9_-]+)\.toml/g)]
         .map((match) => match[1])
         .sort();

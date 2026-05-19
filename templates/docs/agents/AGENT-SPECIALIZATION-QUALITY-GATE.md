@@ -72,9 +72,9 @@ Verificar:
 - para `target=codex`, cada TOML gerenciado contem `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`
 - para `target=codex`, o conjunto gerenciado esperado contem `.codex/agents/*.toml`, `.codex/config.toml` e `AGENTS.md`
 - para `target=codex`, `.codex/config.toml` contem `[agents].max_depth = 2`
-- para `target=codex`, `AGENTS.md` contem contrato de native custom subagent spawning por exact agent name e bloqueio de emulacao com `codex exec`, shell, subprocesso, script ou continuacao local
-- para `target=codex`, `orchestrator` contem hardening contra `codex exec`, shell/subprocess/script/local continuation, role absorption e runtime sem spawn nativo, bloqueando com `ROUTING_RUNTIME_BLOCKED`
-- para `target=codex`, agents nao-orchestrator nao spawnam downstream Sentinel agents e retornam artifact/status/formal handoff signal ao parent orchestrator
+- para `target=codex`, `AGENTS.md` contem contrato de main/root Codex session como default visual entrypoint, aplicacao do Sentinel orchestrator boundary pela sessao principal, native custom subagent spawning direto do owner por exact agent name e bloqueio de emulacao com `codex exec`, shell, subprocesso, script ou continuacao local
+- para `target=codex`, `orchestrator` permanece materializado como agent disponivel/fallback explicito/referencia de boundary, contem hardening contra `codex exec`, shell/subprocess/script/local continuation, role absorption e runtime sem spawn nativo, bloqueando com `ROUTING_RUNTIME_BLOCKED`, e nao se declara default UI path
+- para `target=codex`, agents nao-orchestrator nao spawnam downstream Sentinel agents e retornam artifact/status/formal handoff signal ao parent controller/orchestrator
 - para `target=codex`, `tools` nao e serializado no TOML controlado
 - remocao de campos legados nao permitidos
 - remocao de `## Tools` residual quando o frontmatter ja e a source of truth
@@ -104,7 +104,7 @@ Verificar no minimo:
 - handoffs nao apontam para `.agent.md` inexistente
 - agents ausentes nao continuam implicitos no workflow local
 - quando o fluxo local usa coders, `execution-package-designer` esta presente no conjunto materializado e no roteamento do `orchestrator`
-- o fluxo passa por `validation-eval-designer -> execution-package-designer -> orchestrator -> coder(s)` antes de execução
+- o fluxo passa por `validation-eval-designer -> execution-package-designer -> coder(s)` antes de execução; em Codex, a main/root session faz esse routing visual direto por owner, enquanto `orchestrator` so entra se invocado explicitamente ou como fallback
 - nao ha contradicao interna relevante entre agents sobre boundaries, routing, harness ou fluxo
 - politica de paralelizacao segura aparece apenas onde fizer sentido e nao transforma singleton em worker paralelo por acidente
 - o `orchestrator` trata paralelizacao como politica de coordenacao, nao como promessa de runtime
@@ -125,9 +125,10 @@ Hard fails:
 - specialized tratando handoff de executor ausente, implícito, intermediário ou narrativo como sucesso
 - artifact final materializado sem bloco protocol-fixed aplicavel ao papel
 - target Codex sem `.codex/config.toml` com `[agents].max_depth = 2`
+- target Codex cujo `AGENTS.md` mande spawnar `orchestrator` automaticamente como primeiro task/default visual entrypoint
 - target Codex cujo `AGENTS.md` permita emular handoff via `codex exec`, shell, subprocesso, script ou continuacao local
 - `orchestrator` Codex sem `ROUTING_RUNTIME_BLOCKED` para falta de native custom subagent spawning, depth/config bloqueado ou agent nomeado ausente
-- agent nao-orchestrator Codex que tente spawnar downstream Sentinel agents diretamente em vez de retornar formal handoff signal ao parent orchestrator
+- agent nao-orchestrator Codex que tente spawnar downstream Sentinel agents diretamente em vez de retornar formal handoff signal ao parent controller/orchestrator
 
 ### 4. Surface discipline check
 Verificar no minimo:

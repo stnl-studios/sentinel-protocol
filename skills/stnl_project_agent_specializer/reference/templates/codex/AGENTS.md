@@ -13,9 +13,11 @@ Sentinel-managed agent system is being regenerated.
 This repository uses Sentinel Protocol agents materialized for Codex.
 
 The managed agent definitions live in `.codex/agents/`.
-The managed runtime config lives in `.codex/config.toml`.
+The managed runtime config lives in `.codex/config.toml` and must preserve `[agents].max_depth = 2`.
 
-For Sentinel-governed work, start with the custom subagent named `orchestrator` when native subagent spawning is available.
+For Sentinel-governed work, the main/root Codex session is the visual entrypoint and must apply the Sentinel orchestrator boundary itself. Read only what is needed to identify the current gate and canonical owner, then spawn the next owner directly as a native custom subagent by exact agent name, wait for the result, and decide the next gate while keeping the main chat delta-only.
+
+The `orchestrator` custom subagent exists as an available specialist, explicit fallback, and role-boundary reference. Do not spawn `orchestrator` as the default first task unless the human explicitly asks for the `orchestrator` subagent.
 
 ## Runtime Hardening
 Sentinel-managed Codex agents must declare `model`, `model_reasoning_effort`, and `sandbox_mode` in their `.codex/agents/*.toml` definitions.
@@ -26,7 +28,7 @@ The sandbox is a runtime capability boundary, not a role boundary replacement. A
 
 `model` and `model_reasoning_effort` are operational configuration. Text inside agent instructions is not a substitute for those fields.
 
-In Codex, Sentinel handoff means native custom subagent spawn by exact agent name. You must never emulate handoff with `codex exec`, shell, subprocesses, scripts, or local continuation. If native spawning is unavailable, depth/config blocks routing, or the target agent is missing, stop with `ROUTING_RUNTIME_BLOCKED`.
+In Codex, Sentinel handoff means native custom subagent spawn by exact agent name. The root/main session must spawn the current canonical owner directly. You must never emulate handoff with `codex exec`, shell, subprocesses, scripts, or local continuation. If native spawning is unavailable, depth/config blocks routing, or the target agent is missing, stop with `ROUTING_RUNTIME_BLOCKED`.
 
 Quality guardrails are skills/constraints, not routeable agents. `.codex/config.toml` must preserve `[agents].max_depth = 2`.
 

@@ -1,7 +1,7 @@
 interface:
   name: "stnl_backend_quality"
   display_name: "STNL Backend Quality"
-  version: "2026.5.0-alpha.2"
+  version: "2026.5.0-alpha.3"
   protocol_release: "2026.5"
   status: "active"
   short_description: "Structural backend quality guardrail for implementation and review."

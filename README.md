@@ -1,6 +1,6 @@
 # Sentinel Protocol
 
-**Status:** Alpha Preview - `v2026.5.0-alpha.2`
+**Status:** Alpha Preview - `v2026.5.0-alpha.3`
 
 Sentinel Protocol é um kit pessoal e não oficial de protocolo para organizar trabalho de software assistido por IA em torno de contexto explícito de projeto, SPECs, agents especializados e execução controlada.
 
@@ -26,7 +26,7 @@ Sentinel é para mantenedores que querem uma estrutura leve para:
 - mapear contexto de projeto antes da execução;
 - criar ou retomar SPECs rastreáveis;
 - materializar agents específicos por projeto a partir de templates base;
-- conduzir implementação por um fluxo controlado via `orchestrator`.
+- conduzir implementação por um fluxo controlado pelo boundary de `orchestrator`; no target Codex, a sessão principal aplica esse boundary e spawna os owners especialistas diretamente.
 
 Ele é útil quando o trabalho assistido por IA precisa de limites mais claros que prompts avulsos, mas ainda depende de julgamento humano.
 
@@ -49,14 +49,14 @@ Para repo existente:
 1. `stnl_project_context`
 2. `stnl_project_agent_specializer`
 3. `stnl_spec_manager`
-4. `orchestrator`
+4. `orchestrator` ou, no target Codex, a sessão principal aplicando o boundary de `orchestrator`
 
 Para projeto novo ou greenfield:
 
 1. `stnl_project_foundation`
 2. `stnl_project_agent_specializer`
 3. `stnl_spec_manager`
-4. `orchestrator`
+4. `orchestrator` ou, no target Codex, a sessão principal aplicando o boundary de `orchestrator`
 
 Targets suportados para materialização de agents:
 
