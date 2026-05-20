@@ -188,7 +188,7 @@ Regras:
 - `codex` usa também `AGENTS.md` como instrução de workspace do runtime Codex
 - `AGENTS.md` do target `codex` deve nascer do template interno `reference/templates/codex/AGENTS.md`; nunca criar ou manter um `AGENTS.md` final no repo Sentinel como source paralela
 - `.codex/config.toml` do target `codex` deve nascer do template interno `reference/templates/codex/config.toml`; nunca criar ou manter uma `.codex/config.toml` final no repo Sentinel como source paralela
-- `.codex/config.toml` deve preservar `[agents].max_depth = 2`; essa profundidade é limite controlado para permitir roteamento nativo `root/main -> orchestrator -> owner` quando necessário, não autorização para ampliar arbitrariamente a cadeia de roteamento
+- `.codex/config.toml` deve preservar `[agents].max_depth = 1`; essa profundidade é limite controlado para permitir subagents diretos do root/main (`orchestrator` e owners sibling/root-level mediados pelo root/main após `ROUTE_PACKET`) e bloquear nested owner threads abaixo do `orchestrator`, não autorização para ampliar arbitrariamente a cadeia de roteamento
 - referências internas entre agents devem usar o identificador lógico do agent e ser serializadas no formato físico do `target`; não fixar `.agent.md` quando `target=codex`
 - target desconhecido deve bloquear a materialização antes de qualquer escrita
 
@@ -197,7 +197,9 @@ Quando `target=codex`, a semântica de handoff Sentinel é runtime-native:
 - The main/root Codex session is the human-visible workspace entrypoint for Sentinel-governed work, but the default first Sentinel subagent is `orchestrator`.
 - The main/root session must request the `orchestrator` custom subagent by exact name, wait for its result, and keep the main chat focused on routing/status deltas.
 - The `orchestrator` custom subagent is the default Sentinel routing controller for Codex and owns gate routing and specialist handoffs.
-- The orchestrator must route only to materialized Codex agents by exact custom agent name and must not absorb implementation, validation, review, package design, or finalization responsibilities.
+- In Codex visual mode, routing is parent-mediated: the orchestrator must return a compact `ROUTE_PACKET` naming the next canonical owner and must not spawn downstream Sentinel owners directly.
+- The root/main session is the only spawn executor for Sentinel owners in the standard Codex visual flow; it validates the `ROUTE_PACKET`, spawns the named owner as a native custom subagent by exact custom agent name, waits for the compact owner result, and returns to `orchestrator` for the next routing decision.
+- The orchestrator must decide only among materialized Codex agents by exact custom agent name and must not absorb implementation, validation, review, package design, finalization responsibilities, or downstream owner execution.
 - Direct root-to-owner spawning is not the default Sentinel-governed path and is reserved for explicit human requests for a specific custom subagent or non-Sentinel use.
 - In Codex target, Sentinel handoff means native Codex custom subagent spawning by exact custom agent name.
 - Full-history fork inheritance is not a Sentinel requirement; the handoff must not depend on full-history fork.
@@ -205,14 +207,19 @@ Quando `target=codex`, a semântica de handoff Sentinel é runtime-native:
 - The root/main payload to `orchestrator` must be a minimal, task-scoped routing payload containing only task, repo, SPEC path when applicable, mode, objective, active decisions, and instruction to read applicable `AGENTS.md`, developer instructions, Sentinel docs/templates, and allowed repository docs/codebase.
 - The durable Sentinel contract must live in `AGENTS.md`, `.codex/agents/*.toml`, Sentinel source docs/templates, and allowed repo documentation/codebase, not in a full contract pasted into the prompt.
 - The parent must wait for the subagent result before deciding the next gate.
+- `ROUTE_PACKET` must be compact: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, and `BLOCKER` only when real.
+- `ROUTE_PACKET` must not include full artifacts, full contracts, SPEC/checklist/logs/diffs, or broad transcript history; if a rich artifact is needed, return path plus compact summary.
+- If the orchestrator tries to spawn a downstream Sentinel owner directly in Codex visual mode, that is a contract violation.
+- If root/main chooses a Sentinel owner without a valid `ROUTE_PACKET`, that is a contract violation.
 - Never emulate handoff with `codex exec`, `codex`, shell, subprocesses, scripts, local CLI calls, or local continuation of another Sentinel role.
 - Never pass the full Sentinel contract in the prompt as fallback, never call orchestrator without fork by pasting the full contract into a normal prompt, never claim that prompt replay preserves native handoff by name, and never continue locally as if acting as `orchestrator`.
-- If native custom-agent spawning cannot create an actual `orchestrator` agent thread, or if `orchestrator` is absent, depth/config blocks routing, or the named custom owner agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.
+- If native custom-agent spawning cannot create an actual `orchestrator` agent thread, or if `orchestrator` is absent, root/main cannot spawn the owner named in a valid `ROUTE_PACKET`, depth/config blocks routing, or the named custom owner agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.
 - `ROUTING_RUNTIME_BLOCKED` must include attempted owner, current gate, missing runtime capability or config, and minimum DEV action needed.
 - Non-orchestrator agents must not spawn downstream Sentinel agents.
-- Non-orchestrator agents must return their owned artifact/status/formal handoff signal to the parent controller/orchestrator.
-- Any phrase like "handoff to X" in a non-orchestrator agent means "return a formal handoff signal for parent controller/orchestrator routing", not direct spawning.
+- Non-orchestrator agents must return their owned artifact/status/formal handoff signal to root/main; root/main returns to `orchestrator` for the next route decision.
+- Any phrase like "handoff to X" in a non-orchestrator agent means "return a formal handoff signal for root/main-mediated orchestrator routing", not direct spawning.
 - Quality guardrails remain skills/constraints and must not become routeable agents.
+- Codex `AGENTS.md` Local Notes must stay compact and stable. They may include target repo shape, docs entrypoints, command/gap notes, and local constraints, but must not duplicate the Sentinel contract, SPEC contents, checklists, logs, diffs, or large artifacts.
 
 ## Compact Agent Return Contract
 Todo agent Sentinel materializado deve retornar ao parent/root/orchestrator somente o mínimo necessário para decidir o próximo gate.
@@ -428,8 +435,8 @@ Regras operacionais:
 - `agents` no frontmatter operacional é reservado ao `orchestrator` em `vscode` e deve listar apenas os `frontmatter.name` canônicos dos subagents realmente materializados no output de agents do mesmo target
 - em `codex`, `agents` não é campo obrigatório do TOML do `orchestrator`; o conjunto de subagents e o roteamento devem aparecer em `developer_instructions` e no `AGENTS.md` gerado, salvo suporte explícito do runtime para campo equivalente opcional
 - em `codex`, o `AGENTS.md` deve explicitar que a main/root Codex session é a human-visible workspace entrypoint, solicita `orchestrator` como primeiro subagent Sentinel padrão por exact custom agent name, não depende de full-history fork, envia somente payload mínimo/task-scoped, e bloqueia emulação de handoff por prompt com contrato completo, `codex exec`, shell, subprocesso, script, local CLI call ou continuação local
-- em `codex`, o `orchestrator` deve explicitar em `developer_instructions` que é o default routing controller do fluxo Sentinel no Codex, executa routing dentro do seu runtime boundary, usa native Codex custom subagent spawning by exact custom agent name quando disponível, wait for the subagent result, never use `codex exec`, never use shell/subprocess/script/local continuation to simulate handoff, never accept full Sentinel contract prompt replay as native handoff, never absorb downstream Sentinel roles locally, reporta `ROUTING_RUNTIME_BLOCKED` quando a runtime não cria uma agent thread nativa para `orchestrator`, em limitação de runtime/UI/depth ou agente ausente, e não absorve papéis especialistas
-- em `codex`, todo agent não-orchestrator deve explicitar em `developer_instructions`: must not spawn downstream Sentinel agents, must not call `codex exec` for handoff, must not use shell/subprocess/script to perform handoff, return owned artifact/status/formal handoff signal to the parent controller/orchestrator, e que "handoff to X" means a formal signal for parent controller/orchestrator routing, not direct spawning
+- em `codex`, o `orchestrator` deve explicitar em `developer_instructions` que é o default routing controller do fluxo Sentinel no Codex, é route decision owner e não spawn executor dos downstream owners em Codex visual mode, retorna `ROUTE_PACKET` compacto para root/main, never use `codex exec`, never use shell/subprocess/script/local continuation to simulate handoff, never accept full Sentinel contract prompt replay as native handoff, never absorb downstream Sentinel roles locally, reporta `ROUTING_RUNTIME_BLOCKED` quando a runtime não cria uma agent thread nativa para `orchestrator`, quando root/main não consegue spawnar o owner nomeado no `ROUTE_PACKET`, em limitação de runtime/UI/depth ou agente ausente, e não absorve papéis especialistas
+- em `codex`, todo agent não-orchestrator deve explicitar em `developer_instructions`: must not spawn downstream Sentinel agents, must not call `codex exec` for handoff, must not use shell/subprocess/script to perform handoff, return owned artifact/status/formal handoff signal to root/main for parent-mediated orchestrator routing, e que "handoff to X" means a formal signal for root/main-mediated orchestrator routing, not direct spawning
 - em `codex`, todo `.codex/agents/*.toml` e o `AGENTS.md` devem carregar `Compact Agent Return Contract`, instruindo que subagent returns sejam compactos, gate-oriented, sem despejar contrato/SPEC/checklist/logs/diffs/artifacts completos no chat, e que detalhes expandam somente em blocker, falha, evidência crítica de validação ou pedido humano explícito
 - `model` na metadata operacional é obrigatório como string única; lista priorizada só deve ser usada quando o target suportar explicitamente esse shape, houver justificativa operacional clara e todos os itens respeitarem `allowed_models`
 - qualquer campo fora do shape mínimo nativo ou dos campos opcionais suportados e adotados pela política Sentinel do target deve ser tratado como ausente por default e removido na normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
@@ -462,7 +469,7 @@ Regras operacionais:
   - `sandbox_mode`
   - `developer_instructions`
 - `sandbox_mode` é obrigatório por política Sentinel no TOML Codex final, não por fazer parte do shape mínimo nativo Codex
-- `.codex/config.toml` final normalizado deve ser gerado a partir do template interno, conter comentário gerenciado, conter `[agents]`, conter `max_threads = 6` e conter exatamente `max_depth = 2`
+- `.codex/config.toml` final normalizado deve ser gerado a partir do template interno, conter comentário gerenciado, conter `[agents]`, conter `max_threads = 6` e conter exatamente `max_depth = 1`
 - o custom agent TOML final normalizado de `codex` pode conter campos opcionais adicionais somente quando forem suportados pelo runtime e não confundidos com requisito nativo mínimo
 - convenções internas opcionais do Sentinel em `codex`, quando existirem, devem ser claramente classificadas como internas e removíveis sem quebrar o custom agent TOML mínimo
 - qualquer campo fora do shape do target deve ser tratado como legado residual e removido durante a normalização, salvo instrução humana explícita ou compatibilidade opcional comprovada
@@ -988,10 +995,10 @@ Verificar:
 - base agents canônicos em `templates/agents/*.agent.md` respeitam 28.000 caracteres; esse limite não substitui o limite de materialização
 - quando `target=vscode`, cada `.agent.md` gerenciado respeita o limite de 30.000 caracteres do prompt Markdown do agent, sem sacrificar blocos protocol-fixed
 - quando `target=codex`, artifacts gerenciados estão em `.codex/agents/*.toml`, `.codex/config.toml` e `AGENTS.md`; cada TOML contém `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`; `AGENTS.md` e `.codex/config.toml` foram gerados a partir dos templates internos da skill
-- quando `target=codex`, `.codex/config.toml` contém `[agents].max_depth = 2` e não aumenta a profundidade de roteamento acima desse limite
-- quando `target=codex`, `AGENTS.md` contém o contrato de main/root Codex session como human-visible workspace entrypoint, `orchestrator` como primeiro subagent Sentinel padrão, native Codex custom subagent spawning por nome exato sem dependência de full-history fork, payload mínimo/task-scoped, contrato durável em `AGENTS.md`/`.codex/agents/*.toml`, e bloqueio de emulação por contrato completo no prompt, `codex exec`, shell, subprocesso, script ou continuação local
-- quando `target=codex`, `orchestrator` contém hardening contra full-contract prompt replay, `codex exec`, shell/subprocess/script/local continuation, role absorption e falta de runtime nativo, reportando `ROUTING_RUNTIME_BLOCKED` quando uma agent thread nativa do `orchestrator` não for criada, e declara que é o default routing controller do fluxo Sentinel no Codex sem absorver papéis especialistas
-- quando `target=codex`, agents não-orchestrator não podem spawnar downstream Sentinel agents e devem retornar artifact/status/formal handoff signal ao parent controller/orchestrator
+- quando `target=codex`, `.codex/config.toml` contém `[agents].max_depth = 1` e não aumenta a profundidade de roteamento acima desse limite
+- quando `target=codex`, `AGENTS.md` contém o contrato de main/root Codex session como human-visible workspace entrypoint, `orchestrator` como primeiro subagent Sentinel padrão, Codex Parent-Mediated Routing Contract, `ROUTE_PACKET` compacto, native Codex custom subagent spawning pelo root/main por nome exato após `ROUTE_PACKET` válido, sem dependência de full-history fork, payload mínimo/task-scoped, contrato durável em `AGENTS.md`/`.codex/agents/*.toml`, e bloqueio de emulação por contrato completo no prompt, `codex exec`, shell, subprocesso, script ou continuação local
+- quando `target=codex`, `orchestrator` contém hardening contra full-contract prompt replay, `codex exec`, shell/subprocess/script/local continuation, role absorption e falta de runtime nativo, reportando `ROUTING_RUNTIME_BLOCKED` quando uma agent thread nativa do `orchestrator` não for criada ou root/main não conseguir spawnar o owner nomeado no `ROUTE_PACKET`, e declara que é o default routing controller e route decision owner do fluxo Sentinel no Codex sem absorver papéis especialistas nem spawnar downstream owners diretamente
+- quando `target=codex`, agents não-orchestrator não podem spawnar downstream Sentinel agents e devem retornar artifact/status/formal handoff signal ao root/main para roteamento mediado por `orchestrator`
 - quando `target=codex`, `developer_instructions` preserva a missão, role class, ownership, gates, sequencing, handoffs e regras operacionais do specialized que em `vscode` ficariam no corpo Markdown
 - para qualquer target, blocos protocol-fixed existentes no template/base agent e no `reference/agents/*.agent.md` usado pela skill aparecem no artifact final materializado com frases sentinela verificáveis
 - em especial, `Consistency without legacy propagation`, `Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.` e `This policy does not authorize broad refactors` aparecem no corpo final de `.github/agents/*.agent.md` e em `developer_instructions` de `.codex/agents/*.toml`
@@ -1293,7 +1300,7 @@ managed_artifact: true
 
 [agents]
 max_threads = 6
-max_depth = 2
+max_depth = 1
 ```
 
 #### `.codex/agents/orchestrator.toml`
@@ -1309,13 +1316,17 @@ Coordinate the local Sentinel workflow as the default first Sentinel subagent fo
 
 Preserve the canonical gate order, role class `router`, ownership boundaries, handoff validity, and status sequencing defined by the specialized Sentinel contract.
 
-For Codex, the main/root session is the human-visible workspace entrypoint and should request this `orchestrator` as the default first Sentinel subagent by exact custom agent name. This orchestrator owns routing to the current canonical owner by exact custom agent name, waits for the result, and decides the next gate.
+For Codex, the main/root session is the human-visible workspace entrypoint and should request this `orchestrator` as the default first Sentinel subagent by exact custom agent name. This orchestrator owns gate routing, decides the current canonical owner by exact custom agent name, returns a compact `ROUTE_PACKET` to root/main, waits for root/main to return the owner result, and decides the next gate.
 
 The root/main session should send only a minimal, task-scoped routing payload. Do not require full-history fork inheritance. Read the durable Sentinel contract from `AGENTS.md`, your own developer instructions, and the allowed repository docs/codebase. Never accept a full Sentinel contract pasted into a normal prompt as a substitute for native custom-agent spawning.
 
 Route only to agents that are actually materialized for Codex in `.codex/agents/` and reflected in the generated `AGENTS.md`. Do not implement, do not absorb execution, do not write validation packs or execution packages, and do not treat absent agents as available.
 
-For Codex, handoff means native Codex custom subagent spawning by exact custom agent name when available. A refused full-history fork is not itself failure when Codex still creates a native `orchestrator` agent thread. Wait for the subagent result before deciding the next gate. Never use full-contract prompt replay, `codex exec`, shell, subprocesses, scripts, local CLI calls, local continuation, or local role absorption to simulate downstream Sentinel work. You must never use `codex exec`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff. If native custom-agent spawning cannot create an actual `orchestrator` agent thread, nested routing causes runtime/UI/depth limitations, spawning is blocked by `.codex/config.toml`, or the target custom agent is missing, stop with `ROUTING_RUNTIME_BLOCKED` and include attempted owner, current gate, missing capability/config, and minimum DEV action.
+For Codex visual mode, Sentinel routing is parent-mediated. You must return a compact `ROUTE_PACKET` to root/main and must not spawn downstream Sentinel owners directly. The root/main session spawns the named owner as a native custom subagent by exact custom agent name, returns the compact owner result to you, and comes back to you for the next routing decision.
+
+`ROUTE_PACKET` shape: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, and `BLOCKER` only when real. Keep it compact: do not include full artifacts, full contracts, SPEC/checklist/logs/diffs, or broad transcript history; return path plus compact summary when rich artifacts are needed.
+
+For Codex, handoff means native Codex custom subagent spawning by exact custom agent name when available, executed by root/main after a valid `ROUTE_PACKET`. A refused full-history fork is not itself failure when Codex still creates a native `orchestrator` agent thread. Wait for the owner result from root/main before deciding the next gate. Never use full-contract prompt replay, `codex exec`, shell, subprocesses, scripts, local CLI calls, local continuation, or local role absorption to simulate downstream Sentinel work. You must never use `codex exec`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff. If native custom-agent spawning cannot create an actual `orchestrator` agent thread, root/main cannot spawn the owner named in a valid `ROUTE_PACKET`, spawning is blocked by `.codex/config.toml`, or the target custom agent is missing, stop with `ROUTING_RUNTIME_BLOCKED` and include attempted owner, current gate, missing capability/config, and minimum DEV action.
 
 Keep the main chat surface short: return only the current gate, next owner, blocker, DEV decision need, or routing delta that matters.
 '''
@@ -1336,7 +1347,7 @@ Preserve role class `executor`, targeted-local reading constrained to package an
 
 Do not become planner, execution-package-designer, orchestrator, validation runner, reviewer, or finalizer. Do not redefine the cut, recompile the package, choose structural architecture, widen scope, or return analysis as if implementation happened.
 
-Do not spawn downstream Sentinel agents, do not call `codex exec` for handoff, and do not use shell/subprocess/script to perform handoff. Return your owned artifact/status/formal handoff signal to the parent controller/orchestrator; "handoff to X" means a formal signal for parent controller/orchestrator routing, not direct spawning.
+Do not spawn downstream Sentinel agents, do not call `codex exec` for handoff, and do not use shell/subprocess/script to perform handoff. Return your owned artifact/status/formal handoff signal to root/main for parent-mediated orchestrator routing; "handoff to X" means a formal signal for root/main-mediated orchestrator routing, not direct spawning.
 
 Report only the execution delta needed downstream: changed paths or equivalent implementation evidence, checks run or not run, residual risk, and exact blocker when blocked.
 '''
@@ -1354,8 +1365,9 @@ Notas para os exemplos:
 - em `codex`, qualquer campo adicional além de `model`, `model_reasoning_effort` e `sandbox_mode` só pode ser usado como opcional compatível com o runtime ou convenção interna opcional do Sentinel, nunca como requisito nativo mínimo
 - os exemplos representam o artifact final normalizado, sem `## Tools` no corpo e sem campos legados como `agent_version`
 - os exemplos de shape não substituem o contrato operacional especializado; `orchestrator` e executors continuam obrigados a explicitar capability gate, validade do handoff e regra de runner só com artifact validável
-- no target `codex`, `.codex/config.toml` do repo alvo deve ser gerado a partir de `reference/templates/codex/config.toml` com `[agents].max_depth = 2`
+- no target `codex`, `.codex/config.toml` do repo alvo deve ser gerado a partir de `reference/templates/codex/config.toml` com `[agents].max_depth = 1`
 - no target `codex`, `AGENTS.md` do repo alvo deve ser gerado a partir de `reference/templates/codex/AGENTS.md` e deve apontar para o conjunto real de `.codex/agents/*.toml`
+- no target `codex`, `AGENTS.md` deve preservar `Local Notes` compactas quando houver notas locais; elas podem registrar stack, docs entrypoints, comandos/gaps e restrições locais, mas nao podem duplicar contrato Sentinel, SPEC, checklists, logs, diffs ou artifacts grandes
 - não inventar campos extras fora do necessário
 
 ## EXECUTE OUTPUT esperado
@@ -1366,7 +1378,7 @@ Notas para os exemplos:
 - explicitar quando houve remoção de `## Tools`
 - explicitar quando houve remoção de campos legados, incluindo `agent_version`, quando aplicável
 - quando `target=codex`, explicitar se `AGENTS.md` do repo alvo foi criado ou atualizado a partir do template interno
-- quando `target=codex`, explicitar se `.codex/config.toml` do repo alvo foi criado ou atualizado a partir do template interno e confirmar `max_depth = 2`
+- quando `target=codex`, explicitar se `.codex/config.toml` do repo alvo foi criado ou atualizado a partir do template interno e confirmar `max_depth = 1`
 - informar o verdict final do quality gate e, se houve repair, quais arquivos ele sinalizou
 - nomear qualquer exceção humana explícita que tenha mantido resíduo legado por decisão consciente
 - se houver bloqueio, separar claramente o que foi normalizado do que ficou pendente
@@ -1378,7 +1390,7 @@ Notas para os exemplos:
 - artifacts finais normalizados no shape canônico vigente
 - `target=vscode` materializa agents em `.github/agents/*.agent.md` com `target` correto no frontmatter operacional
 - em `vscode`, para cada agent materializado, `basename` do arquivo sem `.agent.md`, `frontmatter.name` e qualquer item correspondente em `orchestrator.agents` são exatamente o mesmo ID canônico em kebab-case
-- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`, materializa `.codex/config.toml` com `[agents].max_depth = 2`, e materializa `AGENTS.md` na raiz do repo alvo
+- `target=codex` materializa agents em `.codex/agents/*.toml` com `name`, `description`, `model`, `model_reasoning_effort`, `sandbox_mode` e `developer_instructions`, materializa `.codex/config.toml` com `[agents].max_depth = 1`, e materializa `AGENTS.md` na raiz do repo alvo
 - `AGENTS.md` do target `codex` deriva do template interno `reference/templates/codex/AGENTS.md`
 - `.codex/config.toml` do target `codex` deriva do template interno `reference/templates/codex/config.toml`
 - em `vscode`, `tools` presente no frontmatter operacional de todos os specializeds materializados

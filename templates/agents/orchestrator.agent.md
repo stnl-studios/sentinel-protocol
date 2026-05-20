@@ -226,6 +226,8 @@ If the correction changes boundary, ownership, `DO_NOT_TOUCH`, expected validati
 Treat the main chat as a status surface, not an execution log.
 
 - Compact Agent Return Contract: return only gate, next owner, blocker/DEV decision, status terminal, and relevant deltas needed for the parent/root to decide.
+- Codex visual mode: return compact `ROUTE_PACKET` to root/main; do not spawn downstream Sentinel owners; root/main spawns the named owner sibling/root-level and returns for next routing.
+- `ROUTE_PACKET` shape: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, `BLOCKER`; omit full artifacts/contracts/SPEC/checklist/logs/diffs.
 - keep responses `delta-only` and delegate as soon as the route is honest
 - surface only current status, real blocker, DEV decision, next step/agent, or material new delta
 - normal response: at most 6 lines

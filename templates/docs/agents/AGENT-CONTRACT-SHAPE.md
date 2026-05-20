@@ -274,16 +274,21 @@ Regras:
 - `tools` nao deve ser serializado no TOML Codex controlado quando a politica vigente preserva tools semanticamente em `developer_instructions` e por hardening de `sandbox_mode`.
 - `reasoning_effort`, `thinking_effort` ou equivalentes fora de `model_reasoning_effort` nao devem ser inventados.
 - marcas gerenciadas devem preferir comentario/header TOML, nao campo runtime desconhecido.
-- `.codex/config.toml` deve conter `[agents].max_depth = 2` como limite controlado de roteamento nativo para `root/main -> orchestrator -> owner`, sem ampliar arbitrariamente a cadeia.
+- `.codex/config.toml` deve conter `[agents].max_depth = 1` como limite controlado para subagents diretos de root/main. Isso permite `root/main -> orchestrator` e owners sibling/root-level mediados por root/main apos `ROUTE_PACKET`, enquanto bloqueia owner aninhado abaixo do `orchestrator` ou de qualquer agent nao-orchestrator.
 - O contrato Codex usa native custom subagent spawn by exact custom agent name, mas full-history fork nao e requisito obrigatorio de handoff Sentinel.
 - `AGENTS.md` deve declarar a main/root Codex session como entrada humana/visual do workspace e `orchestrator` como primeiro subagent Sentinel padrao para trabalho Sentinel-governed.
 - A root/main session deve enviar ao `orchestrator` apenas payload minimo/task-scoped; `AGENTS.md` e os TOMLs `.codex/agents/*.toml` carregam o contrato Sentinel duravel.
 - `AGENTS.md` e os TOMLs Codex gerenciados devem carregar `Compact Agent Return Contract`, mantendo subagent returns compactos, gate-oriented e sem despejar contrato, SPEC, checklist, logs, diffs ou artifacts completos no chat.
-- `orchestrator` deve existir como agent especializado e default routing controller do fluxo Sentinel no Codex, roteando owners canonicos por nome exato, preservando boundaries e carregando hardening contra prompt-emulated handoff, `codex exec`, shell/subprocess/script/local continuation, role absorption e runtime sem spawn nativo, com bloqueio `ROUTING_RUNTIME_BLOCKED`.
+- Codex Parent-Mediated Routing Contract: root/main spawna `orchestrator` primeiro; `orchestrator` decide gate/proximo owner e retorna `ROUTE_PACKET` compacto; root/main valida o pacote e spawna o owner indicado como native custom subagent sibling/root-level; owner retorna compacto ao root/main; root/main retorna ao `orchestrator` para a proxima decisao ate blocker, terminal ou finalizer.
+- `orchestrator` deve existir como agent especializado, default routing controller e route decision owner do fluxo Sentinel no Codex, decidindo owners canonicos por nome exato, preservando boundaries e carregando hardening contra prompt-emulated handoff, `codex exec`, shell/subprocess/script/local continuation, role absorption e runtime sem spawn nativo, com bloqueio `ROUTING_RUNTIME_BLOCKED`.
+- Em Codex visual mode, `orchestrator` nao deve spawnar downstream Sentinel owners diretamente; isso preserva a camada visual primaria do Codex e evita nested owner threads abaixo do `orchestrator`.
+- Root/main nao decide owner Sentinel sozinho: so pode spawnar owner a partir de `ROUTE_PACKET` valido, pedido humano explicito para tarefa non-Sentinel/custom-agent especifica, ou comportamento documentado de recovery/blocking.
+- `ROUTE_PACKET` deve ser compacto: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, e `BLOCKER` apenas quando real; nao deve incluir artifact completo, contrato completo, SPEC/checklist/logs/diffs completos, e deve usar path + resumo compacto quando precisar de artifact rico.
+- `AGENTS.md` pode conter `Local Notes` compactas e estaveis do repo alvo, mas elas nao podem duplicar contrato Sentinel, SPEC, checklists, logs, diffs ou artifacts grandes.
 - Recusa de full-history fork nao e falha de roteamento quando a runtime ainda cria uma agent thread nativa chamada `orchestrator`; se a thread nativa nao for criada, o fluxo deve bloquear com `ROUTING_RUNTIME_BLOCKED`.
 - Prompt-emulated handoff e invalido: colar o contrato Sentinel completo no prompt, chamar "sem fork" com contrato completo, declarar que isso preserva handoff nativo, ou continuar localmente como outro papel Sentinel nao e handoff Codex nativo.
 - Direct root-to-owner spawning nao e o caminho Sentinel padrao; fica reservado para pedido humano explicito de custom subagent especifico ou uso non-Sentinel.
-- agents nao-orchestrator nao devem spawnar downstream Sentinel agents; devem retornar artifact/status/formal handoff signal ao parent controller/orchestrator.
+- agents nao-orchestrator nao devem spawnar downstream Sentinel agents; devem retornar artifact/status/formal handoff signal ao root/main para roteamento mediado pelo `orchestrator`.
 - quality guardrails continuam skills/constraints, nao agents roteaveis.
 
 ## Finalidade auditavel desses metadados
