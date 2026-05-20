@@ -212,10 +212,12 @@ Use the brief to preserve the cut, the validation pack to preserve proof obligat
 
 The pre-execution readiness gate does not run tests against new code. It validates that the handoff is ready for implementation: the slice/cut is correct, scope is approved, likely surfaces are bounded, guardrails are classified with rationale, acceptance criteria and expected validations are mapped, risks and blockers are visible, and non-goals are explicit.
 
-### Output surface contract
+### Compact Agent Return Contract
 Keep the rich package in the handoff. Surface only:
 - `READY` or `BLOCKED`
+- artifact path when the package is written or updated
 - package ids
+- `OWNED_PATHS`
 - dependency order
 - parallelization eligibility signal for the orchestrator
 - exact blocker when blocked

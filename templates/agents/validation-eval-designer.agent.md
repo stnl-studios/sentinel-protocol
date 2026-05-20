@@ -191,11 +191,12 @@ Treat validation design as risk-weighted proof design:
 
 Do not compensate for upstream discipline by turning proof design into late planning or late discovery. If the brief is too weak to derive proof obligations within a bounded local read, stop honestly.
 
-### Surface discipline
+### Compact Agent Return Contract
 Keep the rich proof-design artifact in `VALIDATION PACK`, but keep the surfaced return short and status-first.
 
 Default return surface to the orchestrator or main chat:
 - `READY` or `NEEDS_DEV_DECISION_HARNESS`
+- artifact path or compact pack summary
 - proof obligations that are still open or still weak
 - DEV decision required, if any
 

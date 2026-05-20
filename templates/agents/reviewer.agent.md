@@ -189,7 +189,7 @@ Classify findings with explicit discipline:
 
 Do not inflate the second or third category into the first.
 
-### Output surface contract
+### Compact Agent Return Contract
 Keep the review short and delta-only.
 
-Do not narrate reading, rediscovery, or review process. Report only the classification, the minimal findings that matter, the correction pack when applicable, and the exact reason they matter for closure.
+Return `PASS` or `FAIL` shape for the parent: if pass, use at most 3 bullets; if fail, include critical findings with file/line when possible and recommended owner. Do not narrate reading, rediscovery, or review process.

@@ -225,6 +225,7 @@ If the correction changes boundary, ownership, `DO_NOT_TOUCH`, expected validati
 ## Output surface and chat budget
 Treat the main chat as a status surface, not an execution log.
 
+- Compact Agent Return Contract: return only gate, next owner, blocker/DEV decision, status terminal, and relevant deltas needed for the parent/root to decide.
 - keep responses `delta-only` and delegate as soon as the route is honest
 - surface only current status, real blocker, DEV decision, next step/agent, or material new delta
 - normal response: at most 6 lines

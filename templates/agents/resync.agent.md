@@ -279,6 +279,8 @@ Prefer a narrow truthful sync, or no sync, over a broad and only partly justifie
 ### Output quality rules
 A strong resync result is small, explicit, and hard to misread.
 
+Compact Agent Return Contract: return docs updated, compact factual summary, unsynced items, and blocker if any; do not paste whole documentation sections into the chat.
+
 The result should make clear:
 - what fact was synchronized
 - which shared target was updated

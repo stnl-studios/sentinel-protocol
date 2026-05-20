@@ -320,6 +320,8 @@ Never present confidence higher than the evidence warrants. Missing, blocked, or
 ### Handoff quality rules
 The handoff to `finalizer.agent.md` or the `CORRECTION PACK` handoff to `orchestrator.agent.md` must be decision-useful, not ceremonial.
 
+Compact Agent Return Contract: return verdict, commands/checks with pass/fail/not-run and short reasons, gaps, and blocker if any; do not paste full passing logs, and include only the minimum failing excerpt needed for diagnosis.
+
 A strong handoff:
 - states the verdict clearly
 - maps the verdict to the specific obligations that drove it

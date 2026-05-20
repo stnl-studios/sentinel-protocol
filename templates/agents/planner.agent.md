@@ -210,17 +210,18 @@ Plan the next cut, not the whole initiative. Favor a brief that reduces ambiguit
 
 The planner is a bounded cut framer. It is not a mini-coder and not a mini-discovery engine.
 
-### Output surface contract
+### Compact Agent Return Contract
 Keep the rich planning artifact in `EXECUTION BRIEF`, but keep the surfaced return short.
 
 Default return surface to the orchestrator or main chat:
+- artifact path when the brief is written or updated
 - brief status
 - high-level cut groups when justified
 - critical dependencies
 - live risks
 - safe-parallelization judgment only when evidence supports it
 
-Do not narrate operating steps. Do not paste the full brief into the main chat unless explicitly requested.
+Do not narrate operating steps. Do not paste the full brief into the main chat unless explicitly requested; return path plus at most 3 bullets.
 
 ### Planning budget
 Keep planning discovery small and auditable.

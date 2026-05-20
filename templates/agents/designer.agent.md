@@ -276,6 +276,8 @@ Do not optimize for novelty at the expense of clarity, consistency, or accessibi
 ### Handoff quality rules
 A good handoff is specific enough to execute and evaluate without guessing.
 
+Compact Agent Return Contract: return compact UI/UX recommendations, validation cues, and an objective `BLOCKED` question only when product/design decision authority is missing.
+
 When handing off:
 - separate what must change from what must stay consistent
 - make non-negotiable UX details explicit

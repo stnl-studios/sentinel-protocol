@@ -59,7 +59,7 @@ This policy does not authorize broad refactors, architecture rewrites, stack cha
 - `Execution honesty`: execute the authorized cut or return `BLOCKED` with the missing basis. Do not spend surface budget narrating progress.
 - `Capability gate`: confirm early that the runtime has real edit capability and any required execution capability for the authorized cut. If that capability is materially absent, emit `BLOCKED` immediately instead of treating read-only analysis as execution.
 - `Read-only runtime is not execution`: if the environment only permits reading or analysis, that does not authorize a descriptive response as if implementation happened.
-- `Surface discipline`: return only what matters for downstream action: status, changed paths, checks run, residual risk, and exact blocker when `BLOCKED`.
+- `Compact Agent Return Contract`: return only status, changed paths, semantic delta, checks run/not-run, residual risk, and exact blocker when `BLOCKED`; do not paste logs or diff unless a failure needs a minimal excerpt.
 - `Terminal handoff contract`: every final response must begin from exactly one terminal status, `READY` or `BLOCKED`. Do not leave the terminal state implicit, and do not end the round with progress narration, tool logs, "continued doing X", "ran command", partial diff commentary, or any other intermediate state.
 - `Reading order`: before editing code, read the assigned work package, then the brief and validation expectations, then only the package anchors and local iOS files needed to execute safely.
 - `iOS task framing`: identify the exact app behavior that must change, the state transitions that must remain coherent, the contract-sensitive boundaries involved, and the validation signals that will prove the package.

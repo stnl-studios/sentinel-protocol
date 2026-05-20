@@ -288,6 +288,8 @@ Preserve stack quality guardrail outcomes from execution, validation, or review 
 ### Handoff and output quality rules
 A strong finalizer output is brief, decision-useful, and impossible to misread as stronger than the evidence.
 
+Compact Agent Return Contract: closure may be slightly fuller than other roles, but still return only status, files changed, validations, QA/manual gaps, documentation updates, `DONE`/`resync` ledger, blocker if any, and next state.
+
 It should make clear:
 - what the round attempted
 - what was actually delivered

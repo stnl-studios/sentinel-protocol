@@ -12,14 +12,26 @@ Codex sandbox policy:
 - não serializar `tools` nos TOMLs Codex
 
 Codex routing policy:
-- a main/root Codex session é o default visual entrypoint para trabalho Sentinel-governed
-- não spawnar `orchestrator` automaticamente como primeiro task por default
-- a root/main session deve aplicar o Sentinel orchestrator boundary, ler somente o necessário para identificar gate/current owner e spawnar diretamente o owner canônico atual
+- a main/root Codex session é a human-visible workspace entrypoint para trabalho Sentinel-governed
+- a root/main session deve pedir o custom subagent `orchestrator` por exact custom agent name como primeiro subagent Sentinel padrão
+- o spawn Sentinel não deve solicitar nem depender de full-history fork
+- o payload para `orchestrator` deve ser mínimo e task-scoped: tarefa, repo, SPEC path quando aplicável, modo, objetivo, decisões ativas e instrução para ler `AGENTS.md`, developer instructions, templates/docs Sentinel e docs/codebase permitidos
+- se full-history fork for recusado, isso só é aceitável se a runtime criar uma native agent thread do custom subagent `orchestrator`
+- contrato completo colado no prompt não é handoff nativo e não preserva handoff nativo por nome
+- `orchestrator.toml` é o default routing controller do fluxo Sentinel no Codex, não apenas fallback
+- o `orchestrator` deve rotear para o owner canônico atual por exact custom agent name, preservar boundaries e aguardar resultado antes do próximo gate
+- direct root-to-owner spawning não é o caminho Sentinel padrão; só vale para pedido humano explícito de agente específico ou uso non-Sentinel
 - handoff Sentinel no Codex = native custom subagent spawn pelo nome exato do custom agent
-- aguardar o resultado do subagent antes de decidir o próximo gate
 - nunca usar `codex exec`, shell, subprocesso, script ou continuação local para simular handoff
-- bloquear com `ROUTING_RUNTIME_BLOCKED` se o runtime não suportar/permitir spawn nativo, se depth/config bloquear, ou se o custom agent nomeado estiver indisponível
-- `orchestrator.toml` deve permanecer disponível para invocação humana explícita, fallback e referência de boundary, mas não é o default visual entrypoint
+- bloquear com `ROUTING_RUNTIME_BLOCKED` se não houver agent thread nativa do `orchestrator`, se o runtime não suportar/permitir spawn nativo, se depth/config bloquear, ou se o custom agent nomeado estiver indisponível
+
+Compact Agent Return Contract:
+- todo subagent deve retornar só o mínimo necessário para o parent decidir o próximo gate
+- formato default: `STATUS`, `OWNER`, `GATE`, `FILES_CHANGED`, `NEXT_OWNER`, `VALIDATIONS`, `BLOCKER` somente se real, e `NOTES` com no máximo 3 bullets curtos
+- não repetir contrato Sentinel completo, prompt inteiro, SPEC, checklist, docs, logs, diffs ou artifacts completos no chat
+- quando houver artifact em arquivo, retornar path + resumo compacto
+- expandir somente em blocker, falha, evidência crítica de validação ou pedido humano explícito
+- manter main chat focado em routing/status deltas
 
 allowed_models:
 - gpt-5.5

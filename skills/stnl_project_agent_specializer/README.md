@@ -13,8 +13,15 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
   - `codex` -> `.codex/agents/*.toml`
   - `codex` -> `.codex/config.toml`
   - `codex` -> `AGENTS.md` na raiz do repo alvo
-- no target `codex`, manter a main/root Codex session como default visual entrypoint do Sentinel, para que background tasks dos owners especialistas apareçam no chat principal
-- manter `orchestrator.toml` materializado em `codex` como agent disponível, fallback explícito e referência de boundary, mas nunca orientar spawn automático dele como primeiro task por default
+- no target `codex`, manter a main/root Codex session como superficie humana/visual do workspace
+- no target `codex`, manter `orchestrator.toml` como o primeiro subagent padrao Sentinel e default routing controller antes dos owners especialistas
+- no target `codex`, preservar `root/main -> orchestrator -> owner` como fluxo Sentinel padrao
+- no target `codex`, full-history fork nao e requisito Sentinel; agent thread nativa de `orchestrator` basta para continuar
+- no target `codex`, payload para `orchestrator` deve ser minimo e task-scoped, com contrato duravel vindo de `AGENTS.md`, `.codex/agents/*.toml`, docs/templates Sentinel e docs/codebase permitidos
+- no target `codex`, contrato completo no prompt e fallback proibido e nao pode ser descrito como handoff nativo preservado
+- no target `codex`, se a agent thread nativa necessaria nao subir, bloquear com `ROUTING_RUNTIME_BLOCKED`
+- no target `codex`, manter `Compact Agent Return Contract` em `AGENTS.md` e nos TOMLs gerenciados: subagents retornam só status/gate/evidencia minima, artifact path + resumo compacto, sem despejar contrato/SPEC/checklist/logs/diffs/artifacts completos no chat por default
+- preservar as melhorias novas de quality, model selection, sandbox e runtime hardening sem orientar root-to-owner direto como fluxo Sentinel default
 - nunca materializar artifacts finais no repo Sentinel Protocol; este repo mantém somente source of truth, templates internos, installer e smoke
 - manter os templates internos do target `codex` em `reference/templates/codex/AGENTS.md` e `reference/templates/codex/config.toml`; esses templates não são artifacts operacionais do repo Sentinel
 - nunca criar `.codex/config.toml` final na raiz do repo Sentinel; esse arquivo só deve existir como template interno ou como artifact final no repo alvo materializado
