@@ -14,13 +14,15 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
   - `codex` -> `.codex/config.toml`
   - `codex` -> `AGENTS.md` na raiz do repo alvo
 - no target `codex`, manter a main/root Codex session como superficie humana/visual do workspace
-- no target `codex`, manter `orchestrator.toml` como o primeiro subagent padrao Sentinel e default routing controller antes dos owners especialistas
-- no target `codex`, manter `[agents].max_depth = 1`; isso permite subagents diretos do root/main e bloqueia owners aninhados abaixo do `orchestrator`
-- no target `codex`, preservar parent-mediated routing: `root/main -> orchestrator -> ROUTE_PACKET -> root/main spawns owner sibling/root-level -> root/main returns to orchestrator`
+- no target `codex`, nao spawnar custom subagents automaticamente; `Use stnl_*` e pedido de skill/workflow no root/main, nao autorizacao para agent
+- no target `codex`, manter `orchestrator.toml` como routing controller disponivel somente quando explicitamente invocado por exact custom agent name
+- no target `codex`, bloquear com `SUBAGENT_AUTH_REQUIRED` quando uma tarefa exigir custom subagent e o humano nao tiver autorizado um agent por nome exato
+- no target `codex`, manter `[agents].max_depth = 1`; isso permite subagents diretos do root/main quando explicitamente autorizados e bloqueia owners aninhados abaixo do `orchestrator`
+- no target `codex`, preservar parent-mediated routing quando `Use orchestrator` for explicito: `root/main -> orchestrator -> ROUTE_PACKET -> root/main spawns owner sibling/root-level -> root/main returns to orchestrator`
 - no target `codex`, `orchestrator` decide gate/owner e retorna `ROUTE_PACKET` compacto; ele nao spawna downstream owners diretamente no fluxo visual padrao
-- no target `codex`, root/main nao escolhe owner sem `ROUTE_PACKET` valido do `orchestrator`, salvo pedido humano explicito non-Sentinel/custom-agent ou recovery/blocking documentado
-- no target `codex`, full-history fork nao e requisito Sentinel; agent thread nativa de `orchestrator` basta para continuar
-- no target `codex`, payload para `orchestrator` deve ser minimo e task-scoped, com contrato duravel vindo de `AGENTS.md`, `.codex/agents/*.toml`, docs/templates Sentinel e docs/codebase permitidos
+- no target `codex`, root/main nao escolhe owner sem `ROUTE_PACKET` valido do `orchestrator`, salvo pedido humano explicito de custom agent por nome exato ou recovery/blocking documentado
+- no target `codex`, full-history fork nao e requisito Sentinel; agent thread nativa do custom subagent explicitamente solicitado basta para continuar
+- no target `codex`, payload para subagent explicitamente autorizado deve ser minimo e task-scoped, com contrato duravel vindo de `AGENTS.md`, `.codex/agents/*.toml`, docs/templates Sentinel e docs/codebase permitidos
 - no target `codex`, contrato completo no prompt e fallback proibido e nao pode ser descrito como handoff nativo preservado
 - no target `codex`, se a agent thread nativa necessaria nao subir, bloquear com `ROUTING_RUNTIME_BLOCKED`
 - no target `codex`, manter `Compact Agent Return Contract` em `AGENTS.md` e nos TOMLs gerenciados: subagents retornam só status/gate/evidencia minima, artifact path + resumo compacto, sem despejar contrato/SPEC/checklist/logs/diffs/artifacts completos no chat por default

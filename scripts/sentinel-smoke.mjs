@@ -75,6 +75,7 @@ const COMPACT_AGENT_RETURN_FORBIDDEN_SNIPPETS = [
 ];
 const CODEX_PARENT_MEDIATED_ROUTING_SNIPPETS = [
     "Codex Parent-Mediated Routing Contract",
+    "When the human explicitly requests `Use orchestrator`",
     "orchestrator must return a compact ROUTE_PACKET",
     "orchestrator must not spawn downstream Sentinel owners directly",
     "root/main session then spawns the named owner",
@@ -89,6 +90,20 @@ const CODEX_PARENT_MEDIATED_ROUTING_FORBIDDEN_SNIPPETS = [
     "orchestrator may spawn downstream owners",
     "root/main chooses the current canonical owner directly",
     "root/main -> owner direct",
+    "default first Sentinel subagent is `orchestrator`",
+    "must request `orchestrator` as the default first Sentinel subagent",
+    "must request the `orchestrator` custom subagent by exact name",
+    "default first Sentinel subagent for Codex",
+    "automatically delegate by description",
+    "automatic delegation by description",
+];
+const CODEX_EXPLICIT_SUBAGENT_INVOCATION_SNIPPETS = [
+    "Explicit Subagent Invocation Contract",
+    "must not spawn custom subagents automatically",
+    "Skill/workflow requests are not subagent authorization",
+    "`Use stnl_spec_manager`",
+    "`Use orchestrator`",
+    "SUBAGENT_AUTH_REQUIRED",
 ];
 
 const CONTROLLED_CONTEXT_DOC_SPECS = [
@@ -164,6 +179,9 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "# Shape Canonico de Contrato de Agent Base",
             "## Metadata canonica parseavel",
             "## Shape esperado para agent especializado",
+            "Explicit Subagent Invocation Contract",
+            "Skill/workflow request nao e autorizacao de custom subagent",
+            "SUBAGENT_AUTH_REQUIRED",
             ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
         ],
     },
@@ -181,6 +199,9 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "Stack quality guardrail propagation check",
             "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
             "artifact final materializado",
+            "Explicit Subagent Invocation Contract",
+            "Use stnl_spec_manager",
+            "SUBAGENT_AUTH_REQUIRED",
             ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
         ],
     },
@@ -1767,14 +1788,15 @@ function withCodexRoutingRuntimeHardening(agentName, body) {
     const hardening = agentName === "orchestrator"
         ? [
             "## Codex routing runtime",
-            "Coordinate the local Sentinel workflow as the default first Sentinel subagent for Codex.",
-            "For Codex, the main/root session is the human-visible workspace entrypoint and should request this `orchestrator` as the default first Sentinel subagent by exact custom agent name.",
+            "Coordinate the local Sentinel workflow when explicitly invoked as the `orchestrator` custom subagent for Codex.",
+            "For Codex, the main/root session is the human-visible workspace entrypoint and must not spawn this `orchestrator` automatically.",
+            "Skill/workflow requests are not subagent authorization; `Use stnl_spec_manager` runs in root/main unless the human also explicitly requests a custom subagent by exact agent name.",
+            "When the human explicitly requests `Use orchestrator`, this orchestrator owns gate routing and decides the current canonical owner by exact custom agent name.",
             "The root/main session should send only a minimal, task-scoped routing payload.",
             "Do not require full-history fork inheritance.",
             "Read the durable Sentinel contract from `AGENTS.md`, your own developer instructions, and the allowed repository docs/codebase.",
             "Never accept a full Sentinel contract pasted into a normal prompt as a substitute for native custom-agent spawning.",
             "Codex Parent-Mediated Routing Contract.",
-            "This orchestrator owns gate routing and decides the current canonical owner by exact custom agent name.",
             "The orchestrator must return a compact ROUTE_PACKET naming the next canonical owner.",
             "The orchestrator must not spawn downstream Sentinel owners directly.",
             "The root/main session then spawns the named owner as a native custom subagent by exact custom agent name.",
@@ -1783,13 +1805,13 @@ function withCodexRoutingRuntimeHardening(agentName, body) {
             "After the owner returns compactly, root/main must return to orchestrator for the next routing decision.",
             "ROUTE_PACKET shape: STATUS, CURRENT_GATE, NEXT_OWNER, REASON, PAYLOAD, and BLOCKER only when real.",
             "ROUTE_PACKET must be compact and must not include full artifacts, full contracts, SPEC/checklist/logs/diffs, or broad transcript history.",
-            "Use native Codex custom subagent spawning by exact custom agent name for Sentinel handoff when available from root/main after ROUTE_PACKET.",
-            "A refused full-history fork is not itself failure when Codex still creates a native `orchestrator` agent thread.",
+            "Use native Codex custom subagent spawning by exact custom agent name for Sentinel handoff when explicitly authorized from root/main after ROUTE_PACKET.",
+            "A refused full-history fork is not itself failure when Codex still creates a native requested agent thread.",
             "Wait for the owner result from root/main before deciding the next gate.",
             "You must never use full-contract prompt replay, `codex exec`, `codex`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff.",
             "You must never use `codex exec`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff.",
             "Never absorb downstream Sentinel roles locally.",
-            "If native custom-agent spawning cannot create an actual `orchestrator` agent thread, root/main cannot spawn the owner named in a valid ROUTE_PACKET, depth/config blocks routing, or the named custom agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.",
+            "If native custom-agent spawning cannot create an explicitly requested agent thread, root/main cannot spawn the owner named in a valid ROUTE_PACKET, depth/config blocks routing, or the named custom agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.",
             "`ROUTING_RUNTIME_BLOCKED` must include attempted owner, current gate, missing runtime capability or config, and minimum DEV action needed.",
         ]
         : [
@@ -2539,8 +2561,11 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
 
         if (agentName === "orchestrator") {
             assertContentIncludesAll(instructions, [
-                "default first Sentinel subagent for Codex",
                 "main/root session is the human-visible workspace entrypoint",
+                "must not spawn this `orchestrator` automatically",
+                "Skill/workflow requests are not subagent authorization",
+                "`Use stnl_spec_manager`",
+                "When the human explicitly requests `Use orchestrator`",
                 "minimal, task-scoped routing payload",
                 "Do not require full-history fork inheritance.",
                 "durable Sentinel contract from `AGENTS.md`",
@@ -2557,12 +2582,12 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
                 "native Codex custom subagent spawning",
                 "exact custom agent name",
                 "refused full-history fork is not itself failure",
-                "native `orchestrator` agent thread",
+                "native requested agent thread",
                 "Wait for the owner result from root/main",
                 "full-contract prompt replay",
                 "never use `codex exec`",
                 "shell/subprocess/script/local continuation",
-                "If native custom-agent spawning cannot create an actual `orchestrator` agent thread",
+                "If native custom-agent spawning cannot create an explicitly requested agent thread",
                 "root/main cannot spawn the owner named in a valid ROUTE_PACKET",
                 "Never absorb downstream Sentinel roles locally.",
                 "ROUTING_RUNTIME_BLOCKED",
@@ -2570,6 +2595,8 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
             assertContentExcludesAll(instructions, [
                 "If explicitly invoked as a custom subagent",
                 "not the default visual entrypoint",
+                "default first Sentinel subagent for Codex",
+                "must request this `orchestrator` as the default first Sentinel subagent",
                 "Do not claim that invoking `orchestrator` as a subagent is the default UI path.",
                 "pass the full contract in the prompt",
                 "preserves native handoff by name",
@@ -2980,6 +3007,7 @@ function assertCodexSourceTemplates() {
     );
     const agentsContent = assertFileHasRequiredShape(agentsTemplatePath, [
         "[agents].max_depth = 1",
+        ...CODEX_EXPLICIT_SUBAGENT_INVOCATION_SNIPPETS,
         "Codex Parent-Mediated Routing Contract",
         "ROUTE_PACKET",
         "orchestrator must not spawn downstream Sentinel owners directly",
@@ -3009,18 +3037,18 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         ".codex/agents/",
         ".codex/config.toml",
         "main/root Codex session is the human-visible workspace entrypoint",
-        "default first Sentinel subagent is `orchestrator`",
+        ...CODEX_EXPLICIT_SUBAGENT_INVOCATION_SNIPPETS,
         "must not depend on full-history fork",
         "minimal, task-scoped routing payload",
         "durable Sentinel instructions must come from",
         "AGENTS.md",
-        ".codex/agents/orchestrator.toml",
-        "Refusing a full-history fork is not itself a routing failure if Codex still creates a native agent thread",
+        ".codex/agents/*.toml",
+        "Refusing a full-history fork is not itself a routing failure if Codex still creates a native agent thread for the requested custom subagent",
         "prompt-emulated handoff is forbidden",
         "do not call the orchestrator \"without fork\" by pasting the full Sentinel contract",
         "do not claim that such prompt replay preserves native handoff",
-        "If native custom-agent spawning cannot create an actual `orchestrator` agent thread, stop with `ROUTING_RUNTIME_BLOCKED`",
-        "orchestrator owns gate routing",
+        "If explicit subagent authorization exists but native custom-agent spawning cannot create the requested agent thread, stop with `ROUTING_RUNTIME_BLOCKED`",
+        "orchestrator` custom subagent is the Sentinel routing controller when explicitly invoked",
         ...CODEX_PARENT_MEDIATED_ROUTING_SNIPPETS,
         "ROUTE_PACKET",
         "STATUS: ROUTE_READY | BLOCKED | TERMINAL",
@@ -3043,7 +3071,9 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
     ]);
     assertContentIncludesAll(content, [
-        "The `orchestrator` custom subagent is the default Sentinel routing controller for Codex.",
+        "The `orchestrator` custom subagent is the Sentinel routing controller when explicitly invoked.",
+        "Skill/workflow requests are not subagent authorization.",
+        "If a requested task cannot be performed safely without a custom subagent and none was explicitly authorized, stop with `SUBAGENT_AUTH_REQUIRED`",
         "The orchestrator must return a compact ROUTE_PACKET naming the next canonical owner.",
         "The orchestrator must not spawn downstream Sentinel owners directly.",
         "The root/main session then spawns the named owner as a native custom subagent by exact custom agent name",
@@ -3063,6 +3093,10 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         "full-history fork is required",
         "continue locally as orchestrator",
         "local continuation as orchestrator",
+        "For Sentinel-governed work, the main/root Codex session is the human-visible workspace entrypoint, but the default first Sentinel subagent is `orchestrator`",
+        "`Use stnl_spec_manager` authorizes `orchestrator`",
+        "Skill/workflow requests authorize subagents",
+        "spawn custom subagents automatically by description",
         ...CODEX_PARENT_MEDIATED_ROUTING_FORBIDDEN_SNIPPETS,
         ...COMPACT_AGENT_RETURN_FORBIDDEN_SNIPPETS,
     ], "AGENTS.md codex must not default to direct root-to-owner routing");
@@ -3071,7 +3105,7 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         .sort();
 
     assert(
-        content.split(/\r?\n/).length <= 85,
+        content.split(/\r?\n/).length <= 100,
         `AGENTS.md codex ficou longo demais para shape plausível curto: ${agentsIndexPath}`
     );
     assert(
