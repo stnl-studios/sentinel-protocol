@@ -536,6 +536,10 @@ function assertSpecManagerContract() {
         path.join(specManagerRoot, "reference", "templates", "decision_log.md"),
         "utf8"
     );
+    const specClosePromptContent = fs.readFileSync(
+        path.join(ROOT, "templates", "prompts", "spec-close.md"),
+        "utf8"
+    );
     const orchestratorSliceContent = fs.readFileSync(
         path.join(ROOT, "templates", "prompts", "orchestrator-slice.md"),
         "utf8"
@@ -559,6 +563,28 @@ function assertSpecManagerContract() {
         "`R-001`, `R-002`, `R-003`",
         "`C-001`, `C-002`, `C-003`",
     ], "stnl_spec_manager/SKILL.md slice identity contract");
+
+    assertContentIncludesAll(skillContent, [
+        "quando `MODE=CLOSE` resultar em `closed` ou `closed_with_residuals`, a pasta da SPEC deve terminar contendo somente `feature_spec.md`",
+        "`closed_with_residuals` significa SPEC fechada com resíduos, limites ou validações pendentes resumidos dentro de `feature_spec.md`; não autoriza manter arquivos auxiliares",
+        "absorver dos artefatos auxiliares apenas a informação final e durável necessária para entendimento futuro da SPEC encerrada",
+        "se algum auxiliar ainda for necessário para entender a SPEC, a SPEC não está pronta para fechamento canônico e o resultado deve ser `not_closed`",
+        "instruções locais ou de prompt não podem enfraquecer a limpeza canônica de `MODE=CLOSE`",
+        "`STATUS: BLOCKED_CLOSE_CONTRACT_OVERRIDE`",
+        "se o DEV confirmar que deseja manter auxiliares, o resultado deve ser `not_closed`",
+        "nunca transportar para `feature_spec.md` fechado resíduo técnico como plano de implementação",
+        "`__MACOSX` e `.DS_Store`",
+    ], "stnl_spec_manager/SKILL.md canonical close cleanup contract");
+
+    assert(
+        !skillContent.includes("manter apenas os que ainda carregarem valor real"),
+        "stnl_spec_manager/SKILL.md não pode permitir retenção de auxiliares em closed_with_residuals"
+    );
+
+    assert(
+        !skillContent.includes("valor residual único"),
+        "stnl_spec_manager/SKILL.md não deve usar valor residual único como justificativa de retenção pós-close"
+    );
 
     assertContentIncludesAll(specSlicesContent, [
         "## Slice Identity Contract",
@@ -589,6 +615,27 @@ function assertSpecManagerContract() {
         "### R-001 — [Risk title]",
         "- id: R-001",
     ], "feature_spec.md canonical ID contract");
+
+    assertContentIncludesAll(featureSpecContent, [
+        "When `closure_status` is `closed` or `closed_with_residuals`, the SPEC folder must contain only `feature_spec.md`",
+        "`closed_with_residuals` records known residual product, scope, or validation limits inside this file; it does not retain auxiliary files.",
+        "do not include implementation plans, session history, validation commands, checklist trails, or maturity logs",
+        "canonical_close_folder_state",
+        "must be `feature_spec.md only`",
+        "For `closed` or `closed_with_residuals`, set this section to `not_applicable_closed` and do not list retained auxiliary artifacts.",
+    ], "feature_spec.md canonical close cleanup contract");
+
+    assertContentIncludesAll(readinessContent, [
+        "If `MODE=CLOSE` produces `closed` or `closed_with_residuals`, this file is a working artifact and must be removed",
+        "If this file is still needed to understand the SPEC, the honest closure result is `not_closed`.",
+    ], "readiness_report.md canonical close cleanup contract");
+
+    assertContentIncludesAll(specClosePromptContent, [
+        "Se fechar como `closed` ou `closed_with_residuals`, compacte o conteúdo durável necessário no `feature_spec.md` e limpe a pasta da SPEC para ficar somente com `feature_spec.md`",
+        "`closed_with_residuals` registra limites conhecidos dentro do `feature_spec.md`; não preserva auxiliares",
+        "Se algum auxiliar ainda for necessário para entender a SPEC, retorne `not_closed`.",
+        "bloqueie com `BLOCKED_CLOSE_CONTRACT_OVERRIDE`",
+    ], "spec-close.md canonical close cleanup prompt");
 
     assertContentIncludesAll(openQuestionsContent, [
         "### Q-001 — [Generic question title]",

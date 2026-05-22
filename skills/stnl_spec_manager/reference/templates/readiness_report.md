@@ -4,6 +4,8 @@
 >
 > Do not let `readiness_score` override blockers, critical gaps, unresolved validation, or explicit conditionality. Any final closure outcome or final decision needed for future understanding must be consolidated into `feature_spec.md`.
 >
+> If `MODE=CLOSE` produces `closed` or `closed_with_residuals`, this file is a working artifact and must be removed after durable closure content is absorbed into `feature_spec.md`. If this file is still needed to understand the SPEC, the honest closure result is `not_closed`.
+>
 > `Execution Ready` is prohibited while any open question has `blocking: yes`. Rebuild, resume, split, close, handoff, and report-generation flows must rerun this gate instead of preserving stale readiness.
 
 ## Current Status

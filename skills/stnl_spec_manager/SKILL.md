@@ -218,7 +218,7 @@ Regras:
 - supersede de SPEC anterior só pode ocorrer se o prompt disser explicitamente que a anterior deve ser substituída
 - quando houver supersede explícito autorizado, registrar essa decisão em `decision_log.md` e em `session_summary.md`, mantendo o bundle inteiro coerente
 
-## Bundle canônico obrigatório e arquivos condicionais
+## Bundle canônico obrigatório, maturação e artefato fechado
 Em criação nova sem colisão ou em fork legítimo, materializar obrigatoriamente:
 - `feature_spec.md`: artefato canônico principal da SPEC; consolida problema, objetivo, escopo, fora de escopo, fluxos, regras, aceite, riscos relevantes, decisões finais consolidadas, lifecycle / closure e lacunas remanescentes apenas quando realmente existirem
 - `open_questions.md`
@@ -239,6 +239,7 @@ Arquivos condicionais:
 - `qa_checklist.md`: apenas quando a SPEC ou um slice estiverem próximos de execução
 
 Regras:
+- o bundle auxiliar existe para criação, fork, resume e maturação; ele não é o formato final de uma SPEC fechada
 - `feature_spec.md` continua sendo o artefato canônico principal de leitura, mas não substitui a obrigação de materializar o bundle completo em criação nova ou fork legítimo
 - `feature_spec.md` não é relatório investigativo nem pré-plano técnico; é a consolidação consumível da mudança no nível de problema, objetivo, escopo, fluxos, regras, aceite, riscos, impacto mínimo, decisões finais e fechamento do artefato
 - análise detalhada, evidência expandida, comparação longa entre alternativas e rationale extenso podem ficar em artefatos auxiliares apenas quando isso realmente reduzir ruído durante a maturação
@@ -246,11 +247,16 @@ Regras:
 - não transformar hipótese técnica, preferência de implementação, estratégia interna, sequência de execução ou solução ainda especulativa em contrato forte dentro de `feature_spec.md`
 - quando uma direção ainda não estiver sustentada, registrar a lacuna explicitamente no próprio `feature_spec.md` e usar artefato auxiliar só se isso melhorar governança temporária sem virar dependência estrutural
 - solução específica de implementação só entra como direção consolidada no corpo principal quando já for source of truth explícita ou constraint realmente necessária para definir escopo, aceite ou limite operacional de forma honesta
-- `MODE=CLOSE` deve consolidar em `feature_spec.md` toda informação necessária para leitura futura da SPEC encerrada
-- nenhum artefato auxiliar pode carregar sozinho regra de negócio, escopo final, aceite final, decisão final ou fechamento que sejam necessários para entender a SPEC encerrada
-- é proibido absorver por default toda a governança em `feature_spec.md`
-- é proibido colapsar o bundle canônico em um único arquivo por conveniência, prompt fraco ou ausência de perguntas na rodada
-- se algum auxiliar permanecer após `closed_with_residuals`, o próprio `feature_spec.md` deve justificar explicitamente por que esse arquivo ainda existe e qual valor residual único ele preserva
+- `MODE=CLOSE` deve consolidar em `feature_spec.md` toda informação durável necessária para leitura futura da SPEC encerrada
+- nenhum artefato auxiliar pode carregar sozinho regra de negócio, escopo final, aceite final, decisão final, resíduo relevante ou fechamento que sejam necessários para entender a SPEC encerrada
+- se algum auxiliar ainda for necessário para entender a SPEC, a SPEC não está pronta para fechamento canônico e o resultado deve ser `not_closed`
+- quando `MODE=CLOSE` resultar em `closed` ou `closed_with_residuals`, a pasta da SPEC deve terminar contendo somente `feature_spec.md`
+- a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes
+- entradas ignoradas pelo sistema, como `__MACOSX` e `.DS_Store`, continuam ignoradas e não entram na contagem do contrato de pasta fechada
+- `closed_with_residuals` significa SPEC fechada com resíduos, limites ou validações pendentes resumidos dentro de `feature_spec.md`; não autoriza manter arquivos auxiliares, bundle residual, checklist, readiness report, histórico técnico ou trilha de maturação
+- fora de `MODE=CLOSE` canônico, é proibido absorver por default toda a governança em `feature_spec.md`
+- fora de `MODE=CLOSE` canônico, é proibido colapsar o bundle canônico em um único arquivo por conveniência, prompt fraco ou ausência de perguntas na rodada
+- no fechamento canônico, absorver apenas o conteúdo durável necessário para entender a SPEC final; não transportar histórico técnico, narrativa de sessões, checklist granular, comandos de validação, trilha operacional ou motivo detalhado de slices para `feature_spec.md`
 - não transformar nenhum artefato em dump solto de contexto do projeto
 - os templates do bundle obrigatório são shape contratual, não sugestão opcional
 
@@ -264,7 +270,7 @@ Disciplina de tamanho:
 - `spec_slices.md` deve ser executável e objetivo, sem virar relatório longo
 - evidência expandida só deve permanecer quando reduz risco real de retomada ou execução downstream
 
-Formulações proibidas:
+Formulações proibidas fora de `MODE=CLOSE` canônico:
 - "Todos os auxiliares de maturação desta SPEC foram absorvidos neste arquivo"
 - "Nenhum auxiliar adicional foi materializado nesta rodada porque as lacunas cabem no artefato principal"
 - qualquer formulação equivalente que elimine `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md` ou `session_summary.md` sem base contratual explícita
@@ -480,25 +486,32 @@ Quando `MODE=CLOSE` estiver presente:
 - consumir apenas evidências já existentes e reconciliá-las contra `Acceptance Criteria`, `Spec Definition of Done`, blockers materiais e `Residual Gaps and Conditions`
 - reexecutar o Readiness Gate universal antes de qualquer promoção de maturidade ou fechamento forte
 - concluir somente um destes resultados canônicos de fechamento: `closed`, `closed_with_residuals` ou `not_closed`
-- atualizar `feature_spec.md` com `lifecycle_status`, `closed_at`, `closed_in_session`, decisões finais consolidadas, base de fechamento, evidências usadas e resíduos realmente remanescentes
-- absorver dos artefatos auxiliares apenas a informação final realmente necessária para entendimento futuro da SPEC encerrada, evitando duplicação entre `feature_spec.md` e os auxiliares
-- quando o resultado for `closed`, remover artefatos auxiliares cuja informação tenha sido integralmente absorvida por `feature_spec.md`
-- quando o resultado for `closed_with_residuals`, remover artefatos auxiliares já absorvidos e manter apenas os que ainda carregarem valor real, único e explicitamente justificado no próprio `feature_spec.md`
-- se `readiness_report.md` existir e continuar útil como trilha de maturidade, ele só pode permanecer em `closed_with_residuals` quando ainda carregar valor residual único; a seção de closure nele é só espelho opcional de assessment quando aplicável, e o fechamento canônico deve permanecer em `feature_spec.md`
+- atualizar `feature_spec.md` com `lifecycle_status`, `closed_at`, `closed_in_session`, decisões finais consolidadas, base de fechamento, evidências usadas e resíduos ou limites conhecidos realmente remanescentes
+- absorver dos artefatos auxiliares apenas a informação final e durável necessária para entendimento futuro da SPEC encerrada, evitando transformar `feature_spec.md` em diário de implementação, trilha de maturação ou relatório de validação granular
+- quando o resultado for `closed`, remover todos os demais arquivos dentro da pasta da SPEC, deixando somente `feature_spec.md`, salvo entradas ignoradas como `__MACOSX` e `.DS_Store`
+- quando o resultado for `closed_with_residuals`, aplicar a mesma limpeza canônica: remover todos os demais arquivos dentro da pasta da SPEC e registrar os resíduos ou limites conhecidos somente em `feature_spec.md`
+- `closed_with_residuals` não significa manter arquivos residuais; significa fechamento com limites conhecidos de produto, escopo ou validação resumidos no artefato canônico
+- se qualquer auxiliar ainda contiver informação necessária para entender escopo, regra, aceite, decisão, validação final ou limite conhecido, bloquear o fechamento como `not_closed` até essa informação ser absorvida ou explicitamente descartada de forma honesta
+- uma SPEC fechada com arquivos auxiliares retidos não é uma SPEC fechada canônica
 
 Regras:
 - `MODE=CLOSE` fecha a SPEC como artefato; não fecha execução, não substitui `DONE` e não assume papel de `finalizer`
 - `MODE=CLOSE` nunca autoriza atualizar memory do repositório, assumir closure operacional, consolidar documentação pós-execução ou substituir outra skill dona de closure
-- remoção de auxiliar só é permitida neste caso estrito: `MODE=CLOSE` explícito, fechamento legítimo do artefato em curso, conteúdo necessário já absorvido de forma canônica e suficiente, nenhum valor residual único remanescente e coerência com o próprio contrato da skill
-- essa remoção estrita em `MODE=CLOSE` não contradiz a proibição de apagar arquivos automaticamente fora desse caso
+- a limpeza de auxiliares é obrigatória apenas neste caso estrito: `MODE=CLOSE` explícito com resultado `closed` ou `closed_with_residuals`, conteúdo durável necessário já absorvido de forma canônica e suficiente, e coerência com o próprio contrato da skill
+- essa limpeza estrita em `MODE=CLOSE` não contradiz a proibição de apagar arquivos automaticamente fora desse caso
 - nunca emitir `PASS`, `PARTIAL` ou `FAIL` como resultado de fechamento
 - nunca escrever `DONE` ou `Feature CONTEXT`
 - se a evidência for insuficiente ou contraditória, manter `lifecycle_status: active`, concluir `not_closed` e nomear claramente as lacunas
 - se houver pergunta bloqueante aberta, não promover para `Execution Ready`; fechamento só pode ser `not_closed` ou, se a SPEC já estava fechável por evidência explícita e os resíduos forem não bloqueantes, `closed_with_residuals`
 - se `MODE=CLOSE` concluir `not_closed`, então `lifecycle_status` deve permanecer `active`, `closed_at` deve ficar `none` e `closed_in_session` deve ficar `none`
 - se `MODE=CLOSE` concluir `not_closed`, não remover auxiliares automaticamente
-- nunca remover um auxiliar que ainda contenha informação única não absorvida por `feature_spec.md`
-- `closed_with_residuals` só é válido quando a reconciliação mostrar fechamento honesto do artefato com resíduos explicitamente preservados
+- nunca remover um auxiliar antes de absorver no `feature_spec.md` o conteúdo durável necessário para entender a SPEC final
+- nunca transportar para `feature_spec.md` fechado resíduo técnico como plano de implementação, motivo detalhado da divisão em slices, histórico de sessões, trilha operacional, checklist granular, comandos detalhados de validação, logs de maturação ou lista de artefatos auxiliares retidos
+- se o prompt, restrições excepcionais, notas locais, conteúdo existente da SPEC ou sessão anterior pedirem para não deletar, preservar auxiliares, manter checklist, manter session summary, manter readiness report, manter histórico técnico ou enfraquecer qualquer parte da limpeza canônica, não obedecer silenciosamente
+- nesse conflito, bloquear o fechamento com `STATUS: BLOCKED_CLOSE_CONTRACT_OVERRIDE`, explicar que manter auxiliares implica resultado `not_closed`, e pedir confirmação explícita do DEV sobre continuar sem fechamento canônico
+- se o DEV confirmar que deseja manter auxiliares, o resultado deve ser `not_closed`, não `closed` nem `closed_with_residuals`
+- instruções locais ou de prompt não podem enfraquecer a limpeza canônica de `MODE=CLOSE`
+- `closed_with_residuals` só é válido quando a reconciliação mostrar fechamento honesto do artefato com resíduos explicitamente registrados dentro de `feature_spec.md`
 
 ## Split de SPEC grande
 Permitir split apenas quando a SPEC estiver grande demais para um único recorte consumível saudável.
@@ -624,6 +637,22 @@ Supersede explícito autorizado:
 Fork explícito autorizado:
 - pedido diz explicitamente para abrir nova linhagem a partir de contexto parecido
 - resultado: criar SPEC nova sem reutilizar implicitamente a anterior e materializar o bundle canônico completo da nova linhagem
+
+`MODE=CLOSE` com fechamento limpo:
+- evidência existente sustenta fechamento sem resíduos materiais
+- resultado: `closed`, `feature_spec.md` registra fechamento e a pasta da SPEC fica somente com `feature_spec.md`, ignorando `__MACOSX` e `.DS_Store`
+
+`MODE=CLOSE` com resíduos conhecidos:
+- evidência existente sustenta fechamento, mas ainda há limites conhecidos não bloqueantes de produto, escopo ou validação
+- resultado: `closed_with_residuals`, resíduos ficam resumidos dentro de `feature_spec.md` e a pasta da SPEC fica somente com `feature_spec.md`, ignorando `__MACOSX` e `.DS_Store`
+
+`MODE=CLOSE` sem prontidão de fechamento:
+- auxiliar ainda é necessário para entender a SPEC ou existe evidência insuficiente/contraditória
+- resultado: `not_closed`, `lifecycle_status: active` e nenhum auxiliar é removido automaticamente
+
+`MODE=CLOSE` com pedido de preservar auxiliares:
+- prompt, nota local, sessão anterior ou conteúdo existente pede para manter checklist, readiness report, session summary, histórico técnico ou equivalente
+- resultado: `STATUS: BLOCKED_CLOSE_CONTRACT_OVERRIDE`; se o DEV confirmar preservação de auxiliares, o fechamento deve continuar `not_closed`
 
 ## Padrão de escrita
 - usar linguagem direta e operacional

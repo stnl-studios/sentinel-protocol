@@ -32,9 +32,14 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter `MODE=CLOSE` restrito a reconciliar evidência já existente contra aceite, Spec DoD, blockers materiais e lacunas remanescentes já materializadas
 - manter `MODE=CLOSE` como fechamento ou congelamento da SPEC, nunca como `DONE`, `Feature CONTEXT`, troca de ownership do workflow ou substituto de `finalizer` / `validation-runner`
 - em `MODE=CLOSE`, nunca usar fechamento do artefato para justificar memory sync, closure operacional ou handoff automático
-- permitir remoção de auxiliar somente no caso estrito de `MODE=CLOSE` explícito com fechamento legítimo do artefato, conteúdo já absorvido de forma canônica e suficiente e ausência de valor residual único
+- em `MODE=CLOSE`, quando o resultado for `closed` ou `closed_with_residuals`, exigir que a pasta da SPEC termine contendo somente `feature_spec.md`, ignorando apenas entradas de sistema como `__MACOSX` e `.DS_Store`
+- manter `closed_with_residuals` como resíduos ou limites conhecidos registrados dentro de `feature_spec.md`, nunca como permissão para reter auxiliares, readiness report, checklist, session summary ou histórico técnico
+- antes de limpar auxiliares, absorver no `feature_spec.md` somente o conteúdo durável necessário para entender a SPEC final, sem transportar diário de implementação, trilha de maturação, comandos de validação ou checklist granular
+- se algum auxiliar ainda for necessário para entender a SPEC, manter o resultado como `not_closed`
+- bloquear com `BLOCKED_CLOSE_CONTRACT_OVERRIDE` quando prompt, restrições excepcionais, notas locais, conteúdo existente ou sessão anterior pedirem para preservar auxiliares ou enfraquecer a limpeza canônica
+- se o DEV quiser manter auxiliares, o resultado deve ser `not_closed`
 - não apagar automaticamente auxiliares quando o resultado for `not_closed`
-- fora desse caso estrito de `MODE=CLOSE`, não apagar auxiliares por inércia, conveniência ou colapso oportunista do bundle; após fechamento, só persistem quando ainda carregarem valor residual real e explicitamente justificado em `feature_spec.md`
+- fora desse caso estrito de `MODE=CLOSE`, não apagar auxiliares por inércia, conveniência ou colapso oportunista do bundle
 - manter investigação detalhada, evidência expandida e comparação longa entre alternativas fora do arquivo canônico sempre que isso evitar poluição da SPEC final
 - manter `decision_log.md` apenas como apoio opcional para decisões intermediárias; decisões finais relevantes precisam ser consolidadas em `feature_spec.md`
 - manter o shape padrão de saída na skill e nos templates, para que o prompt do usuário carregue sobretudo objetivo, escopo e contexto específico
@@ -45,7 +50,7 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - usar essa rodada mínima para reduzir a pergunta, não para fechar arquitetura automaticamente nem para transformar a skill em planner ou coder
 - registrar, quando aplicável, uma matriz factual curta por item em `readiness_report.md` com item, evidência observada, direção preliminar, confiança e lacuna restante
 - manter a classificação preliminar genérica e não prescritiva, por exemplo `local_optimization_candidate`, `structural_support_candidate` e `inconclusive`
-- após a materialização inicial obrigatória do bundle, manter `open_questions.md` apenas quando houver rastreabilidade residual que realmente justifique o arquivo separado
+- após a materialização inicial obrigatória do bundle, auxiliares podem existir durante maturação e resume, mas devem morrer no fechamento canônico
 - manter qualquer handoff apenas como `Optional Manual Handoff Prompt`, nunca como roteamento automático
 - nunca permitir formulações que absorvam por default todos os auxiliares no `feature_spec.md`
 - nunca permitir que a skill toque `memory.md` ou aja como closure/finalizer operacional
@@ -68,4 +73,4 @@ Condicionais:
 Os templates permanecem em en-US para consistência com o restante do kit documental do repo.
 
 ## Referência estrutural
-`feature_spec.md` é o artefato canônico principal da SPEC final, mas não substitui o bundle canônico obrigatório em criação nova ou fork legítimo. Ausência de `MODE=RESUME` implica não-retomada. SPEC correlata nunca pode ser reutilizada automaticamente. `stnl_spec_manager` não toca `memory.md` nem assume papel de closure/finalizer.
+`feature_spec.md` é o artefato canônico principal da SPEC final, mas não substitui o bundle canônico obrigatório em criação nova ou fork legítimo. Em fechamento canônico com `closed` ou `closed_with_residuals`, o bundle auxiliar morre e a pasta da SPEC deve ficar somente com `feature_spec.md`, salvo entradas ignoradas de sistema. Ausência de `MODE=RESUME` implica não-retomada. SPEC correlata nunca pode ser reutilizada automaticamente. `stnl_spec_manager` não toca `memory.md` nem assume papel de closure/finalizer.
