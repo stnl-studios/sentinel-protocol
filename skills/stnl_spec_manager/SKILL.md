@@ -254,6 +254,8 @@ Regras:
 - a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes
 - entradas ignoradas pelo sistema, como `__MACOSX` e `.DS_Store`, continuam ignoradas e não entram na contagem do contrato de pasta fechada
 - `closed_with_residuals` significa SPEC fechada com resíduos, limites ou validações pendentes resumidos dentro de `feature_spec.md`; não autoriza manter arquivos auxiliares, bundle residual, checklist, readiness report, histórico técnico ou trilha de maturação
+- em `feature_spec.md` fechado, evidências de fechamento devem ser categorias compactas e duráveis, não comandos exatos, logs, paths operacionais de validação, contagens detalhadas de suíte ou checklist técnico granular
+- categorias compactas permitidas incluem validação automatizada local web, build/lint/testes unitários ou componentes, validação local de rules, smoke manual confirmado, validação estática/documental e limites conhecidos de validação
 - fora de `MODE=CLOSE` canônico, é proibido absorver por default toda a governança em `feature_spec.md`
 - fora de `MODE=CLOSE` canônico, é proibido colapsar o bundle canônico em um único arquivo por conveniência, prompt fraco ou ausência de perguntas na rodada
 - no fechamento canônico, absorver apenas o conteúdo durável necessário para entender a SPEC final; não transportar histórico técnico, narrativa de sessões, checklist granular, comandos de validação, trilha operacional ou motivo detalhado de slices para `feature_spec.md`
@@ -488,6 +490,7 @@ Quando `MODE=CLOSE` estiver presente:
 - concluir somente um destes resultados canônicos de fechamento: `closed`, `closed_with_residuals` ou `not_closed`
 - atualizar `feature_spec.md` com `lifecycle_status`, `closed_at`, `closed_in_session`, decisões finais consolidadas, base de fechamento, evidências usadas e resíduos ou limites conhecidos realmente remanescentes
 - absorver dos artefatos auxiliares apenas a informação final e durável necessária para entendimento futuro da SPEC encerrada, evitando transformar `feature_spec.md` em diário de implementação, trilha de maturação ou relatório de validação granular
+- consolidar `evidence_used` por categoria compacta de evidência; nunca registrar comandos exatos, logs, paths operacionais, contagens detalhadas de suíte ou checklist técnico granular no `feature_spec.md` fechado
 - quando o resultado for `closed`, remover todos os demais arquivos dentro da pasta da SPEC, deixando somente `feature_spec.md`, salvo entradas ignoradas como `__MACOSX` e `.DS_Store`
 - quando o resultado for `closed_with_residuals`, aplicar a mesma limpeza canônica: remover todos os demais arquivos dentro da pasta da SPEC e registrar os resíduos ou limites conhecidos somente em `feature_spec.md`
 - `closed_with_residuals` não significa manter arquivos residuais; significa fechamento com limites conhecidos de produto, escopo ou validação resumidos no artefato canônico
@@ -507,6 +510,7 @@ Regras:
 - se `MODE=CLOSE` concluir `not_closed`, não remover auxiliares automaticamente
 - nunca remover um auxiliar antes de absorver no `feature_spec.md` o conteúdo durável necessário para entender a SPEC final
 - nunca transportar para `feature_spec.md` fechado resíduo técnico como plano de implementação, motivo detalhado da divisão em slices, histórico de sessões, trilha operacional, checklist granular, comandos detalhados de validação, logs de maturação ou lista de artefatos auxiliares retidos
+- logs, checklist granular, contagens detalhadas e comandos pertencem aos artefatos auxiliares enquanto a SPEC estiver ativa; no artefato fechado, só podem sobreviver como síntese categórica compacta quando forem evidência durável de fechamento
 - se o prompt, restrições excepcionais, notas locais, conteúdo existente da SPEC ou sessão anterior pedirem para não deletar, preservar auxiliares, manter checklist, manter session summary, manter readiness report, manter histórico técnico ou enfraquecer qualquer parte da limpeza canônica, não obedecer silenciosamente
 - nesse conflito, bloquear o fechamento com `STATUS: BLOCKED_CLOSE_CONTRACT_OVERRIDE`, explicar que manter auxiliares implica resultado `not_closed`, e pedir confirmação explícita do DEV sobre continuar sem fechamento canônico
 - se o DEV confirmar que deseja manter auxiliares, o resultado deve ser `not_closed`, não `closed` nem `closed_with_residuals`

@@ -73,6 +73,15 @@ const COMPACT_AGENT_RETURN_FORBIDDEN_SNIPPETS = [
     "repeat the full Sentinel contract in the return",
     "return raw intermediate output",
 ];
+const CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS = [
+    "cd web && npm run lint",
+    "cd web && npm run build",
+    "cd web && npm test",
+    "cd functions && npm run test:rules",
+    "--watch=false",
+    "--browsers=ChromeHeadless",
+    "106/106",
+];
 const CODEX_PARENT_MEDIATED_ROUTING_SNIPPETS = [
     "Codex Parent-Mediated Routing Contract",
     "When the human explicitly requests `Use orchestrator`",
@@ -573,8 +582,18 @@ function assertSpecManagerContract() {
         "`STATUS: BLOCKED_CLOSE_CONTRACT_OVERRIDE`",
         "se o DEV confirmar que deseja manter auxiliares, o resultado deve ser `not_closed`",
         "nunca transportar para `feature_spec.md` fechado resíduo técnico como plano de implementação",
+        "em `feature_spec.md` fechado, evidências de fechamento devem ser categorias compactas e duráveis",
+        "categorias compactas permitidas incluem validação automatizada local web",
+        "consolidar `evidence_used` por categoria compacta de evidência",
+        "logs, checklist granular, contagens detalhadas e comandos pertencem aos artefatos auxiliares enquanto a SPEC estiver ativa",
         "`__MACOSX` e `.DS_Store`",
     ], "stnl_spec_manager/SKILL.md canonical close cleanup contract");
+
+    assertContentExcludesAll(
+        skillContent,
+        CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS,
+        "stnl_spec_manager/SKILL.md closed SPEC evidence contract"
+    );
 
     assert(
         !skillContent.includes("manter apenas os que ainda carregarem valor real"),
@@ -620,10 +639,23 @@ function assertSpecManagerContract() {
         "When `closure_status` is `closed` or `closed_with_residuals`, the SPEC folder must contain only `feature_spec.md`",
         "`closed_with_residuals` records known residual product, scope, or validation limits inside this file; it does not retain auxiliary files.",
         "do not include implementation plans, session history, validation commands, checklist trails, or maturity logs",
+        "Closure evidence in this file must be compact evidence categories",
+        "not exact validation commands, logs, operational paths, detailed suite counts, granular checklists, or technical validation trails",
+        "Detailed evidence belongs in auxiliary working artifacts while the SPEC is active, not in the closed canonical artifact.",
+        "Compact evidence category 1",
+        "local automated web validation passed: lint, build, and unit/component tests",
+        "local rules validation passed for the relevant scenarios",
+        "final manual smoke confirmed OK, static/documental validation completed, or known validation limits preserved",
         "canonical_close_folder_state",
         "must be `feature_spec.md only`",
         "For `closed` or `closed_with_residuals`, set this section to `not_applicable_closed` and do not list retained auxiliary artifacts.",
     ], "feature_spec.md canonical close cleanup contract");
+
+    assertContentExcludesAll(
+        featureSpecContent,
+        CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS,
+        "feature_spec.md closed SPEC evidence contract"
+    );
 
     assertContentIncludesAll(readinessContent, [
         "If `MODE=CLOSE` produces `closed` or `closed_with_residuals`, this file is a working artifact and must be removed",
@@ -632,10 +664,17 @@ function assertSpecManagerContract() {
 
     assertContentIncludesAll(specClosePromptContent, [
         "Se fechar como `closed` ou `closed_with_residuals`, compacte o conteúdo durável necessário no `feature_spec.md` e limpe a pasta da SPEC para ficar somente com `feature_spec.md`",
+        "Consolide evidências por categoria compacta; não registre comandos detalhados",
         "`closed_with_residuals` registra limites conhecidos dentro do `feature_spec.md`; não preserva auxiliares",
         "Se algum auxiliar ainda for necessário para entender a SPEC, retorne `not_closed`.",
         "bloqueie com `BLOCKED_CLOSE_CONTRACT_OVERRIDE`",
     ], "spec-close.md canonical close cleanup prompt");
+
+    assertContentExcludesAll(
+        specClosePromptContent,
+        CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS,
+        "spec-close.md closed SPEC evidence contract"
+    );
 
     assertContentIncludesAll(openQuestionsContent, [
         "### Q-001 — [Generic question title]",

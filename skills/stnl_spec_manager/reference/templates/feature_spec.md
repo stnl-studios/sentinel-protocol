@@ -24,6 +24,8 @@
 >
 > When `closure_status` is `closed` or `closed_with_residuals`, the SPEC folder must contain only `feature_spec.md`, except ignored system entries such as `__MACOSX` and `.DS_Store`. `closed_with_residuals` records known residual product, scope, or validation limits inside this file; it does not retain auxiliary files.
 >
+> Closure evidence in this file must be compact evidence categories, not exact validation commands, logs, operational paths, detailed suite counts, granular checklists, or technical validation trails. Detailed evidence belongs in auxiliary working artifacts while the SPEC is active, not in the closed canonical artifact.
+>
 > `state` tracks maturity and consumability. `lifecycle_status` tracks whether this SPEC artifact remains active or has been closed after explicit reconciliation against existing evidence.
 >
 > Use canonical stable IDs for questions (`Q-001`), decisions (`D-001`), acceptance criteria (`AC-001`), slices (`SL-001`), risks (`R-001`), and constraints (`C-001`). Every identified item must include the ID in its heading and an explicit `id:` field. Do not renumber, reuse removed IDs, or convert uncertainty into requirements.
@@ -233,8 +235,9 @@
 - closure_basis: not_applicable_yet | validation_evidence | manual_verification | combined_evidence
 - closure_summary: [State whether this SPEC artifact remains active or what explicitly justified closure.]
 - evidence_used:
-  - [Short evidence category or observation 1, without command logs]
-  - [Short evidence category or observation 2, without command logs]
+  - [Compact evidence category 1, for example local automated web validation passed: lint, build, and unit/component tests.]
+  - [Compact evidence category 2, for example local rules validation passed for the relevant scenarios.]
+  - [Compact evidence category 3, for example final manual smoke confirmed OK, static/documental validation completed, or known validation limits preserved.]
 - residuals_after_closure:
   - [Known residual product, scope, or validation limit, or `none`]
 - canonical_close_folder_state: [If `closed` or `closed_with_residuals`, must be `feature_spec.md only`; if `not_closed`, use `not_applicable`.]
