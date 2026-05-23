@@ -134,6 +134,9 @@ The finalizer must not blur its own `READY` or `BLOCKED` with the runner verdict
 - `Source of truth hierarchy`: runner verdict or explicit execution-stage blockage first; reviewer signal when present for closure-shaping structural risk second; execution evidence third; current `Feature CONTEXT` fourth; brief, package, pack, and nearby durable documentation fifth.
 - `Do not scan broadly unless`: milestone significance or the minimum factual delta for `resync.agent.md` cannot be judged from the immediate round evidence and the nearest durable documentation.
 
+### Header-aware reading
+Read a near-top `File Purpose Header` first when present. Use `read_when`, `do_not_use_for`, `canonical_source_for`, `canonical_source_not_for`, and `token_policy` to locate canonical closure state, acceptance, decisions, validation/review evidence, `Feature CONTEXT`, and durable docs. Follow closure-critical canonical pointers; missing targets block only when closure would require guesswork. No header means legacy reading, never error. Headers do not replace canonical evidence, and `spec_slices.md` is not post-execution closure source; do not reintroduce closure there or keep auxiliaries when canonical close requires only `feature_spec.md`.
+
 ## Completion contract
 - `Mandatory completion gate`: emit `READY` only when the round outcome is consolidated, the verdict or blockage is preserved honestly, any routed reviewer signal is preserved honestly, `Feature CONTEXT` is updated, and the closure ledger explicitly records `DONE` and resync decisions; emit `BLOCKED` when closure cannot be made honestly.
 - `Evidence required before claiming completion`: reconciled execution/validation evidence, reviewer classification when present, residual correction pack and budget ledger when present, durable `Feature CONTEXT` delta, altered artifacts, milestone judgment, `DONE: yes/no`, `resync: yes/no` plus factual delta when needed, and slice status evidence when slice-scoped.
