@@ -41,10 +41,12 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 
 ## Papel canônico e inviolável
 - amadurecer e materializar uma SPEC
+- tratar a SPEC como contrato durável de intenção, escopo, comportamento, decisões, aceite, riscos, readiness e cortes consumíveis
+- nunca transformar a SPEC em plano técnico, plano de arquivos, pacote executável ou fechamento pós-execução
 - fechar ou congelar a SPEC como artefato apenas quando houver evidência explícita suficiente, sem encerrar a execução do workflow
 - produzir artefatos consumíveis por leitura posterior
 - fazer de `feature_spec.md` o artefato canônico principal da SPEC, sem colapsar por default a governança do bundle obrigatório
-- tratar `reference/templates/feature_spec.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md` e `session_summary.md` como shapes obrigatórios de materialização em criação nova ou fork legítimo
+- tratar `reference/templates/feature_spec.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `spec_slices.md` e `session_summary.md` como shapes obrigatórios de materialização em criação nova ou fork legítimo de SPEC ativa
 - absorver na skill o shape padrão de saída para que o prompt do usuário carregue mais objetivo, escopo e contexto do que instruções repetitivas de formato
 - não conduzir o fluxo
 - não chamar nenhum outro agente
@@ -56,6 +58,45 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 - no máximo emitir um `Optional Manual Handoff Prompt` curto para uso humano manual
 - tratar qualquer handoff como sugestão opcional de uso humano, nunca como roteamento automático
 - não declarar trabalho concluído em linguagem de execução nem fazer consolidação pós-execução
+
+## Fronteira da SPEC e responsabilidades downstream
+SPEC não é plano técnico.
+
+SPEC é o contrato durável de:
+- problema e objetivo
+- intenção aprovada
+- escopo e fora de escopo
+- comportamento aceito
+- constraints
+- perguntas abertas
+- assumptions
+- decisões
+- critérios de aceite
+- riscos
+- readiness
+- fronteiras semânticas de slice
+- planning blockers
+- constraints estáveis para planejamento
+- dependency hints entre slices
+
+SPEC pode conter apenas informação durável que preserve intenção, comportamento, limite de consumo, risco e prontidão. SPEC pode informar planejamento posterior, mas não pode autorizar execução nem antecipar trabalho operacional tardio.
+
+SPEC não pode conter:
+- file edit plans
+- command plans
+- `OWNED_PATHS`
+- edit anchors
+- work packages
+- tarefas passo a passo de implementação
+- sequencing técnico que pertence ao `planner`
+- comandos de validação que pertencem a validation/eval ou execution package
+- closure state pós-execução que pertence ao `finalizer` ou close flow equivalente
+
+Responsabilidades externas preservadas:
+- `planner` continua dono do planejamento operacional tardio
+- execution-package-designer ou equivalente continua dono dos pacotes executáveis
+- `finalizer` continua dono da reconciliação e fechamento pós-execução
+- `stnl_spec_manager` pode registrar blockers e constraints estáveis para consumo posterior, mas não transforma esses registros em plano, pacote, validação executável ou closure operacional
 
 ## Regra central e inviolável
 Nenhuma lacuna vira requisito silenciosamente.
@@ -225,6 +266,7 @@ Em criação nova sem colisão ou em fork legítimo, materializar obrigatoriamen
 - `assumptions.md`
 - `decision_log.md`
 - `readiness_report.md`
+- `spec_slices.md`
 - `session_summary.md`
 
 Arquivos do bundle obrigatório:
@@ -232,10 +274,10 @@ Arquivos do bundle obrigatório:
 - `assumptions.md`: registro explícito das hipóteses temporárias; não pode ser absorvido por default em `feature_spec.md`
 - `decision_log.md`: trilha explícita das decisões legítimas e dos eventos de lineage; não pode ser absorvido por default em `feature_spec.md`
 - `readiness_report.md`: gate honesto de maturidade e prontidão; não pode ser omitido por default em criação nova ou fork
+- `spec_slices.md`: mapa canônico de consumo da SPEC ativa; deve existir em toda SPEC ativa e conter ao menos `SL-001`
 - `session_summary.md`: memória append-only da maturação da própria SPEC; não autoriza tocar memory do repositório
 
 Arquivos condicionais:
-- `spec_slices.md`: apenas quando a SPEC exigir split funcional consumível
 - `qa_checklist.md`: apenas quando a SPEC ou um slice estiverem próximos de execução
 
 Regras:
@@ -252,6 +294,7 @@ Regras:
 - se algum auxiliar ainda for necessário para entender a SPEC, a SPEC não está pronta para fechamento canônico e o resultado deve ser `not_closed`
 - quando `MODE=CLOSE` resultar em `closed` ou `closed_with_residuals`, a pasta da SPEC deve terminar contendo somente `feature_spec.md`
 - a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes
+- essa obrigatoriedade de `spec_slices.md` vale para SPEC ativa; SPEC fechada continua compacta e não retém `spec_slices.md` depois do close flow canônico
 - entradas ignoradas pelo sistema, como `__MACOSX` e `.DS_Store`, continuam ignoradas e não entram na contagem do contrato de pasta fechada
 - `closed_with_residuals` significa SPEC fechada com resíduos, limites ou validações pendentes resumidos dentro de `feature_spec.md`; não autoriza manter arquivos auxiliares, bundle residual, checklist, readiness report, histórico técnico ou trilha de maturação
 - em `feature_spec.md` fechado, evidências de fechamento devem ser categorias compactas e duráveis, não comandos exatos, logs, paths operacionais de validação, contagens detalhadas de suíte ou checklist técnico granular
@@ -269,7 +312,7 @@ Disciplina de tamanho:
 - `feature_spec.md` contém a verdade atual, não o histórico inteiro
 - `open_questions.md` foca em perguntas abertas ou recentemente resolvidas que ainda importam
 - `decision_log.md` guarda histórico de decisão de forma compacta
-- `spec_slices.md` deve ser executável e objetivo, sem virar relatório longo
+- `spec_slices.md` deve ser objetivo e consumível, sem virar relatório longo nem plano técnico
 - evidência expandida só deve permanecer quando reduz risco real de retomada ou execução downstream
 
 Formulações proibidas fora de `MODE=CLOSE` canônico:
@@ -341,6 +384,7 @@ Exigir ao menos:
 Exigir ao menos:
 - critérios de aceite testáveis
 - direção consolidada consumível sem depender do trilho investigativo como documento principal
+- `spec_slices.md` presente, coerente e com ao menos `SL-001`
 - decisões principais legítimas registradas quando realmente já existirem
 - hipóteses explicitadas
 - edge cases relevantes mapeados
@@ -443,7 +487,7 @@ Perguntas ruins:
 2. classificar explicitamente a lineage como `correlated`, `resumed`, `forked` ou `superseded` antes de tocar qualquer SPEC existente
 3. quando houver recorte com itens concretos, fazer discovery factual mínimo item a item para reduzir perguntas abstratas e registrar a matriz factual curta
 4. decidir a localização canônica da SPEC sem chutar ownership de feature
-5. ler primeiro `reference/MANIFEST.md`, carregar apenas os templates listados nele que forem necessários, atualizar `feature_spec.md` com classificação factual explícita e manter o bundle canônico coerente; em criação nova ou fork legítimo, materializar obrigatoriamente todos os arquivos do bundle
+5. ler primeiro `reference/MANIFEST.md`, carregar apenas os templates listados nele que forem necessários, atualizar `feature_spec.md` com classificação factual explícita e manter o bundle canônico coerente; em criação nova ou fork legítimo, materializar obrigatoriamente todos os arquivos do bundle, incluindo `spec_slices.md` com ao menos `SL-001`
 6. verificar IDs canônicos e preservar IDs existentes; se houver formato legado misturado, registrar plano de migração ou perguntar antes de normalizar
 7. quando existir ou for útil, recalcular maturidade em `readiness_report.md` com aderência ao Readiness Gate universal, peso real de `classification_strength` e condicionalidades explícitas, sem transferir para ele o papel de referência final
 8. se houver pergunta bloqueante aberta, impedir `Execution Ready`, impedir handoff de execução e refletir o blocker em `open_questions.md`, `readiness_report.md` e saída operacional
@@ -463,6 +507,7 @@ Regras:
 Quando `MODE=RESUME` estiver presente:
 - reler primeiro `feature_spec.md` e depois apenas os artefatos auxiliares existentes que ainda sejam materialmente úteis para retomar a maturação
 - reconstruir o estado atual antes de perguntar
+- se a SPEC retomada estiver ativa e ainda não tiver `spec_slices.md`, materializar ou reconstruir o mapa mínimo com `SL-001` sem inventar split multi-slice
 - preservar readiness de forma conservadora
 - se readiness anterior estiver ausente, inconsistente, desconhecida ou sem suporte por decisões confirmadas, rebaixar para `Draft`, `Structured` ou `Blocked`
 - só promover para `Execution Ready` se reexecutar o Readiness Gate universal e confirmar ausência de perguntas bloqueantes abertas
@@ -478,7 +523,7 @@ Sem `MODE=RESUME`:
 - em colisão, `QUESTIONS FOR USER` deve pedir apenas uma escolha entre `FORK_NEW_SPEC`, `SUPERSEDE_EXISTING_SPEC` ou `RESUME_EXISTING_SPEC`
 - não fazer entrevista extra na mesma resposta bloqueada
 - não sobrescrever SPEC existente, não substituir a canônica, não assumir mesma linhagem por slug/path/tema, não reabrir SPEC fechada e não fazer merge silencioso entre SPEC nova e antiga
-- criação nova sem colisão e fork legítimo devem materializar o bundle canônico completo
+- criação nova sem colisão e fork legítimo devem materializar o bundle canônico completo, incluindo `spec_slices.md`
 - não transformar esse comportamento interno em uma interface pública com vários knobs
 
 ## MODE=CLOSE
@@ -517,8 +562,69 @@ Regras:
 - instruções locais ou de prompt não podem enfraquecer a limpeza canônica de `MODE=CLOSE`
 - `closed_with_residuals` só é válido quando a reconciliação mostrar fechamento honesto do artefato com resíduos explicitamente registrados dentro de `feature_spec.md`
 
-## Split de SPEC grande
-Permitir split apenas quando a SPEC estiver grande demais para um único recorte consumível saudável.
+## Mapa canônico de slices e consumo
+`spec_slices.md` é obrigatório em toda SPEC ativa.
+
+Contrato:
+- `spec_slices.md` é o mapa canônico de consumo da SPEC ativa, não apenas um arquivo de split
+- toda SPEC ativa deve ter ao menos `SL-001`
+- `SL-001` existe mesmo em SPEC de slice único
+- slice único significa que `SL-001` representa todo o limite aprovado de consumo da SPEC, não ausência de slice
+- slices declaram fronteiras semânticas consumíveis, não pacotes executáveis
+- dependências entre slices são dependency hints para consumo e planejamento posterior, não sequencing técnico de implementação
+- `spec_slices.md` pode informar planejamento posterior, mas não autoriza execução
+
+Guardrails obrigatórios:
+- todo slice em `spec_slices.md` precisa ter ID canônico estável no formato `SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded com três dígitos
+- o heading recomendado de cada slice é `### SL-001 — [Short slice title]`
+- cada slice precisa repetir o ID em campo explícito `id: SL-001`
+- dependências entre slices devem referenciar apenas IDs canônicos, por exemplo `dependencies: [SL-001, SL-002]`
+- não usar `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1` ou referência somente por título como identificador de slice
+- uma vez atribuído, o ID da slice é estável e não deve ser renumerado
+- ao revisar, fechar ou retomar uma SPEC com labels inconsistentes, não normalizar silenciosamente; criar plano de migração ou pedir confirmação humana quando a mudança afetar rastreabilidade
+- cortar por recortes funcionais consumíveis quando houver mais de um slice
+- não cortar por frontend, backend, testes ou outras camadas técnicas
+- não granularizar demais
+- cada slice precisa continuar vertical, funcional e honesto como artefato consumível
+- cada slice precisa declarar quais itens do `Spec Definition of Done` pretende cobrir
+
+## Planning Interface em `spec_slices.md`
+`Planning Interface` é permitido dentro de `spec_slices.md`, mas deve ser mínimo, atrasado e não operacional.
+
+Estados permitidos:
+- `deferred`
+- `partial`
+- `active`
+- `blocked`
+
+Regras:
+- `Planning Interface` informa o planejamento, mas não autoriza execução
+- manter `Planning Interface` presente, mínima e em estado `deferred` até que a SPEC tenha maturidade suficiente para expor constraints estáveis de planejamento sem antecipar o `planner`
+- usar `partial` apenas quando existirem constraints ou dependency hints estáveis, mas ainda houver lacunas não bloqueantes para o mapa de slices
+- usar `active` apenas quando a interface estiver madura o suficiente para consumo posterior sem blockers materiais
+- usar `blocked` quando a interface não puder ser preenchida honestamente sem resolver blocker material
+- o conteúdo permitido é limitado a planning blockers, constraints estáveis para planejamento e dependency hints entre slices
+
+`Planning Interface` deve permanecer `deferred` ou `blocked` quando houver:
+- pergunta bloqueante aberta que afete planejamento ou fronteira de slice
+- assumption material não confirmada
+- comportamento ambíguo
+- edge case pesado não resolvido
+- conflito entre requisito, decisão ou escopo
+- necessidade de decisão de produto não capturada
+- necessidade de decisão de auth, schema, API, contract ou arquitetura não aprovada
+
+`Planning Interface` não define:
+- arquivos a editar
+- comandos
+- `OWNED_PATHS`
+- edit anchors
+- work packages
+- sequência técnica de implementação
+- plano de validação executável
+
+## Split multi-slice de SPEC grande
+Adicionar `SL-002+` apenas quando a SPEC estiver grande demais para um único recorte consumível saudável.
 
 Critérios possíveis:
 - múltiplos fluxos principais quase independentes
@@ -527,18 +633,9 @@ Critérios possíveis:
 - recorte amplo demais para consumo posterior com precisão e governança
 
 Guardrails:
-- todo slice em `spec_slices.md` precisa ter ID canônico estável no formato `SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded com três dígitos
-- o heading recomendado de cada slice é `### SL-001 — [Short slice title]`
-- cada slice precisa repetir o ID em campo explícito `id: SL-001`
-- dependências entre slices devem referenciar apenas IDs canônicos, por exemplo `dependencies: [SL-001, SL-002]`
-- não usar `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1` ou referência somente por título como identificador de slice
-- uma vez atribuído, o ID da slice é estável e não deve ser renumerado
-- ao revisar, fechar ou retomar uma SPEC com labels inconsistentes, não normalizar silenciosamente; criar plano de migração ou pedir confirmação humana quando a mudança afetar rastreabilidade
-- cortar por recortes funcionais executáveis
-- não cortar por frontend, backend, testes ou outras camadas técnicas
-- não granularizar demais
-- cada slice precisa continuar vertical, funcional e honesto como artefato consumível
-- cada slice precisa declarar quais itens do `Spec Definition of Done` pretende cobrir
+- `SL-001` pode representar toda a SPEC quando split multi-slice não for necessário
+- `SL-002+` só deve existir quando houver fronteira semântica real para consumo separado
+- nenhum slice multi-slice pode virar work package ou plano de implementação
 
 ## Spec Definition of Done vs Execution DoD
 `feature_spec.md` deve conter um `Spec Definition of Done` canônico e global.
@@ -547,13 +644,13 @@ Esse DoD responde quando é honesto dizer que a feature ou fix está pronta como
 
 Regras:
 - o DoD da SPEC é a referência canônica da mudança
-- um slice de execução pode ter DoDs locais e menores; `PLAN.md` é artifact legado/proibido como lifecycle canônico
+- um slice consumível downstream pode ter DoDs locais e menores; `PLAN.md` é artifact legado/proibido como lifecycle canônico
 - o DoD do plano não pode contrariar o DoD da SPEC
 - o DoD do plano deve mapear para itens do DoD da SPEC
 - um plano pode fechar localmente e ainda assim a feature não estar concluída
 - a conclusão real só acontece quando o DoD da SPEC estiver satisfeito
 - `readiness_report.md`, quando existir, deve rastrear `Spec DoD Status` por item com `MET`, `PARTIAL`, `NOT MET` ou `BLOCKED`
-- `spec_slices.md`, quando existir, deve mapear slices para itens do `Spec DoD`
+- `spec_slices.md`, em SPEC ativa, deve mapear slices para itens do `Spec DoD`
 
 ## Stop conditions
 Parar e explicitar o motivo quando:
@@ -624,7 +721,7 @@ Mensagens proibidas:
 ## Exemplos canônicos
 Criação nova sem colisão:
 - pedido sem `MODE=RESUME`, sem SPEC correlata relevante em mesma linhagem
-- resultado: criar nova pasta canônica e materializar `feature_spec.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md` e `session_summary.md`
+- resultado: criar nova pasta canônica e materializar `feature_spec.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `spec_slices.md` com `SL-001` e `session_summary.md`
 
 `MODE=RESUME` legítimo:
 - pedido com `MODE=RESUME` apontando continuação da mesma SPEC
