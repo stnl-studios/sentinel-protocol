@@ -16,11 +16,15 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter `open_questions.md` como fonte oficial de dúvidas; não criar `open_decisions.md`
 - manter o Readiness Gate universal: nenhuma SPEC ou slice vira `Execution Ready` com pergunta bloqueante aberta
 - manter IDs canônicos estáveis: `Q-001`, `D-001`, `AC-001`, `SL-001`, `R-001` e `C-001`
+- manter `spec_slices.md` obrigatório em toda SPEC ativa como mapa canônico de consumo, não como arquivo opcional de split
+- manter toda SPEC ativa com ao menos `SL-001`; em SPEC single-slice, `SL-001` representa o limite aprovado de consumo inteiro
+- manter IDs de slice no formato `SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded; nunca `S-001`, `Slice 1`, `S1`, `slice-1` ou referência só por título
 - preservar IDs existentes e nunca normalizar formatos mistos silenciosamente
 - manter artefatos finais compactos, com referência por ID em vez de repetição longa
 - usar somente exemplos sintéticos e genéricos; nunca usar contexto privado, cliente real, projeto real ou feature real
 - manter a taxonomia `FACT / DERIVED / ASSUMPTION / OPEN_QUESTION / DECISION` operacional e visível
 - manter apenas `MODE=RESUME` e `MODE=CLOSE` como modos públicos explícitos
+- não criar `MODE=DESIGN_FIRST`, `MODE=QUICK_PLAN`, Quick Plan, Design First, `tasks.md`, `design.md` ou estrutura Kiro-style `requirements/design/tasks`
 - manter `FORK_NEW_SPEC`, `SUPERSEDE_EXISTING_SPEC` e `RESUME_EXISTING_SPEC` apenas como tokens de decisão humana de lineage em colisão, nunca como modos públicos ou interface paralela a `MODE=*`
 - manter ausência de `MODE=RESUME` como proibição de retomada implícita da mesma linhagem
 - manter SPEC correlata como contexto apenas; colisão sem `MODE=RESUME` deve bloquear e pedir decisão humana explícita entre `FORK_NEW_SPEC`, `SUPERSEDE_EXISTING_SPEC` ou `RESUME_EXISTING_SPEC`
@@ -55,6 +59,34 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - nunca permitir formulações que absorvam por default todos os auxiliares no `feature_spec.md`
 - nunca permitir que a skill toque `memory.md` ou aja como closure/finalizer operacional
 - evitar overlap com `planner`, `orchestrator`, `finalizer`, `validation-runner`, artifacts legados de closure ou bootstrap de `docs/**`
+- manter SPEC e `spec_slices.md` livres de plano de edição de arquivos, comandos, `OWNED_PATHS`, edit anchors, work packages, tarefas passo a passo de implementação, sequencing técnico, plano executável de validação e closure pós-execução
+
+## `spec_slices.md` e `SL-001`
+`spec_slices.md` é obrigatório em toda SPEC ativa e funciona como mapa canônico de consumo da SPEC. Ele não é apenas um arquivo para split multi-slice.
+
+- SPEC single-slice também materializa `spec_slices.md`
+- toda SPEC ativa deve ter ao menos `SL-001`
+- `SL-001` pode existir em estado `deferred` ou bloqueado enquanto a SPEC ainda está em planejamento
+- `SL-001` não significa que a SPEC está pronta para execução
+- quando não houver split multi-slice, `SL-001` representa o limite aprovado de consumo inteiro
+- IDs de slice devem ser canônicos, sequenciais e zero-padded: `SL-001`, `SL-002`, `SL-003`
+
+## Planning Interface
+`Planning Interface` vive em `spec_slices.md` como ponte mínima entre SPEC e planner. Ela informa planejamento posterior, mas não autoriza execução e não substitui `planner`, `execution-package-designer`, `validation-eval-designer` ou `finalizer`.
+
+- estados permitidos: `deferred`, `partial`, `active`, `blocked`
+- estado inicial seguro: `deferred`, quando readiness ainda não está estável
+- manter `deferred` ou `blocked` quando houver pergunta bloqueante, assumption material não confirmada, ambiguidade, edge case pesado não resolvido, conflito de escopo/decisão ou decisão ausente de produto, auth, schema, API, contrato ou arquitetura
+- não registrar plano técnico, comandos, work packages, caminhos de ownership ou validação executável na interface
+
+## File Purpose Header
+Arquivos gerados de SPEC passam a incluir `File Purpose Header` para reduzir leitura/token e ajudar agentes a abrir o arquivo correto.
+
+- o header não substitui o conteúdo canônico do arquivo
+- o header não duplica regras de negócio, acceptance criteria ou decisões
+- o header não autoriza execução
+- o header inclui `token_policy`
+- projetos antigos sem header continuam compatíveis; ausência de header em SPEC legada não deve ser tratada como erro
 
 ## Bundle de templates
 Canônico obrigatório em criação nova ou fork legítimo:
@@ -63,14 +95,14 @@ Canônico obrigatório em criação nova ou fork legítimo:
 - `assumptions.md`
 - `decision_log.md`
 - `readiness_report.md`
+- `spec_slices.md`
 - `session_summary.md`
 
 Condicionais:
-- `spec_slices.md`
 - `qa_checklist.md`
 
 ## Linguagem
 Os templates permanecem em en-US para consistência com o restante do kit documental do repo.
 
 ## Referência estrutural
-`feature_spec.md` é o artefato canônico principal da SPEC final, mas não substitui o bundle canônico obrigatório em criação nova ou fork legítimo. Em fechamento canônico com `closed` ou `closed_with_residuals`, o bundle auxiliar morre e a pasta da SPEC deve ficar somente com `feature_spec.md`, salvo entradas ignoradas de sistema. Ausência de `MODE=RESUME` implica não-retomada. SPEC correlata nunca pode ser reutilizada automaticamente. `stnl_spec_manager` não toca `memory.md` nem assume papel de closure/finalizer.
+`feature_spec.md` é o artefato canônico principal da SPEC final, mas não substitui o bundle canônico obrigatório em criação nova ou fork legítimo. SPEC ativa mantém bundle auxiliar, incluindo `spec_slices.md`; SPEC fechada continua compacta. Em fechamento canônico com `closed` ou `closed_with_residuals`, o bundle auxiliar morre e a pasta da SPEC deve ficar somente com `feature_spec.md`, salvo entradas ignoradas de sistema. `spec_slices.md` não deve permanecer no bundle fechado. Ausência de `MODE=RESUME` implica não-retomada. SPEC correlata nunca pode ser reutilizada automaticamente. `stnl_spec_manager` não toca `memory.md` nem assume papel de closure/finalizer. O novo comportamento vale para novas SPECs ativas e retomadas/forks legítimos conforme o contrato da skill, sem introduzir novo modo público.
