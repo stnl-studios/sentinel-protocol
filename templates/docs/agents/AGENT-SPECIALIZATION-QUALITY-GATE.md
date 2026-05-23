@@ -1,5 +1,16 @@
 # Quality Gate Canonico de Especializacao de Agents
 
+## File Purpose Header
+- purpose: Gate canônico para validar specializeds materializados por projeto.
+- read_when: Após geração ou atualização de agents, antes de concluir especialização ou aceitar repair.
+- do_not_use_for: Planejar implementação de produto, autorizar execução, rodar comandos ou substituir contrato de agent base.
+- canonical_source_for: Checks de qualidade, fidelidade factual, role drift, cross-reference e shape dos specializeds.
+- canonical_source_not_for: Shape base completo, fatos do projeto, fluxo temporal do workflow ou runtime config nativo.
+- update_owner: `stnl_project_agent_specializer`.
+- downstream_consumers: `stnl_project_agent_specializer`, `reviewer`, `orchestrator`, agents especializados.
+- token_policy: Ler checks aplicáveis ao target e role tocados; não reler o gate inteiro sem necessidade.
+- related_files: `reference/docs/agents/AGENT-CONTRACT-SHAPE.md`, `reference/agents/*.agent.md`, `reference/docs/workflow/*`.
+
 ## Proposito
 Definir o gate minimo, auditavel e orientado a custo que valida specializeds gerados a partir dos base agents canonicos.
 

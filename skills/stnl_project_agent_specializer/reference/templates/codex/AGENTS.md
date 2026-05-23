@@ -8,6 +8,17 @@ This file is generated in the target repository. Do not edit it directly when th
 Sentinel-managed agent system is being regenerated.
 -->
 
+## File Purpose Header
+- purpose: Generated Codex workspace routing and runtime contract for Sentinel-managed agents.
+- read_when: Root/main or a custom subagent needs Codex routing, invocation, sandbox, or compact return rules.
+- do_not_use_for: Project facts, SPEC content, execution authorization, work packages, validation evidence, or agent role exactness.
+- canonical_source_for: Codex target routing contract, explicit subagent invocation rules, managed agent list, and local notes.
+- canonical_source_not_for: Individual agent duties, project documentation, Sentinel source contracts, implementation plans, or validation results.
+- update_owner: `stnl_project_agent_specializer` during target `codex` materialization.
+- downstream_consumers: root/main Codex session, `orchestrator`, managed `.codex/agents/*.toml`, specialized agents.
+- token_policy: Read this header, Runtime Contract, Managed Agents, and Local Notes first; open the target agent TOML for role-specific accuracy.
+- related_files: `.codex/agents/*.toml`, `.codex/config.toml`, `docs/**`, Sentinel source templates/docs.
+
 ## Runtime Contract
 This repository uses Sentinel Protocol agents materialized for Codex.
 The managed agent definitions live in `.codex/agents/`.

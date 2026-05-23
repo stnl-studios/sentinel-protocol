@@ -3,6 +3,17 @@ UNIT: <unit-slug>
 UNIT CLASS: app | api | mobile | worker | package | bff | admin | TBD
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Contexto local de uma unit sem contrariar a base global.
+- read_when: Um agente trabalha dentro desta unit e precisa entender papel, escopo, superfícies e dependências locais.
+- do_not_use_for: Regras globais, contratos completos, matriz de testes, comandos, execução ou work packages.
+- canonical_source_for: Papel da unit, escopo local, superfícies, integrações e linguagem local.
+- canonical_source_not_for: Verdade global do projeto, regras locais detalhadas, contratos locais ou validação.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `planner`, `execution-package-designer`, coders, `reviewer`, `resync`, agents especializados.
+- token_policy: Ler header e seções locais relevantes; voltar para `core` quando a dúvida for global.
+- related_files: `docs/core/CONTEXT.md`, `docs/units/<unit-slug>/RULES.md`, `STATE.md`, `CONTRACTS.md`, `TESTING.md`, `UI_KIT.md`.
+
 # Unit Context
 
 ## Objetivo

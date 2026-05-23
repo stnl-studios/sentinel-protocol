@@ -2,6 +2,17 @@ SCOPE: core
 PROJECT: <project-name>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Matriz factual mínima de harness, checks e estratégia global de validação.
+- read_when: Um agente precisa desenhar, executar ou revisar prova proporcional ao risco da mudança.
+- do_not_use_for: Planejamento funcional, implementação, regras de domínio, contratos detalhados ou prova inventada.
+- canonical_source_for: Comandos canônicos observados, níveis de validação, mínimos por mudança e limites de harness.
+- canonical_source_not_for: Aceite de produto, estado estrutural do repo, contratos específicos ou evidência pós-execução.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `validation-eval-designer`, `execution-package-designer`, coders, `validation-runner`, `reviewer`, `finalizer`.
+- token_policy: Ler política e matriz da superfície tocada; executar ou citar somente checks sustentados por este doc e pelo repo.
+- related_files: `docs/core/CONTEXT.md`, `docs/core/CONTRACTS.md`, `docs/core/RULES.md`, `docs/core/STATE.md`, `docs/units/*/TESTING.md`.
+
 # Core Testing
 
 ## Objetivo

@@ -3218,7 +3218,7 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         .sort();
 
     assert(
-        content.split(/\r?\n/).length <= 100,
+        content.split(/\r?\n/).length <= 112,
         `AGENTS.md codex ficou longo demais para shape plausível curto: ${agentsIndexPath}`
     );
     assert(

@@ -1,5 +1,16 @@
 # Feature CONTEXT
 
+## File Purpose Header
+- purpose: Snapshot operacional e durável de uma feature ativa.
+- read_when: Um agente trabalha no recorte da feature, precisa entender foco atual, paths, dependências ou riscos imediatos.
+- do_not_use_for: Regras globais, catálogo de contratos, política de testes, execução, comandos ou histórico completo.
+- canonical_source_for: Estado atual da feature, escopo ativo, hot paths, dependências imediatas e lacunas locais.
+- canonical_source_not_for: Regras estáveis, contratos detalhados, harness global, milestones `DONE` ou decisões transversais.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `orchestrator`, `planner`, `execution-package-designer`, coders, `reviewer`, `finalizer`, `resync`.
+- token_policy: Ler snapshot e seções do cut; buscar detalhes estáveis em `core`, `units`, `DONE` ou paths fonte.
+- related_files: `docs/core/*`, `docs/units/*`, `docs/features/<feature-path>/done/*`, `docs/TBDS.md`.
+
 ## Snapshot da feature
 - LATEST MILESTONE NOTE: `./done/DONE-YYYYMMDD-<entrega-real>.md` | `TBD`
 - CURRENT STATUS: `active | in-progress | paused | TBD`

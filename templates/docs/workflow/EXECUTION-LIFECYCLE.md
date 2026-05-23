@@ -1,5 +1,16 @@
 # Execution Lifecycle Canonico
 
+## File Purpose Header
+- purpose: Ordem operacional canônica do workflow Sentinel e ownership dos artifacts/verdicts.
+- read_when: Um agente precisa entender sequência, handoffs, correction loop, proof pós-execução ou closure.
+- do_not_use_for: Autorizar execução sem gates, criar work packages concretos, comandos, SPEC ou validação factual do repo.
+- canonical_source_for: Sequência do lifecycle, ownership de artifacts, correction loop e regras de closure.
+- canonical_source_not_for: Lista curta de status, contratos de agents, fatos do projeto ou pacotes executáveis específicos.
+- update_owner: `stnl_project_agent_specializer`.
+- downstream_consumers: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, coders, `validation-runner`, `reviewer`, `finalizer`.
+- token_policy: Ler fluxo resumido e a seção do gate atual; usar `STATUS-GATES.md` para significados de status.
+- related_files: `reference/docs/workflow/STATUS-GATES.md`, `reference/docs/agents/AGENT-CONTRACT-SHAPE.md`, `reference/docs/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`.
+
 ## Objetivo
 Descrever a ordem operacional canônica do Sentinel com mais precisão que `STATUS-GATES.md`, deixando explícito onde entram o quality gate pós-execução e o review técnico semântico e quem é owner de cada artifact ou verdict.
 

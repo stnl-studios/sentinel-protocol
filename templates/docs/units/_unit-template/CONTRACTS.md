@@ -2,6 +2,17 @@ SCOPE: unit
 UNIT: <unit-slug>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Mapa de contratos e convenções locais da unit.
+- read_when: A mudança toca DTO, payload, event, interface, boundary ou convenção local desta unit.
+- do_not_use_for: Contratos globais, regras, estado estrutural, testes, execução ou inventário completo.
+- canonical_source_for: Localização, convenções e contratos locais representativos ou sensíveis.
+- canonical_source_not_for: Contratos globais, implementação completa, regras locais ou matriz de validação.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `planner`, `validation-eval-designer`, `execution-package-designer`, coders, `reviewer`.
+- token_policy: Ler só o tipo de contrato afetado; abrir paths fonte quando compatibilidade exigir exatidão.
+- related_files: `docs/core/CONTRACTS.md`, `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `STATE.md`, `TESTING.md`.
+
 # Unit Contracts
 
 > Template opcional. Criar apenas quando a unit tiver vocabulário, camadas, boundaries ou contratos locais que não caibam bem em `docs/core/CONTRACTS.md`.

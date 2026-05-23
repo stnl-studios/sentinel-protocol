@@ -2,6 +2,17 @@ SCOPE: core
 PROJECT: <project-name>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Mapa global de famílias contratuais, convenções e contratos sensíveis.
+- read_when: Uma mudança ou revisão toca API, payload, schema, auth, persistência, integração ou boundary compartilhada.
+- do_not_use_for: Inventário completo de DTOs, plano de execução, comandos, testes ou regras de domínio.
+- canonical_source_for: Localização e convenções dos contratos globais relevantes.
+- canonical_source_not_for: Implementação completa de contratos, regras arquiteturais gerais, estado do repo ou validação.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `planner`, `validation-eval-designer`, `execution-package-designer`, coders, `reviewer`, `resync`.
+- token_policy: Ler mapa e família afetada; abrir paths fonte quando a mudança exigir exatidão contratual.
+- related_files: `docs/core/CONTEXT.md`, `docs/core/RULES.md`, `docs/core/STATE.md`, `docs/core/TESTING.md`, `docs/TBDS.md`, `docs/units/*/CONTRACTS.md`.
+
 # Core Contracts
 
 ## Objetivo

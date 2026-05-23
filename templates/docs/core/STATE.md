@@ -2,6 +2,17 @@ SCOPE: core
 PROJECT: <project-name>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Fotografia factual global da estrutura, entrypoints e superfícies observáveis.
+- read_when: Um agente precisa localizar onde algo existe antes de abrir código ou docs locais.
+- do_not_use_for: Regras, contratos detalhados, testes, decisão de arquitetura ou autorização de mudança.
+- canonical_source_for: Mapa global de paths, entrypoints, módulos, jobs, pipelines e superfícies.
+- canonical_source_not_for: Significado de domínio, regras, contratos sensíveis, política de validação ou lacunas consolidadas.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `orchestrator`, `planner`, `execution-package-designer`, coders, `reviewer`, `resync`.
+- token_policy: Ler tabelas de localização; abrir arquivos do repo apenas quando o cut exigir evidência atual.
+- related_files: `docs/core/CONTEXT.md`, `docs/core/RULES.md`, `docs/core/CONTRACTS.md`, `docs/core/TESTING.md`, `docs/units/*/STATE.md`.
+
 # Core State
 
 ## Objetivo

@@ -2,6 +2,17 @@ SCOPE: unit
 UNIT: <unit-slug>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Regras locais confirmadas da unit e stop rules de boundary local.
+- read_when: Um agente vai planejar, executar ou revisar mudança dentro desta unit.
+- do_not_use_for: Regras globais, contexto narrativo, contratos completos, teste detalhado ou autorização de execução.
+- canonical_source_for: Regras locais, stop rules e exceções aprovadas da unit.
+- canonical_source_not_for: Arquitetura global, contratos locais detalhados, estado estrutural ou matriz de harness.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `planner`, `validation-eval-designer`, `execution-package-designer`, coders, `reviewer`.
+- token_policy: Ler regras invioláveis e stop rules; ler detalhes por superfície só quando a unit for tocada.
+- related_files: `docs/core/RULES.md`, `docs/units/<unit-slug>/CONTEXT.md`, `CONTRACTS.md`, `STATE.md`, `TESTING.md`.
+
 # Unit Rules
 
 ## Objetivo

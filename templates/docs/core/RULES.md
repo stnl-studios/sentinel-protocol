@@ -2,6 +2,17 @@ SCOPE: core
 PROJECT: <project-name>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Regras globais confirmadas, stop rules e seeds separados para mudança segura.
+- read_when: Um agente precisa checar invariantes, boundaries, arquitetura ou regras globais antes de planejar, executar ou revisar.
+- do_not_use_for: Contexto narrativo, catálogo de contratos, estado estrutural, validação detalhada ou autorização de execução.
+- canonical_source_for: Regras globais ativas, stop rules e exceções aprovadas.
+- canonical_source_not_for: Fatos de domínio, paths completos, contratos específicos, matriz de harness ou backlog.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `planner`, `validation-eval-designer`, `execution-package-designer`, coders, `reviewer`, `finalizer`.
+- token_policy: Ler regras invioláveis e stop rules primeiro; aprofundar só na superfície tocada.
+- related_files: `docs/core/CONTEXT.md`, `docs/core/CONTRACTS.md`, `docs/core/STATE.md`, `docs/core/TESTING.md`, `docs/TBDS.md`, `docs/units/*/RULES.md`.
+
 # Core Rules
 
 ## Objetivo

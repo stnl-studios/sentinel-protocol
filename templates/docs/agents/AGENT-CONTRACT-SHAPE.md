@@ -1,5 +1,16 @@
 # Shape Canonico de Contrato de Agent Base
 
+## File Purpose Header
+- purpose: Contrato canônico de shape para base agents e specializeds Sentinel.
+- read_when: `stnl_project_agent_specializer` ou reviewer precisa validar metadata, role class, leitura, handoff ou superfície de retorno.
+- do_not_use_for: Criar SPEC, planejar execução, autorizar subagents, rodar comandos ou substituir base agents.
+- canonical_source_for: Shape mínimo de contrato, role classes, reading scope e retorno compacto dos agents.
+- canonical_source_not_for: Conteúdo completo de cada agent, fatos do projeto, quality gate pós-geração ou fluxo temporal.
+- update_owner: `stnl_project_agent_specializer`.
+- downstream_consumers: `stnl_project_agent_specializer`, `orchestrator`, `reviewer`, agents especializados.
+- token_policy: Ler seções de shape e role class relevantes; abrir base agent específico para exatidão de papel.
+- related_files: `reference/agents/*.agent.md`, `reference/docs/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`, `reference/docs/workflow/*`.
+
 ## Proposito
 Definir o shape minimo e canonico que todo agent base do Sentinel precisa explicitar, inclusive quando houver especializacao por projeto.
 

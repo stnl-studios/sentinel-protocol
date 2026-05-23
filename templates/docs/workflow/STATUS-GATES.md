@@ -1,5 +1,16 @@
 # Status e Gates Canônicos
 
+## File Purpose Header
+- purpose: Tabela canônica de status, gates e ownership de vereditos do workflow.
+- read_when: Um agente precisa interpretar status, decidir gate atual ou validar handoff sem reler o lifecycle inteiro.
+- do_not_use_for: Sequência completa do workflow, autorização de execução, comandos, work packages ou fatos do projeto.
+- canonical_source_for: Significado dos status, gates, readiness e ownership dos vereditos.
+- canonical_source_not_for: Ordem detalhada do lifecycle, contrato dos agents, artifacts ricos ou validações concretas.
+- update_owner: `stnl_project_agent_specializer`.
+- downstream_consumers: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `validation-runner`, `reviewer`, `finalizer`.
+- token_policy: Ler status/gate específico; abrir `EXECUTION-LIFECYCLE.md` quando a sequência importar.
+- related_files: `reference/docs/workflow/EXECUTION-LIFECYCLE.md`, `reference/docs/agents/AGENT-CONTRACT-SHAPE.md`, `reference/docs/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`.
+
 ## Objetivo
 Registrar os status e gates canônicos do workflow do Sentinel, o momento em que cada um aparece no fluxo, e deixar explícito que o fluxo já contempla proof pós-execução do artifact implementado e pode incluir review técnico semântico adicional do mesmo artifact.
 

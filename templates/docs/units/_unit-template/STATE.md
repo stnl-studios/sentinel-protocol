@@ -2,6 +2,17 @@ SCOPE: unit
 UNIT: <unit-slug>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Fotografia factual da estrutura e dos entrypoints desta unit.
+- read_when: Um agente precisa localizar paths, superfícies, jobs, testes ou boundaries locais.
+- do_not_use_for: Regras locais, contratos, contexto de domínio, validação ou autorização de mudança.
+- canonical_source_for: Paths, entrypoints, superfícies e status estrutural local da unit.
+- canonical_source_not_for: Estado global do repo, regras, contratos sensíveis ou estratégia de testes.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `orchestrator`, `planner`, `execution-package-designer`, coders, `reviewer`, `resync`.
+- token_policy: Ler tabelas locais; abrir código apenas para confirmar o delta ou ambiguidade do cut.
+- related_files: `docs/core/STATE.md`, `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `CONTRACTS.md`, `TESTING.md`.
+
 # Unit State
 
 ## Objetivo

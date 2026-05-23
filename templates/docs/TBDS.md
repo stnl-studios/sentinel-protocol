@@ -1,5 +1,16 @@
 # TBDs
 
+## File Purpose Header
+- purpose: Consolidado canônico de lacunas, conflitos e ambiguidades relevantes.
+- read_when: Discovery, resync, handoff, especialização ou execução encontra dúvida arquitetural, contratual ou de boundary.
+- do_not_use_for: Backlog genérico, plano de execução, comandos, work packages ou fechamento otimista.
+- canonical_source_for: Status e descrição das lacunas relevantes do projeto.
+- canonical_source_not_for: Regras ativas, contratos detalhados, estado factual completo ou validação.
+- update_owner: `stnl_project_context` ou `stnl_project_foundation`, conforme estágio documental.
+- downstream_consumers: `orchestrator`, `planner`, `reviewer`, `finalizer`, `resync`, `stnl_project_agent_specializer`.
+- token_policy: Ler IDs/status e somente os itens relacionados ao bloqueio ou delta atual.
+- related_files: `docs/INDEX.md`, `docs/core/*`, `docs/units/*`, `docs/features/*`, `docs/decisions/*`.
+
 ## Objetivo
 Consolidar as lacunas relevantes do projeto em um ponto canônico de consulta, sem transformar `RULES.md` ou `INDEX.md` em backlog de pendências.
 
