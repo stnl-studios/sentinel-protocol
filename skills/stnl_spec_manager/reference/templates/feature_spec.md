@@ -18,6 +18,17 @@
 - last_updated: <YYYY-MM-DD>
 - last_session: <1>
 
+## File Purpose Header
+- purpose: Canonical business and product contract for this SPEC.
+- read_when: Scope, objective, flows, rules, acceptance criteria, constraints, risks, decisions, or closure need to be understood.
+- do_not_use_for: Execution sequence, file editing plan, owned paths, validation commands, temporary notes, or work packages.
+- canonical_source_for: Problem, objective, scope, out_of_scope, functional behavior, acceptance criteria, Spec DoD, and final closure summary.
+- canonical_source_not_for: Detailed open questions, temporary assumptions, session history, or the slice consumption map.
+- update_owner: `stnl_spec_manager` while active; `finalizer` only consolidates closure through the approved close flow.
+- downstream_consumers: `planner`, `orchestrator`, `validation-eval-designer`, `reviewer`, `finalizer`.
+- token_policy: Read Metadata, Executive Summary, Scope, Acceptance Criteria, Spec DoD, and Closure first; open deeper sections only when needed.
+- related_files: `spec_slices.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`.
+
 > This is the canonical persisted shape for the final SPEC artifact. A closed SPEC must be readable, understandable, and reusable starting and ending in this file. Keep every section in place even when the content is partial. If something is unknown, mark it as pending, conditional, or `none` instead of collapsing the document or inventing certainty.
 >
 > Keep this file directly consumable, but do not turn it into an execution plan or an early implementation prescription. Detailed investigation or temporary working notes may live elsewhere while the SPEC matures, but no auxiliary artifact should be required to understand the final business scope, rules, acceptance, decisions, or closure captured here.

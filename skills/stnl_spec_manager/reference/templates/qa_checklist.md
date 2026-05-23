@@ -1,5 +1,16 @@
 # QA Checklist
 
+## File Purpose Header
+- purpose: Working checklist for SPEC quality, completeness, ambiguity, and testability.
+- read_when: A SPEC or slice needs quality review before downstream consumption or validation design.
+- do_not_use_for: Accepted behavior, closure evidence, execution plans, file paths, commands, or work packages.
+- canonical_source_for: SPEC quality checks, completeness checks, ambiguity checks, and testability checks.
+- canonical_source_not_for: Final accepted behavior, final decisions, validation evidence, closure summary, or implementation sequence.
+- update_owner: `stnl_spec_manager` while the SPEC is active.
+- downstream_consumers: `validation-eval-designer`, `reviewer`, `finalizer`.
+- token_policy: Read failed/warning checks first; skip passed checks unless investigating a specific risk.
+- related_files: `feature_spec.md`, `spec_slices.md`, `readiness_report.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`.
+
 ## Validation Scope
 - spec_id: <SPEC-001>
 - target_scope: <full spec or slice id>

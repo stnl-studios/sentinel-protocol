@@ -606,16 +606,43 @@ function assertSpecManagerContract() {
     );
 
     assertContentIncludesAll(specSlicesContent, [
+        "## File Purpose Header",
+        "- read_when: A downstream agent needs slice boundaries, readiness labels, dependencies by slice ID, or the Planning Interface state.",
+        "## Slice Model",
+        "split_required: pending | no | yes",
+        "slice_model: pending | single_slice | multi_slice",
+        "single-slice does not mean no slice; it means SL-001 represents the whole approved consumption boundary.",
         "## Slice Identity Contract",
         "canonical_id_format: `SL-001`, `SL-002`, `SL-003`, sequential and zero-padded with three digits",
         "recommended_heading: `### SL-001 — [Short slice title]`",
         "id_field_required: every slice must include `id: SL-001`",
-        "dependencies_must_use: canonical slice IDs only, for example `dependencies: [SL-001, SL-002]`",
+        "dependencies_must_use: canonical slice IDs only",
         "prohibited_slice_identifiers: `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, title-only references",
-        "### SL-001 — [Short slice title]",
+        "id_stability: once assigned, a slice ID must not be renumbered or reused",
+        "migration_rule: when labels are inconsistent, do not normalize silently; create a migration plan or ask for human confirmation when traceability could change",
+        "## Planning Interface",
+        "status: deferred",
+        "allowed_status_values: deferred | partial | active | blocked",
+        "Planning constraints must not be generated before readiness is stable.",
+        "do_not_use_for: Execution authorization, execution plans, file paths, commands, work packages, validation packs, or closure decisions.",
+        "does_not_authorize: execution",
+        "does_not_replace:",
+        "`execution-package-designer`",
+        "## Slice Dependency Overview",
+        "SL-001 depends_on: []",
+        "### SL-001 — Pending approved consumption boundary",
         "id: SL-001",
-        "dependencies: [SL-001]",
-    ], "spec_slices.md slice identity contract");
+        "planning_status: blocked_for_planning",
+        "can_be_planned_independently: no",
+        "parallelization_hint: unknown",
+    ], "spec_slices.md active SPEC consumption map contract");
+
+    assertContentExcludesAll(specSlicesContent, [
+        "deferred Planning Interface state",
+        "## Post-Slice Closure Contract",
+        "final_slice_status_values",
+        "applies_after_execution: yes",
+    ], "spec_slices.md active SPEC consumption map forbidden closure contract");
 
     assertContentIncludesAll(readinessContent, [
         "`Execution Ready` is prohibited while any open question has `blocking: yes`.",
