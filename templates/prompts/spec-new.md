@@ -2,6 +2,7 @@ Use `stnl_spec_manager`.
 
 Objetivo:
 - consolidar uma SPEC implementável para [feature/mudança]
+- materializar o bundle ativo canônico, incluindo `spec_slices.md` com `SL-001`.
 
 Entrada mínima aceita:
 - [descreva em poucas linhas o problema, bug, feature ou iniciativa; não precisa preencher todos os campos abaixo]

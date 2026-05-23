@@ -14,4 +14,5 @@ Objetivo:
 
 Observação:
 - launcher manual auxiliar; não substitui a regra automática de que toda rodada terminal passa pelo `finalizer`.
+- fechamento pós-execução da slice pertence ao `finalizer`; `spec_slices.md` é mapa de consumo, não fonte de closure pós-execução.
 - o `orchestrator` apenas roteia este fechamento; o `finalizer` é o owner canônico da declaração final da rodada de slice.

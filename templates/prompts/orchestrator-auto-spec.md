@@ -10,7 +10,7 @@ Modo:
 
 Objetivo:
 - executar a SPEC de forma auto-guiada e bounded até o próximo gate canônico, blocker real ou prontidão honesta para teste humano/manual.
-- identificar estado real da SPEC, slices concluídas/pendentes e próxima slice elegível.
+- identificar estado real da SPEC, slices concluídas/pendentes e próxima slice elegível usando `spec_slices.md` para dependências/readiness.
 - rotear os agentes necessários sem o `orchestrator` absorver planejamento, package design, execução, validação, review ou fechamento.
 - para cada rodada, preservar o fluxo Sentinel: `EXECUTION BRIEF`, `VALIDATION PACK`, `EXECUTION PACKAGE`, execução por coder, validação, review quando aplicável e fechamento pelo `finalizer`.
 - continuar sem pedir aprovação do DEV após cada slice quando não houver gate/blocker legítimo.
@@ -23,6 +23,7 @@ Regras:
 - não feche slice, rodada ou SPEC sem passagem terminal pelo `finalizer`.
 - não marque trabalho como pronto sem evidência e validação compatíveis com o cut.
 - não entre em loop autônomo infinito: avance apenas para a próxima slice elegível ou pare no gate canônico/blocker real.
+- respeitar `Planning Interface`; não executar slice deferred/blocked para planejamento.
 - todo handoff para coder deve preservar `EXECUTION PACKAGE` e `WORK_PACKAGE_ID`.
 
 Autonomia e parada:

@@ -6,6 +6,7 @@ SPEC alvo:
 
 Objetivo desta rodada:
 - [o que precisa ser retomado, corrigido ou consolidado]
+- preservar ou reconstruir o `spec_slices.md` mínimo com `SL-001` se ausente, sem inventar split multi-slice.
 
 Delta novo:
 - [nova evidência, decisão, blocker ou ajuste de direção]

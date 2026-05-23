@@ -13,6 +13,12 @@ Eles servem para copiar e colar no agente/skill correspondente, sem repetir cont
 - Quando uma regra fixa precisar mudar, altere a skill/base agent correspondente, não este prompt launcher.
 - Quando houver uma exceção real do projeto ou da rodada, registre em `Restrições excepcionais`.
 
+## SPEC ativa
+
+- SPEC ativa agora inclui `spec_slices.md` e ao menos `SL-001`.
+- Launchers continuam finos; a regra completa vive na skill, agentes, templates e validações.
+- Quando houver `File Purpose Header`, agentes devem usá-lo como roteador de leitura, mas o launcher não precisa repetir headers.
+
 ## Natureza destes arquivos
 
 Estes templates não são usados automaticamente pelo runtime do Sentinel.
