@@ -181,6 +181,214 @@ const CONTROLLED_CONTEXT_DOC_SPECS = [
     },
 ];
 
+const SPEC_TEMPLATE_HEADER_REQUIRED_SNIPPETS = [
+    "## File Purpose Header",
+    "- do_not_use_for:",
+    "- canonical_source_for:",
+    "- canonical_source_not_for:",
+    "- update_owner:",
+    "- downstream_consumers:",
+    "- token_policy:",
+    "- related_files:",
+];
+
+const SPEC_TEMPLATE_HEADER_SPECS = [
+    {
+        relativePath: "feature_spec.md",
+        requiredSnippets: [
+            "Canonical business and product contract",
+            "do_not_use_for: Execution sequence, file editing plan, owned paths, validation commands, temporary notes, or work packages.",
+            "canonical_source_not_for: Detailed open questions, temporary assumptions, session history, or the slice consumption map.",
+        ],
+    },
+    {
+        relativePath: "spec_slices.md",
+        requiredSnippets: [
+            "Canonical consumption map for an active SPEC",
+            "do_not_use_for: Execution authorization, execution plans, file paths, commands, work packages, validation packs, or closure decisions.",
+            "canonical_source_not_for: Business acceptance, final product decisions, detailed questions, implementation sequencing, validation commands, or post-execution closure.",
+        ],
+    },
+    {
+        relativePath: "open_questions.md",
+        requiredSnippets: [
+            "Canonical register of material uncertainty",
+            "do_not_use_for: Final accepted scope, resolved product decisions, implementation direction, or closure evidence.",
+            "canonical_source_for: `Q-*` items",
+        ],
+    },
+    {
+        relativePath: "assumptions.md",
+        requiredSnippets: [
+            "Canonical register of provisional assumptions",
+            "do_not_use_for: Final decisions, closure evidence, execution plans, or accepted product behavior.",
+            "canonical_source_for: `A-*` assumptions",
+        ],
+    },
+    {
+        relativePath: "decision_log.md",
+        requiredSnippets: [
+            "Canonical register of decisions",
+            "do_not_use_for: Open questions, speculative implementation, temporary assumptions, execution plans, or validation commands.",
+            "canonical_source_for: `D-*` decisions",
+        ],
+    },
+    {
+        relativePath: "readiness_report.md",
+        requiredSnippets: [
+            "Working assessment of SPEC maturity",
+            "do_not_use_for: Implementation steps, execution plans, final closure summary, file paths, commands, or work packages.",
+            "canonical_source_for: Readiness status",
+        ],
+    },
+    {
+        relativePath: "qa_checklist.md",
+        requiredSnippets: [
+            "Working checklist for SPEC quality",
+            "do_not_use_for: Accepted behavior, closure evidence, execution plans, file paths, commands, or work packages.",
+            "canonical_source_for: SPEC quality checks",
+        ],
+    },
+];
+
+const DOC_TEMPLATE_HEADER_REQUIRED_SNIPPETS = [
+    "## File Purpose Header",
+    "- do_not_use_for:",
+    "- canonical_source_for:",
+    "- canonical_source_not_for:",
+    "- token_policy:",
+];
+
+const DOC_TEMPLATE_HEADER_PATHS = [
+    "INDEX.md",
+    "TBDS.md",
+    path.join("core", "CONTEXT.md"),
+    path.join("core", "CONTRACTS.md"),
+    path.join("core", "RULES.md"),
+    path.join("core", "STATE.md"),
+    path.join("core", "TESTING.md"),
+    path.join("units", "_unit-template", "CONTEXT.md"),
+    path.join("units", "_unit-template", "CONTRACTS.md"),
+    path.join("units", "_unit-template", "RULES.md"),
+    path.join("units", "_unit-template", "STATE.md"),
+    path.join("units", "_unit-template", "TESTING.md"),
+    path.join("units", "_unit-template", "UI_KIT.md"),
+    path.join("features", "_feature-template", "CONTEXT.md"),
+    path.join("features", "_feature-template", "done", "DONE-TEMPLATE.md"),
+    path.join("decisions", "ADR-template.md"),
+    path.join("decisions", "INDEX.md"),
+    path.join("reference", "DESIGN_SYSTEM.md"),
+    path.join("agents", "AGENT-CONTRACT-SHAPE.md"),
+    path.join("agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+    path.join("workflow", "EXECUTION-LIFECYCLE.md"),
+    path.join("workflow", "STATUS-GATES.md"),
+];
+
+const DOC_TEMPLATE_CRITICAL_SNIPPETS = [
+    {
+        relativePath: "INDEX.md",
+        requiredSnippets: [
+            "sem substituir os docs factuais",
+            "`docs/INDEX.md` não substitui nenhum desses documentos",
+        ],
+    },
+    {
+        relativePath: path.join("core", "TESTING.md"),
+        requiredSnippets: [
+            "não substitui o `VALIDATION PACK` cut-scoped",
+            "não vira checklist rígido",
+        ],
+    },
+    {
+        relativePath: path.join("features", "_feature-template", "done", "DONE-TEMPLATE.md"),
+        requiredSnippets: [
+            "work packages ou substituto de `Feature CONTEXT`",
+            "`DONE` não substitui `Feature CONTEXT`",
+        ],
+    },
+    {
+        relativePath: path.join("agents", "AGENT-CONTRACT-SHAPE.md"),
+        requiredSnippets: [
+            "Criar SPEC, planejar execução, autorizar subagents, rodar comandos ou substituir base agents.",
+            "O `EXECUTION PACKAGE` nao substitui o orchestrator.",
+        ],
+    },
+    {
+        relativePath: path.join("agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+        requiredSnippets: [
+            "Planejar implementação de produto, autorizar execução, rodar comandos ou substituir contrato de agent base.",
+            "AGENTS.md` e cada `.codex/agents/*.toml` contem `Compact Agent Return Contract`",
+        ],
+    },
+    {
+        relativePath: path.join("workflow", "EXECUTION-LIFECYCLE.md"),
+        requiredSnippets: [
+            "Autorizar execução sem gates, criar work packages concretos, comandos, SPEC ou validação factual do repo.",
+            "`execution-package-designer` compila `EXECUTION PACKAGE`",
+        ],
+    },
+    {
+        relativePath: path.join("workflow", "STATUS-GATES.md"),
+        requiredSnippets: [
+            "autorização de execução, comandos, work packages ou fatos do projeto.",
+            "não substitui a proof pós-execução",
+        ],
+    },
+];
+
+const BASE_HEADER_AWARE_AGENT_FILES = [
+    "orchestrator.agent.md",
+    "planner.agent.md",
+    "execution-package-designer.agent.md",
+    "validation-eval-designer.agent.md",
+    "validation-runner.agent.md",
+    "reviewer.agent.md",
+    "finalizer.agent.md",
+];
+
+const HEADER_AWARE_AGENT_COMMON_SNIPPETS = [
+    "### Header-aware reading",
+    "`File Purpose Header`",
+    "`read_when`",
+    "`do_not_use_for`",
+    "`canonical_source_for`",
+    "`canonical_source_not_for`",
+    "`token_policy`",
+    "legacy reading",
+];
+
+const HEADER_AWARE_AGENT_CRITICAL_SNIPPETS = {
+    "orchestrator.agent.md": [
+        "it never replaces canonical exact content",
+        "SPEC header/`Planning Interface` never authorizes execution, validation, or closure",
+    ],
+    "planner.agent.md": [
+        "`Planning Interface` as planning information only, never as an executable plan or execution authorization",
+        "exact scope, decisions, acceptance, blockers, and readiness still require canonical content",
+    ],
+    "execution-package-designer.agent.md": [
+        "Headers may route reading, but they must not fill `OWNED_PATHS`, commands, work packages, acceptance checks, or block conditions",
+        "they never authorize a package when the SPEC or slice is blocked or deferred for planning",
+    ],
+    "validation-eval-designer.agent.md": [
+        "Header is not acceptance, DoD, readiness, or proof evidence",
+        "`Planning Interface` never authorizes execution, validation, or closure",
+    ],
+    "validation-runner.agent.md": [
+        "never extract commands/proof criteria from non-canonical files",
+        "SPEC header or `Planning Interface` never authorizes commands, execution, proof obligations, verdict changes, or closure",
+    ],
+    "reviewer.agent.md": [
+        "Do not approve or reject from the header alone",
+        "confirm quality, consistency, package adherence, and guardrail fit against canonical content",
+    ],
+    "finalizer.agent.md": [
+        "Headers do not replace canonical evidence",
+        "`spec_slices.md` is not post-execution closure source",
+        "canonical close requires only `feature_spec.md`",
+    ],
+};
+
 const AGENT_REFERENCE_DOC_SPECS = [
     {
         relativePath: path.join("reference", "docs", "agents", "AGENT-CONTRACT-SHAPE.md"),
@@ -521,6 +729,7 @@ function assertReferenceManifests() {
 function assertSpecManagerContract() {
     const specManagerRoot = path.join(SOURCE_DIR, "stnl_spec_manager");
     const skillContent = fs.readFileSync(path.join(specManagerRoot, "SKILL.md"), "utf8");
+    const manifestContent = fs.readFileSync(path.join(specManagerRoot, "reference", "MANIFEST.md"), "utf8");
     const specSlicesContent = fs.readFileSync(
         path.join(specManagerRoot, "reference", "templates", "spec_slices.md"),
         "utf8"
@@ -557,6 +766,44 @@ function assertSpecManagerContract() {
         path.join(ROOT, "templates", "prompts", "orchestrator-next-slice.md"),
         "utf8"
     );
+
+    assertSpecTemplateHeaders(specManagerRoot);
+
+    assertContentIncludesAll(skillContent, [
+        "tratar a SPEC como contrato durável de intenção, escopo, comportamento, decisões, aceite, riscos, readiness e cortes consumíveis",
+        "nunca transformar a SPEC em plano técnico, plano de arquivos, pacote executável ou fechamento pós-execução",
+        "SPEC não é plano técnico.",
+        "SPEC é o contrato durável",
+        "`spec_slices.md`: mapa canônico de consumo da SPEC ativa; deve existir em toda SPEC ativa e conter ao menos `SL-001`",
+        "`spec_slices.md` é obrigatório em toda SPEC ativa.",
+        "`spec_slices.md` é o mapa canônico de consumo da SPEC ativa, não apenas um arquivo de split",
+        "toda SPEC ativa deve ter ao menos `SL-001`",
+        "`SL-001` existe mesmo em SPEC de slice único",
+        "`spec_slices.md` pode informar planejamento posterior, mas não autoriza execução",
+        "`Planning Interface` é permitido dentro de `spec_slices.md`, mas deve ser mínimo, atrasado e não operacional.",
+        "`Planning Interface` informa o planejamento, mas não autoriza execução",
+        "manter `Planning Interface` presente, mínima e em estado `deferred`",
+        "`Planning Interface` não define:",
+        "arquivos a editar",
+        "`OWNED_PATHS`",
+        "work packages",
+        "plano de validação executável",
+        "a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes",
+        "SPEC fechada continua compacta e não retém `spec_slices.md` depois do close flow canônico",
+    ], "stnl_spec_manager/SKILL.md planning interface and active SPEC bundle contract");
+
+    assertContentIncludesAll(manifestContent, [
+        "`spec_slices.md` is mandatory for every active SPEC. It is the canonical consumption map for the active SPEC, not only a split file.",
+        "Single-slice SPECs still have `spec_slices.md` and `SL-001`",
+        "`Planning Interface` lives in `spec_slices.md` as a minimal bridge from SPEC to later planning.",
+        "It informs planning, does not authorize execution",
+        "Generated SPEC files include a `File Purpose Header`",
+        "The header includes `token_policy`, but it does not replace canonical content",
+        "Older projects without `File Purpose Header` remain compatible; absence of the header in legacy material is not an error.",
+        "Closed SPECs remain compact",
+        "only `feature_spec.md` remains in the SPEC folder",
+        "`spec_slices.md` is not retained in the closed bundle",
+    ], "stnl_spec_manager/reference/MANIFEST.md active SPEC and header compatibility contract");
 
     assertContentIncludesAll(skillContent, [
         "`SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded com três dígitos",
@@ -626,8 +873,17 @@ function assertSpecManagerContract() {
         "Planning constraints must not be generated before readiness is stable.",
         "do_not_use_for: Execution authorization, execution plans, file paths, commands, work packages, validation packs, or closure decisions.",
         "does_not_authorize: execution",
+        "does_not_define:",
+        "execution plan",
+        "file paths",
+        "commands",
+        "work packages",
+        "owned paths",
         "does_not_replace:",
+        "`planner`",
         "`execution-package-designer`",
+        "`validation-eval-designer`",
+        "`finalizer`",
         "## Slice Dependency Overview",
         "SL-001 depends_on: []",
         "### SL-001 — Pending approved consumption boundary",
@@ -1581,6 +1837,89 @@ function assertContentExcludesAll(content, snippets, label) {
     }
 }
 
+function assertContentIncludesAny(content, snippets, label) {
+    assert(
+        snippets.some((snippet) => content.includes(snippet)),
+        `${label} não contém nenhum dos invariantes esperados: ${snippets.join(" | ")}`
+    );
+}
+
+function assertFilePurposeHeaderFields(content, label, requiredSnippets = DOC_TEMPLATE_HEADER_REQUIRED_SNIPPETS) {
+    assertContentIncludesAll(content, requiredSnippets, `${label} File Purpose Header`);
+}
+
+function assertSpecTemplateHeaders(specManagerRoot) {
+    const templatesRoot = path.join(specManagerRoot, "reference", "templates");
+
+    for (const spec of SPEC_TEMPLATE_HEADER_SPECS) {
+        const content = fs.readFileSync(path.join(templatesRoot, spec.relativePath), "utf8");
+        assertFilePurposeHeaderFields(
+            content,
+            `stnl_spec_manager/reference/templates/${spec.relativePath}`,
+            SPEC_TEMPLATE_HEADER_REQUIRED_SNIPPETS
+        );
+        assertContentIncludesAll(
+            content,
+            spec.requiredSnippets,
+            `stnl_spec_manager/reference/templates/${spec.relativePath} header contract`
+        );
+    }
+}
+
+function assertDocumentationTemplateHeaders(docRoot, label, relativePaths = DOC_TEMPLATE_HEADER_PATHS) {
+    for (const relativePath of relativePaths) {
+        const content = fs.readFileSync(path.join(docRoot, relativePath), "utf8");
+        assertFilePurposeHeaderFields(content, `${label}/${relativePath}`);
+    }
+}
+
+function assertDocumentationTemplateCriticalSnippets(docRoot, label) {
+    for (const spec of DOC_TEMPLATE_CRITICAL_SNIPPETS) {
+        const content = fs.readFileSync(path.join(docRoot, spec.relativePath), "utf8");
+        assertContentIncludesAll(content, spec.requiredSnippets, `${label}/${spec.relativePath} header critical contract`);
+    }
+}
+
+function assertHeaderAwareReadingContent(content, label) {
+    assertContentIncludesAll(content, HEADER_AWARE_AGENT_COMMON_SNIPPETS, `${label} header-aware reading`);
+    assertContentIncludesAny(content, [
+        "No header means legacy reading, never error.",
+        "no header means legacy reading, never error.",
+        "If no header exists, continue with normal legacy reading and never treat absence as an error.",
+    ], `${label} legacy header fallback`);
+}
+
+function assertHeaderAwareReadingInAgentSet(agentRoot, label, agentFiles = BASE_HEADER_AWARE_AGENT_FILES) {
+    for (const fileName of agentFiles) {
+        const content = fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+        assertHeaderAwareReadingContent(content, `${label}/${fileName}`);
+        assertContentIncludesAll(
+            content,
+            HEADER_AWARE_AGENT_CRITICAL_SNIPPETS[fileName] ?? [],
+            `${label}/${fileName} header-aware critical contract`
+        );
+    }
+}
+
+function assertHeaderAwareReadingInCodexAgents(repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        if (!BASE_HEADER_AWARE_AGENT_FILES.includes(fileName)) {
+            continue;
+        }
+
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+
+        assertHeaderAwareReadingContent(parsed.developer_instructions, `codex/${agentName}`);
+        assertContentIncludesAll(
+            parsed.developer_instructions,
+            HEADER_AWARE_AGENT_CRITICAL_SNIPPETS[fileName] ?? [],
+            `codex/${agentName} header-aware critical contract`
+        );
+    }
+}
+
 function assertCanonicalDesignerRoleClassInDocs(docRoot, label) {
     const checkedDocs = [
         path.join("agents", "AGENT-CONTRACT-SHAPE.md"),
@@ -1992,6 +2331,7 @@ function assertControlledContextMaterialization(repoRoot) {
     for (const spec of CONTROLLED_CONTEXT_DOC_SPECS) {
         const filePath = path.join(repoRoot, spec.targetPath);
         const content = assertFileHasRequiredShape(filePath, spec.requiredSnippets);
+        assertFilePurposeHeaderFields(content, `context doc materializado ${spec.targetPath}`);
 
         if (filePath.endsWith(path.join("core", "CONTEXT.md"))) {
             assert(
@@ -2015,7 +2355,8 @@ function assertControlledContextMaterialization(repoRoot) {
 
 function assertControlledReferenceDocs(skillRoot) {
     for (const spec of AGENT_REFERENCE_DOC_SPECS) {
-        assertFileHasRequiredShape(path.join(skillRoot, spec.relativePath), spec.requiredSnippets);
+        const content = assertFileHasRequiredShape(path.join(skillRoot, spec.relativePath), spec.requiredSnippets);
+        assertFilePurposeHeaderFields(content, `reference doc instalado ${spec.relativePath}`);
     }
 }
 
@@ -3119,6 +3460,10 @@ function assertCodexSourceTemplates() {
         `Template Codex config não deve exigir max_depth = 2: ${configTemplatePath}`
     );
     const agentsContent = assertFileHasRequiredShape(agentsTemplatePath, [
+        "## File Purpose Header",
+        "do_not_use_for: Project facts, SPEC content, execution authorization, work packages, validation evidence, or agent role exactness.",
+        "canonical_source_not_for: Individual agent duties, project documentation, Sentinel source contracts, implementation plans, or validation results.",
+        "open the target agent TOML for role-specific accuracy",
         "[agents].max_depth = 1",
         ...CODEX_EXPLICIT_SUBAGENT_INVOCATION_SNIPPETS,
         "Codex Parent-Mediated Routing Contract",
@@ -3130,6 +3475,7 @@ function assertCodexSourceTemplates() {
         "Local Notes must stay compact and stable.",
         "{{LOCAL_NOTES}}",
     ]);
+    assertFilePurposeHeaderFields(agentsContent, "Codex AGENTS.md source template");
     assertContentExcludesAll(agentsContent, [
         "[agents].max_depth = 2",
         "max_depth = 2",
@@ -3144,6 +3490,10 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         .sort();
     const content = assertFileHasRequiredShape(agentsIndexPath, [
         `# ${SMOKE_FIXTURE_REPO_NAME} Agents`,
+        "## File Purpose Header",
+        "do_not_use_for: Project facts, SPEC content, execution authorization, work packages, validation evidence, or agent role exactness.",
+        "canonical_source_not_for: Individual agent duties, project documentation, Sentinel source contracts, implementation plans, or validation results.",
+        "open the target agent TOML for role-specific accuracy",
         "## Runtime Contract",
         "## Runtime Hardening",
         "## Managed Agents",
@@ -3183,6 +3533,7 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         "`workspace-write`",
         ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
     ]);
+    assertFilePurposeHeaderFields(content, "AGENTS.md codex materializado");
     assertContentIncludesAll(content, [
         "The `orchestrator` custom subagent is the Sentinel routing controller when explicitly invoked.",
         "Skill/workflow requests are not subagent authorization.",
@@ -3270,6 +3621,10 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledReferenceDocs(agentSkillRoot);
         assertProtocolHardeningInTemplateAgents();
         assertProtocolHardeningInReferenceAgents(agentSkillRoot);
+        assertHeaderAwareReadingInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
         assertRound1AntiInferenceHardeningInAgentSet(
             path.join(agentSkillRoot, "reference", "agents"),
             "reference/agents instalado"
@@ -3288,6 +3643,10 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertHeaderAwareReadingInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
         assertRound1AntiInferenceHardeningInAgentSet(
             path.join(vscodeRepoRoot, ".github", "agents"),
             "vscode materializado"
@@ -3318,6 +3677,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexRuntimeConfig(codexRepoRoot);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertHeaderAwareReadingInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound2OperationalAxesInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound3OrchestratorLadderInCodexAgents(codexRepoRoot);
@@ -3341,10 +3701,13 @@ async function runSentinelSmoke() {
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();
     assertQualityGuardrailSourceDefinitions();
+    assertDocumentationTemplateHeaders(path.join(ROOT, "templates", "docs"), "templates/docs");
+    assertDocumentationTemplateCriticalSnippets(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCanonicalDesignerRoleClassInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCorrectionLoopPolicyInTemplateDocs();
     assertBaseAgentTemplateSizeLimit();
+    assertHeaderAwareReadingInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound1AntiInferenceHardeningInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound2OperationalAxesInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
@@ -3364,6 +3727,8 @@ async function runSentinelSmoke() {
     );
     assertNoOperationalArtifactsInSentinelRoot();
     assertNoLegacyDirectoryInSentinelRoot();
+    assert(isIgnoredEntry(".DS_Store"), ".DS_Store deve continuar ignorado pelo smoke/materialização");
+    assert(isIgnoredEntry("__MACOSX"), "__MACOSX deve continuar ignorado pelo smoke/materialização");
 
     console.log("Smoke Sentinel: install/doctor em HOME temporário");
     const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-smoke-"));
