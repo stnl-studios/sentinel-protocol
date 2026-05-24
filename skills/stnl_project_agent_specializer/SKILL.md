@@ -423,7 +423,9 @@ Regras operacionais:
 - em `codex`, `developer_instructions` é o lugar obrigatório para carregar a missão especializada, role class, ownership, gates, sequencing, handoffs, disciplina de superfície, limites de leitura e regras operacionais derivadas dos base agents e do modelo factual intermediário
 - em `vscode`, `specialization_revision` começa em `1` na primeira materialização gerenciada do repo alvo
 - em `vscode`, `managed_artifact: true` é a marca de overwrite seguro e da deleção segura de artifacts gerenciados
+- em `vscode`, `managed_artifact: true` também significa que update é reconstrução gerenciada a partir do template/base agent canônico atual, não patch incremental do corpo antigo
 - em `codex`, qualquer marca de gerenciamento do Sentinel é convenção interna opcional e não faz parte do shape mínimo obrigatório do runtime; se for serializada, deve ser compatível com Codex e claramente distinguida de requisito nativo
+- em `codex`, comentário/header gerenciado equivalente como `# Sentinel managed artifact: true` tem a mesma força: o TOML deve ser re-renderizado a partir do base agent/template atual, preservando somente inputs locais permitidos pelo contrato
 - quando fizer sentido, preservar `reading_scope_class` somente como hint compatível com o contrato base; nunca usá-lo para expandir a classe permitida
 - em `vscode`, `tools` no frontmatter operacional é obrigatório nos agents especializados materializados e é a source of truth operacional
 - em `codex`, `tools` não é obrigatório nem deve ser serializado no TOML controlado; a política de tools e least privilege deve ser preservada semanticamente em `developer_instructions` e em `sandbox_mode`
@@ -482,6 +484,27 @@ Regras operacionais:
 - a normalização protocol-fixed não pode reescrever o bloco inteiro, não pode alterar `model`, `model_reasoning_effort`, `sandbox_mode`, não pode adicionar campos TOML e não pode mexer em metadata operacional fora do marcador fixo
 - o artifact final normalizado deve conter exatamente uma ocorrência de `## Consistency without legacy propagation` e zero ocorrências da linha legada `Consistency without legacy propagation:`
 - a normalização final deve eliminar duplicação entre source of truth operacional do target e texto legado residual
+
+## Atualização canônica de artifacts gerenciados
+Agents materializados são artifacts gerenciados, não documentos locais autoritativos do contrato Sentinel.
+
+Quando um artifact existente indicar `managed_artifact: true` em `vscode` ou marca gerenciada equivalente em `codex`:
+- reconstruir o artifact final a partir do template/base agent canônico atual listado em `reference/MANIFEST.md`
+- reaplicar a especialização factual local apenas pelos slots permitidos e pelo modelo factual intermediário vigente
+- protocol-fixed sections do template/base agent canônico vencem sempre sobre o corpo antigo materializado
+- corpo operacional, status, gates, handoffs, role class, reading scope, compact return contract e hardening de runtime devem refletir o template atual
+- bump de `base_agent_version`, `specialization_revision`, `model` ou metadata nunca é update suficiente quando o corpo canônico mudou
+- nunca preservar parágrafos antigos por diffs aproximados, conveniência ou tentativa de patch parcial
+- nunca entregar artifact híbrido com contrato antigo e contrato novo misturados
+
+Áreas de customização local:
+- preservar somente conteúdo que a própria skill tenha emitido dentro de slot explicitamente permitido, como `## Project specialization` em agents VS Code/GitHub ou `Local Notes` compactas em `AGENTS.md` Codex
+- customização local preservada deve ser revalidada contra role class, protocol-fixed sections, status e target shape atuais
+- edição manual fora de slot permitido não é input canônico; para artifact gerenciado, a skill deve sobrescrever durante a reconstrução e reportar no output que drift manual fora de slot permitido foi descartado, salvo se a edição tornar a autoria/gerenciamento ambíguos
+- se o arquivo existente não tiver marca gerenciada suficiente, tiver autoria ambígua, ou não for possível distinguir customização permitida de contrato manual concorrente, bloquear com conflito em vez de sobrescrever silenciosamente
+- se houver conflito entre customização local permitida e template/base agent atual, o template/base agent vence e a customização deve ser removida ou rebaixada no relatório
+
+Critério prático: depois de qualquer update gerenciado, comparar o artifact final contra o template/base agent atual e falhar o quality gate se status antigos, headings antigos, handoffs obsoletos ou blocos protocol-fixed antigos sobreviverem fora de slots permitidos.
 
 ## Blocos protocol-fixed non-compressible
 Os blocos abaixo são parte fixa do protocolo, não são conteúdo local do projeto e não podem ser resumidos, removidos, enfraquecidos, reescritos do zero prático ou substituídos por paráfrase incompleta durante a especialização:
@@ -761,12 +784,13 @@ Antes de remover um agent canônico do conjunto local:
 - ao revisar artifacts gerenciados existentes, normalizar o shape final e remover resíduos legados, mesmo quando o drift factual for pequeno
 - remover `## Tools` do corpo por default quando `tools` já existir na metadata operacional suportada pelo target, salvo exceção humana explícita e justificada
 - remover campos legados não canônicos da metadata operacional final, incluindo `agent_version`, salvo instrução humana explícita em sentido contrário
-- preferir update em cima do agent local quando ele já for um artifact gerenciado válido
-- quando a divergência for grande, regenerar o agent inteiro com base canônica + especialização factual local em vez de tentar patch incoerente
+- para artifact gerenciado válido, atualizar por reconstrução integral do artifact final a partir do template/base agent canônico atual e da especialização factual local permitida; o artifact antigo serve apenas para metadata compatível, slots permitidos e detecção de drift/conflito
+- não usar patch parcial do corpo antigo como estratégia de update de artifact gerenciado
+- qualquer divergência de protocol-fixed section, status, heading, handoff, compact return contract, role class ou runtime hardening exige reconstrução canônica, mesmo quando o drift factual local for pequeno
 - ao alterar materialmente um agent gerenciado em `vscode`, incrementar `specialization_revision`; em `codex`, só incrementar metadata equivalente se ela existir como convenção interna opcional compatível
 
 ## Política para artifacts locais existentes
-- se o arquivo já estiver no output gerenciado do `target`, tiver shape compatível e indicar `managed_artifact: true`, tratar como artifact gerenciado e atualizar com overwrite seguro
+- se o arquivo já estiver no output gerenciado do `target`, tiver shape compatível e indicar `managed_artifact: true` ou marca gerenciada equivalente, tratar como artifact gerenciado e reconstruir com overwrite seguro a partir do template/base agent canônico atual
 - se o arquivo existir mas estiver ambíguo, sem metadata suficiente, ou com sinais fortes de autoria humana fora do fluxo gerenciado, não sobrescrever cegamente
 - se um artifact local não gerenciado conflitar com o conjunto que a skill precisa manter, bloquear e explicitar o conflito em vez de apagar ou substituir silenciosamente
 
@@ -1269,7 +1293,7 @@ agents:
   - finalizer
   - resync
 model: <default-model>
-base_agent_version: "2026.5.0"
+base_agent_version: "2026.5.1"
 specialization_revision: 1
 managed_artifact: true
 ---
@@ -1287,7 +1311,7 @@ tools:
   - edit
   - execute
 model: <coding-model>
-base_agent_version: "2026.5.0"
+base_agent_version: "2026.5.1"
 specialization_revision: 1
 managed_artifact: true
 ---

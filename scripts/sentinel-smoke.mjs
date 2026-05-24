@@ -510,6 +510,14 @@ const CONSISTENCY_WITHOUT_LEGACY_PROPAGATION_SNIPPETS = [
 ];
 const CONSISTENCY_POLICY_CANONICAL_HEADING = "## Consistency without legacy propagation";
 const CONSISTENCY_POLICY_LEGACY_MARKER = "Consistency without legacy propagation:";
+const LEGACY_REVIEWER_STATUS_MARKER = "LEGACY_REVIEWER_READY_BLOCKED_STATUS_MARKER";
+const STATUS_CONTRACT_BY_AGENT = {
+    "reviewer": ["PASS", "FAIL"],
+    "coder-backend": ["READY", "BLOCKED"],
+    "coder-frontend": ["READY", "BLOCKED"],
+    "coder-ios": ["READY", "BLOCKED"],
+    "validation-runner": ["PASS", "PARTIAL", "FAIL", "BLOCKED"],
+};
 
 const CODEX_AGENTS_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "AGENTS.md");
 const CODEX_CONFIG_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "config.toml");
@@ -2092,6 +2100,61 @@ function assertSingleConsistencyPolicyBlock(content, label) {
     );
 }
 
+function extractMarkdownSection(content, heading, label) {
+    const start = content.indexOf(heading);
+    assert(start >= 0, `${label} sem seção esperada: ${heading}`);
+
+    const nextHeading = content.indexOf("\n## ", start + heading.length);
+    const end = nextHeading >= 0 ? nextHeading + 1 : content.length;
+    return content.slice(start, end);
+}
+
+function extractStatusContract(content, label) {
+    const statusSection = extractMarkdownSection(content, "## Status it may emit", label);
+    return [...statusSection.matchAll(/^\s*-\s+`([^`]+)`\s*$/gm)].map((match) => match[1]);
+}
+
+function assertStatusContract(content, agentName, label) {
+    const expectedStatuses = STATUS_CONTRACT_BY_AGENT[agentName];
+
+    if (!expectedStatuses) {
+        return;
+    }
+
+    assert.deepEqual(
+        extractStatusContract(content, label),
+        expectedStatuses,
+        `${label} preservou status incorreto para ${agentName}`
+    );
+}
+
+function assertVscodeStatusContracts(repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+
+        if (!STATUS_CONTRACT_BY_AGENT[agentName]) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".github", "agents", fileName), "utf8");
+        assertStatusContract(content, agentName, `vscode/${fileName}`);
+    }
+}
+
+function assertCodexStatusContracts(repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+
+        if (!STATUS_CONTRACT_BY_AGENT[agentName]) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+        assertStatusContract(parsed.developer_instructions, agentName, `codex/${agentName}`);
+    }
+}
+
 function stripConsistencyPolicyBlock(content, label) {
     const heading = CONSISTENCY_POLICY_CANONICAL_HEADING;
     const start = content.indexOf(heading);
@@ -2257,6 +2320,42 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, 
 
         writeFile(
             path.join(repoRoot, ".github", "agents", fileName),
+            renderFrontmatter(specializedFrontmatter) + normalizedBody
+        );
+    }
+}
+
+function rebuildManagedVscodeAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
+
+        if (fs.existsSync(materializedPath)) {
+            const existingContent = fs.readFileSync(materializedPath, "utf8");
+            const { data: existingFrontmatter } = parseFrontmatter(existingContent, materializedPath);
+            assert.equal(
+                existingFrontmatter.managed_artifact,
+                true,
+                `Fixture de update gerenciado VS Code recebeu artifact sem managed_artifact: true: ${materializedPath}`
+            );
+        }
+
+        const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
+        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const normalizedBody = fitControlledVscodeFixtureBody(
+            normalizeProtocolFixedConsistencyHeading(body),
+            fileName
+        );
+        const specializedFrontmatter = buildSpecializedFrontmatter(
+            baseFrontmatter,
+            fileName,
+            controlledAgentFiles
+        );
+
+        specializedFrontmatter.specialization_revision = 2;
+
+        writeFile(
+            materializedPath,
             renderFrontmatter(specializedFrontmatter) + normalizedBody
         );
     }
@@ -2459,6 +2558,25 @@ function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFi
     const configTemplatePath = getCodexConfigTemplatePath(skillRoot);
     const configTemplate = fs.readFileSync(configTemplatePath, "utf8");
     writeFile(path.join(repoRoot, ".codex", "config.toml"), configTemplate);
+}
+
+function rebuildManagedCodexAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const materializedPath = path.join(repoRoot, ".codex", "agents", `${agentName}.toml`);
+
+        if (!fs.existsSync(materializedPath)) {
+            continue;
+        }
+
+        const existingContent = fs.readFileSync(materializedPath, "utf8");
+        assert(
+            existingContent.startsWith("# Sentinel managed artifact: true\n"),
+            `Fixture de update gerenciado Codex recebeu artifact sem header gerenciado: ${materializedPath}`
+        );
+    }
+
+    materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles);
 }
 
 function assertControlledContextMaterialization(repoRoot) {
@@ -3011,6 +3129,10 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "Seguir o padrão do projeto não significa copiar dívida técnica",
         "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
         "a propagação protocol-fixed deve ser validada comparando template/base agent canônico, `reference/agents/*.agent.md` instalado e artifact final materializado do target",
+        "Agents materializados são artifacts gerenciados, não documentos locais autoritativos do contrato Sentinel.",
+        "reconstruir o artifact final a partir do template/base agent canônico atual listado em `reference/MANIFEST.md`",
+        "bump de `base_agent_version`, `specialization_revision`, `model` ou metadata nunca é update suficiente quando o corpo canônico mudou",
+        "nunca entregar artifact híbrido com contrato antigo e contrato novo misturados",
         "REQUIRED_QUALITY_GUARDRAILS",
         "stnl_frontend_quality",
         "stnl_backend_sql_quality",
@@ -3033,6 +3155,9 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "finalizer READY` sem `DONE` yes/no explícito ou sem resync yes/no explícito",
         "todo artifact gerenciado materializa `model`",
         "Consistency without legacy propagation check",
+        "Managed artifact canonical rebuild check",
+        "reviewer` materializado usa somente `PASS` e `FAIL` como status do papel",
+        "update de artifact gerenciado que altera apenas metadata",
         "Stack quality guardrail propagation check",
         "frases sentinela de consistencia presentes no template/base ou reference agent mas ausentes de `developer_instructions` em Codex",
         "compactacao ou normalizacao remove bloco protocol-fixed para caber no limite de 30.000 caracteres",
@@ -3467,6 +3592,121 @@ function assertConsistencyPolicyRepairsLegacyCodexMaterialization(skillRoot, con
     }
 }
 
+function buildLegacyReviewerBody() {
+    return [
+        "# Reviewer Agent",
+        "",
+        "## Mission",
+        "Legacy reviewer body kept from an older managed artifact.",
+        "",
+        "## Status it may emit",
+        "- `READY`",
+        "- `BLOCKED`",
+        "",
+        "This stale body mentions newer `PASS` and `FAIL` language elsewhere, making it a hybrid.",
+        LEGACY_REVIEWER_STATUS_MARKER,
+        "",
+        "## Handoff",
+        "Legacy handoff text.",
+        "",
+        "## Reading contract",
+        "Legacy reading contract.",
+        "",
+        "## Consistency without legacy propagation",
+        "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
+        "",
+        "This policy does not authorize broad refactors.",
+        "",
+    ].join("\n");
+}
+
+function writeLegacyManagedVscodeReviewer(repoRoot) {
+    const frontmatter = {
+        name: "reviewer",
+        description: "Legacy managed reviewer fixture.",
+        target: "vscode",
+        tools: CONTROLLED_AGENT_TOOLSETS["reviewer.agent.md"],
+        model: getControlledModelForAgent("reviewer"),
+        base_agent_version: "2026.5.0",
+        specialization_revision: 1,
+        managed_artifact: true,
+        reading_scope_class: "review-minimal",
+    };
+
+    writeFile(
+        path.join(repoRoot, ".github", "agents", "reviewer.agent.md"),
+        renderFrontmatter(frontmatter) + buildLegacyReviewerBody()
+    );
+}
+
+function writeLegacyManagedCodexReviewer(repoRoot) {
+    writeFile(
+        path.join(repoRoot, ".codex", "agents", "reviewer.toml"),
+        renderCodexAgentToml({
+            name: "reviewer",
+            description: "Legacy managed reviewer fixture.",
+            model: getControlledModelForAgent("reviewer"),
+            model_reasoning_effort: EXPECTED_CODEX_AGENT_REASONING_EFFORT.reviewer,
+            sandbox_mode: EXPECTED_CODEX_AGENT_SANDBOX_MODE.reviewer,
+            developer_instructions: buildLegacyReviewerBody(),
+        }, "legacy-reviewer.toml")
+    );
+}
+
+function assertManagedVscodeUpdateRebuildsLegacyReviewer(skillRoot, controlledAgentFiles) {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-managed-update-vscode-"));
+
+    try {
+        createControlledFixtureRepo(repoRoot);
+        materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles);
+        writeLegacyManagedVscodeReviewer(repoRoot);
+
+        const stalePath = path.join(repoRoot, ".github", "agents", "reviewer.agent.md");
+        assert(
+            fs.readFileSync(stalePath, "utf8").includes(LEGACY_REVIEWER_STATUS_MARKER),
+            "Fixture VS Code deveria começar com reviewer gerenciado legado"
+        );
+
+        rebuildManagedVscodeAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles);
+
+        const rebuiltContent = fs.readFileSync(stalePath, "utf8");
+        const { data: frontmatter } = parseFrontmatter(rebuiltContent, stalePath);
+        assert.equal(frontmatter.base_agent_version, "2026.5.1", "reviewer VS Code não atualizou base_agent_version para 2026.5.1");
+        assert.equal(frontmatter.specialization_revision, 2, "reviewer VS Code gerenciado não incrementou specialization_revision no update");
+        assert(!rebuiltContent.includes(LEGACY_REVIEWER_STATUS_MARKER), "reviewer VS Code preservou corpo legado apos update gerenciado");
+        assertVscodeStatusContracts(repoRoot, controlledAgentFiles);
+        assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertManagedCodexUpdateRebuildsLegacyReviewer(skillRoot, controlledAgentFiles) {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-managed-update-codex-"));
+
+    try {
+        createControlledFixtureRepo(repoRoot);
+        materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles);
+        writeLegacyManagedCodexReviewer(repoRoot);
+
+        const stalePath = path.join(repoRoot, ".codex", "agents", "reviewer.toml");
+        assert(
+            fs.readFileSync(stalePath, "utf8").includes(LEGACY_REVIEWER_STATUS_MARKER),
+            "Fixture Codex deveria começar com reviewer gerenciado legado"
+        );
+
+        rebuildManagedCodexAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles);
+
+        const rebuiltContent = fs.readFileSync(stalePath, "utf8");
+        const parsed = parseToml(rebuiltContent, stalePath);
+        assert(!parsed.developer_instructions.includes(LEGACY_REVIEWER_STATUS_MARKER), "reviewer Codex preservou corpo legado apos update gerenciado");
+        assertCodexStatusContracts(repoRoot, controlledAgentFiles);
+        assertConsistencyPolicyPropagationToCodexAgents(skillRoot, repoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+}
+
 function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFiles) {
     const codexAgentsRoot = path.join(repoRoot, ".codex", "agents");
     const expectedAgentNames = controlledAgentFiles
@@ -3777,6 +4017,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertVscodeStatusContracts(vscodeRepoRoot, controlledAgentFiles);
         assertHeaderAwareReadingInAgentSet(
             path.join(vscodeRepoRoot, ".github", "agents"),
             "vscode materializado"
@@ -3803,6 +4044,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(agentSkillRoot);
         assertConsistencyPolicyRejectsVscodeMaterializationDrift(agentSkillRoot, controlledAgentFiles);
         assertConsistencyPolicyRepairsLegacyVscodeMaterialization(agentSkillRoot, controlledAgentFiles);
+        assertManagedVscodeUpdateRebuildsLegacyReviewer(agentSkillRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(codexRepoRoot);
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
@@ -3811,6 +4053,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexRuntimeConfig(codexRepoRoot);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertCodexStatusContracts(codexRepoRoot, controlledAgentFiles);
         assertHeaderAwareReadingInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound2OperationalAxesInCodexAgents(codexRepoRoot, controlledAgentFiles);
@@ -3819,6 +4062,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertConsistencyPolicyPropagationToCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyRejectsCodexMaterializationDrift(agentSkillRoot, controlledAgentFiles);
         assertConsistencyPolicyRepairsLegacyCodexMaterialization(agentSkillRoot, controlledAgentFiles);
+        assertManagedCodexUpdateRebuildsLegacyReviewer(agentSkillRoot, controlledAgentFiles);
     } finally {
         fs.rmSync(vscodeRepoRoot, { recursive: true, force: true });
         fs.rmSync(backendOnlyRepoRoot, { recursive: true, force: true });

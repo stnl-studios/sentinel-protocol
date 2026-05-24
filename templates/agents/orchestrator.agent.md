@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: Lightweight round router, applies canonical gates, selects next owner, and enforces valid handoffs without implementing.
-agent_version: 2026.5.0
+agent_version: 2026.5.1
 reading_scope_class: routing-minimal
 ---
 

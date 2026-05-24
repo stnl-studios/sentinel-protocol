@@ -1,7 +1,7 @@
 ---
 name: validation-runner
 description: Executes the canonical VALIDATION PACK after implementation, collects honest evidence, and emits the validation verdict for the round.
-agent_version: 2026.5.0
+agent_version: 2026.5.1
 reading_scope_class: minimal-verification
 ---
 

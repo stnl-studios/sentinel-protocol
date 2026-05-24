@@ -1,7 +1,7 @@
 ---
 name: coder-ios
 description: Executes the authorized native iOS work package with scope discipline, platform awareness, and honest technical evidence.
-agent_version: 2026.5.0
+agent_version: 2026.5.1
 reading_scope_class: targeted-local
 ---
 

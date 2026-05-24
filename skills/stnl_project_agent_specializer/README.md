@@ -47,6 +47,8 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - não tratar `tools`, `agents`, `base_agent_version`, `specialization_revision` ou `managed_artifact` como campos obrigatórios nativos de `codex`
 - não serializar `tools` no TOML controlado de `codex`; usar `sandbox_mode` para hardening runtime e `developer_instructions` para preservar a política semântica de tools
 - tratar o specialized final como shape normalizado e remover legado residual por default durante create e update
+- tratar artifacts com `managed_artifact: true` ou marca gerenciada equivalente como artifacts reconstruiveis: update parte do template/base agent canônico atual, preservando somente slots locais explicitamente permitidos
+- nunca corrigir agent gerenciado por patch parcial do corpo antigo; isso pode gerar artifact hibrido entre contratos antigos e novos
 - não perpetuar `## Tools` no corpo nem `agent_version` no frontmatter sem ordem humana explícita
 - manter `model` como campo operacional obrigatório em todo agent materializado
 - manter `model_policy` como override avançado opcional; ausência de `model_policy` não deve exigir matriz longa nos prompts de uso diário

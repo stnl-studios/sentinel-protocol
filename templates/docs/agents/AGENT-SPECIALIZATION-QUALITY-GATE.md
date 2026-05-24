@@ -96,6 +96,25 @@ Verificar:
 - existencia de `chat budget` explicito quando o papel tiver superficie curta relevante
 - retorno default compacto preservado em todos os agents materializados, sem artifacts completos, SPEC, checklist, logs ou diffs despejados no chat por default
 
+### 1b. Managed artifact canonical rebuild check
+Verificar:
+- qualquer artifact existente com `managed_artifact: true` ou marca gerenciada equivalente foi reconstruido a partir do template/base agent canonico atual, nao remendado em cima do corpo antigo
+- `base_agent_version` do artifact VS Code/GitHub reflete o `agent_version` atual do base agent correspondente
+- protocol-fixed sections do template/base agent atual vencem o corpo antigo materializado
+- customizacao local preservada aparece somente em slot explicitamente permitido, como `## Project specialization`, ou em `Local Notes` compactas no `AGENTS.md` Codex
+- edicao manual fora de slot permitido foi sobrescrita com reporte de drift descartado ou bloqueada quando a autoria/gerenciamento ficou ambiguo
+- o artifact final nao mistura status, gates, handoffs, headings ou compact return contract de versoes diferentes
+- `reviewer` materializado usa somente `PASS` e `FAIL` como status do papel; `READY` ou `BLOCKED` nao podem sobreviver como status do reviewer
+- coders materializados continuam usando `READY` e `BLOCKED`
+- `validation-runner` materializado continua usando `PASS`, `PARTIAL`, `FAIL` e `BLOCKED`
+
+Hard fails:
+- update de artifact gerenciado que altera apenas metadata, `base_agent_version`, `specialization_revision` ou modelo enquanto preserva corpo operacional antigo
+- artifact gerenciado hibrido contendo contrato antigo e contrato novo misturados
+- `reviewer` gerenciado com `READY` ou `BLOCKED` como status proprio
+- customizacao local fora de slot permitido preservada silenciosamente
+- artifact gerenciado atualizado a partir de copia fora do bundle instalado da skill ou fora dos paths listados em `reference/MANIFEST.md`
+
 ### 2. Role-class integrity check
 Verificar:
 - o agent especializado respeita a role class canonica do base correspondente

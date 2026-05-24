@@ -36,7 +36,7 @@ Exemplo conceitual:
 ---
 name: Orchestrator
 description: ...
-agent_version: 2026.5.0
+agent_version: 2026.5.1
 reading_scope_class: routing-minimal
 ---
 ```
@@ -247,6 +247,7 @@ Regras:
 - `specialization_revision` versiona apenas a materializacao especializada daquele projeto
 - `specialization_revision` comeca em `1`
 - `managed_artifact: true` identifica artifact gerenciado pela futura skill
+- `managed_artifact: true` autoriza overwrite seguro e exige update por reconstrucao a partir do base agent canonico atual, nao patch parcial do corpo antigo
 - `model` identifica o modelo operacional materializado; texto no corpo do agent nao substitui esse campo
 - `.agent.md` de VS Code/GitHub nao deve serializar `reasoning_effort`, `thinking_effort`, `model_reasoning_effort` ou equivalente no frontmatter
 - `.agent.md` gerenciado para VS Code/GitHub deve respeitar o limite de 30.000 caracteres do prompt Markdown do agent
@@ -259,7 +260,7 @@ Exemplo conceitual:
 ---
 name: Orchestrator
 description: ...
-base_agent_version: 2026.5.0
+base_agent_version: 2026.5.1
 specialization_revision: 1
 managed_artifact: true
 ---
@@ -320,3 +321,8 @@ Eles nao substituem o corpo contratual dos agents ou as docs canonicas.
 - a especializacao por projeto muda conteudo, nao muda o nome fisico do arquivo
 - todo agent especializado preserva o contrato canonico do agent base correspondente
 - todo agent do Sentinel e um agent base que pode ser especializado por projeto sem renomeacao fisica
+- artifacts gerenciados devem ser reconstruidos a partir do template/base agent canonico atual em cada update relevante
+- protocol-fixed sections, status, gates, role class, handoffs e compact return contract do base agent atual vencem qualquer corpo antigo materializado
+- customizacao local so pode sobreviver em slot explicitamente permitido, como `## Project specialization` ou `Local Notes` compactas de `AGENTS.md`; fora desses slots, artifact gerenciado pode ser sobrescrito e o drift deve ser reportado, ou bloqueado quando a autoria for ambigua
+- update que apenas muda metadata ou versao sem atualizar o corpo operacional nao satisfaz o contrato de artifact gerenciado
+- artifact hibrido, combinando status ou blocos antigos com contrato novo, e invalido

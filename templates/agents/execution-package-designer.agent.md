@@ -1,7 +1,7 @@
 ---
 name: execution-package-designer
 description: Compiles the canonical EXECUTION PACKAGE from the EXECUTION BRIEF and VALIDATION PACK so specialist coders can execute bounded work without re-planning.
-agent_version: 2026.5.0
+agent_version: 2026.5.1
 reading_scope_class: targeted-local
 ---
 
