@@ -41,9 +41,8 @@ Revisão humana é obrigatória. O smoke valida estrutura e wiring; ele não pro
 ![Sentinel — Fluxo Recomendado de Uso](assets/sentinel-flow.png)
 
 > Guia visual do fluxo recomendado.  
-> A fonte de verdade continua sendo os templates, skills e documentação versionada do projeto.
->
->
+> O PNG é visão macro; a fonte de verdade é o contrato textual versionado em templates, skills e documentação do projeto.
+
 Para repo existente:
 
 1. `stnl_project_context`
