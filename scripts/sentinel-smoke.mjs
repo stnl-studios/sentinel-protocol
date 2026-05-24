@@ -242,6 +242,14 @@ const SPEC_TEMPLATE_HEADER_SPECS = [
         ],
     },
     {
+        relativePath: "session_summary.md",
+        requiredSnippets: [
+            "Append-only working log of SPEC maturation sessions",
+            "do_not_use_for: Canonical final scope, accepted behavior, execution plans, file paths, commands, validation proof, or closure evidence.",
+            "canonical_source_for: Session-by-session working history",
+        ],
+    },
+    {
         relativePath: "qa_checklist.md",
         requiredSnippets: [
             "Working checklist for SPEC quality",
@@ -847,7 +855,7 @@ function assertSpecManagerContract() {
         "`handoff_notes_for_planner` gives short planner-facing notes without choosing an agent or calling orchestrator",
         "must not generate an execution plan, work packages, final owned paths, final commands, or a final validation pack",
         "informs planning, does not authorize execution",
-        "Generated SPEC files include a `File Purpose Header`",
+        "Generated SPEC files in the required bundle, including `session_summary.md`, include a `File Purpose Header`",
         "The header includes `token_policy`, but it does not replace canonical content",
         "Older projects without `File Purpose Header` remain compatible; absence of the header in legacy material is not an error.",
         "Closed SPECs remain compact",
@@ -2870,7 +2878,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "Do not invoke unrelated guardrails by reflex",
         "return exactly one formal `CORRECTION PACK` block to `orchestrator.agent.md`",
         "The block heading must be exactly `CORRECTION PACK`",
-        "When emitting `CORRECTION PACK`, do not emit `READY` or `BLOCKED` in the same handoff",
+        "When emitting `CORRECTION PACK`, do not emit `PASS` or `FAIL` in the same handoff",
         "material structural risk",
     ], "reviewer stack quality guardrail review");
 

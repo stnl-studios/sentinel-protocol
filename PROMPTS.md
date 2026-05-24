@@ -15,6 +15,7 @@ Use este arquivo para escolher o launcher correto do Sentinel. Os templates conc
 | Gerar agents de procedure SQL para VS Code | `stnl_project_agent_specializer` | `agents-vscode-sql-procedure.md` |
 | Criar uma SPEC | `stnl_spec_manager` | `spec-new.md` |
 | Retomar uma SPEC | `stnl_spec_manager` | `spec-resume.md` |
+| Enriquecer a Planning Interface de uma SPEC ativa | `stnl_spec_manager` | `spec-planning-interface.md` |
 | Fechar uma SPEC | `stnl_spec_manager` | `spec-close.md` |
 | Iniciar execução de SPEC | `orchestrator` | `orchestrator-init.md` |
 | Iniciar execução automática de SPEC até teste humano ou bloqueio | `orchestrator` | `orchestrator-auto-spec.md` |
@@ -41,6 +42,7 @@ Arquivos atuais:
 - `orchestrator-slice.md`
 - `spec-close.md`
 - `spec-new.md`
+- `spec-planning-interface.md`
 - `spec-resume.md`
 
 Estes arquivos são launchers humanos de copy/paste, não um runtime automático.

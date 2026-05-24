@@ -6,7 +6,7 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 
 ## Notas para mantenedores
 - manter a skill como produtora de SPEC e artefatos consumíveis, sem condução de fluxo
-- tratar `reference/templates/feature_spec.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md` e `session_summary.md` como bundle canônico obrigatório em criação nova ou fork legítimo
+- tratar `reference/templates/feature_spec.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `spec_slices.md` e `session_summary.md` como bundle canônico obrigatório em criação nova ou fork legítimo
 - manter `feature_spec.md` como artefato canônico principal da SPEC final, não como relatório de análise nem pré-plano técnico
 - manter `feature_spec.md` focado em problema, objetivo, escopo, fora de escopo, fluxos, regras, aceite, riscos relevantes, decisões finais consolidadas, lifecycle / closure e lacunas remanescentes apenas quando realmente existirem
 - manter `allow_implicit_invocation: false`

@@ -26,7 +26,7 @@ Sentinel é para mantenedores que querem uma estrutura leve para:
 - mapear contexto de projeto antes da execução;
 - criar ou retomar SPECs rastreáveis;
 - materializar agents específicos por projeto a partir de templates base;
-- conduzir implementação por um fluxo controlado pelo boundary de `orchestrator`; no target Codex, a sessão principal aplica esse boundary e spawna os owners especialistas diretamente.
+- conduzir implementação por um fluxo controlado por `orchestrator`; no target Codex, o roteamento é parent-mediated por `ROUTE_PACKET`, depende de autorização explícita para subagent nativo e respeita profundidade máxima controlada.
 
 Ele é útil quando o trabalho assistido por IA precisa de limites mais claros que prompts avulsos, mas ainda depende de julgamento humano.
 
@@ -49,14 +49,14 @@ Para repo existente:
 1. `stnl_project_context`
 2. `stnl_project_agent_specializer`
 3. `stnl_spec_manager`
-4. `orchestrator` ou, no target Codex, a sessão principal aplicando o boundary de `orchestrator`
+4. `orchestrator`; no target Codex, a sessão parent medeia `ROUTE_PACKET` com autorização explícita e max depth controlado
 
 Para projeto novo ou greenfield:
 
 1. `stnl_project_foundation`
 2. `stnl_project_agent_specializer`
 3. `stnl_spec_manager`
-4. `orchestrator` ou, no target Codex, a sessão principal aplicando o boundary de `orchestrator`
+4. `orchestrator`; no target Codex, a sessão parent medeia `ROUTE_PACKET` com autorização explícita e max depth controlado
 
 Targets suportados para materialização de agents:
 

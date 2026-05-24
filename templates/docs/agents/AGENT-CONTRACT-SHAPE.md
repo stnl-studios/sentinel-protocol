@@ -121,6 +121,8 @@ Formato default:
 - `BLOCKER: <only if real blocker>`
 - `NOTES: <max 3 short bullets>`
 
+O formato default vale quando a role class nao declara override proprio. `semantic-review` usa o shape especifico `PASS/FAIL` abaixo, sem converter o reviewer para `DONE/BLOCKED`.
+
 Regras:
 - return only the minimum needed for the parent to decide the next gate
 - Do not repeat the full Sentinel contract

@@ -1,5 +1,16 @@
 # Session Summary
 
+## File Purpose Header
+- purpose: Append-only working log of SPEC maturation sessions while the SPEC is active.
+- read_when: Session history, maturity deltas, changed questions, assumptions, decisions, or next recommended questions need to be checked.
+- do_not_use_for: Canonical final scope, accepted behavior, execution plans, file paths, commands, validation proof, or closure evidence.
+- canonical_source_for: Session-by-session working history, maturity deltas, changed artifacts, and remaining session-level follow-up candidates.
+- canonical_source_not_for: Final product decisions, accepted behavior, implementation sequencing, validation commands, or final closure summary.
+- update_owner: `stnl_spec_manager` while the SPEC is active.
+- downstream_consumers: `stnl_spec_manager`, `planner`, `orchestrator`, `reviewer`, `finalizer`.
+- token_policy: Read only the latest session block first; open older sessions only when lineage, regression, or changed decision history is relevant.
+- related_files: `feature_spec.md`, `spec_slices.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`.
+
 > Append-only log. Add a new session block for each working round. Do not rewrite old sessions except to correct a factual mistake explicitly.
 
 ## Session 1
