@@ -23,7 +23,9 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter artefatos finais compactos, com referência por ID em vez de repetição longa
 - usar somente exemplos sintéticos e genéricos; nunca usar contexto privado, cliente real, projeto real ou feature real
 - manter a taxonomia `FACT / DERIVED / ASSUMPTION / OPEN_QUESTION / DECISION` operacional e visível
-- manter apenas `MODE=RESUME` e `MODE=CLOSE` como modos públicos explícitos
+- manter apenas `MODE=RESUME`, `MODE=PLANNING_INTERFACE` e `MODE=CLOSE` como modos públicos explícitos
+- manter explícito que `MODE=NEW` não existe como modo público; criação nova é inferida internamente quando não há modo público explícito e não há colisão de lineage
+- manter `MODE=PLANNING_INTERFACE` como enriquecimento de SPEC ativa existente, focado principalmente em `spec_slices.md`, nunca como plano de execução
 - não criar `MODE=DESIGN_FIRST`, `MODE=QUICK_PLAN`, Quick Plan, Design First, `tasks.md`, `design.md` ou estrutura Kiro-style `requirements/design/tasks`
 - manter `FORK_NEW_SPEC`, `SUPERSEDE_EXISTING_SPEC` e `RESUME_EXISTING_SPEC` apenas como tokens de decisão humana de lineage em colisão, nunca como modos públicos ou interface paralela a `MODE=*`
 - manter ausência de `MODE=RESUME` como proibição de retomada implícita da mesma linhagem
@@ -60,6 +62,7 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - nunca permitir que a skill toque `memory.md` ou aja como closure/finalizer operacional
 - evitar overlap com `planner`, `orchestrator`, `finalizer`, `validation-runner`, artifacts legados de closure ou bootstrap de `docs/**`
 - manter SPEC e `spec_slices.md` livres de plano de edição de arquivos, comandos, `OWNED_PATHS`, edit anchors, work packages, tarefas passo a passo de implementação, sequencing técnico, plano executável de validação e closure pós-execução
+- manter o fluxo documentado como `new SPEC creation -> PLANNING_INTERFACE -> orchestrator` ou `new SPEC creation -> RESUME -> PLANNING_INTERFACE -> orchestrator`, sempre com `PLANNING_INTERFACE` como etapa de enriquecimento da SPEC, não execução
 
 ## `spec_slices.md` e `SL-001`
 `spec_slices.md` é obrigatório em toda SPEC ativa e funciona como mapa canônico de consumo da SPEC. Ele não é apenas um arquivo para split multi-slice.
@@ -72,12 +75,34 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - IDs de slice devem ser canônicos, sequenciais e zero-padded: `SL-001`, `SL-002`, `SL-003`
 
 ## Planning Interface
-`Planning Interface` vive em `spec_slices.md` como ponte mínima entre SPEC e planner. Ela informa planejamento posterior, mas não autoriza execução e não substitui `planner`, `execution-package-designer`, `validation-eval-designer` ou `finalizer`.
+`Planning Interface` vive em `spec_slices.md` como ponte entre SPEC e planner. Ela pode ser enriquecida por `MODE=PLANNING_INTERFACE`, informa planejamento posterior, mas não autoriza execução e não substitui `planner`, `execution-package-designer`, `validation-eval-designer` ou `finalizer`.
 
 - estados permitidos: `deferred`, `partial`, `active`, `blocked`
 - estado inicial seguro: `deferred`, quando readiness ainda não está estável
 - manter `deferred` ou `blocked` quando houver pergunta bloqueante, assumption material não confirmada, ambiguidade, edge case pesado não resolvido, conflito de escopo/decisão ou decisão ausente de produto, auth, schema, API, contrato ou arquitetura
-- não registrar plano técnico, comandos, work packages, caminhos de ownership ou validação executável na interface
+- enriquecer a interface com `planning_intent`, `planning_inputs_required`, `planning_focus`, `likely_implementation_surfaces`, `validation_focus`, `anti_drift_constraints` e `handoff_notes_for_planner`
+- enriquecer cada slice com `planning_notes`, `implementation_surface_hints`, `validation_hints`, `risks_for_planner` e `downstream_handoff_expectations`
+- `planning_intent` registra intenção de consumo posterior, sem plano
+- `planning_inputs_required` registra inputs confirmados ainda necessários para planejar com precisão, não tarefas
+- `planning_focus` registra áreas de atenção para o planner, sem sequência técnica
+- `likely_implementation_surfaces` registra hints semânticos, nunca paths finais, owned paths ou autorização de ownership
+- `validation_focus` registra foco de validação/aceite, nunca comandos ou validation pack final
+- `anti_drift_constraints` registra decisões, constraints ou regras que o planner não pode violar
+- `handoff_notes_for_planner` registra notas curtas para consumo do planner, sem escolher agente nem chamar `orchestrator`
+- por slice, `planning_notes`, `implementation_surface_hints`, `validation_hints`, `risks_for_planner` e `downstream_handoff_expectations` devem preservar fronteiras, hints e riscos sem montar execution package
+- não registrar plano técnico, execution plan, comandos finais, work packages, owned paths finais, caminhos de ownership ou validation pack final na interface
+
+Mini exemplo sintético bom:
+- `likely_implementation_surfaces`: `account settings UI`, `user preference persistence`, `notification delivery policy`
+- `validation_focus`: aceite sobre preferência salva e respeito ao opt-in, sem comandos
+- `anti_drift_constraints`: preservar `D-001` e `C-001`
+- `handoff_notes_for_planner`: considerar a fronteira entre configuração do usuário e política de envio
+
+Mini exemplo sintético ruim:
+- `likely_implementation_surfaces`: `src/settings/page.tsx`, `OWNED_PATHS: src/settings/**`
+- `validation_focus`: executar `npm test -- settings` e entregar validation pack final
+- `handoff_notes_for_planner`: chamar `orchestrator`, escolher agente e executar UI antes de API
+- problema: contém paths finais, ownership, comandos, work packages, sequência técnica e roteamento automático
 
 ## File Purpose Header
 Arquivos gerados de SPEC passam a incluir `File Purpose Header` para reduzir leitura/token e ajudar agentes a abrir o arquivo correto.
@@ -105,4 +130,4 @@ Condicionais:
 Os templates permanecem em en-US para consistência com o restante do kit documental do repo.
 
 ## Referência estrutural
-`feature_spec.md` é o artefato canônico principal da SPEC final, mas não substitui o bundle canônico obrigatório em criação nova ou fork legítimo. SPEC ativa mantém bundle auxiliar, incluindo `spec_slices.md`; SPEC fechada continua compacta. Em fechamento canônico com `closed` ou `closed_with_residuals`, o bundle auxiliar morre e a pasta da SPEC deve ficar somente com `feature_spec.md`, salvo entradas ignoradas de sistema. `spec_slices.md` não deve permanecer no bundle fechado. Ausência de `MODE=RESUME` implica não-retomada. SPEC correlata nunca pode ser reutilizada automaticamente. `stnl_spec_manager` não toca `memory.md` nem assume papel de closure/finalizer. O novo comportamento vale para novas SPECs ativas e retomadas/forks legítimos conforme o contrato da skill, sem introduzir novo modo público.
+`feature_spec.md` é o artefato canônico principal da SPEC final, mas não substitui o bundle canônico obrigatório em criação nova ou fork legítimo. SPEC ativa mantém bundle auxiliar, incluindo `spec_slices.md`; SPEC fechada continua compacta. Em fechamento canônico com `closed` ou `closed_with_residuals`, o bundle auxiliar morre e a pasta da SPEC deve ficar somente com `feature_spec.md`, salvo entradas ignoradas de sistema. `spec_slices.md` não deve permanecer no bundle fechado. Ausência de `MODE=RESUME` implica não-retomada. SPEC correlata nunca pode ser reutilizada automaticamente. `MODE=PLANNING_INTERFACE` só enriquece SPEC ativa existente para consumo posterior. `stnl_spec_manager` não toca `memory.md` nem assume papel de closure/finalizer. O novo comportamento vale para novas SPECs ativas e retomadas/forks legítimos conforme o contrato da skill, sem criar execução, work packages ou validation pack final.

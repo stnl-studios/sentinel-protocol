@@ -729,6 +729,7 @@ function assertReferenceManifests() {
 function assertSpecManagerContract() {
     const specManagerRoot = path.join(SOURCE_DIR, "stnl_spec_manager");
     const skillContent = fs.readFileSync(path.join(specManagerRoot, "SKILL.md"), "utf8");
+    const specManagerReadmeContent = fs.readFileSync(path.join(specManagerRoot, "README.md"), "utf8");
     const manifestContent = fs.readFileSync(path.join(specManagerRoot, "reference", "MANIFEST.md"), "utf8");
     const specSlicesContent = fs.readFileSync(
         path.join(specManagerRoot, "reference", "templates", "spec_slices.md"),
@@ -758,6 +759,15 @@ function assertSpecManagerContract() {
         path.join(ROOT, "templates", "prompts", "spec-close.md"),
         "utf8"
     );
+    const specPlanningInterfacePromptPath = path.join(ROOT, "templates", "prompts", "spec-planning-interface.md");
+    const specPlanningInterfacePromptContent = fs.readFileSync(
+        specPlanningInterfacePromptPath,
+        "utf8"
+    );
+    const promptReadmeContent = fs.readFileSync(
+        path.join(ROOT, "templates", "prompts", "README.md"),
+        "utf8"
+    );
     const orchestratorSliceContent = fs.readFileSync(
         path.join(ROOT, "templates", "prompts", "orchestrator-slice.md"),
         "utf8"
@@ -780,14 +790,45 @@ function assertSpecManagerContract() {
         "toda SPEC ativa deve ter ao menos `SL-001`",
         "`SL-001` existe mesmo em SPEC de slice único",
         "`spec_slices.md` pode informar planejamento posterior, mas não autoriza execução",
-        "`Planning Interface` é permitido dentro de `spec_slices.md`, mas deve ser mínimo, atrasado e não operacional.",
+        "`Planning Interface` vive dentro de `spec_slices.md`. Ela pode ser enriquecida por `MODE=PLANNING_INTERFACE`, mas continua atrasada, não operacional e subordinada à SPEC ativa.",
+        "## MODE=PLANNING_INTERFACE",
+        "`MODE=PLANNING_INTERFACE`",
+        "`PLANNING_INTERFACE` é etapa de enriquecimento da SPEC ativa, não etapa de execução",
+        "`MODE=NEW` não existe como modo público",
+        "`new SPEC creation -> PLANNING_INTERFACE -> orchestrator`",
+        "`new SPEC creation -> RESUME -> PLANNING_INTERFACE -> orchestrator`",
+        "atualizar principalmente `spec_slices.md`",
+        "não criar execution plan",
+        "não criar work packages",
+        "não definir owned paths finais",
+        "não definir comandos finais",
+        "não criar validation pack final",
         "`Planning Interface` informa o planejamento, mas não autoriza execução",
-        "manter `Planning Interface` presente, mínima e em estado `deferred`",
+        "manter `Planning Interface` presente e em estado `deferred`",
         "`Planning Interface` não define:",
         "arquivos a editar",
         "`OWNED_PATHS`",
         "work packages",
         "plano de validação executável",
+        "`planning_intent`",
+        "`planning_inputs_required`",
+        "`planning_focus`",
+        "`likely_implementation_surfaces`",
+        "nunca paths finais, owned paths, package boundaries, edit anchors ou autorização de ownership",
+        "`validation_focus`",
+        "nunca comandos, suites finais, scripts, validation pack final ou matriz executável",
+        "`anti_drift_constraints`",
+        "`handoff_notes_for_planner`",
+        "não escolher agente, não chamar `orchestrator`, não rotear automaticamente",
+        "`planning_notes`",
+        "`implementation_surface_hints`",
+        "`validation_hints`",
+        "`risks_for_planner`",
+        "`downstream_handoff_expectations`",
+        "não montar execution package, work package ou instrução de chamada",
+        "`ARTIFACTS UPDATED`",
+        "`PLANNING_INTERFACE STATUS`",
+        "`NEXT STEP`",
         "a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes",
         "SPEC fechada continua compacta e não retém `spec_slices.md` depois do close flow canônico",
     ], "stnl_spec_manager/SKILL.md planning interface and active SPEC bundle contract");
@@ -795,8 +836,15 @@ function assertSpecManagerContract() {
     assertContentIncludesAll(manifestContent, [
         "`spec_slices.md` is mandatory for every active SPEC. It is the canonical consumption map for the active SPEC, not only a split file.",
         "Single-slice SPECs still have `spec_slices.md` and `SL-001`",
-        "`Planning Interface` lives in `spec_slices.md` as a minimal bridge from SPEC to later planning.",
-        "It informs planning, does not authorize execution",
+        "`Planning Interface` lives in `spec_slices.md` as a bridge from SPEC to later planning.",
+        "It may be enriched through `MODE=PLANNING_INTERFACE`",
+        "`MODE=PLANNING_INTERFACE` acts only on an existing active SPEC",
+        "Public modes are only `MODE=RESUME`, `MODE=PLANNING_INTERFACE`, and `MODE=CLOSE`; `MODE=NEW` is not a public mode.",
+        "`likely_implementation_surfaces` uses semantic hints, never final paths, owned paths, or ownership authorization",
+        "`validation_focus` names acceptance or validation focus, never commands or a final validation pack",
+        "`handoff_notes_for_planner` gives short planner-facing notes without choosing an agent or calling orchestrator",
+        "must not generate an execution plan, work packages, final owned paths, final commands, or a final validation pack",
+        "informs planning, does not authorize execution",
         "Generated SPEC files include a `File Purpose Header`",
         "The header includes `token_policy`, but it does not replace canonical content",
         "Older projects without `File Purpose Header` remain compatible; absence of the header in legacy material is not an error.",
@@ -873,12 +921,25 @@ function assertSpecManagerContract() {
         "Planning constraints must not be generated before readiness is stable.",
         "do_not_use_for: Execution authorization, execution plans, file paths, commands, work packages, validation packs, or closure decisions.",
         "does_not_authorize: execution",
+        "planning_intent:",
+        "planning_inputs_required:",
+        "planning_focus:",
+        "likely_implementation_surfaces:",
+        "never final path, owned path, package boundary, edit anchor, or ownership authorization",
+        "validation_focus:",
+        "never command, script, suite list, executable matrix, or final validation pack",
+        "anti_drift_constraints:",
+        "handoff_notes_for_planner:",
+        "do not choose an agent, call orchestrator, route automatically",
         "does_not_define:",
         "execution plan",
         "file paths",
         "commands",
         "work packages",
         "owned paths",
+        "final owned paths",
+        "final commands",
+        "final validation pack",
         "does_not_replace:",
         "`planner`",
         "`execution-package-designer`",
@@ -889,6 +950,14 @@ function assertSpecManagerContract() {
         "### SL-001 — Pending approved consumption boundary",
         "id: SL-001",
         "planning_status: blocked_for_planning",
+        "planning_notes:",
+        "implementation_surface_hints:",
+        "not final paths, owned paths, mandatory modules, or ownership authorization",
+        "validation_hints:",
+        "not commands, scripts, suites, or final validation pack",
+        "risks_for_planner:",
+        "downstream_handoff_expectations:",
+        "do not assemble an execution package, work package, or agent call",
         "can_be_planned_independently: no",
         "parallelization_hint: unknown",
     ], "spec_slices.md active SPEC consumption map contract");
@@ -957,6 +1026,59 @@ function assertSpecManagerContract() {
         specClosePromptContent,
         CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS,
         "spec-close.md closed SPEC evidence contract"
+    );
+
+    assert(fs.existsSync(specPlanningInterfacePromptPath), "spec-planning-interface.md deve existir");
+
+    assertContentIncludesAll(promptReadmeContent, [
+        "spec-planning-interface.md",
+        "Modos públicos explícitos de SPEC são somente `MODE=RESUME`, `MODE=PLANNING_INTERFACE` e `MODE=CLOSE`; `MODE=NEW` não existe como modo público.",
+        "`new SPEC creation -> PLANNING_INTERFACE -> orchestrator`",
+        "`new SPEC creation -> RESUME -> PLANNING_INTERFACE -> orchestrator`",
+        "`PLANNING_INTERFACE` é etapa de enriquecimento da SPEC ativa, não etapa de execução",
+    ], "templates/prompts/README.md planning interface launcher contract");
+
+    assertContentIncludesAll(specPlanningInterfacePromptContent, [
+        "MODE=PLANNING_INTERFACE",
+        "SPEC alvo obrigatório e explícito:",
+        "atualizar principalmente `spec_slices.md`",
+        "inputs confirmados ainda necessários para planejamento preciso",
+        "superfícies prováveis como hints semânticos, sem paths finais ou owned paths",
+        "foco de validação esperado, sem comandos ou validation pack final",
+        "notas curtas para o planner, sem escolher agente ou chamar orchestrator",
+        "não gerar execution plan",
+        "não criar work packages",
+        "não definir owned paths finais",
+        "não definir comandos finais",
+        "não criar validation pack final",
+    ], "spec-planning-interface.md launcher contract");
+
+    const planningInterfaceContractContent = [
+        skillContent,
+        specManagerReadmeContent,
+        manifestContent,
+        promptReadmeContent,
+        specPlanningInterfacePromptContent,
+        specSlicesContent,
+    ].join("\n");
+
+    assertContentExcludesAll(planningInterfaceContractContent, [
+        "`NEW -> PLANNING_INTERFACE -> orchestrator`",
+        "`NEW -> RESUME -> PLANNING_INTERFACE -> orchestrator`",
+        "Fluxos esperados: `NEW -> PLANNING_INTERFACE -> orchestrator`",
+        "fluxo: `NEW -> PLANNING_INTERFACE -> orchestrator`",
+        "fluxo: `NEW -> RESUME -> PLANNING_INTERFACE -> orchestrator`",
+        "## MODE=NEW",
+    ], "Planning Interface public mode hardening contract");
+
+    assert(
+        !/modos expl[ií]citos suportados:[^\n]*MODE=NEW/.test(planningInterfaceContractContent),
+        "Planning Interface não deve documentar MODE=NEW como modo público suportado"
+    );
+
+    assert(
+        !/public modes are[^\n]*MODE=NEW[^\n]*(supported|allowed)/i.test(planningInterfaceContractContent),
+        "Planning Interface não deve declarar MODE=NEW como public mode suportado"
     );
 
     assertContentIncludesAll(openQuestionsContent, [

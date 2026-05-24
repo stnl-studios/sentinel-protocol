@@ -35,12 +35,28 @@
 - activation_condition: SPEC reaches Structured or Execution Ready with no blocking question that affects slice boundaries.
 - informs: Later planning consumption only.
 - does_not_authorize: execution
+- planning_intent: [Later planning consumption intent; describe what the planner needs to understand about the SPEC, without a plan, package, or sequence; pending until stable]
+- planning_inputs_required:
+  - [Confirmed input still needed before downstream planning can be precise; decision, evidence, or answer needed, not a task]
+- planning_focus:
+  - [Attention area for the planner, without technical sequence, file edit order, or execution decomposition]
+- likely_implementation_surfaces:
+  - [Semantic surface hint only, e.g. user settings UI or notification policy; never final path, owned path, package boundary, edit anchor, or ownership authorization]
+- validation_focus:
+  - [Validation or acceptance focus for later validation design; never command, script, suite list, executable matrix, or final validation pack]
+- anti_drift_constraints:
+  - [Decision ID, constraint ID, or stable rule the planner must preserve]
+- handoff_notes_for_planner:
+  - [Short durable notes for planner consumption; do not choose an agent, call orchestrator, route automatically, build an execution package, or list execution steps]
 - does_not_define:
   - execution plan
   - file paths
   - commands
   - work packages
   - owned paths
+  - final owned paths
+  - final commands
+  - final validation pack
 - does_not_replace:
   - `planner`
   - `execution-package-designer`
@@ -70,5 +86,15 @@
 - must_not_infer: []
 - planning_blockers:
   - Waiting for SPEC readiness stabilization.
+- planning_notes:
+  - [Pending boundary and consumption notes for the slice; no step-by-step implementation]
+- implementation_surface_hints:
+  - [Pending semantic surface hints; not final paths, owned paths, mandatory modules, or ownership authorization]
+- validation_hints:
+  - [Pending risks or acceptance hints for later validation; not commands, scripts, suites, or final validation pack]
+- risks_for_planner:
+  - [Pending risks that could affect later planning, including ambiguity, dependency, uncertain sequence, or missing decision]
+- downstream_handoff_expectations:
+  - [Pending expectations for downstream consumption; do not assemble an execution package, work package, or agent call]
 - can_be_planned_independently: no
 - parallelization_hint: unknown

@@ -1,6 +1,6 @@
 ---
 name: stnl_spec_manager
-description: Amadurece uma ideia, bug, pedido ou recorte parcial em uma SPEC confiavel, rastreavel e consumivel por outros agentes, sem conduzir o fluxo. Use quando for preciso consolidar problema, objetivo, escopo, fluxos, criterios de aceite, riscos e decisoes legitimas sem inventar requisitos, preservando `feature_spec.md` como artefato canônico principal dentro de um bundle canônico obrigatório, com retomada explicita somente via `MODE=RESUME` e fechamento limitado ao artefato da SPEC, nunca ao workflow.
+description: Amadurece uma ideia, bug, pedido ou recorte parcial em uma SPEC confiavel, rastreavel e consumivel por outros agentes, sem conduzir o fluxo. Use quando for preciso consolidar problema, objetivo, escopo, fluxos, criterios de aceite, riscos e decisoes legitimas sem inventar requisitos, preservando `feature_spec.md` como artefato canônico principal dentro de um bundle canônico obrigatório, com retomada explicita via `MODE=RESUME`, enriquecimento de Planning Interface via `MODE=PLANNING_INTERFACE` e fechamento limitado ao artefato da SPEC, nunca ao workflow.
 ---
 
 # STNL Spec Manager
@@ -33,8 +33,9 @@ Esta skill materializa artefatos consumíveis e para aí. Ela não conduz o flux
 - para apagar automaticamente artefatos em `docs/SPEC/**` fora do caso estrito permitido em `MODE=CLOSE`
 
 ## Interface pública
-- modos explícitos suportados: `MODE=RESUME`, `MODE=CLOSE`
-- fora `MODE=RESUME` e `MODE=CLOSE`, inferir internamente o estágio de maturidade a partir dos artefatos e do contexto disponível
+- modos explícitos suportados: `MODE=RESUME`, `MODE=PLANNING_INTERFACE`, `MODE=CLOSE`
+- `MODE=NEW` não existe como modo público; criação nova de SPEC é o comportamento inferido quando não há `MODE=RESUME`, `MODE=PLANNING_INTERFACE` ou `MODE=CLOSE` e não existe colisão de lineage
+- fora `MODE=RESUME`, `MODE=PLANNING_INTERFACE` e `MODE=CLOSE`, inferir internamente o estágio de maturidade a partir dos artefatos e do contexto disponível
 - `FORK_NEW_SPEC`, `SUPERSEDE_EXISTING_SPEC` e `RESUME_EXISTING_SPEC` são apenas tokens de decisão humana de lineage em caso de colisão; não são modos públicos nem interface paralela a `MODE=*`
 - não expor modos públicos adicionais como `DISCOVER`, `REFINE`, `HARDEN` ou equivalentes
 - exigir invocação manual explícita; nunca auto-invocar
@@ -422,6 +423,7 @@ Essa regra vale para:
 - criação de nova SPEC
 - refinamento em rodada comum
 - `MODE=RESUME`
+- `MODE=PLANNING_INTERFACE`
 - rebuild ou reconstrução de estado
 - sync/update de artefatos
 - split/slicing
@@ -526,6 +528,63 @@ Sem `MODE=RESUME`:
 - criação nova sem colisão e fork legítimo devem materializar o bundle canônico completo, incluindo `spec_slices.md`
 - não transformar esse comportamento interno em uma interface pública com vários knobs
 
+## MODE=PLANNING_INTERFACE
+Quando `MODE=PLANNING_INTERFACE` estiver presente:
+- exigir SPEC ativa existente e alvo explícito; este modo não cria SPEC nova, não fecha SPEC e não retoma lineage por inferência
+- atuar sobre uma SPEC já criada por fluxo comum ou retomada por `MODE=RESUME`
+- ler primeiro `feature_spec.md`, depois `spec_slices.md` e os auxiliares estritamente necessários para entender readiness, blockers, perguntas abertas, decisões e assumptions que afetam planejamento
+- atualizar principalmente `spec_slices.md`, enriquecendo a seção `Planning Interface` e os campos planning-facing de cada slice existente
+- preservar `feature_spec.md` como contrato canônico principal; não reescrever a SPEC inteira e não transformar este modo em rodada ampla de maturação
+- pode refletir status mínimo em `readiness_report.md` quando necessário para manter coerência de readiness, blockers ou status da Planning Interface
+- registrar em `session_summary.md` apenas delta curto quando a SPEC ativa já usar esse artefato como log append-only
+- não criar novos slices salvo quando a própria SPEC já tiver fronteira funcional confirmada e a ausência do slice impeça a interface de representar consumo honesto; mesmo assim, não transformar slice em pacote executável
+- não promover para `Execution Ready` sem reexecutar o Readiness Gate universal
+
+Fluxos esperados:
+- `new SPEC creation -> PLANNING_INTERFACE -> orchestrator`
+- `new SPEC creation -> RESUME -> PLANNING_INTERFACE -> orchestrator`
+
+Regras:
+- `PLANNING_INTERFACE` é etapa de enriquecimento da SPEC ativa, não etapa de execução
+- `PLANNING_INTERFACE` prepara leitura e roteamento posterior, mas não escolhe o próximo agente e não chama `orchestrator`
+- não substituir `planner`, `execution-package-designer` ou `validation-eval-designer`
+- não criar execution plan
+- não criar work packages
+- não definir owned paths finais
+- não definir comandos finais
+- não criar validation pack final
+- não definir sequência técnica de implementação
+- não definir arquivos a editar, edit anchors ou ownership operacional
+- não usar likely surfaces como autorização de ownership; surfaces são hints semânticos e podem permanecer `pending`
+- se houver blocker material para preencher a interface honestamente, manter `Planning Interface` como `blocked` ou `partial` e nomear os blockers
+
+Campos mínimos em `Planning Interface`:
+- `planning_intent`: intenção de consumo posterior da SPEC pelo planner; declarar o que o planejamento precisa entender, sem plano, sequência, pacote ou decisão operacional
+- `planning_inputs_required`: inputs confirmados ainda necessários para planejar com precisão; registrar decisões, evidências ou respostas faltantes, não tarefas
+- `planning_focus`: áreas de atenção para o planner preservar ao pensar no plano; não registrar sequência técnica, ordem de edição ou decomposição de execução
+- `likely_implementation_surfaces`: hints semânticos de superfície provável, por exemplo "authentication flow" ou "notification settings UI"; nunca paths finais, owned paths, package boundaries, edit anchors ou autorização de ownership
+- `validation_focus`: foco de validação ou aceite que precisará ser coberto depois; nunca comandos, suites finais, scripts, validation pack final ou matriz executável
+- `anti_drift_constraints`: decisões, constraints, IDs canônicos ou regras que o planner não pode violar
+- `handoff_notes_for_planner`: notas curtas e duráveis para consumo do planner; não escolher agente, não chamar `orchestrator`, não rotear automaticamente e não montar execution package
+
+Campos mínimos por slice:
+- `planning_notes`: notas de fronteira, consumo e intenção do slice, sem passo a passo
+- `implementation_surface_hints`: superfícies prováveis em nível semântico; não usar path final, owned path, módulo obrigatório ou autorização de ownership
+- `validation_hints`: riscos, aceites ou observações que depois orientarão validação; não registrar comandos, scripts, suites finais ou validation pack
+- `risks_for_planner`: riscos que podem afetar o plano posterior, inclusive ambiguidade, dependência, sequência incerta ou decisão pendente
+- `downstream_handoff_expectations`: expectativas de consumo por agentes posteriores; não montar execution package, work package ou instrução de chamada
+
+Saída operacional obrigatória para `MODE=PLANNING_INTERFACE`:
+- `STATUS`
+- `SPEC PATH`
+- `ARTIFACTS UPDATED`
+- `PLANNING_INTERFACE STATUS`
+- `BLOCKERS`
+- `SUMMARY`
+- `NEXT STEP`
+
+`NEXT STEP` deve ser uma indicação manual curta, por exemplo "human may ask orchestrator to route this SPEC", nunca roteamento automático nem chamada direta.
+
 ## MODE=CLOSE
 Quando `MODE=CLOSE` estiver presente:
 - exigir SPEC já existente e evidência explícita suficiente para avaliação de fechamento
@@ -589,7 +648,7 @@ Guardrails obrigatórios:
 - cada slice precisa declarar quais itens do `Spec Definition of Done` pretende cobrir
 
 ## Planning Interface em `spec_slices.md`
-`Planning Interface` é permitido dentro de `spec_slices.md`, mas deve ser mínimo, atrasado e não operacional.
+`Planning Interface` vive dentro de `spec_slices.md`. Ela pode ser enriquecida por `MODE=PLANNING_INTERFACE`, mas continua atrasada, não operacional e subordinada à SPEC ativa.
 
 Estados permitidos:
 - `deferred`
@@ -599,11 +658,11 @@ Estados permitidos:
 
 Regras:
 - `Planning Interface` informa o planejamento, mas não autoriza execução
-- manter `Planning Interface` presente, mínima e em estado `deferred` até que a SPEC tenha maturidade suficiente para expor constraints estáveis de planejamento sem antecipar o `planner`
+- manter `Planning Interface` presente e em estado `deferred` até que a SPEC tenha maturidade suficiente para expor constraints estáveis de planejamento sem antecipar o `planner`
 - usar `partial` apenas quando existirem constraints ou dependency hints estáveis, mas ainda houver lacunas não bloqueantes para o mapa de slices
 - usar `active` apenas quando a interface estiver madura o suficiente para consumo posterior sem blockers materiais
 - usar `blocked` quando a interface não puder ser preenchida honestamente sem resolver blocker material
-- o conteúdo permitido é limitado a planning blockers, constraints estáveis para planejamento e dependency hints entre slices
+- o conteúdo permitido é limitado a planning intent, inputs ainda necessários, foco de planejamento, likely implementation surfaces como hints não finais, foco de validação, constraints anti-drift, handoff notes para o planner, planning blockers, constraints estáveis para planejamento e dependency hints entre slices
 
 `Planning Interface` deve permanecer `deferred` ou `blocked` quando houver:
 - pergunta bloqueante aberta que afete planejamento ou fronteira de slice
@@ -614,6 +673,22 @@ Regras:
 - necessidade de decisão de produto não capturada
 - necessidade de decisão de auth, schema, API, contract ou arquitetura não aprovada
 
+Campos mínimos em `Planning Interface`:
+- `planning_intent`: intenção de consumo posterior da SPEC pelo planner; declarar o que o planejamento precisa entender, sem plano, sequência, pacote ou decisão operacional
+- `planning_inputs_required`: inputs confirmados ainda necessários para planejar com precisão; registrar decisões, evidências ou respostas faltantes, não tarefas
+- `planning_focus`: áreas de atenção para o planner preservar ao pensar no plano; não registrar sequência técnica, ordem de edição ou decomposição de execução
+- `likely_implementation_surfaces`: hints semânticos de superfície provável, por exemplo "authentication flow" ou "notification settings UI"; nunca paths finais, owned paths, package boundaries, edit anchors ou autorização de ownership
+- `validation_focus`: foco de validação ou aceite que precisará ser coberto depois; nunca comandos, suites finais, scripts, validation pack final ou matriz executável
+- `anti_drift_constraints`: decisões, constraints, IDs canônicos ou regras que o planner não pode violar
+- `handoff_notes_for_planner`: notas curtas e duráveis para consumo do planner; não escolher agente, não chamar `orchestrator`, não rotear automaticamente e não montar execution package
+
+Campos mínimos por slice:
+- `planning_notes`: notas de fronteira, consumo e intenção do slice, sem passo a passo
+- `implementation_surface_hints`: superfícies prováveis em nível semântico; não usar path final, owned path, módulo obrigatório ou autorização de ownership
+- `validation_hints`: riscos, aceites ou observações que depois orientarão validação; não registrar comandos, scripts, suites finais ou validation pack
+- `risks_for_planner`: riscos que podem afetar o plano posterior, inclusive ambiguidade, dependência, sequência incerta ou decisão pendente
+- `downstream_handoff_expectations`: expectativas de consumo por agentes posteriores; não montar execution package, work package ou instrução de chamada
+
 `Planning Interface` não define:
 - arquivos a editar
 - comandos
@@ -622,6 +697,7 @@ Regras:
 - work packages
 - sequência técnica de implementação
 - plano de validação executável
+- validation pack final
 
 ## Split multi-slice de SPEC grande
 Adicionar `SL-002+` apenas quando a SPEC estiver grande demais para um único recorte consumível saudável.
@@ -688,6 +764,7 @@ Regras:
 - `CURRENT MATURITY` deve refletir estado, força da classificação e qualquer condicionalidade material
 - `OPTIONAL MANUAL HANDOFF PROMPT` deve ser `none` quando houver pergunta bloqueante aberta ou quando o Readiness Gate universal não sustentar execução
 - quando `MODE=CLOSE` for usado, `SUMMARY` deve declarar `closed`, `closed_with_residuals` ou `not_closed` e nunca usar vocabulário de `validation-runner` ou `finalizer`
+- quando `MODE=PLANNING_INTERFACE` for usado, substituir este shape pelo shape próprio do modo: `STATUS`, `SPEC PATH`, `ARTIFACTS UPDATED`, `PLANNING_INTERFACE STATUS`, `BLOCKERS`, `SUMMARY` e `NEXT STEP`
 - em colisão sem `MODE=RESUME`, restringir a resposta a esse shape operacional e usar `QUESTIONS FOR USER` apenas para pedir a escolha de lineage
 
 ## Boundary operacional e linguagem proibida
@@ -726,6 +803,28 @@ Criação nova sem colisão:
 `MODE=RESUME` legítimo:
 - pedido com `MODE=RESUME` apontando continuação da mesma SPEC
 - resultado: reler a linhagem existente, atualizar a mesma SPEC e continuar a maturação sem reabrir perguntas já resolvidas
+
+`MODE=PLANNING_INTERFACE` após criação nova:
+- fluxo: `new SPEC creation -> PLANNING_INTERFACE -> orchestrator`
+- pedido com `MODE=PLANNING_INTERFACE` apontando uma SPEC ativa existente
+- resultado: enriquecer principalmente `spec_slices.md` com campos planning-facing e deixar o próximo passo como indicação manual para o humano pedir roteamento ao `orchestrator`
+
+`MODE=PLANNING_INTERFACE` após retomada:
+- fluxo: `new SPEC creation -> RESUME -> PLANNING_INTERFACE -> orchestrator`
+- pedido com `MODE=RESUME` consolida a SPEC ativa primeiro; rodada posterior com `MODE=PLANNING_INTERFACE` enriquece a interface sem gerar plano de execução
+
+Mini exemplo sintético de `Planning Interface` bom:
+- `planning_intent`: permitir que o planner entenda que a SPEC trata de ajuste de notificação de conta, preservando decisão `D-001` sobre opt-in explícito.
+- `likely_implementation_surfaces`: `notification preferences UI`, `user consent persistence`, `outbound notification policy`.
+- `validation_focus`: confirmar que preferências salvas respeitam opt-in explícito e não enviam notificação quando o usuário desativa o canal.
+- `anti_drift_constraints`: `D-001`, `C-001` e a regra de não alterar consentimento sem ação explícita do usuário.
+- `handoff_notes_for_planner`: considerar a fronteira entre preferência do usuário e política de envio; manter perguntas abertas bloqueantes fora do plano até decisão humana.
+
+Mini exemplo sintético ruim de `Planning Interface`:
+- `likely_implementation_surfaces`: `src/pages/settings/notifications.tsx`, `api/notifications/update.ts`, `OWNED_PATHS: src/pages/settings/**`.
+- `validation_focus`: rodar `npm test -- notification` e entregar `VALIDATION PACK` final com lint, build e browser smoke.
+- `handoff_notes_for_planner`: chamar `orchestrator`, escolher `frontend-coder` e executar primeiro o pacote UI, depois API, depois testes.
+- problema: contém paths finais, ownership, comandos, work packages, sequência técnica e roteamento automático.
 
 Colisão bloqueada:
 - pedido sem `MODE=RESUME`, mas existe SPEC correlata relevante que pode ser confundida com a mesma linhagem
