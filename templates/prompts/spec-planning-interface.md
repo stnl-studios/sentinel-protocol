@@ -19,6 +19,7 @@ Contexto novo para a interface:
 - notas curtas para o planner, sem escolher agente ou chamar orchestrator: [...]
 
 Restrições:
+- se `Planning Interface > does_not_define` já existir em `spec_slices.md`, sincronizar apenas os itens proibidos ausentes do template atual, incluindo `final owned paths`, `final commands` e `final validation pack`.
 - não gerar execution plan.
 - não criar work packages.
 - não definir owned paths finais.

@@ -534,6 +534,7 @@ Quando `MODE=PLANNING_INTERFACE` estiver presente:
 - atuar sobre uma SPEC já criada por fluxo comum ou retomada por `MODE=RESUME`
 - ler primeiro `feature_spec.md`, depois `spec_slices.md` e os auxiliares estritamente necessários para entender readiness, blockers, perguntas abertas, decisões e assumptions que afetam planejamento
 - atualizar principalmente `spec_slices.md`, enriquecendo a seção `Planning Interface` e os campos planning-facing de cada slice existente
+- se `spec_slices.md` já existir com `Planning Interface > does_not_define` incompleto, sincronizar apenas os itens proibidos ausentes do template atual, incluindo `final owned paths`, `final commands` e `final validation pack`, sem reescrever a SPEC inteira
 - preservar `feature_spec.md` como contrato canônico principal; não reescrever a SPEC inteira e não transformar este modo em rodada ampla de maturação
 - pode refletir status mínimo em `readiness_report.md` quando necessário para manter coerência de readiness, blockers ou status da Planning Interface
 - registrar em `session_summary.md` apenas delta curto quando a SPEC ativa já usar esse artefato como log append-only
@@ -695,6 +696,8 @@ Campos mínimos por slice:
 - `OWNED_PATHS`
 - edit anchors
 - work packages
+- owned paths finais
+- comandos finais
 - sequência técnica de implementação
 - plano de validação executável
 - validation pack final
