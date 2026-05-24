@@ -37,6 +37,7 @@ Fluxo alvo:
 
 ## Artefatos do workflow
 - Os artefatos efêmeros do workflow são `EXECUTION BRIEF`, `VALIDATION PACK`, `EXECUTION PACKAGE` e `CORRECTION PACK` quando runner ou reviewer encontram problema corrigível dentro do escopo aprovado.
+- `QA CHECKLIST UPDATE` é handoff compacto do `validation-runner` para o `finalizer` quando validação foi executada ou tentada; ele alimenta `qa_checklist.md` aplicável na SPEC ativa, mas não substitui verdict, closure ou logs completos.
 - As stack quality guardrails ativas são metadados operacionais carregados por esses artefatos; elas não são agents e não substituem planner, package designer, coders, runner, reviewer ou finalizer.
 - `EXECUTION PACKAGE` pertence ao `execution-package-designer`, carrega 1..N work packages executáveis e não substitui o `orchestrator`.
 - `CORRECTION PACK` pertence ao agent que encontrou o problema como evidência de correção solicitada, mas o roteamento, o budget e a decisão de reutilizar ou redesenhar `EXECUTION PACKAGE` pertencem ao `orchestrator`.
@@ -71,6 +72,7 @@ Fluxo alvo:
 - Aceitar evidência parcial explicitamente exige que o `validation-eval-designer` registre no `VALIDATION PACK` a limitação de harness aceita, a prova ainda faltante, a evidência substituta, o risco residual visível e que a escolha foi decisão explícita do DEV antes de qualquer gate normal de execução.
 - Reduzir o cut invalida implicitamente o cut anterior como base de execução; readiness, `EXECUTION PACKAGE` e execution approval derivados do recorte anterior não valem para o novo recorte até existirem novo `EXECUTION BRIEF`, novo `VALIDATION PACK` e novo `EXECUTION PACKAGE`.
 - Sem proof/check mínimo relevante executado com resultado honesto, a rodada não fecha como "done limpo"; a lacuna, falha ou bloqueio precisa aparecer no verdict e no fechamento.
+- Quando validação executada ou tentada tiver evidência suficiente, o runner deve preservar `QA CHECKLIST UPDATE` com check/AC, resultado `passed|failed|blocked|not_run`, tipo, comando ou método compacto e evidência curta. `passed` exige execução ou observação real; inferência, green irrelevante, histórico antigo ou intenção viram `blocked` ou `not_run`.
 
 ## Regra de correction loop
 - Problemas corrigíveis dentro do escopo aprovado devem voltar ao `orchestrator` antes de fechamento terminal como `PARTIAL`, `FAIL`, `BLOCKED` ou entrega parcial honesta.
@@ -102,6 +104,7 @@ Fluxo alvo:
 - `validation-eval-designer` desenha o `VALIDATION PACK`; `execution-package-designer` garante pacote pronto para coder com critérios de qualidade e guardrails aplicáveis; coders implementam sem ampliar escopo.
 - O `reviewer` é owner do review semântico/arquitetural pós-execução quando ele entra na rodada; esse sinal não substitui o ownership de proof do runner.
 - O `finalizer` consome esses vereditos para consolidar memória durável, mas não os reemite como seus próprios status.
+- O `finalizer` atualiza `qa_checklist.md` quando ele existir ou for exigido pela SPEC ativa e houver `QA CHECKLIST UPDATE`; se não houver checklist aplicável, não cria por conta própria e reporta a não aplicabilidade. Em fechamento compacto de SPEC, o checklist não é retido no bundle fechado.
 - O `finalizer` também pode consumir o sinal do `reviewer` quando ele existir, sem absorver review técnico substituto, e preserva correction pack residual quando budget estoura ou correção automática não é permitida.
 - Em rodada de slice, o `finalizer` é o owner canônico da declaração pós-slice: slice trabalhada com ID `SL-001`, `SL-002`, etc., status final `concluida`, `parcial` ou `bloqueada`, evidências, pendências/blockers, necessidade de resync e próxima slice elegível quando aplicável.
 - Quando a execução bloqueia antes do runner, o `orchestrator` roteia o caso direto ao `finalizer` como bloqueio pré-validação, sem inventar veredito do runner nem closure otimista.

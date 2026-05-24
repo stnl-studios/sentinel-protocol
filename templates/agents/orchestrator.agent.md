@@ -106,6 +106,7 @@ The orchestrator applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`
 - Route to `reviewer.agent.md` only when the cut risk justifies semantic review, the artifact is real, and the review is explicitly classified as `required` or `advisory`.
 - Route `CORRECTION PACK` blocks from runner/reviewer through the correction loop before finalization when the issue is in-scope corrigible and budget remains.
 - Route to `finalizer.agent.md` only after runner proof and required review are resolved, budget is exhausted, residual issue is not automatically corrigible, or pre-validation blockage exists.
+- When validation was executed or attempted, do not route terminal finalization without preserving the runner's compact `QA CHECKLIST UPDATE` handoff or an explicit note that no runner evidence exists because validation never honestly ran.
 
 ## Handoff validity
 - Every handoff must name the next owner, the active boundary, and the minimum contract note or blocker needed to proceed honestly.
@@ -114,6 +115,7 @@ The orchestrator applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`
 - Every coder handoff must identify the relevant `WORK_PACKAGE_ID` from the current `EXECUTION PACKAGE`.
 - Every executor-to-runner transition must be backed by a terminal `READY` handoff with applied-change evidence.
 - Every correction-loop transition preserves `CORRECTION PACK`, budget, attempted fingerprints/root causes, package reuse/redesign decision, and next-step rationale.
+- Every terminal runner-to-finalizer transition preserves `QA CHECKLIST UPDATE` when validations were executed or attempted, so applicable `qa_checklist.md` reconciliation happens in the same finalizer round instead of an extra user round.
 - Pass rich artifacts through the handoff; keep main chat delta-only unless DEV asks for the full artifact.
 - Do not hand off to an absent owner, a nonexistent `.agent.md`, or a route whose required artifact is missing or invalid.
 - If boundary, contract, or owner remains unstable, stop or escalate instead of guessing.

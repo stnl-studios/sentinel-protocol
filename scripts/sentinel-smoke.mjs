@@ -253,8 +253,10 @@ const SPEC_TEMPLATE_HEADER_SPECS = [
         relativePath: "qa_checklist.md",
         requiredSnippets: [
             "Working checklist for SPEC quality",
-            "do_not_use_for: Accepted behavior, closure evidence, execution plans, file paths, commands, or work packages.",
+            "post-validation checklist reconciliation while still active",
+            "do_not_use_for: Accepted behavior, closure substitute, raw logs, execution plans, file paths, work packages, or detailed command transcripts.",
             "canonical_source_for: SPEC quality checks",
+            "runner-backed QA checklist results for an active SPEC when applicable",
         ],
     },
 ];
@@ -759,6 +761,10 @@ function assertSpecManagerContract() {
         path.join(specManagerRoot, "reference", "templates", "feature_spec.md"),
         "utf8"
     );
+    const qaChecklistContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "qa_checklist.md"),
+        "utf8"
+    );
     const openQuestionsContent = fs.readFileSync(
         path.join(specManagerRoot, "reference", "templates", "open_questions.md"),
         "utf8"
@@ -849,6 +855,8 @@ function assertSpecManagerContract() {
         "`NEXT STEP`",
         "a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes",
         "SPEC fechada continua compacta e não retém `spec_slices.md` depois do close flow canônico",
+        "um `qa_checklist.md` aplicável pode receber atualização compacta de resultados de validação durante fechamento normal da rodada pelo `finalizer`",
+        "`qa_checklist.md` não é fonte de logs brutos, não substitui o verdict do `validation-runner`, não substitui closure e nunca pode registrar sucesso sem evidência real",
     ], "stnl_spec_manager/SKILL.md planning interface and active SPEC bundle contract");
 
     assertContentIncludesAll(manifestContent, [
@@ -869,7 +877,19 @@ function assertSpecManagerContract() {
         "Closed SPECs remain compact",
         "only `feature_spec.md` remains in the SPEC folder",
         "`spec_slices.md` is not retained in the closed bundle",
+        "may be updated by the finalizer from compact `validation-runner` evidence",
+        "must not store raw logs, replace the runner verdict, or record success without real evidence",
     ], "stnl_spec_manager/reference/MANIFEST.md active SPEC and header compatibility contract");
+
+    assertContentIncludesAll(qaChecklistContent, [
+        "compact active validation tracking",
+        "runner-backed QA checklist results for an active SPEC when applicable",
+        "`finalizer` may reconcile runner-backed validation results during active-SPEC round closure",
+        "## Executed Validation Tracking",
+        "Use only compact evidence produced or preserved by `validation-runner` in the same round.",
+        "Never mark an item as passed unless the runner evidence shows real execution or observation of that check.",
+        "If evidence is absent, record `blocked` or `not_run` with a short reason instead.",
+    ], "qa_checklist.md runner-backed active validation tracking");
 
     assertContentIncludesAll(skillContent, [
         "`SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded com três dígitos",
@@ -3101,6 +3121,98 @@ function assertCorrectionLoopPolicyInTemplateDocs() {
     ], "templates/docs/workflow/STATUS-GATES.md correction loop");
 }
 
+function assertQaChecklistValidationHandoffInAgentSet(agentRoot, label) {
+    const runnerContent = fs.readFileSync(path.join(agentRoot, "validation-runner.agent.md"), "utf8");
+    const finalizerContent = fs.readFileSync(path.join(agentRoot, "finalizer.agent.md"), "utf8");
+    const orchestratorContent = fs.readFileSync(path.join(agentRoot, "orchestrator.agent.md"), "utf8");
+
+    assertContentIncludesAll(runnerContent, [
+        "`QA CHECKLIST UPDATE`",
+        "check or acceptance ID",
+        "result `passed|failed|blocked|not_run`",
+        "Use `blocked` or `not_run` when evidence is missing",
+        "never mark `passed` from implementation inspection or intent",
+        "not permission to edit `qa_checklist.md`",
+        "`QA checklist evidence gate`",
+    ], `${label} validation-runner QA checklist handoff`);
+
+    assertContentIncludesAll(finalizerContent, [
+        "active SPEC has an applicable `qa_checklist.md`",
+        "runner's `QA CHECKLIST UPDATE`",
+        "record only check/AC, `passed|failed|blocked|not_run`, type, compact command or method, and short evidence",
+        "If runner evidence is absent or insufficient, record `blocked` or `not_run` instead of success.",
+        "If no checklist exists and the current SPEC contract does not require creation, do not create it",
+        "If `MODE=CLOSE` requires compact closed SPEC cleanup, do not retain `qa_checklist.md` in the closed bundle.",
+    ], `${label} finalizer QA checklist reconciliation`);
+
+    assertContentIncludesAll(orchestratorContent, [
+        "preserving the runner's compact `QA CHECKLIST UPDATE` handoff",
+        "applicable `qa_checklist.md` reconciliation happens in the same finalizer round instead of an extra user round",
+    ], `${label} orchestrator QA checklist routing`);
+}
+
+function assertQaChecklistValidationHandoffInCodexAgents(repoRoot, controlledAgentFiles) {
+    const requiredAgents = ["validation-runner", "finalizer", "orchestrator"];
+
+    for (const agentName of requiredAgents) {
+        assert(
+            controlledAgentFiles.includes(`${agentName}.agent.md`),
+            `Agent Codex esperado ausente do conjunto controlado: ${agentName}`
+        );
+    }
+
+    const readInstructions = (agentName) => {
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        return parseToml(content, `codex/${agentName}`).developer_instructions;
+    };
+
+    assertContentIncludesAll(readInstructions("validation-runner"), [
+        "`QA CHECKLIST UPDATE`",
+        "result `passed|failed|blocked|not_run`",
+        "never mark `passed` from implementation inspection or intent",
+        "`QA checklist evidence gate`",
+    ], "codex validation-runner QA checklist handoff");
+
+    assertContentIncludesAll(readInstructions("finalizer"), [
+        "active SPEC has an applicable `qa_checklist.md`",
+        "runner's `QA CHECKLIST UPDATE`",
+        "If runner evidence is absent or insufficient, record `blocked` or `not_run` instead of success.",
+        "If `MODE=CLOSE` requires compact closed SPEC cleanup, do not retain `qa_checklist.md` in the closed bundle.",
+    ], "codex finalizer QA checklist reconciliation");
+
+    assertContentIncludesAll(readInstructions("orchestrator"), [
+        "preserving the runner's compact `QA CHECKLIST UPDATE` handoff",
+        "same finalizer round instead of an extra user round",
+    ], "codex orchestrator QA checklist routing");
+}
+
+function assertQaChecklistValidationHandoffInDocs(docRoot, label) {
+    const lifecycleContent = fs.readFileSync(
+        path.join(docRoot, "workflow", "EXECUTION-LIFECYCLE.md"),
+        "utf8"
+    );
+    const statusGatesContent = fs.readFileSync(
+        path.join(docRoot, "workflow", "STATUS-GATES.md"),
+        "utf8"
+    );
+
+    assertContentIncludesAll(lifecycleContent, [
+        "Validação executada deve virar checklist durável quando aplicável",
+        "`QA CHECKLIST UPDATE` compacto",
+        "`qa_checklist.md` não substitui o validation verdict nem closure",
+        "não pode registrar `passed` sem evidência real de execução ou observação",
+        "o arquivo não é retido no bundle fechado",
+    ], `${label}/workflow/EXECUTION-LIFECYCLE.md QA checklist handoff`);
+
+    assertContentIncludesAll(statusGatesContent, [
+        "`QA CHECKLIST UPDATE` é handoff compacto",
+        "ele alimenta `qa_checklist.md` aplicável na SPEC ativa",
+        "não substitui verdict, closure ou logs completos",
+        "`passed` exige execução ou observação real",
+        "Em fechamento compacto de SPEC, o checklist não é retido no bundle fechado.",
+    ], `${label}/workflow/STATUS-GATES.md QA checklist handoff`);
+}
+
 function assertProtocolHardeningInCanonicalRefs(skillRoot) {
     const skillContent = fs.readFileSync(path.join(skillRoot, "SKILL.md"), "utf8");
     assertContentIncludesAll(skillContent, [
@@ -3995,6 +4107,10 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledReferenceDocs(agentSkillRoot);
         assertProtocolHardeningInTemplateAgents();
         assertProtocolHardeningInReferenceAgents(agentSkillRoot);
+        assertQaChecklistValidationHandoffInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
         assertHeaderAwareReadingInAgentSet(
             path.join(agentSkillRoot, "reference", "agents"),
             "reference/agents instalado"
@@ -4013,10 +4129,18 @@ function runControlledMaterializationSmoke(targetHome) {
         );
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
         assertQualityGuardrailsInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
+        assertQaChecklistValidationHandoffInDocs(
+            path.join(agentSkillRoot, "reference", "docs"),
+            "reference/docs instalado"
+        );
         assertCanonicalDesignerRoleClassInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertQaChecklistValidationHandoffInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
         assertVscodeStatusContracts(vscodeRepoRoot, controlledAgentFiles);
         assertHeaderAwareReadingInAgentSet(
             path.join(vscodeRepoRoot, ".github", "agents"),
@@ -4053,6 +4177,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexRuntimeConfig(codexRepoRoot);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertQaChecklistValidationHandoffInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertCodexStatusContracts(codexRepoRoot, controlledAgentFiles);
         assertHeaderAwareReadingInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
@@ -4084,8 +4209,10 @@ async function runSentinelSmoke() {
     assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCanonicalDesignerRoleClassInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCorrectionLoopPolicyInTemplateDocs();
+    assertQaChecklistValidationHandoffInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertBaseAgentTemplateSizeLimit();
     assertHeaderAwareReadingInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertQaChecklistValidationHandoffInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound1AntiInferenceHardeningInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound2OperationalAxesInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");

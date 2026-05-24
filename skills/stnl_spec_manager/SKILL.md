@@ -279,7 +279,7 @@ Arquivos do bundle obrigatório:
 - `session_summary.md`: memória append-only da maturação da própria SPEC; não autoriza tocar memory do repositório
 
 Arquivos condicionais:
-- `qa_checklist.md`: apenas quando a SPEC ou um slice estiverem próximos de execução
+- `qa_checklist.md`: apenas quando a SPEC ou um slice estiverem próximos de execução ou quando a SPEC ativa exigir QA tracking durável
 
 Regras:
 - o bundle auxiliar existe para criação, fork, resume e maturação; ele não é o formato final de uma SPEC fechada
@@ -291,6 +291,8 @@ Regras:
 - quando uma direção ainda não estiver sustentada, registrar a lacuna explicitamente no próprio `feature_spec.md` e usar artefato auxiliar só se isso melhorar governança temporária sem virar dependência estrutural
 - solução específica de implementação só entra como direção consolidada no corpo principal quando já for source of truth explícita ou constraint realmente necessária para definir escopo, aceite ou limite operacional de forma honesta
 - `MODE=CLOSE` deve consolidar em `feature_spec.md` toda informação durável necessária para leitura futura da SPEC encerrada
+- enquanto a SPEC continuar ativa, um `qa_checklist.md` aplicável pode receber atualização compacta de resultados de validação durante fechamento normal da rodada pelo `finalizer`, desde que a evidência venha do `validation-runner`
+- `qa_checklist.md` não é fonte de logs brutos, não substitui o verdict do `validation-runner`, não substitui closure e nunca pode registrar sucesso sem evidência real de execução ou observação
 - nenhum artefato auxiliar pode carregar sozinho regra de negócio, escopo final, aceite final, decisão final, resíduo relevante ou fechamento que sejam necessários para entender a SPEC encerrada
 - se algum auxiliar ainda for necessário para entender a SPEC, a SPEC não está pronta para fechamento canônico e o resultado deve ser `not_closed`
 - quando `MODE=CLOSE` resultar em `closed` ou `closed_with_residuals`, a pasta da SPEC deve terminar contendo somente `feature_spec.md`

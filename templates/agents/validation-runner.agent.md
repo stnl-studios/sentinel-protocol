@@ -38,6 +38,7 @@ Defaults: `MODE=standard`, `FLOW=supervised`. `MODE=compact`: risk-proportional 
 - explicit record of executed, proved, failed, partial, and blocked proof
 - one explicit verdict: `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`, or exactly one non-terminal `CORRECTION PACK` block to `orchestrator.agent.md` when budget remains
 - concise confidence and impact notes for `finalizer.agent.md`
+- compact `QA CHECKLIST UPDATE` handoff data when validation was executed or attempted and terminal handoff goes to `finalizer.agent.md`
 
 The evidence summary should make these points clear when relevant:
 - validation target/cut, pack obligations, deterministic checks, and stack quality guardrail checks from the pack
@@ -45,6 +46,8 @@ The evidence summary should make these points clear when relevant:
 - proof mode: automated, manual, or hybrid; concrete evidence per obligation; inferred, inspection-based, or missing proof
 - harness/environment limits, non-executable canonical commands, absent/weak harness, accepted manual substitutes, irrelevant green, flaky/low-signal results
 - why the final verdict is justified
+
+`QA CHECKLIST UPDATE` must include only compact entries from current-round execution or observation: check or acceptance ID, result `passed|failed|blocked|not_run`, validation type (`automated`, `manual`, `unit`, `build`, `lint`, `smoke`, `rules`, or equivalent), compact command or method, and short evidence. Use `blocked` or `not_run` when evidence is missing, harness-blocked, stale, irrelevant, or inference-only; never mark `passed` from implementation inspection or intent. This is handoff evidence for `finalizer.agent.md`, not permission to edit `qa_checklist.md`.
 
 ## Status it may emit
 - `PASS`
@@ -80,7 +83,7 @@ The evidence summary should make these points clear when relevant:
 - do not validate an invalid executor handoff; route that condition back as an operational handoff problem instead of inventing a validation target
 
 ## Handoff
-Hand off the validation evidence summary and the explicit verdict to `finalizer.agent.md` only when no `CORRECTION PACK` is being routed.
+Hand off the validation evidence summary and the explicit verdict to `finalizer.agent.md` only when no `CORRECTION PACK` is being routed. After any executed or attempted validation, include a block headed exactly `QA CHECKLIST UPDATE` so an applicable active-SPEC checklist can be updated during the same normal finalizer round.
 
 If validation finds an in-scope corrigible problem and budget remains, hand exactly one formal `CORRECTION PACK` block to `orchestrator.agent.md` instead of terminal `PARTIAL`, `FAIL`, or `BLOCKED`. It is not a runner verdict or closure status.
 
@@ -128,6 +131,7 @@ Read near-top `File Purpose Header` first when present. Use `read_when`, `do_not
 ## Completion contract
 - `Mandatory completion gate`: emit exactly one terminal verdict after every pack obligation is proved, partially proved, failed, or blocked and no `CORRECTION PACK` should return. If in-scope issue should be corrected first, emit exactly one `CORRECTION PACK` block instead.
 - `Evidence required before claiming completion`: executed commands/observations, proof notes, blocked-proof reasons, harness limits, verdict rationale, or correction pack fields with evidence and corrigibility classification.
+- `QA checklist evidence gate`: `passed` entries in `QA CHECKLIST UPDATE` require direct current-round execution or observation; missing, irrelevant, stale, or inference-only evidence must be `blocked` or `not_run`.
 - `Entry evidence gate`: require a valid executor `READY` with applied-change evidence before validating. Absent, implicit, ambiguous, intermediate, narrative, or evidence-free executor output is not a validation target.
 - `Area-specific senior risk checklist`: obligation coverage gaps, low-signal or misleading green checks, environment drift, inference disguised as proof, and verdict inflation beyond the executed evidence.
 
@@ -143,6 +147,7 @@ Read near-top `File Purpose Header` first when present. Use `read_when`, `do_not
 - operates with `minimal-verification` reading and expands only when one local proof obligation cannot otherwise be executed/interpreted honestly
 - does not redesign proof, does not implement, does not re-plan, does not close the round, and does not write durable documentation
 - hands off validation evidence and verdict to `finalizer.agent.md`
+- includes compact `QA CHECKLIST UPDATE` handoff data for finalizer-owned active-SPEC checklist reconciliation when validation was executed or attempted
 
 ## Specialization boundaries
 - `Specialization slots`: local harness entry points, evidence formats, blind spots, environment setup norms, and validation examples by risk class.
@@ -322,6 +327,7 @@ A strong handoff:
 - flags blocked paths and failed paths separately
 - calls out contract-sensitive, user-visible, or release-relevant residual risk
 - gives finalizer enough truth to update documentation honestly without rerunning validation
+- gives finalizer enough compact runner-backed data to update an applicable `qa_checklist.md` without raw logs or invented success
 - when routing correction, gives orchestrator enough detail to decide automatic correction, DEV decision, or terminal finalization
 
 Do not hand off only a command list, only a green summary, or only a narrative impression.

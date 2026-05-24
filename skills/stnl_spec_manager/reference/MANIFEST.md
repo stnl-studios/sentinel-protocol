@@ -31,4 +31,5 @@ Generated artifact contract:
 - Older projects without `File Purpose Header` remain compatible; absence of the header in legacy material is not an error.
 - Active SPECs keep the auxiliary bundle, including `spec_slices.md`. Closed SPECs remain compact: when `MODE=CLOSE` results in `closed` or `closed_with_residuals`, only `feature_spec.md` remains in the SPEC folder, except ignored system entries, so `spec_slices.md` is not retained in the closed bundle.
 - `qa_checklist.md` remains a required reference template but a conditional generated artifact. Do not infer from this manifest that every new SPEC must generate a QA checklist.
+- While a SPEC remains active, an applicable `qa_checklist.md` may be updated by the finalizer from compact `validation-runner` evidence; it must not store raw logs, replace the runner verdict, or record success without real evidence.
 - There is no Quick Plan, no Design First, and no Kiro-style `requirements/design/tasks` structure.
