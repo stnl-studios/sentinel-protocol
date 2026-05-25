@@ -7,6 +7,7 @@ SPEC alvo:
 Objetivo desta rodada:
 - [o que precisa ser retomado, corrigido ou consolidado]
 - preservar ou reconstruir o `spec_slices.md` mínimo com `SL-001` se ausente, sem inventar split multi-slice.
+- se a SPEC ficar ou continuar `Execution Ready`, criar ou atualizar `qa_checklist.md` como checklist mínimo de conclusão/QA antes do ciclo do orchestrator.
 
 Delta novo:
 - [nova evidência, decisão, blocker ou ajuste de direção]

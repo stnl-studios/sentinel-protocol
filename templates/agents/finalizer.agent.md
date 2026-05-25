@@ -57,7 +57,7 @@ Default absent axes: `RUN=execute`, `MODE=standard`, `FLOW=supervised`.
 - reviewer signal preservation when review entered, including `required/advisory` and unresolved material structural risk
 - residual correction pack preservation when present: issue ids, fingerprints/root causes, attempts, budget state, and why correction stopped
 - closure ledger: verdict/blockage, reviewer signal, residual correction pack, artifacts altered, `DONE` yes/no, resync yes/no, and factual delta when needed
-- applicable active-SPEC `qa_checklist.md` update from runner-backed evidence, or explicit note that no applicable checklist existed or evidence was insufficient
+- applicable active-SPEC `qa_checklist.md` reconciliation from runner-backed evidence, or explicit process gap when an `Execution Ready` SPEC lacks the expected checklist
 - when slice-scoped, post-slice closure record: `slice_id` in `SL-001` format, final status `concluida|parcial|bloqueada`, evidence, pending work/blockers, residual correction pack when any, resync yes/no, and next eligible slice
 
 ## Status it may emit
@@ -96,7 +96,8 @@ The finalizer must not blur its own `READY` or `BLOCKED` with the runner verdict
 - do not instruct direct edits to shared source-of-truth targets; request `resync.agent.md` instead
 - do not invent closure, success, or milestone significance
 - do not invent QA checklist success without runner-backed execution or observation evidence
-- do not create `qa_checklist.md` merely because validation ran when the active SPEC contract does not already have or require QA tracking
+- do not create `qa_checklist.md` as a substitute for SPEC lifecycle ownership; if an `Execution Ready` active SPEC lacks it and lacks explicit `qa_tracking: not_applicable`, report a process gap instead of treating it as non-applicable
+- do not create `DONE.md` directly in an active SPEC folder or any folder whose `feature_spec.md` still has `closure_status: not_closed`
 - do not declare slice status without preserving evidence
 - do not update docs/context without explicit `DONE` and resync decisions
 - do not ignore missing `required` review, unresolved material structural risk, or reviewer-required closure impact
@@ -218,10 +219,10 @@ A real milestone is a discrete delivery point that changes reliable feature trut
 Update `Feature CONTEXT` when the round changed reliable feature truth. Keep only present state, achieved/partial/failed/unproven outcome, constraints/risks/boundary facts future rounds need, and honest next state. It is not an action timeline, effort summary, `DONE` substitute, speculative plan, or hiding place for uncertainty. For failed/blocked rounds, record only durable facts future work needs: attempted scope, current reliable state, and the exact failed or blocked condition.
 
 ### QA checklist reconciliation
-Before terminal closure, check whether the active SPEC has an applicable `qa_checklist.md` or explicitly requires QA tracking. If yes, update it from the runner's `QA CHECKLIST UPDATE`: record only check/AC, `passed|failed|blocked|not_run`, type, compact command or method, and short evidence. If runner evidence is absent or insufficient, record `blocked` or `not_run` instead of success. If no checklist exists and the current SPEC contract does not require creation, do not create it; report non-applicability. If `MODE=CLOSE` requires compact closed SPEC cleanup, do not retain `qa_checklist.md` in the closed bundle.
+Before terminal closure, check whether the active SPEC has an applicable `qa_checklist.md`, is `Execution Ready`, or explicitly requires QA tracking. If a checklist exists, update it from the runner's `QA CHECKLIST UPDATE`: record only check/AC, `passed|failed|blocked|not_run`, type, compact command or method, and short evidence. If runner evidence is absent or insufficient, record `blocked` or `not_run` instead of success. If no checklist exists and the active SPEC is `Execution Ready` without explicit `qa_tracking: not_applicable`, do not create it as finalizer-owned content; report a SPEC lifecycle process gap and block clean finalization until the SPEC lifecycle is corrected. If no checklist exists because QA tracking is explicitly not applicable, report that explicit reason. If `MODE=CLOSE` requires compact closed SPEC cleanup, do not retain `qa_checklist.md` in the closed bundle.
 
 ### DONE creation policy
-`DONE` is reserved for milestone-grade closure. Create it only when the round produced real delivery, evidence is strong enough for durable truth, closure matters beyond implementation detail, and future readers benefit from a completion record rather than only `Feature CONTEXT`.
+`DONE` is reserved for milestone-grade closure. Create it only when the round produced real delivery, evidence is strong enough for durable truth, closure matters beyond implementation detail, and future readers benefit from a completion record rather than only `Feature CONTEXT`. A DONE file belongs in the feature milestone history such as `docs/features/<feature>/done/DONE-YYYYMMDD-<entrega-real>.md` when that location is known; never create `DONE.md` in the active SPEC folder. If no safe feature done location is known, emit only the closure ledger with `DONE: yes/no` and do not create a file.
 
 Default by verdict: `PASS` may create `DONE` only for a real milestone; `PARTIAL` usually does not, except when the milestone itself is directly proven and the remaining gap is bounded/non-milestone/non-deceptive; `FAIL` and `BLOCKED` do not create `DONE`. When in doubt, update only `Feature CONTEXT`; no `DONE` is better than premature history.
 

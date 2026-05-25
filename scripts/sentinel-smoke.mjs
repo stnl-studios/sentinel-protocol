@@ -859,7 +859,8 @@ function assertSpecManagerContract() {
         "`NEXT STEP`",
         "a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes",
         "SPEC fechada continua compacta e não retém `spec_slices.md` depois do close flow canônico",
-        "um `qa_checklist.md` aplicável pode receber atualização compacta de resultados de validação durante fechamento normal da rodada pelo `finalizer`",
+        "o `qa_checklist.md` executável é artefato da própria SPEC: `stnl_spec_manager` materializa antes do ciclo do `orchestrator`",
+        "uma SPEC ou slice `Execution Ready` sem `qa_checklist.md` e sem `qa_tracking: not_applicable` explícito é contrato incompleto",
         "`qa_checklist.md` não é fonte de logs brutos, não substitui o verdict do `validation-runner`, não substitui closure e nunca pode registrar sucesso sem evidência real",
     ], "stnl_spec_manager/SKILL.md planning interface and active SPEC bundle contract");
 
@@ -881,14 +882,16 @@ function assertSpecManagerContract() {
         "Closed SPECs remain compact",
         "only `feature_spec.md` remains in the SPEC folder",
         "`spec_slices.md` is not retained in the closed bundle",
-        "may be updated by the finalizer from compact `validation-runner` evidence",
+        "when a SPEC or slice becomes `Execution Ready`, it must be materialized before `orchestrator` consumption unless `qa_tracking: not_applicable` is explicitly justified",
+        "may be reconciled by the finalizer from compact `validation-runner` evidence",
         "must not store raw logs, replace the runner verdict, or record success without real evidence",
     ], "stnl_spec_manager/reference/MANIFEST.md active SPEC and header compatibility contract");
 
     assertContentIncludesAll(qaChecklistContent, [
         "compact active validation tracking",
+        "minimum completion/QA checks for an executable SPEC",
         "runner-backed QA checklist results for an active SPEC when applicable",
-        "`finalizer` may reconcile runner-backed validation results during active-SPEC round closure",
+        "`finalizer` may only reconcile runner-backed validation results during active-SPEC round closure",
         "## Executed Validation Tracking",
         "Use only compact evidence produced or preserved by `validation-runner` in the same round.",
         "Never mark an item as passed unless the runner evidence shows real execution or observation of that check.",
@@ -997,6 +1000,8 @@ function assertSpecManagerContract() {
         "not final paths, owned paths, mandatory modules, or ownership authorization",
         "validation_hints:",
         "not commands, scripts, suites, or final validation pack",
+        "qa_checklist_reference:",
+        "Use `qa_checklist.md` once this slice is `Execution Ready`",
         "risks_for_planner:",
         "downstream_handoff_expectations:",
         "do not assemble an execution package, work package, or agent call",
@@ -1017,6 +1022,8 @@ function assertSpecManagerContract() {
         "Do not use `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, or title-only references as slice IDs.",
         "### SL-001 — [Short slice title]",
         "id: SL-001",
+        "executable_qa_checklist_ready: yes | no | not_applicable",
+        "qa_tracking_exception_justified: yes | no | not_applicable",
     ], "readiness_report.md slice identity contract");
 
     assertContentIncludesAll(featureSpecContent, [
@@ -3282,13 +3289,15 @@ function assertQaChecklistValidationHandoffInAgentSet(agentRoot, label) {
         "runner's `QA CHECKLIST UPDATE`",
         "record only check/AC, `passed|failed|blocked|not_run`, type, compact command or method, and short evidence",
         "If runner evidence is absent or insufficient, record `blocked` or `not_run` instead of success.",
-        "If no checklist exists and the current SPEC contract does not require creation, do not create it",
+        "If no checklist exists and the active SPEC is `Execution Ready` without explicit `qa_tracking: not_applicable`, do not create it as finalizer-owned content",
+        "report a SPEC lifecycle process gap and block clean finalization",
         "If `MODE=CLOSE` requires compact closed SPEC cleanup, do not retain `qa_checklist.md` in the closed bundle.",
     ], `${label} finalizer QA checklist reconciliation`);
 
     assertContentIncludesAll(orchestratorContent, [
         "preserving the runner's compact `QA CHECKLIST UPDATE` handoff",
         "applicable `qa_checklist.md` reconciliation happens in the same finalizer round instead of an extra user round",
+        "Missing executable QA tracking is a SPEC lifecycle gap, not a finalizer responsibility",
     ], `${label} orchestrator QA checklist routing`);
 }
 
@@ -3318,6 +3327,7 @@ function assertQaChecklistValidationHandoffInCodexAgents(repoRoot, controlledAge
         "active SPEC has an applicable `qa_checklist.md`",
         "runner's `QA CHECKLIST UPDATE`",
         "If runner evidence is absent or insufficient, record `blocked` or `not_run` instead of success.",
+        "If no checklist exists and the active SPEC is `Execution Ready` without explicit `qa_tracking: not_applicable`, do not create it as finalizer-owned content",
         "If `MODE=CLOSE` requires compact closed SPEC cleanup, do not retain `qa_checklist.md` in the closed bundle.",
     ], "codex finalizer QA checklist reconciliation");
 
@@ -3338,6 +3348,7 @@ function assertQaChecklistValidationHandoffInDocs(docRoot, label) {
     );
 
     assertContentIncludesAll(lifecycleContent, [
+        "SPEC executável deve entrar no ciclo com `qa_checklist.md` já materializado pela skill de SPEC",
         "Validação executada deve virar checklist durável quando aplicável",
         "`QA CHECKLIST UPDATE` compacto",
         "`qa_checklist.md` não substitui o validation verdict nem closure",
@@ -3348,6 +3359,7 @@ function assertQaChecklistValidationHandoffInDocs(docRoot, label) {
     assertContentIncludesAll(statusGatesContent, [
         "`QA CHECKLIST UPDATE` é handoff compacto",
         "ele alimenta `qa_checklist.md` aplicável na SPEC ativa",
+        "gap de lifecycle da SPEC, não não-aplicabilidade silenciosa",
         "não substitui verdict, closure ou logs completos",
         "`passed` exige execução ou observação real",
         "Em fechamento compacto de SPEC, o checklist não é retido no bundle fechado.",

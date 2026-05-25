@@ -104,6 +104,8 @@
 - critical_dependencies_visible: yes | no
 - critical_pending_items_resolved_or_explicitly_decided_or_factually_reclassified: yes | no
 - no_execution_ready_blocking_active_assumptions: yes | no
+- executable_qa_checklist_ready: yes | no | not_applicable
+- qa_tracking_exception_justified: yes | no | not_applicable
 - blocking_questions_closed_or_reclassified: yes | no
 - critical_questions_handled: yes | no
 - external_validation_closed_or_non_blocking_with_recorded_basis: yes | no

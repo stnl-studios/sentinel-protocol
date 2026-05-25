@@ -279,7 +279,7 @@ Arquivos do bundle obrigatório:
 - `session_summary.md`: memória append-only da maturação da própria SPEC; não autoriza tocar memory do repositório
 
 Arquivos condicionais:
-- `qa_checklist.md`: apenas quando a SPEC ou um slice estiverem próximos de execução ou quando a SPEC ativa exigir QA tracking durável
+- `qa_checklist.md`: condicional durante `Draft`/`Structured`, mas obrigatório antes de qualquer handoff de execução quando a SPEC ou um slice estiverem `Execution Ready`, salvo exceção explícita `qa_tracking: not_applicable` com justificativa curta
 
 Regras:
 - o bundle auxiliar existe para criação, fork, resume e maturação; ele não é o formato final de uma SPEC fechada
@@ -291,8 +291,9 @@ Regras:
 - quando uma direção ainda não estiver sustentada, registrar a lacuna explicitamente no próprio `feature_spec.md` e usar artefato auxiliar só se isso melhorar governança temporária sem virar dependência estrutural
 - solução específica de implementação só entra como direção consolidada no corpo principal quando já for source of truth explícita ou constraint realmente necessária para definir escopo, aceite ou limite operacional de forma honesta
 - `MODE=CLOSE` deve consolidar em `feature_spec.md` toda informação durável necessária para leitura futura da SPEC encerrada
-- enquanto a SPEC continuar ativa, um `qa_checklist.md` aplicável pode receber atualização compacta de resultados de validação durante fechamento normal da rodada pelo `finalizer`, desde que a evidência venha do `validation-runner`
+- enquanto a SPEC continuar ativa, o `qa_checklist.md` executável é artefato da própria SPEC: `stnl_spec_manager` materializa antes do ciclo do `orchestrator`; o `finalizer` apenas reconcilia atualização compacta de resultados de validação, desde que a evidência venha do `validation-runner`
 - `qa_checklist.md` não é fonte de logs brutos, não substitui o verdict do `validation-runner`, não substitui closure e nunca pode registrar sucesso sem evidência real de execução ou observação
+- uma SPEC ou slice `Execution Ready` sem `qa_checklist.md` e sem `qa_tracking: not_applicable` explícito é contrato incompleto e não deve ser entregue ao ciclo do `orchestrator`
 - nenhum artefato auxiliar pode carregar sozinho regra de negócio, escopo final, aceite final, decisão final, resíduo relevante ou fechamento que sejam necessários para entender a SPEC encerrada
 - se algum auxiliar ainda for necessário para entender a SPEC, a SPEC não está pronta para fechamento canônico e o resultado deve ser `not_closed`
 - quando `MODE=CLOSE` resultar em `closed` ou `closed_with_residuals`, a pasta da SPEC deve terminar contendo somente `feature_spec.md`
@@ -386,6 +387,7 @@ Exigir ao menos:
 ### Virar `Execution Ready`
 Exigir ao menos:
 - critérios de aceite testáveis
+- `qa_checklist.md` materializado como checklist mínimo de conclusão/QA da SPEC ativa, derivado dos acceptance criteria, Spec DoD, riscos, anti-drift constraints e validation hints, salvo `qa_tracking: not_applicable` explícito e justificado
 - direção consolidada consumível sem depender do trilho investigativo como documento principal
 - `spec_slices.md` presente, coerente e com ao menos `SL-001`
 - decisões principais legítimas registradas quando realmente já existirem
@@ -439,6 +441,7 @@ Uma SPEC ou slice só pode virar `Execution Ready` quando:
 - pendência crítica só deixou de bloquear prontidão se foi respondida por decisão explícita, resolvida por evidência factual direta, ou reclassificada como não bloqueante com justificativa registrada
 - nenhuma assumption `ACTIVE` marcada com `must_be_confirmed_by: before execution ready` permanece aberta
 - `feature_spec.md` contém apenas requisitos confirmados
+- `qa_checklist.md` existe para SPEC executável, ou a SPEC registra `qa_tracking: not_applicable` com justificativa explícita e rara
 - critérios de aceite são testáveis
 - nenhuma decisão crítica de produto, dados, permissão, persistência, validação ou erro permanece aberta
 
@@ -740,7 +743,7 @@ Parar e explicitar o motivo quando:
 - docs e codebase conflitarem de forma relevante e o conflito não puder ser resolvido honestamente
 - a SPEC estiver `Blocked`
 - houver pergunta bloqueante crítica ainda aberta
-- a SPEC ou um slice estiverem honestamente `Execution Ready` e os artefatos consumíveis já estiverem materializados
+- a SPEC ou um slice estiverem honestamente `Execution Ready` e os artefatos consumíveis já estiverem materializados, incluindo `qa_checklist.md` quando QA tracking for aplicável
 - houver pergunta bloqueante aberta que impeça maturidade mais forte
 
 ## Saída operacional obrigatória

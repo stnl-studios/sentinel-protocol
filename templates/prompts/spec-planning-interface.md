@@ -7,6 +7,7 @@ SPEC alvo obrigatório e explícito:
 Objetivo desta rodada:
 - enriquecer a Planning Interface da SPEC ativa para consumo posterior pelo planner.
 - atualizar principalmente `spec_slices.md`.
+- se a interface deixar a SPEC ou slice pronta para execução, garantir `qa_checklist.md` materializado ou registrar `qa_tracking: not_applicable` explicitamente.
 
 Contexto novo para a interface:
 - decisões recentes: [...]

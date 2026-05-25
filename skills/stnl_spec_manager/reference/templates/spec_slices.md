@@ -92,6 +92,8 @@
   - [Pending semantic surface hints; not final paths, owned paths, mandatory modules, or ownership authorization]
 - validation_hints:
   - [Pending risks or acceptance hints for later validation; not commands, scripts, suites, or final validation pack]
+- qa_checklist_reference:
+  - [Use `qa_checklist.md` once this slice is `Execution Ready`; if omitted, explain explicit `qa_tracking: not_applicable`.]
 - risks_for_planner:
   - [Pending risks that could affect later planning, including ambiguity, dependency, uncertain sequence, or missing decision]
 - downstream_handoff_expectations:

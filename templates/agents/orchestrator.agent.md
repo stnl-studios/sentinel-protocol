@@ -94,6 +94,7 @@ The orchestrator applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`
 - Route the base gate to `stnl_project_context` in `MODE=BOOTSTRAP` when factual base is missing, or `MODE=RESYNC` when explicit feature delta meets factual drift; do not confuse it with `resync.agent.md`.
 - Canonical preparation order is `planner.agent.md` for `EXECUTION BRIEF`, then `validation-eval-designer.agent.md` for `VALIDATION PACK`, then `execution-package-designer.agent.md` for `EXECUTION PACKAGE` before any coder.
 - Route to `planner.agent.md` once the base gate is satisfied; do not hold the round in the router to improve the plan locally.
+- For SPEC-scoped work, do not enter the execution cycle from an `Execution Ready` SPEC unless `qa_checklist.md` exists or the SPEC explicitly records `qa_tracking: not_applicable` with justification. Missing executable QA tracking is a SPEC lifecycle gap, not a finalizer responsibility.
 - Route to `validation-eval-designer.agent.md` only after a bounded `EXECUTION BRIEF` exists.
 - Route to `execution-package-designer.agent.md` only after a `READY` `VALIDATION PACK` exists for the current `EXECUTION BRIEF`.
 - Do not route to execution approval or executor while `NEEDS_DEV_DECISION_HARNESS` is active, even if build, smoke, or manual path covers part of the cut.
@@ -115,7 +116,7 @@ The orchestrator applies or routes the canonical gates `NEEDS_DEV_DECISION_BASE`
 - Every coder handoff must identify the relevant `WORK_PACKAGE_ID` from the current `EXECUTION PACKAGE`.
 - Every executor-to-runner transition must be backed by a terminal `READY` handoff with applied-change evidence.
 - Every correction-loop transition preserves `CORRECTION PACK`, budget, attempted fingerprints/root causes, package reuse/redesign decision, and next-step rationale.
-- Every terminal runner-to-finalizer transition preserves `QA CHECKLIST UPDATE` when validations were executed or attempted, so applicable `qa_checklist.md` reconciliation happens in the same finalizer round instead of an extra user round.
+- Every terminal runner-to-finalizer transition preserves `QA CHECKLIST UPDATE` when validations were executed or attempted, so applicable `qa_checklist.md` reconciliation happens in the same finalizer round instead of an extra user round. If the active SPEC was executable but lacks `qa_checklist.md`, route the gap explicitly instead of allowing silent non-applicability.
 - Pass rich artifacts through the handoff; keep main chat delta-only unless DEV asks for the full artifact.
 - Do not hand off to an absent owner, a nonexistent `.agent.md`, or a route whose required artifact is missing or invalid.
 - If boundary, contract, or owner remains unstable, stop or escalate instead of guessing.

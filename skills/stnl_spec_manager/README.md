@@ -14,7 +14,7 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - manter a regra central: nenhuma lacuna vira requisito silenciosamente
 - manter intake esparso: o usuário pode trazer descrição curta, sem preencher template grande
 - manter `open_questions.md` como fonte oficial de dúvidas; não criar `open_decisions.md`
-- manter o Readiness Gate universal: nenhuma SPEC ou slice vira `Execution Ready` com pergunta bloqueante aberta
+- manter o Readiness Gate universal: nenhuma SPEC ou slice vira `Execution Ready` com pergunta bloqueante aberta ou sem `qa_checklist.md` aplicável, salvo `qa_tracking: not_applicable` explícito e justificado
 - manter IDs canônicos estáveis: `Q-001`, `D-001`, `AC-001`, `SL-001`, `R-001` e `C-001`
 - manter `spec_slices.md` obrigatório em toda SPEC ativa como mapa canônico de consumo, não como arquivo opcional de split
 - manter toda SPEC ativa com ao menos `SL-001`; em SPEC single-slice, `SL-001` representa o limite aprovado de consumo inteiro
@@ -124,10 +124,10 @@ Canônico obrigatório em criação nova ou fork legítimo:
 - `session_summary.md`
 
 Condicionais:
-- `qa_checklist.md`
+- `qa_checklist.md` durante `Draft`/`Structured`; obrigatório quando a SPEC ou slice virar `Execution Ready`, salvo `qa_tracking: not_applicable` explícito e raro
 
 ## Linguagem
 Os templates permanecem em en-US para consistência com o restante do kit documental do repo.
 
 ## Referência estrutural
-`feature_spec.md` é o artefato canônico principal da SPEC final, mas não substitui o bundle canônico obrigatório em criação nova ou fork legítimo. SPEC ativa mantém bundle auxiliar, incluindo `spec_slices.md`; SPEC fechada continua compacta. Em fechamento canônico com `closed` ou `closed_with_residuals`, o bundle auxiliar morre e a pasta da SPEC deve ficar somente com `feature_spec.md`, salvo entradas ignoradas de sistema. `spec_slices.md` não deve permanecer no bundle fechado. Ausência de `MODE=RESUME` implica não-retomada. SPEC correlata nunca pode ser reutilizada automaticamente. `MODE=PLANNING_INTERFACE` só enriquece SPEC ativa existente para consumo posterior. `stnl_spec_manager` não toca `memory.md` nem assume papel de closure/finalizer. O novo comportamento vale para novas SPECs ativas e retomadas/forks legítimos conforme o contrato da skill, sem criar execução, work packages ou validation pack final.
+`feature_spec.md` é o artefato canônico principal da SPEC final, mas não substitui o bundle canônico obrigatório em criação nova ou fork legítimo. SPEC ativa mantém bundle auxiliar, incluindo `spec_slices.md`; SPEC executável também mantém `qa_checklist.md` como checklist mínimo de conclusão/QA; SPEC fechada continua compacta. Em fechamento canônico com `closed` ou `closed_with_residuals`, o bundle auxiliar morre e a pasta da SPEC deve ficar somente com `feature_spec.md`, salvo entradas ignoradas de sistema. `spec_slices.md` não deve permanecer no bundle fechado. Ausência de `MODE=RESUME` implica não-retomada. SPEC correlata nunca pode ser reutilizada automaticamente. `MODE=PLANNING_INTERFACE` só enriquece SPEC ativa existente para consumo posterior. `stnl_spec_manager` não toca `memory.md` nem assume papel de closure/finalizer. O novo comportamento vale para novas SPECs ativas e retomadas/forks legítimos conforme o contrato da skill, sem criar execução, work packages ou validation pack final.

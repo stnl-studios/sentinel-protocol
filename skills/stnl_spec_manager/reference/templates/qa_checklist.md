@@ -1,15 +1,21 @@
 # QA Checklist
 
 ## File Purpose Header
-- purpose: Working checklist for SPEC quality, completeness, ambiguity, testability, and compact active validation tracking.
-- read_when: A SPEC or slice needs quality review before downstream consumption, validation design, or post-validation checklist reconciliation while still active.
+- purpose: Working checklist for SPEC quality, completeness, ambiguity, testability, minimum completion/QA expectations, and compact active validation tracking.
+- read_when: A SPEC or slice needs quality review before downstream consumption, reaches `Execution Ready`, needs validation design, or needs post-validation checklist reconciliation while still active.
 - do_not_use_for: Accepted behavior, closure substitute, raw logs, execution plans, file paths, work packages, or detailed command transcripts.
-- canonical_source_for: SPEC quality checks, completeness checks, ambiguity checks, testability checks, and runner-backed QA checklist results for an active SPEC when applicable.
+- canonical_source_for: SPEC quality checks, completeness checks, ambiguity checks, testability checks, minimum completion/QA checks for an executable SPEC, and runner-backed QA checklist results for an active SPEC when applicable.
 - canonical_source_not_for: Final accepted behavior, final decisions, raw validation logs, final closure summary, implementation sequence, or replacement for the validation verdict.
-- update_owner: `stnl_spec_manager` while the SPEC is being matured; `finalizer` may reconcile runner-backed validation results during active-SPEC round closure when this artifact is applicable.
+- update_owner: `stnl_spec_manager` while the SPEC is being matured and before `Execution Ready`; `finalizer` may only reconcile runner-backed validation results during active-SPEC round closure when this artifact is already applicable.
 - downstream_consumers: `validation-eval-designer`, `validation-runner`, `reviewer`, `finalizer`.
 - token_policy: Read failed/warning checks first; skip passed checks unless investigating a specific risk.
 - related_files: `feature_spec.md`, `spec_slices.md`, `readiness_report.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`.
+
+## Applicability Gate
+> `qa_checklist.md` is expected for every executable SPEC or executable slice. Omit it only when the SPEC is not entering execution or when `qa_tracking: not_applicable` is explicitly justified in the SPEC lifecycle metadata. Even when no automated test exists, list the minimum manual, static, visual, rules, smoke, or contract validation expected for the cut.
+
+- qa_tracking: applicable | not_applicable
+- not_applicable_reason: <required only when qa_tracking is not_applicable>
 
 ## Validation Scope
 - spec_id: <SPEC-001>
