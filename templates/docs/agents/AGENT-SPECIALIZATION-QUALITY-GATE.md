@@ -420,12 +420,14 @@ Verificar:
 - `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `validation-runner`, `reviewer` e `finalizer` preservam o contrato nominal de ativacao, carregamento, prova, review e closure das guardrails relevantes ao cut
 - coders especializados preservam somente as guardrails compatíveis com sua superficie: front-end para `coder-frontend`, backend e SQL/persistencia para `coder-backend`, iOS Swift para `coder-ios`
 - o `reference/agents/*.agent.md` instalado e os artifacts finais materializados para VS Code/GitHub e Codex preservam os nomes das guardrails aplicáveis no corpo final ou em `developer_instructions`
+- artifacts finais especializados podam guardrails sem superfície ativa: se o repo alvo não tem superfície nativa iOS reconhecida e `coder-ios` não foi materializado, `stnl_mobile_ios_swift_quality` não aparece nos agents finais VS Code/GitHub ou Codex, embora continue existindo nos templates/base agents e skills fonte
 - `REQUIRED_QUALITY_GUARDRAILS` permanece metadado operacional por package, nunca lista de agents roteaveis
 - a compactacao, normalizacao ou especializacao local nao remove nome de guardrail ativa nem troca a skill por resumo local que enfraqueca autoridade
 
 Hard fails:
 - alguma quality guardrail fonte `stnl_*_quality` esperada nao esta instalada ou nao e propagada para os bundles de referencia
 - docs canonicos ou artifacts finais omitem uma guardrail canonica aplicavel ao papel
+- artifacts finais mantem `stnl_mobile_ios_swift_quality` em repo sem superfície nativa iOS reconhecida e sem `coder-ios` materializado
 - target VS Code/GitHub ou Codex materializado transforma quality guardrail em agent roteavel, executor substituto, reviewer substituto ou checklist universal
 - `REQUIRED_QUALITY_GUARDRAILS` desaparece de package ou executor quando a superficie do cut exige uma guardrail ativa
 

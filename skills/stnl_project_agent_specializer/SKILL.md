@@ -641,6 +641,19 @@ Adicionar `resync` quando o projeto mantém shared canonical docs fora da featur
 - tratar `UIKit interop` como evidência complementar para `coder-ios`, não como centro default do papel; ele só entra quando o repo já o materializa ou quando o cut exigir compatibilidade real
 - não materializar `coder-ios` em projetos sem app iOS nativo real, e não presumir que todo mobile pertence a `coder-frontend`
 
+### Guardrails por superfície ativa
+Depois de decidir o conjunto final de agents, montar uma lista de stack quality guardrails ativas a partir da superfície real do repo e dos agents materializados. Essa lista deve ser aplicada antes de serializar qualquer artifact final, tanto para `vscode` quanto para `codex`.
+
+Regras:
+- manter `stnl_frontend_quality` quando houver front-end web/browser, UI client-side, design system, componentes, telas ou `coder-frontend` materializado
+- manter `stnl_backend_quality` quando houver API, serviços, domínio, jobs, integrações, auth, runtime server-side ou `coder-backend` materializado
+- manter `stnl_backend_sql_quality` quando houver persistência, data access, query, ORM, NoSQL, cache, migrations, transaction, indexes ou package/cut que toque essa superfície
+- manter `stnl_mobile_ios_swift_quality` somente quando houver superfície nativa iOS real reconhecida no repo, centrada em Swift/SwiftUI/UIKit, ou quando `coder-ios` for materializado
+- se não houver superfície nativa iOS reconhecida e `coder-ios` não for materializado, remover `stnl_mobile_ios_swift_quality` dos agents finais especializados; notas como "native iOS is out of scope" podem permanecer, mas a guardrail iOS não pode aparecer como lente ativa, opção de ativação, proof obligation, review ou closure
+- a remoção é local ao artifact especializado final do repo alvo; não remover `stnl_mobile_ios_swift_quality` dos templates/base agents canônicos nem das skills fonte oficiais
+- se houver superfície iOS real ou `coder-ios` materializado, preservar a guardrail iOS e não podar referências necessárias ao workflow nativo iOS
+- aplicar o mesmo pruning aos corpos Markdown de `.github/agents/*.agent.md`, às `developer_instructions` de `.codex/agents/*.toml`, ao `AGENTS.md` Codex quando ele listar agents, e a qualquer lista operacional do `orchestrator`
+
 ### Política de materialização de `designer`
 Classificar `designer` em um destes níveis:
 
@@ -839,6 +852,7 @@ Regras:
 - o `validation-runner` só pode entrar quando existir artifact validável do executor; promessa de mudança não basta
 - o `orchestrator` deve reconhecer quando o cut ativa trilha material de `security`, `performance`, `migration/schema` ou `observability/release safety` e explicitá-la no handoff
 - o `orchestrator` deve marcar stack quality guardrails ativas conforme a superfície real do cut: `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality` e/ou `stnl_mobile_ios_swift_quality`; essas guardrails não viram agents nem substituem coders, runner, reviewer ou finalizer
+- o `orchestrator` especializado final deve listar somente guardrails compatíveis com a superfície real do repo e com o conjunto final de agents materializados; se não houver superfície iOS reconhecida e `coder-ios` não existir, `stnl_mobile_ios_swift_quality` não pode aparecer como guardrail ativa possível
 - o `orchestrator` não pode inventar trilha ou guardrail por reflexo nem transformar todo cut em `high risk` por default
 - o `reviewer` só pode entrar com artifact implementado real e classificação explícita `required` ou `advisory`
 - o `reviewer` não substitui a verdade de proof do `validation-runner`; ele agrega review semântico/arquitetural antes do fechamento

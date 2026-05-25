@@ -25,6 +25,7 @@ const QUALITY_GUARDRAIL_SKILLS = [
     "stnl_backend_sql_quality",
     "stnl_mobile_ios_swift_quality",
 ];
+const IOS_QUALITY_GUARDRAIL_SKILL = "stnl_mobile_ios_swift_quality";
 
 const REQUIRED_BUNDLE_PATHS = [
     ["stnl_project_foundation", "reference/docs", "core/CONTEXT.md"],
@@ -496,6 +497,9 @@ const BACKEND_ONLY_SPECIALIZED_AGENT_FILES = [
     "validation-runner.agent.md",
     "finalizer.agent.md",
 ];
+const NO_IOS_SPECIALIZED_AGENT_FILES = REQUIRED_CONTROLLED_AGENT_FILES.filter(
+    (fileName) => fileName !== "coder-ios.agent.md"
+);
 const LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE = "coder-backend.agent.md";
 
 const REQUIRED_AGENT_BODY_SNIPPETS = [
@@ -2252,6 +2256,18 @@ function createControlledFixtureRepo(repoRoot) {
     }
 }
 
+function createNoIosFixtureRepo(repoRoot) {
+    ensureDir(repoRoot);
+
+    for (const [relativePath, content] of Object.entries(CONTROLLED_FIXTURE_FILES)) {
+        if (relativePath.startsWith(`ios${path.sep}`) || relativePath.startsWith("ios/")) {
+            continue;
+        }
+
+        writeFile(path.join(repoRoot, relativePath), content);
+    }
+}
+
 function materializeControlledContextDocs(skillRoot, repoRoot) {
     for (const spec of CONTROLLED_CONTEXT_DOC_SPECS) {
         const sourcePath = path.join(skillRoot, "reference", "docs", spec.sourcePath);
@@ -2262,6 +2278,98 @@ function materializeControlledContextDocs(skillRoot, repoRoot) {
 
         writeFile(path.join(repoRoot, spec.targetPath), content);
     }
+}
+
+function hasNativeIosSurface(repoRoot) {
+    return listRelativeFiles(repoRoot).some((relativePath) => {
+        if (
+            relativePath.endsWith(".xcodeproj") ||
+            relativePath.endsWith(".xcworkspace") ||
+            relativePath.endsWith("Package.swift")
+        ) {
+            return true;
+        }
+
+        if (!relativePath.endsWith(".swift")) {
+            return false;
+        }
+
+        const normalizedPath = relativePath.split(path.sep).join("/");
+        if (normalizedPath.startsWith("ios/") || normalizedPath.startsWith("Sources/iOS/")) {
+            return true;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+        return /\bimport\s+(SwiftUI|UIKit)\b/.test(content);
+    });
+}
+
+function resolveActiveStackQualityGuardrails(repoRoot, controlledAgentFiles) {
+    const activeGuardrails = new Set(QUALITY_GUARDRAIL_SKILLS);
+    const hasMaterializedIosAgent = controlledAgentFiles.includes("coder-ios.agent.md");
+
+    if (!hasNativeIosSurface(repoRoot) && !hasMaterializedIosAgent) {
+        activeGuardrails.delete(IOS_QUALITY_GUARDRAIL_SKILL);
+    }
+
+    return activeGuardrails;
+}
+
+function pruneUnavailableIosGuardrail(content) {
+    return content
+        .replace(
+            "`stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, and/or `stnl_mobile_ios_swift_quality`",
+            "`stnl_frontend_quality`, `stnl_backend_quality`, and/or `stnl_backend_sql_quality`"
+        )
+        .replace(
+            "`stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, and `stnl_mobile_ios_swift_quality`",
+            "`stnl_frontend_quality`, `stnl_backend_quality`, and `stnl_backend_sql_quality`"
+        )
+        .replace(
+            "`stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, or `stnl_mobile_ios_swift_quality`",
+            "`stnl_frontend_quality`, `stnl_backend_quality`, or `stnl_backend_sql_quality`"
+        )
+        .replace(
+            ", and `stnl_mobile_ios_swift_quality` for native Swift/SwiftUI/UIKit iOS",
+            ""
+        )
+        .replace(
+            " and `stnl_mobile_ios_swift_quality` for native Swift/SwiftUI/UIKit iOS packages",
+            ""
+        )
+        .replace(
+            / Use `stnl_mobile_ios_swift_quality` for Swift\/SwiftUI\/UIKit boundaries, state, concurrency, lifecycle, navigation, networking, persistence, platform conventions, and testability\./g,
+            ""
+        )
+        .replace(
+            "Do not run a new guardrail review during finalization and do not edit `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, or `stnl_mobile_ios_swift_quality`.",
+            "Do not run a new guardrail review during finalization and do not edit `stnl_frontend_quality`, `stnl_backend_quality`, or `stnl_backend_sql_quality`."
+        );
+}
+
+function pruneUnavailableIosAgentReferences(content) {
+    return content
+        .replace(
+            "Route web/browser client work to `coder-frontend.agent.md`, real Swift/SwiftUI native iOS work to `coder-ios.agent.md`, and API/service/persistence/auth/job/integration/runtime work to `coder-backend.agent.md`.",
+            "Route web/browser client work to `coder-frontend.agent.md` and API/service/persistence/auth/job/integration/runtime work to `coder-backend.agent.md`. Native iOS is out of scope unless a real Swift/SwiftUI/UIKit surface is materialized locally."
+        )
+        .replace(
+            "Parallelizable only: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`, at most 3 active instances per role.",
+            "Parallelizable only: `coder-backend`, `coder-frontend`, `designer`, at most 3 active instances per role."
+        );
+}
+
+function pruneUnavailableStackQualityGuardrails(content, activeGuardrails) {
+    if (activeGuardrails.has(IOS_QUALITY_GUARDRAIL_SKILL)) {
+        return content;
+    }
+
+    const prunedContent = pruneUnavailableIosAgentReferences(pruneUnavailableIosGuardrail(content));
+    assert(
+        !prunedContent.includes(IOS_QUALITY_GUARDRAIL_SKILL),
+        "Pruning de guardrail iOS indisponível deixou referência residual no artifact final"
+    );
+    return prunedContent;
 }
 
 function buildSpecializedFrontmatter(baseFrontmatter, fileName, controlledAgentFiles) {
@@ -2324,13 +2432,18 @@ function readControlledAgentSourceContent(skillRoot, fileName, options = {}) {
 }
 
 function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, controlledAgentFiles);
+
     for (const fileName of controlledAgentFiles) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = readControlledAgentSourceContent(skillRoot, fileName, options);
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
-        const normalizedBody = fitControlledVscodeFixtureBody(
-            normalizeProtocolFixedConsistencyHeading(body),
-            fileName
+        const normalizedBody = pruneUnavailableStackQualityGuardrails(
+            fitControlledVscodeFixtureBody(
+                normalizeProtocolFixedConsistencyHeading(body),
+                fileName
+            ),
+            activeGuardrails
         );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
@@ -2346,6 +2459,8 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, 
 }
 
 function rebuildManagedVscodeAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles) {
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, controlledAgentFiles);
+
     for (const fileName of controlledAgentFiles) {
         const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
 
@@ -2362,9 +2477,12 @@ function rebuildManagedVscodeAgentsFromCanonical(skillRoot, repoRoot, controlled
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
-        const normalizedBody = fitControlledVscodeFixtureBody(
-            normalizeProtocolFixedConsistencyHeading(body),
-            fileName
+        const normalizedBody = pruneUnavailableStackQualityGuardrails(
+            fitControlledVscodeFixtureBody(
+                normalizeProtocolFixedConsistencyHeading(body),
+                fileName
+            ),
+            activeGuardrails
         );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
@@ -2423,13 +2541,18 @@ function renderBackendOnlySpecializedBody(body, fileName) {
 }
 
 function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES);
+
     for (const fileName of BACKEND_ONLY_SPECIALIZED_AGENT_FILES) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
-        const normalizedBody = fitBackendOnlyVscodeFixtureBody(
-            normalizeProtocolFixedConsistencyHeading(body),
-            fileName
+        const normalizedBody = pruneUnavailableStackQualityGuardrails(
+            fitBackendOnlyVscodeFixtureBody(
+                normalizeProtocolFixedConsistencyHeading(body),
+                fileName
+            ),
+            activeGuardrails
         );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
@@ -2447,6 +2570,8 @@ function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
 }
 
 function materializeCompactedWeakBackendOnlyAgents(skillRoot, repoRoot) {
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES);
+
     for (const fileName of BACKEND_ONLY_SPECIALIZED_AGENT_FILES) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
@@ -2461,7 +2586,7 @@ function materializeCompactedWeakBackendOnlyAgents(skillRoot, repoRoot) {
 
         writeFile(
             path.join(repoRoot, ".github", "agents", fileName),
-            renderFrontmatter(specializedFrontmatter) + [
+            renderFrontmatter(specializedFrontmatter) + pruneUnavailableStackQualityGuardrails([
                 "## Mission",
                 "Backend-only specialized agent with compact operational guidance.",
                 "",
@@ -2471,7 +2596,7 @@ function materializeCompactedWeakBackendOnlyAgents(skillRoot, repoRoot) {
                 "## Handoff",
                 "Return a concise final status for downstream agents.",
                 "",
-            ].join("\n")
+            ].join("\n"), activeGuardrails)
         );
     }
 }
@@ -2482,10 +2607,22 @@ function buildCodexAgentList(agentNames) {
         .join("\n");
 }
 
+function formatBacktickList(values) {
+    if (values.length <= 1) {
+        return values.map((value) => `\`${value}\``).join("");
+    }
+
+    return `${values.slice(0, -1).map((value) => `\`${value}\``).join(", ")}, or \`${values.at(-1)}\``;
+}
+
 function renderCodexAgentsIndex(template, agentNames) {
     return template
         .replaceAll("{{PROJECT_NAME}}", SMOKE_FIXTURE_REPO_NAME)
         .replace("{{AGENT_LIST}}", buildCodexAgentList(agentNames))
+        .replace(
+            /Without explicit subagent authorization, do not spawn .*?\./,
+            `Without explicit subagent authorization, do not spawn ${formatBacktickList(agentNames)}.`
+        )
         .replace("{{LOCAL_NOTES}}", "- Smoke fixture for controlled Codex materialization.");
 }
 
@@ -2544,6 +2681,7 @@ function withCodexRoutingRuntimeHardening(agentName, body) {
 
 function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
     const agentNames = controlledAgentFiles.map((fileName) => canonicalAgentIdFromFileName(fileName));
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, controlledAgentFiles);
 
     for (const fileName of controlledAgentFiles) {
         const agentName = canonicalAgentIdFromFileName(fileName);
@@ -2557,7 +2695,10 @@ function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFi
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
         const normalizedBody = withCodexRoutingRuntimeHardening(
             agentName,
-            normalizeProtocolFixedConsistencyHeading(body)
+            pruneUnavailableStackQualityGuardrails(
+                normalizeProtocolFixedConsistencyHeading(body),
+                activeGuardrails
+            )
         );
         const tomlContent = renderCodexAgentToml({
             name: agentName,
@@ -3593,6 +3734,121 @@ function assertBackendOnlySpecializedMaterialization(repoRoot) {
     assertProtocolHardeningInMaterializedAgents(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES);
 }
 
+function assertNoIosVscodeMaterialization(repoRoot) {
+    const agentsRoot = path.join(repoRoot, ".github", "agents");
+    const materializedFiles = listRelativeFiles(agentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort();
+
+    assert(
+        !materializedFiles.includes("coder-ios.agent.md"),
+        "Fixture sem iOS não deve materializar coder-ios.agent.md"
+    );
+    assert.deepEqual(
+        materializedFiles,
+        [...NO_IOS_SPECIALIZED_AGENT_FILES].sort(),
+        `Especialização sem iOS materializou conjunto inesperado: ${agentsRoot}`
+    );
+
+    for (const fileName of materializedFiles) {
+        const materializedPath = path.join(agentsRoot, fileName);
+        const content = fs.readFileSync(materializedPath, "utf8");
+
+        assert(
+            !content.includes(IOS_QUALITY_GUARDRAIL_SKILL),
+            `Guardrail iOS indisponível vazou para artifact VS Code sem iOS: ${materializedPath}`
+        );
+    }
+
+    const orchestratorPath = path.join(agentsRoot, "orchestrator.agent.md");
+    const orchestratorContent = fs.readFileSync(orchestratorPath, "utf8");
+    const { data: orchestratorFrontmatter } = parseFrontmatter(orchestratorContent, orchestratorPath);
+
+    assert(
+        !orchestratorFrontmatter.agents.includes("coder-ios"),
+        "orchestrator VS Code sem iOS não deve listar coder-ios no frontmatter"
+    );
+    assert(
+        !orchestratorContent.includes("coder-ios"),
+        "orchestrator VS Code sem iOS não deve manter referência textual a coder-ios"
+    );
+    assertContentIncludesAll(orchestratorContent, [
+        "Native iOS is out of scope",
+        "stnl_frontend_quality",
+        "stnl_backend_quality",
+        "stnl_backend_sql_quality",
+        "QA CHECKLIST UPDATE",
+    ], "orchestrator VS Code sem iOS");
+
+    for (const fileName of [
+        "validation-runner.agent.md",
+        "finalizer.agent.md",
+        "orchestrator.agent.md",
+    ]) {
+        const content = fs.readFileSync(path.join(agentsRoot, fileName), "utf8");
+        assert(
+            content.includes("QA CHECKLIST UPDATE"),
+            `${fileName} sem iOS perdeu QA CHECKLIST UPDATE`
+        );
+    }
+
+    const reviewerContent = fs.readFileSync(path.join(agentsRoot, "reviewer.agent.md"), "utf8");
+    assertStatusContract(reviewerContent, "reviewer", "reviewer VS Code sem iOS");
+    assertVscodeOperationalIdentity(
+        collectVscodeOperationalIdentityRecords(repoRoot, NO_IOS_SPECIALIZED_AGENT_FILES)
+    );
+    assertProtocolHardeningInMaterializedAgents(repoRoot, NO_IOS_SPECIALIZED_AGENT_FILES);
+}
+
+function assertNoIosCodexMaterialization(repoRoot) {
+    const codexAgentsRoot = path.join(repoRoot, ".codex", "agents");
+    const materializedTomls = listRelativeFiles(codexAgentsRoot).filter((entry) => entry.endsWith(".toml"));
+    const materializedAgentNames = materializedTomls
+        .map((entry) => path.basename(entry, ".toml"))
+        .sort();
+
+    assert(
+        !materializedAgentNames.includes("coder-ios"),
+        "Fixture Codex sem iOS não deve materializar coder-ios.toml"
+    );
+    assert.deepEqual(
+        materializedAgentNames,
+        NO_IOS_SPECIALIZED_AGENT_FILES.map((fileName) => canonicalAgentIdFromFileName(fileName)).sort(),
+        `Especialização Codex sem iOS materializou conjunto inesperado: ${codexAgentsRoot}`
+    );
+
+    for (const relativePath of materializedTomls) {
+        const materializedPath = path.join(codexAgentsRoot, relativePath);
+        const content = fs.readFileSync(materializedPath, "utf8");
+        const parsed = parseToml(content, materializedPath);
+
+        assert(
+            !parsed.developer_instructions.includes(IOS_QUALITY_GUARDRAIL_SKILL),
+            `Guardrail iOS indisponível vazou para artifact Codex sem iOS: ${materializedPath}`
+        );
+    }
+
+    const orchestratorContent = fs.readFileSync(path.join(codexAgentsRoot, "orchestrator.toml"), "utf8");
+    const orchestratorParsed = parseToml(orchestratorContent, "codex/orchestrator.toml");
+    assert(
+        !orchestratorParsed.developer_instructions.includes("coder-ios"),
+        "orchestrator Codex sem iOS não deve manter referência textual a coder-ios"
+    );
+    assertContentIncludesAll(orchestratorParsed.developer_instructions, [
+        "Native iOS is out of scope",
+        "stnl_frontend_quality",
+        "stnl_backend_quality",
+        "stnl_backend_sql_quality",
+        "QA CHECKLIST UPDATE",
+    ], "orchestrator Codex sem iOS");
+
+    const agentsIndexContent = fs.readFileSync(path.join(repoRoot, "AGENTS.md"), "utf8");
+    assert(
+        !agentsIndexContent.includes("coder-ios"),
+        "AGENTS.md Codex sem iOS não deve listar coder-ios"
+    );
+}
+
 function assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(skillRoot) {
     const weakRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-weak-backend-"));
 
@@ -4096,6 +4352,8 @@ function runControlledMaterializationSmoke(targetHome) {
     const controlledAgentFiles = getControlledAgentFiles(agentSkillRoot);
     const vscodeRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-"));
     const backendOnlyRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-backend-only-"));
+    const noIosVscodeRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-no-ios-"));
+    const noIosCodexRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-no-ios-"));
     const codexRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-"));
 
     try {
@@ -4170,6 +4428,15 @@ function runControlledMaterializationSmoke(targetHome) {
         assertConsistencyPolicyRepairsLegacyVscodeMaterialization(agentSkillRoot, controlledAgentFiles);
         assertManagedVscodeUpdateRebuildsLegacyReviewer(agentSkillRoot, controlledAgentFiles);
 
+        createNoIosFixtureRepo(noIosVscodeRepoRoot);
+        materializeControlledContextDocs(contextSkillRoot, noIosVscodeRepoRoot);
+        materializeControlledAgents(agentSkillRoot, noIosVscodeRepoRoot, NO_IOS_SPECIALIZED_AGENT_FILES);
+        assertNoIosVscodeMaterialization(noIosVscodeRepoRoot);
+
+        createNoIosFixtureRepo(noIosCodexRepoRoot);
+        materializeControlledCodexAgents(agentSkillRoot, noIosCodexRepoRoot, NO_IOS_SPECIALIZED_AGENT_FILES);
+        assertNoIosCodexMaterialization(noIosCodexRepoRoot);
+
         createControlledFixtureRepo(codexRepoRoot);
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
 
@@ -4191,6 +4458,8 @@ function runControlledMaterializationSmoke(targetHome) {
     } finally {
         fs.rmSync(vscodeRepoRoot, { recursive: true, force: true });
         fs.rmSync(backendOnlyRepoRoot, { recursive: true, force: true });
+        fs.rmSync(noIosVscodeRepoRoot, { recursive: true, force: true });
+        fs.rmSync(noIosCodexRepoRoot, { recursive: true, force: true });
         fs.rmSync(codexRepoRoot, { recursive: true, force: true });
     }
 }
