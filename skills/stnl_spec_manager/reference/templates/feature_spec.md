@@ -18,9 +18,24 @@
 - last_updated: <YYYY-MM-DD>
 - last_session: <1>
 
+## File Purpose Header
+- purpose: Canonical business and product contract for this SPEC.
+- read_when: Scope, objective, flows, rules, acceptance criteria, constraints, risks, decisions, or closure need to be understood.
+- do_not_use_for: Execution sequence, file editing plan, owned paths, validation commands, temporary notes, or work packages.
+- canonical_source_for: Problem, objective, scope, out_of_scope, functional behavior, acceptance criteria, Spec DoD, and final closure summary.
+- canonical_source_not_for: Detailed open questions, temporary assumptions, session history, or the slice consumption map.
+- update_owner: `stnl_spec_manager` while active; `finalizer` only consolidates closure through the approved close flow.
+- downstream_consumers: `planner`, `orchestrator`, `validation-eval-designer`, `reviewer`, `finalizer`.
+- token_policy: Read Metadata, Executive Summary, Scope, Acceptance Criteria, Spec DoD, and Closure first; open deeper sections only when needed.
+- related_files: `spec_slices.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`.
+
 > This is the canonical persisted shape for the final SPEC artifact. A closed SPEC must be readable, understandable, and reusable starting and ending in this file. Keep every section in place even when the content is partial. If something is unknown, mark it as pending, conditional, or `none` instead of collapsing the document or inventing certainty.
 >
 > Keep this file directly consumable, but do not turn it into an execution plan or an early implementation prescription. Detailed investigation or temporary working notes may live elsewhere while the SPEC matures, but no auxiliary artifact should be required to understand the final business scope, rules, acceptance, decisions, or closure captured here.
+>
+> When `closure_status` is `closed` or `closed_with_residuals`, the SPEC folder must contain only `feature_spec.md`, except ignored system entries such as `__MACOSX` and `.DS_Store`. `closed_with_residuals` records known residual product, scope, or validation limits inside this file; it does not retain auxiliary files.
+>
+> Closure evidence in this file must be compact evidence categories, not exact validation commands, logs, operational paths, detailed suite counts, granular checklists, or technical validation trails. Detailed evidence belongs in auxiliary working artifacts while the SPEC is active, not in the closed canonical artifact.
 >
 > `state` tracks maturity and consumability. `lifecycle_status` tracks whether this SPEC artifact remains active or has been closed after explicit reconciliation against existing evidence.
 >
@@ -224,25 +239,22 @@
 - mitigation: [Mitigation, decision ID, or `pending`]
 
 ## Residual Gaps and Conditions
-- [Residual gap, pending validation, or condition that still matters for honest reading of this SPEC. Use `none` when there are no material residuals.]
+- [Residual gap, pending validation, or condition that still matters for honest reading of this SPEC. Use `none` when there are no material residuals. Keep this summary product/contract focused; do not include implementation plans, session history, validation commands, checklist trails, or maturity logs.]
 
 ## Spec Closure
 - closure_status: not_closed | closed | closed_with_residuals
 - closure_basis: not_applicable_yet | validation_evidence | manual_verification | combined_evidence
 - closure_summary: [State whether this SPEC artifact remains active or what explicitly justified closure.]
 - evidence_used:
-  - [Evidence artifact or observation 1]
-  - [Evidence artifact or observation 2]
+  - [Compact evidence category 1, for example local automated web validation passed: lint, build, and unit/component tests.]
+  - [Compact evidence category 2, for example local rules validation passed for the relevant scenarios.]
+  - [Compact evidence category 3, for example final manual smoke confirmed OK, static/documental validation completed, or known validation limits preserved.]
 - residuals_after_closure:
-  - [Residual item or `none`]
+  - [Known residual product, scope, or validation limit, or `none`]
+- canonical_close_folder_state: [If `closed` or `closed_with_residuals`, must be `feature_spec.md only`; if `not_closed`, use `not_applicable`.]
 
-## Supporting Working Artifacts
-> Track supporting artifacts that materially helped maturation or may help resume context. In new SPEC creation or legitimate fork, canonical bundle artifacts are required by the bundle contract; conditional artifacts are generated only when applicable. Supporting artifacts become removable or dispensable only under closure and residual-value rules, and must never be the only place to understand final scope, acceptance, decision, or closure.
+## Active Working Artifacts
+> Use this section only while the SPEC is active. In new SPEC creation or legitimate fork, canonical bundle artifacts are required by the bundle contract; conditional artifacts are generated only when applicable. For `closed` or `closed_with_residuals`, set this section to `not_applicable_closed` and do not list retained auxiliary artifacts.
 
-- `open_questions.md` (canonical bundle artifact)
-- `assumptions.md` (canonical bundle artifact)
-- `decision_log.md` (canonical bundle artifact)
-- `readiness_report.md` (canonical bundle artifact)
-- `session_summary.md` (canonical bundle artifact)
-- `spec_slices.md` (conditional: only when split is needed)
-- `qa_checklist.md` (conditional: only when approaching execution readiness)
+- status: active | not_applicable_closed
+- active_artifacts: [List active working artifacts while `lifecycle_status: active`, or `none` after closure.]

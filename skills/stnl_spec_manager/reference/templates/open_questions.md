@@ -1,5 +1,16 @@
 # Open Questions
 
+## File Purpose Header
+- purpose: Canonical register of material uncertainty for the active SPEC.
+- read_when: Questions, blocker status, severity, or confirmation needs affect scope, acceptance, readiness, or a target slice.
+- do_not_use_for: Final accepted scope, resolved product decisions, implementation direction, or closure evidence.
+- canonical_source_for: `Q-*` items, blocker status, severity, confirmation need, answer state, and question-to-decision references.
+- canonical_source_not_for: Final accepted behavior, resolved decisions, execution plans, or implementation details.
+- update_owner: `stnl_spec_manager` while the SPEC is active.
+- downstream_consumers: `planner`, `orchestrator`, `validation-eval-designer`, `reviewer`, `finalizer`.
+- token_policy: Read Summary and only blocking/high questions first, unless the target slice references more.
+- related_files: `feature_spec.md`, `spec_slices.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`.
+
 > This is the canonical question register. Do not replace it with a reduced summary. Keep one full question block per material item, and preserve answered, deferred, or invalidated entries when they matter for traceability.
 >
 > Any uncertainty, inference, probable behavior, missing product decision, or AI-suggested direction that is not confirmed must live here instead of becoming a requirement in `feature_spec.md`. Suggested options are allowed, but they are never defaults.

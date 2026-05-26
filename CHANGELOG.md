@@ -1,5 +1,21 @@
 # Changelog
 
+## v2026.5.1-alpha.1
+
+Melhoria da interface de consumo de SPECs na linha Alpha Preview.
+
+### Alterado
+
+- Reforçado o uso de `spec_slices.md` como mapa obrigatório de consumo para SPECs ativas.
+- Adicionada a Planning Interface como etapa documental para enriquecer SPECs antes da execução, sem autorizar implementação.
+- Alinhados contratos de agentes, documentação Codex e smoke checks ao novo fluxo de consumo de SPEC.
+
+### Corrigido
+
+- Corrigidas inconsistências entre README, manifests, prompt map, templates de SPEC e contrato de retorno do `reviewer`.
+- Corrigida a política de update de agents gerenciados para reconstruir artifacts a partir do template canônico atual, evitando híbridos entre contratos antigos e novos.
+- Corrigido o contrato de `EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE` para tratá-los como handoffs efêmeros de rodada, sem arquivos obrigatórios nem leitura de paths temporários de runtime.
+
 ## v2026.5.0-alpha.3
 
 Correção do entrypoint visual Codex na linha Alpha Preview.

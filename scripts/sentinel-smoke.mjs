@@ -25,6 +25,7 @@ const QUALITY_GUARDRAIL_SKILLS = [
     "stnl_backend_sql_quality",
     "stnl_mobile_ios_swift_quality",
 ];
+const IOS_QUALITY_GUARDRAIL_SKILL = "stnl_mobile_ios_swift_quality";
 
 const REQUIRED_BUNDLE_PATHS = [
     ["stnl_project_foundation", "reference/docs", "core/CONTEXT.md"],
@@ -58,6 +59,104 @@ const OWNED_SOURCE_ROOTS = [
 
 const SMOKE_FIXTURE_REPO_NAME = "sentinel-smoke-fixture";
 const SMOKE_MATERIALIZATION_DATE = "20260412";
+const COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS = [
+    "Compact Agent Return Contract",
+    "return only the minimum needed for the parent to decide the next gate",
+    "Do not repeat the full Sentinel contract",
+    "Do not paste full SPEC, checklist, logs, or diffs",
+    "return durable artifact path only for files actually written",
+    "compact handoff summary/status",
+    "Expand only on blocker, failure, critical validation evidence, or explicit human request",
+    "main chat focused on routing/status deltas",
+];
+const EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS = [
+    "EXECUTION BRIEF",
+    "VALIDATION PACK",
+    "EXECUTION PACKAGE",
+    "handoff",
+    "HANDOFF_MISSING",
+    "HANDOFF_INVALID",
+    "REQUEST_REPLAY_FROM_ORCHESTRATOR",
+    "REQUEST_REGEN_FROM_OWNER",
+    "workspaceStorage",
+    "chat-session-resources",
+    "content.txt",
+    "scratchpad",
+];
+const EPHEMERAL_PREPARATION_HANDOFF_FILE_NAMES = [
+    "execution_brief.md",
+    "validation_pack.md",
+    "execution_package.md",
+];
+const READ_ONLY_PREPARATION_HANDOFF_AGENT_FILES = [
+    "planner.agent.md",
+    "validation-eval-designer.agent.md",
+    "execution-package-designer.agent.md",
+];
+const HANDOFF_READY_DIRECT_STATUS_SNIPPETS = [
+    "\n- `HANDOFF_READY`\n",
+    "operational handoff states `HANDOFF_READY`",
+    "Use `HANDOFF_READY`,",
+];
+const EPHEMERAL_PREPARATION_HANDOFF_FORBIDDEN_PHRASES = [
+    "must materialize `execution_brief.md`",
+    "must persist `validation_pack.md`",
+    "must create `execution_package.md`",
+    "deve materializar `execution_brief.md`",
+    "deve persistir `validation_pack.md`",
+    "deve criar `execution_package.md`",
+    "path do `EXECUTION BRIEF`",
+    "path do `VALIDATION PACK`",
+    "path do `EXECUTION PACKAGE`",
+    "`VALIDATION PACK` mantido como artifact local",
+];
+const COMPACT_AGENT_RETURN_FORBIDDEN_SNIPPETS = [
+    "paste the full artifact into the chat",
+    "include full logs when validation passed",
+    "repeat the full Sentinel contract in the return",
+    "return raw intermediate output",
+];
+const CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS = [
+    "cd web && npm run lint",
+    "cd web && npm run build",
+    "cd web && npm test",
+    "cd functions && npm run test:rules",
+    "--watch=false",
+    "--browsers=ChromeHeadless",
+    "106/106",
+];
+const CODEX_PARENT_MEDIATED_ROUTING_SNIPPETS = [
+    "Codex Parent-Mediated Routing Contract",
+    "When the human explicitly requests `Use orchestrator`",
+    "orchestrator must return a compact ROUTE_PACKET",
+    "orchestrator must not spawn downstream Sentinel owners directly",
+    "root/main session then spawns the named owner",
+    "root/main must not choose owners on its own except from a valid ROUTE_PACKET",
+    "preserves the Codex primary visual layer",
+    "avoids nested owner threads",
+    "return to orchestrator for the next routing decision",
+];
+const CODEX_PARENT_MEDIATED_ROUTING_FORBIDDEN_SNIPPETS = [
+    "orchestrator may then spawn the current canonical owner directly",
+    "orchestrator spawns the current canonical owner",
+    "orchestrator may spawn downstream owners",
+    "root/main chooses the current canonical owner directly",
+    "root/main -> owner direct",
+    "default first Sentinel subagent is `orchestrator`",
+    "must request `orchestrator` as the default first Sentinel subagent",
+    "must request the `orchestrator` custom subagent by exact name",
+    "default first Sentinel subagent for Codex",
+    "automatically delegate by description",
+    "automatic delegation by description",
+];
+const CODEX_EXPLICIT_SUBAGENT_INVOCATION_SNIPPETS = [
+    "Explicit Subagent Invocation Contract",
+    "must not spawn custom subagents automatically",
+    "Skill/workflow requests are not subagent authorization",
+    "`Use stnl_spec_manager`",
+    "`Use orchestrator`",
+    "SUBAGENT_AUTH_REQUIRED",
+];
 
 const CONTROLLED_CONTEXT_DOC_SPECS = [
     {
@@ -125,6 +224,224 @@ const CONTROLLED_CONTEXT_DOC_SPECS = [
     },
 ];
 
+const SPEC_TEMPLATE_HEADER_REQUIRED_SNIPPETS = [
+    "## File Purpose Header",
+    "- do_not_use_for:",
+    "- canonical_source_for:",
+    "- canonical_source_not_for:",
+    "- update_owner:",
+    "- downstream_consumers:",
+    "- token_policy:",
+    "- related_files:",
+];
+
+const SPEC_TEMPLATE_HEADER_SPECS = [
+    {
+        relativePath: "feature_spec.md",
+        requiredSnippets: [
+            "Canonical business and product contract",
+            "do_not_use_for: Execution sequence, file editing plan, owned paths, validation commands, temporary notes, or work packages.",
+            "canonical_source_not_for: Detailed open questions, temporary assumptions, session history, or the slice consumption map.",
+        ],
+    },
+    {
+        relativePath: "spec_slices.md",
+        requiredSnippets: [
+            "Canonical consumption map for an active SPEC",
+            "do_not_use_for: Execution authorization, execution plans, file paths, commands, work packages, validation packs, or closure decisions.",
+            "canonical_source_not_for: Business acceptance, final product decisions, detailed questions, implementation sequencing, validation commands, or post-execution closure.",
+        ],
+    },
+    {
+        relativePath: "open_questions.md",
+        requiredSnippets: [
+            "Canonical register of material uncertainty",
+            "do_not_use_for: Final accepted scope, resolved product decisions, implementation direction, or closure evidence.",
+            "canonical_source_for: `Q-*` items",
+        ],
+    },
+    {
+        relativePath: "assumptions.md",
+        requiredSnippets: [
+            "Canonical register of provisional assumptions",
+            "do_not_use_for: Final decisions, closure evidence, execution plans, or accepted product behavior.",
+            "canonical_source_for: `A-*` assumptions",
+        ],
+    },
+    {
+        relativePath: "decision_log.md",
+        requiredSnippets: [
+            "Canonical register of decisions",
+            "do_not_use_for: Open questions, speculative implementation, temporary assumptions, execution plans, or validation commands.",
+            "canonical_source_for: `D-*` decisions",
+        ],
+    },
+    {
+        relativePath: "readiness_report.md",
+        requiredSnippets: [
+            "Working assessment of SPEC maturity",
+            "do_not_use_for: Implementation steps, execution plans, final closure summary, file paths, commands, or work packages.",
+            "canonical_source_for: Readiness status",
+        ],
+    },
+    {
+        relativePath: "session_summary.md",
+        requiredSnippets: [
+            "Append-only working log of SPEC maturation sessions",
+            "do_not_use_for: Canonical final scope, accepted behavior, execution plans, file paths, commands, validation proof, or closure evidence.",
+            "canonical_source_for: Session-by-session working history",
+        ],
+    },
+    {
+        relativePath: "qa_checklist.md",
+        requiredSnippets: [
+            "Working checklist for SPEC quality",
+            "post-validation checklist reconciliation while still active",
+            "do_not_use_for: Accepted behavior, closure substitute, raw logs, execution plans, file paths, work packages, or detailed command transcripts.",
+            "canonical_source_for: SPEC quality checks",
+            "runner-backed QA checklist results for an active SPEC when applicable",
+        ],
+    },
+];
+
+const DOC_TEMPLATE_HEADER_REQUIRED_SNIPPETS = [
+    "## File Purpose Header",
+    "- do_not_use_for:",
+    "- canonical_source_for:",
+    "- canonical_source_not_for:",
+    "- token_policy:",
+];
+
+const DOC_TEMPLATE_HEADER_PATHS = [
+    "INDEX.md",
+    "TBDS.md",
+    path.join("core", "CONTEXT.md"),
+    path.join("core", "CONTRACTS.md"),
+    path.join("core", "RULES.md"),
+    path.join("core", "STATE.md"),
+    path.join("core", "TESTING.md"),
+    path.join("units", "_unit-template", "CONTEXT.md"),
+    path.join("units", "_unit-template", "CONTRACTS.md"),
+    path.join("units", "_unit-template", "RULES.md"),
+    path.join("units", "_unit-template", "STATE.md"),
+    path.join("units", "_unit-template", "TESTING.md"),
+    path.join("units", "_unit-template", "UI_KIT.md"),
+    path.join("features", "_feature-template", "CONTEXT.md"),
+    path.join("features", "_feature-template", "done", "DONE-TEMPLATE.md"),
+    path.join("decisions", "ADR-template.md"),
+    path.join("decisions", "INDEX.md"),
+    path.join("reference", "DESIGN_SYSTEM.md"),
+    path.join("agents", "AGENT-CONTRACT-SHAPE.md"),
+    path.join("agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+    path.join("workflow", "EXECUTION-LIFECYCLE.md"),
+    path.join("workflow", "STATUS-GATES.md"),
+];
+
+const DOC_TEMPLATE_CRITICAL_SNIPPETS = [
+    {
+        relativePath: "INDEX.md",
+        requiredSnippets: [
+            "sem substituir os docs factuais",
+            "`docs/INDEX.md` não substitui nenhum desses documentos",
+        ],
+    },
+    {
+        relativePath: path.join("core", "TESTING.md"),
+        requiredSnippets: [
+            "não substitui o `VALIDATION PACK` cut-scoped",
+            "não vira checklist rígido",
+        ],
+    },
+    {
+        relativePath: path.join("features", "_feature-template", "done", "DONE-TEMPLATE.md"),
+        requiredSnippets: [
+            "work packages ou substituto de `Feature CONTEXT`",
+            "`DONE` não substitui `Feature CONTEXT`",
+        ],
+    },
+    {
+        relativePath: path.join("agents", "AGENT-CONTRACT-SHAPE.md"),
+        requiredSnippets: [
+            "Criar SPEC, planejar execução, autorizar subagents, rodar comandos ou substituir base agents.",
+            "O `EXECUTION PACKAGE` nao substitui o orchestrator.",
+        ],
+    },
+    {
+        relativePath: path.join("agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+        requiredSnippets: [
+            "Planejar implementação de produto, autorizar execução, rodar comandos ou substituir contrato de agent base.",
+            "AGENTS.md` e cada `.codex/agents/*.toml` contem `Compact Agent Return Contract`",
+        ],
+    },
+    {
+        relativePath: path.join("workflow", "EXECUTION-LIFECYCLE.md"),
+        requiredSnippets: [
+            "Autorizar execução sem gates, criar work packages concretos, comandos, SPEC ou validação factual do repo.",
+            "`execution-package-designer` compila `EXECUTION PACKAGE`",
+        ],
+    },
+    {
+        relativePath: path.join("workflow", "STATUS-GATES.md"),
+        requiredSnippets: [
+            "autorização de execução, comandos, work packages ou fatos do projeto.",
+            "não substitui a proof pós-execução",
+        ],
+    },
+];
+
+const BASE_HEADER_AWARE_AGENT_FILES = [
+    "orchestrator.agent.md",
+    "planner.agent.md",
+    "execution-package-designer.agent.md",
+    "validation-eval-designer.agent.md",
+    "validation-runner.agent.md",
+    "reviewer.agent.md",
+    "finalizer.agent.md",
+];
+
+const HEADER_AWARE_AGENT_COMMON_SNIPPETS = [
+    "### Header-aware reading",
+    "`File Purpose Header`",
+    "`read_when`",
+    "`do_not_use_for`",
+    "`canonical_source_for`",
+    "`canonical_source_not_for`",
+    "`token_policy`",
+    "legacy reading",
+];
+
+const HEADER_AWARE_AGENT_CRITICAL_SNIPPETS = {
+    "orchestrator.agent.md": [
+        "it never replaces canonical exact content",
+        "SPEC header/`Planning Interface` never authorizes execution, validation, or closure",
+    ],
+    "planner.agent.md": [
+        "`Planning Interface` as planning information only, never as an executable plan or execution authorization",
+        "exact scope, decisions, acceptance, blockers, and readiness still require canonical content",
+    ],
+    "execution-package-designer.agent.md": [
+        "Headers may route reading, but they must not fill `OWNED_PATHS`, commands, work packages, acceptance checks, or block conditions",
+        "they never authorize a package when the SPEC or slice is blocked or deferred for planning",
+    ],
+    "validation-eval-designer.agent.md": [
+        "Header is not acceptance, DoD, readiness, or proof evidence",
+        "`Planning Interface` never authorizes execution, validation, or closure",
+    ],
+    "validation-runner.agent.md": [
+        "never extract commands/proof criteria from non-canonical files",
+        "SPEC header or `Planning Interface` never authorizes commands, execution, proof obligations, verdict changes, or closure",
+    ],
+    "reviewer.agent.md": [
+        "Do not approve or reject from the header alone",
+        "confirm quality, consistency, package adherence, and guardrail fit against canonical content",
+    ],
+    "finalizer.agent.md": [
+        "Headers do not replace canonical evidence",
+        "`spec_slices.md` is not post-execution closure source",
+        "canonical close requires only `feature_spec.md`",
+    ],
+};
+
 const AGENT_REFERENCE_DOC_SPECS = [
     {
         relativePath: path.join("reference", "docs", "agents", "AGENT-CONTRACT-SHAPE.md"),
@@ -132,6 +449,10 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "# Shape Canonico de Contrato de Agent Base",
             "## Metadata canonica parseavel",
             "## Shape esperado para agent especializado",
+            "Explicit Subagent Invocation Contract",
+            "Skill/workflow request nao e autorizacao de custom subagent",
+            "SUBAGENT_AUTH_REQUIRED",
+            ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
         ],
     },
     {
@@ -148,6 +469,10 @@ const AGENT_REFERENCE_DOC_SPECS = [
             "Stack quality guardrail propagation check",
             "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
             "artifact final materializado",
+            "Explicit Subagent Invocation Contract",
+            "Use stnl_spec_manager",
+            "SUBAGENT_AUTH_REQUIRED",
+            ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
         ],
     },
     {
@@ -214,6 +539,9 @@ const BACKEND_ONLY_SPECIALIZED_AGENT_FILES = [
     "validation-runner.agent.md",
     "finalizer.agent.md",
 ];
+const NO_IOS_SPECIALIZED_AGENT_FILES = REQUIRED_CONTROLLED_AGENT_FILES.filter(
+    (fileName) => fileName !== "coder-ios.agent.md"
+);
 const LEGACY_CONSISTENCY_HEADING_FIXTURE_FILE = "coder-backend.agent.md";
 
 const REQUIRED_AGENT_BODY_SNIPPETS = [
@@ -230,6 +558,60 @@ const CONSISTENCY_WITHOUT_LEGACY_PROPAGATION_SNIPPETS = [
 ];
 const CONSISTENCY_POLICY_CANONICAL_HEADING = "## Consistency without legacy propagation";
 const CONSISTENCY_POLICY_LEGACY_MARKER = "Consistency without legacy propagation:";
+const LEGACY_REVIEWER_STATUS_MARKER = "LEGACY_REVIEWER_READY_BLOCKED_STATUS_MARKER";
+const MANAGED_UPDATE_CANONICAL_SNIPPETS_BY_AGENT = {
+    "orchestrator.agent.md": [
+        "These are ephemeral current-round handoffs, not required files.",
+        "missing persisted file is not invalid by itself",
+        "HANDOFF_READY` must not substitute for owner `READY` or create a second readiness gate",
+        "valid only from the current-round owner or orchestrator replay",
+        "Never search `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpads, or temp runtime files",
+        "regenerate via previous owner",
+    ],
+    "planner.agent.md": [
+        "do not create `execution_brief.md`",
+        "When ready, emit `STATUS: READY` and hand off the `EXECUTION BRIEF`",
+    ],
+    "validation-eval-designer.agent.md": [
+        "do not create `validation_pack.md`",
+        "When ready, emit `STATUS: READY` and hand off the `VALIDATION PACK`",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "execution-package-designer.agent.md": [
+        "do not create `execution_package.md`",
+        "When ready, emit `STATUS: READY` and hand off the `EXECUTION PACKAGE`",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "coder-frontend.agent.md": [
+        "do not reconstruct it locally",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "coder-backend.agent.md": [
+        "do not reconstruct it locally",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "coder-ios.agent.md": [
+        "do not reconstruct it locally",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "validation-runner.agent.md": [
+        "the required `VALIDATION PACK` is absent from current-round context",
+        "do not search runtime temp paths",
+    ],
+    "finalizer.agent.md": [
+        "Do not require `execution_brief.md`, `validation_pack.md`, or `execution_package.md` to close a SPEC.",
+    ],
+    "resync.agent.md": [
+        "do not recover old `EXECUTION BRIEF`, `VALIDATION PACK`, or `EXECUTION PACKAGE` handoffs",
+    ],
+};
+const STATUS_CONTRACT_BY_AGENT = {
+    "reviewer": ["PASS", "FAIL"],
+    "coder-backend": ["READY", "BLOCKED"],
+    "coder-frontend": ["READY", "BLOCKED"],
+    "coder-ios": ["READY", "BLOCKED"],
+    "validation-runner": ["PASS", "PARTIAL", "FAIL", "BLOCKED"],
+};
 
 const CODEX_AGENTS_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "AGENTS.md");
 const CODEX_CONFIG_TEMPLATE_RELATIVE_PATH = path.join("reference", "templates", "codex", "config.toml");
@@ -457,6 +839,8 @@ function assertReferenceManifests() {
 function assertSpecManagerContract() {
     const specManagerRoot = path.join(SOURCE_DIR, "stnl_spec_manager");
     const skillContent = fs.readFileSync(path.join(specManagerRoot, "SKILL.md"), "utf8");
+    const specManagerReadmeContent = fs.readFileSync(path.join(specManagerRoot, "README.md"), "utf8");
+    const manifestContent = fs.readFileSync(path.join(specManagerRoot, "reference", "MANIFEST.md"), "utf8");
     const specSlicesContent = fs.readFileSync(
         path.join(specManagerRoot, "reference", "templates", "spec_slices.md"),
         "utf8"
@@ -467,6 +851,10 @@ function assertSpecManagerContract() {
     );
     const featureSpecContent = fs.readFileSync(
         path.join(specManagerRoot, "reference", "templates", "feature_spec.md"),
+        "utf8"
+    );
+    const qaChecklistContent = fs.readFileSync(
+        path.join(specManagerRoot, "reference", "templates", "qa_checklist.md"),
         "utf8"
     );
     const openQuestionsContent = fs.readFileSync(
@@ -481,6 +869,19 @@ function assertSpecManagerContract() {
         path.join(specManagerRoot, "reference", "templates", "decision_log.md"),
         "utf8"
     );
+    const specClosePromptContent = fs.readFileSync(
+        path.join(ROOT, "templates", "prompts", "spec-close.md"),
+        "utf8"
+    );
+    const specPlanningInterfacePromptPath = path.join(ROOT, "templates", "prompts", "spec-planning-interface.md");
+    const specPlanningInterfacePromptContent = fs.readFileSync(
+        specPlanningInterfacePromptPath,
+        "utf8"
+    );
+    const promptReadmeContent = fs.readFileSync(
+        path.join(ROOT, "templates", "prompts", "README.md"),
+        "utf8"
+    );
     const orchestratorSliceContent = fs.readFileSync(
         path.join(ROOT, "templates", "prompts", "orchestrator-slice.md"),
         "utf8"
@@ -489,6 +890,101 @@ function assertSpecManagerContract() {
         path.join(ROOT, "templates", "prompts", "orchestrator-next-slice.md"),
         "utf8"
     );
+
+    assertSpecTemplateHeaders(specManagerRoot);
+
+    assertContentIncludesAll(skillContent, [
+        "tratar a SPEC como contrato durável de intenção, escopo, comportamento, decisões, aceite, riscos, readiness e cortes consumíveis",
+        "nunca transformar a SPEC em plano técnico, plano de arquivos, pacote executável ou fechamento pós-execução",
+        "SPEC não é plano técnico.",
+        "SPEC é o contrato durável",
+        "`spec_slices.md`: mapa canônico de consumo da SPEC ativa; deve existir em toda SPEC ativa e conter ao menos `SL-001`",
+        "`spec_slices.md` é obrigatório em toda SPEC ativa.",
+        "`spec_slices.md` é o mapa canônico de consumo da SPEC ativa, não apenas um arquivo de split",
+        "toda SPEC ativa deve ter ao menos `SL-001`",
+        "`SL-001` existe mesmo em SPEC de slice único",
+        "`spec_slices.md` pode informar planejamento posterior, mas não autoriza execução",
+        "`Planning Interface` vive dentro de `spec_slices.md`. Ela pode ser enriquecida por `MODE=PLANNING_INTERFACE`, mas continua atrasada, não operacional e subordinada à SPEC ativa.",
+        "## MODE=PLANNING_INTERFACE",
+        "`MODE=PLANNING_INTERFACE`",
+        "`PLANNING_INTERFACE` é etapa de enriquecimento da SPEC ativa, não etapa de execução",
+        "`MODE=NEW` não existe como modo público",
+        "`new SPEC creation -> PLANNING_INTERFACE -> orchestrator`",
+        "`new SPEC creation -> RESUME -> PLANNING_INTERFACE -> orchestrator`",
+        "atualizar principalmente `spec_slices.md`",
+        "se `spec_slices.md` já existir com `Planning Interface > does_not_define` incompleto, sincronizar apenas os itens proibidos ausentes do template atual",
+        "`final owned paths`, `final commands` e `final validation pack`",
+        "não criar execution plan",
+        "não criar work packages",
+        "não definir owned paths finais",
+        "não definir comandos finais",
+        "não criar validation pack final",
+        "`Planning Interface` informa o planejamento, mas não autoriza execução",
+        "manter `Planning Interface` presente e em estado `deferred`",
+        "`Planning Interface` não define:",
+        "arquivos a editar",
+        "`OWNED_PATHS`",
+        "work packages",
+        "plano de validação executável",
+        "`planning_intent`",
+        "`planning_inputs_required`",
+        "`planning_focus`",
+        "`likely_implementation_surfaces`",
+        "nunca paths finais, owned paths, package boundaries, edit anchors ou autorização de ownership",
+        "`validation_focus`",
+        "nunca comandos, suites finais, scripts, validation pack final ou matriz executável",
+        "`anti_drift_constraints`",
+        "`handoff_notes_for_planner`",
+        "não escolher agente, não chamar `orchestrator`, não rotear automaticamente",
+        "`planning_notes`",
+        "`implementation_surface_hints`",
+        "`validation_hints`",
+        "`risks_for_planner`",
+        "`downstream_handoff_expectations`",
+        "não montar execution package, work package ou instrução de chamada",
+        "`ARTIFACTS UPDATED`",
+        "`PLANNING_INTERFACE STATUS`",
+        "`NEXT STEP`",
+        "a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md` e qualquer `validation_pack.md` legado/acidental ou equivalente não canônico",
+        "SPEC fechada continua compacta e não retém `spec_slices.md` depois do close flow canônico",
+        "o `qa_checklist.md` executável é artefato da própria SPEC: `stnl_spec_manager` materializa antes do ciclo do `orchestrator`",
+        "uma SPEC ou slice `Execution Ready` sem `qa_checklist.md` e sem `qa_tracking: not_applicable` explícito é contrato incompleto",
+        "`qa_checklist.md` não é fonte de logs brutos, não substitui o verdict do `validation-runner`, não substitui closure e nunca pode registrar sucesso sem evidência real",
+    ], "stnl_spec_manager/SKILL.md planning interface and active SPEC bundle contract");
+
+    assertContentIncludesAll(manifestContent, [
+        "`spec_slices.md` is mandatory for every active SPEC. It is the canonical consumption map for the active SPEC, not only a split file.",
+        "Single-slice SPECs still have `spec_slices.md` and `SL-001`",
+        "`Planning Interface` lives in `spec_slices.md` as a bridge from SPEC to later planning.",
+        "It may be enriched through `MODE=PLANNING_INTERFACE`",
+        "`MODE=PLANNING_INTERFACE` acts only on an existing active SPEC",
+        "Public modes are only `MODE=RESUME`, `MODE=PLANNING_INTERFACE`, and `MODE=CLOSE`; `MODE=NEW` is not a public mode.",
+        "`likely_implementation_surfaces` uses semantic hints, never final paths, owned paths, or ownership authorization",
+        "`validation_focus` names acceptance or validation focus, never commands or a final validation pack",
+        "`handoff_notes_for_planner` gives short planner-facing notes without choosing an agent or calling orchestrator",
+        "must not generate an execution plan, work packages, final owned paths, final commands, or a final validation pack",
+        "informs planning, does not authorize execution",
+        "Generated SPEC files in the required bundle, including `session_summary.md`, include a `File Purpose Header`",
+        "The header includes `token_policy`, but it does not replace canonical content",
+        "Older projects without `File Purpose Header` remain compatible; absence of the header in legacy material is not an error.",
+        "Closed SPECs remain compact",
+        "only `feature_spec.md` remains in the SPEC folder",
+        "`spec_slices.md` is not retained in the closed bundle",
+        "when a SPEC or slice becomes `Execution Ready`, it must be materialized before `orchestrator` consumption unless `qa_tracking: not_applicable` is explicitly justified",
+        "may be reconciled by the finalizer from compact `validation-runner` evidence",
+        "must not store raw logs, replace the runner verdict, or record success without real evidence",
+    ], "stnl_spec_manager/reference/MANIFEST.md active SPEC and header compatibility contract");
+
+    assertContentIncludesAll(qaChecklistContent, [
+        "compact active validation tracking",
+        "minimum completion/QA checks for an executable SPEC",
+        "runner-backed QA checklist results for an active SPEC when applicable",
+        "`finalizer` may only reconcile runner-backed validation results during active-SPEC round closure",
+        "## Executed Validation Tracking",
+        "Use only compact evidence produced or preserved by `validation-runner` in the same round.",
+        "Never mark an item as passed unless the runner evidence shows real execution or observation of that check.",
+        "If evidence is absent, record `blocked` or `not_run` with a short reason instead.",
+    ], "qa_checklist.md runner-backed active validation tracking");
 
     assertContentIncludesAll(skillContent, [
         "`SL-001`, `SL-002`, `SL-003`, sequencial e zero-padded com três dígitos",
@@ -505,17 +1001,108 @@ function assertSpecManagerContract() {
         "`C-001`, `C-002`, `C-003`",
     ], "stnl_spec_manager/SKILL.md slice identity contract");
 
+    assertContentIncludesAll(skillContent, [
+        "quando `MODE=CLOSE` resultar em `closed` ou `closed_with_residuals`, a pasta da SPEC deve terminar contendo somente `feature_spec.md`",
+        "`closed_with_residuals` significa SPEC fechada com resíduos, limites ou validações pendentes resumidos dentro de `feature_spec.md`; não autoriza manter arquivos auxiliares",
+        "absorver dos artefatos auxiliares apenas a informação final e durável necessária para entendimento futuro da SPEC encerrada",
+        "se algum auxiliar ainda for necessário para entender a SPEC, a SPEC não está pronta para fechamento canônico e o resultado deve ser `not_closed`",
+        "instruções locais ou de prompt não podem enfraquecer a limpeza canônica de `MODE=CLOSE`",
+        "`STATUS: BLOCKED_CLOSE_CONTRACT_OVERRIDE`",
+        "se o DEV confirmar que deseja manter auxiliares, o resultado deve ser `not_closed`",
+        "nunca transportar para `feature_spec.md` fechado resíduo técnico como plano de implementação",
+        "em `feature_spec.md` fechado, evidências de fechamento devem ser categorias compactas e duráveis",
+        "categorias compactas permitidas incluem validação automatizada local web",
+        "consolidar `evidence_used` por categoria compacta de evidência",
+        "logs, checklist granular, contagens detalhadas e comandos pertencem aos artefatos auxiliares enquanto a SPEC estiver ativa",
+        "`__MACOSX` e `.DS_Store`",
+    ], "stnl_spec_manager/SKILL.md canonical close cleanup contract");
+
+    assertContentExcludesAll(
+        skillContent,
+        CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS,
+        "stnl_spec_manager/SKILL.md closed SPEC evidence contract"
+    );
+
+    assert(
+        !skillContent.includes("manter apenas os que ainda carregarem valor real"),
+        "stnl_spec_manager/SKILL.md não pode permitir retenção de auxiliares em closed_with_residuals"
+    );
+
+    assert(
+        !skillContent.includes("valor residual único"),
+        "stnl_spec_manager/SKILL.md não deve usar valor residual único como justificativa de retenção pós-close"
+    );
+
     assertContentIncludesAll(specSlicesContent, [
+        "## File Purpose Header",
+        "- read_when: A downstream agent needs slice boundaries, readiness labels, dependencies by slice ID, or the Planning Interface state.",
+        "## Slice Model",
+        "split_required: pending | no | yes",
+        "slice_model: pending | single_slice | multi_slice",
+        "single-slice does not mean no slice; it means SL-001 represents the whole approved consumption boundary.",
         "## Slice Identity Contract",
         "canonical_id_format: `SL-001`, `SL-002`, `SL-003`, sequential and zero-padded with three digits",
         "recommended_heading: `### SL-001 — [Short slice title]`",
         "id_field_required: every slice must include `id: SL-001`",
-        "dependencies_must_use: canonical slice IDs only, for example `dependencies: [SL-001, SL-002]`",
+        "dependencies_must_use: canonical slice IDs only",
         "prohibited_slice_identifiers: `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, title-only references",
-        "### SL-001 — [Short slice title]",
+        "id_stability: once assigned, a slice ID must not be renumbered or reused",
+        "migration_rule: when labels are inconsistent, do not normalize silently; create a migration plan or ask for human confirmation when traceability could change",
+        "## Planning Interface",
+        "status: deferred",
+        "allowed_status_values: deferred | partial | active | blocked",
+        "Planning constraints must not be generated before readiness is stable.",
+        "do_not_use_for: Execution authorization, execution plans, file paths, commands, work packages, validation packs, or closure decisions.",
+        "does_not_authorize: execution",
+        "planning_intent:",
+        "planning_inputs_required:",
+        "planning_focus:",
+        "likely_implementation_surfaces:",
+        "never final path, owned path, package boundary, edit anchor, or ownership authorization",
+        "validation_focus:",
+        "never command, script, suite list, executable matrix, or final validation pack",
+        "anti_drift_constraints:",
+        "handoff_notes_for_planner:",
+        "do not choose an agent, call orchestrator, route automatically",
+        "does_not_define:",
+        "execution plan",
+        "file paths",
+        "commands",
+        "work packages",
+        "owned paths",
+        "final owned paths",
+        "final commands",
+        "final validation pack",
+        "does_not_replace:",
+        "`planner`",
+        "`execution-package-designer`",
+        "`validation-eval-designer`",
+        "`finalizer`",
+        "## Slice Dependency Overview",
+        "SL-001 depends_on: []",
+        "### SL-001 — Pending approved consumption boundary",
         "id: SL-001",
-        "dependencies: [SL-001]",
-    ], "spec_slices.md slice identity contract");
+        "planning_status: blocked_for_planning",
+        "planning_notes:",
+        "implementation_surface_hints:",
+        "not final paths, owned paths, mandatory modules, or ownership authorization",
+        "validation_hints:",
+        "not commands, scripts, suites, or final validation pack",
+        "qa_checklist_reference:",
+        "Use `qa_checklist.md` once this slice is `Execution Ready`",
+        "risks_for_planner:",
+        "downstream_handoff_expectations:",
+        "do not assemble an execution package, work package, or agent call",
+        "can_be_planned_independently: no",
+        "parallelization_hint: unknown",
+    ], "spec_slices.md active SPEC consumption map contract");
+
+    assertContentExcludesAll(specSlicesContent, [
+        "deferred Planning Interface state",
+        "## Post-Slice Closure Contract",
+        "final_slice_status_values",
+        "applies_after_execution: yes",
+    ], "spec_slices.md active SPEC consumption map forbidden closure contract");
 
     assertContentIncludesAll(readinessContent, [
         "`Execution Ready` is prohibited while any open question has `blocking: yes`.",
@@ -523,6 +1110,8 @@ function assertSpecManagerContract() {
         "Do not use `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, or title-only references as slice IDs.",
         "### SL-001 — [Short slice title]",
         "id: SL-001",
+        "executable_qa_checklist_ready: yes | no | not_applicable",
+        "qa_tracking_exception_justified: yes | no | not_applicable",
     ], "readiness_report.md slice identity contract");
 
     assertContentIncludesAll(featureSpecContent, [
@@ -534,6 +1123,102 @@ function assertSpecManagerContract() {
         "### R-001 — [Risk title]",
         "- id: R-001",
     ], "feature_spec.md canonical ID contract");
+
+    assertContentIncludesAll(featureSpecContent, [
+        "When `closure_status` is `closed` or `closed_with_residuals`, the SPEC folder must contain only `feature_spec.md`",
+        "`closed_with_residuals` records known residual product, scope, or validation limits inside this file; it does not retain auxiliary files.",
+        "do not include implementation plans, session history, validation commands, checklist trails, or maturity logs",
+        "Closure evidence in this file must be compact evidence categories",
+        "not exact validation commands, logs, operational paths, detailed suite counts, granular checklists, or technical validation trails",
+        "Detailed evidence belongs in auxiliary working artifacts while the SPEC is active, not in the closed canonical artifact.",
+        "Compact evidence category 1",
+        "local automated web validation passed: lint, build, and unit/component tests",
+        "local rules validation passed for the relevant scenarios",
+        "final manual smoke confirmed OK, static/documental validation completed, or known validation limits preserved",
+        "canonical_close_folder_state",
+        "must be `feature_spec.md only`",
+        "For `closed` or `closed_with_residuals`, set this section to `not_applicable_closed` and do not list retained auxiliary artifacts.",
+    ], "feature_spec.md canonical close cleanup contract");
+
+    assertContentExcludesAll(
+        featureSpecContent,
+        CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS,
+        "feature_spec.md closed SPEC evidence contract"
+    );
+
+    assertContentIncludesAll(readinessContent, [
+        "If `MODE=CLOSE` produces `closed` or `closed_with_residuals`, this file is a working artifact and must be removed",
+        "If this file is still needed to understand the SPEC, the honest closure result is `not_closed`.",
+    ], "readiness_report.md canonical close cleanup contract");
+
+    assertContentIncludesAll(specClosePromptContent, [
+        "Se fechar como `closed` ou `closed_with_residuals`, compacte o conteúdo durável necessário no `feature_spec.md` e limpe a pasta da SPEC para ficar somente com `feature_spec.md`",
+        "Consolide evidências por categoria compacta; não registre comandos detalhados",
+        "`closed_with_residuals` registra limites conhecidos dentro do `feature_spec.md`; não preserva auxiliares",
+        "Se algum auxiliar ainda for necessário para entender a SPEC, retorne `not_closed`.",
+        "bloqueie com `BLOCKED_CLOSE_CONTRACT_OVERRIDE`",
+    ], "spec-close.md canonical close cleanup prompt");
+
+    assertContentExcludesAll(
+        specClosePromptContent,
+        CLOSED_SPEC_DETAILED_EVIDENCE_FORBIDDEN_SNIPPETS,
+        "spec-close.md closed SPEC evidence contract"
+    );
+
+    assert(fs.existsSync(specPlanningInterfacePromptPath), "spec-planning-interface.md deve existir");
+
+    assertContentIncludesAll(promptReadmeContent, [
+        "spec-planning-interface.md",
+        "Modos públicos explícitos de SPEC são somente `MODE=RESUME`, `MODE=PLANNING_INTERFACE` e `MODE=CLOSE`; `MODE=NEW` não existe como modo público.",
+        "`new SPEC creation -> PLANNING_INTERFACE -> orchestrator`",
+        "`new SPEC creation -> RESUME -> PLANNING_INTERFACE -> orchestrator`",
+        "`PLANNING_INTERFACE` é etapa de enriquecimento da SPEC ativa, não etapa de execução",
+    ], "templates/prompts/README.md planning interface launcher contract");
+
+    assertContentIncludesAll(specPlanningInterfacePromptContent, [
+        "MODE=PLANNING_INTERFACE",
+        "SPEC alvo obrigatório e explícito:",
+        "atualizar principalmente `spec_slices.md`",
+        "se `Planning Interface > does_not_define` já existir em `spec_slices.md`, sincronizar apenas os itens proibidos ausentes do template atual",
+        "`final owned paths`, `final commands` e `final validation pack`",
+        "inputs confirmados ainda necessários para planejamento preciso",
+        "superfícies prováveis como hints semânticos, sem paths finais ou owned paths",
+        "foco de validação esperado, sem comandos ou validation pack final",
+        "notas curtas para o planner, sem escolher agente ou chamar orchestrator",
+        "não gerar execution plan",
+        "não criar work packages",
+        "não definir owned paths finais",
+        "não definir comandos finais",
+        "não criar validation pack final",
+    ], "spec-planning-interface.md launcher contract");
+
+    const planningInterfaceContractContent = [
+        skillContent,
+        specManagerReadmeContent,
+        manifestContent,
+        promptReadmeContent,
+        specPlanningInterfacePromptContent,
+        specSlicesContent,
+    ].join("\n");
+
+    assertContentExcludesAll(planningInterfaceContractContent, [
+        "`NEW -> PLANNING_INTERFACE -> orchestrator`",
+        "`NEW -> RESUME -> PLANNING_INTERFACE -> orchestrator`",
+        "Fluxos esperados: `NEW -> PLANNING_INTERFACE -> orchestrator`",
+        "fluxo: `NEW -> PLANNING_INTERFACE -> orchestrator`",
+        "fluxo: `NEW -> RESUME -> PLANNING_INTERFACE -> orchestrator`",
+        "## MODE=NEW",
+    ], "Planning Interface public mode hardening contract");
+
+    assert(
+        !/modos expl[ií]citos suportados:[^\n]*MODE=NEW/.test(planningInterfaceContractContent),
+        "Planning Interface não deve documentar MODE=NEW como modo público suportado"
+    );
+
+    assert(
+        !/public modes are[^\n]*MODE=NEW[^\n]*(supported|allowed)/i.test(planningInterfaceContractContent),
+        "Planning Interface não deve declarar MODE=NEW como public mode suportado"
+    );
 
     assertContentIncludesAll(openQuestionsContent, [
         "### Q-001 — [Generic question title]",
@@ -1066,7 +1751,7 @@ const ROUND3_ORCHESTRATOR_LADDER_SNIPPETS = [
     "3. Detect `FLOW`.",
     "4. Apply defaults: `MODE=standard`, `FLOW=supervised`, `RUN=execute`.",
     "5. Identify the current gate.",
-    "6. Check the required artifact for that gate.",
+    "6. Check the required handoff for that gate.",
     "7. Check handoff validity.",
     "8. Route to the owning agent.",
     "9. Stop if DEV decision is needed.",
@@ -1413,6 +2098,89 @@ function assertContentExcludesAll(content, snippets, label) {
     }
 }
 
+function assertContentIncludesAny(content, snippets, label) {
+    assert(
+        snippets.some((snippet) => content.includes(snippet)),
+        `${label} não contém nenhum dos invariantes esperados: ${snippets.join(" | ")}`
+    );
+}
+
+function assertFilePurposeHeaderFields(content, label, requiredSnippets = DOC_TEMPLATE_HEADER_REQUIRED_SNIPPETS) {
+    assertContentIncludesAll(content, requiredSnippets, `${label} File Purpose Header`);
+}
+
+function assertSpecTemplateHeaders(specManagerRoot) {
+    const templatesRoot = path.join(specManagerRoot, "reference", "templates");
+
+    for (const spec of SPEC_TEMPLATE_HEADER_SPECS) {
+        const content = fs.readFileSync(path.join(templatesRoot, spec.relativePath), "utf8");
+        assertFilePurposeHeaderFields(
+            content,
+            `stnl_spec_manager/reference/templates/${spec.relativePath}`,
+            SPEC_TEMPLATE_HEADER_REQUIRED_SNIPPETS
+        );
+        assertContentIncludesAll(
+            content,
+            spec.requiredSnippets,
+            `stnl_spec_manager/reference/templates/${spec.relativePath} header contract`
+        );
+    }
+}
+
+function assertDocumentationTemplateHeaders(docRoot, label, relativePaths = DOC_TEMPLATE_HEADER_PATHS) {
+    for (const relativePath of relativePaths) {
+        const content = fs.readFileSync(path.join(docRoot, relativePath), "utf8");
+        assertFilePurposeHeaderFields(content, `${label}/${relativePath}`);
+    }
+}
+
+function assertDocumentationTemplateCriticalSnippets(docRoot, label) {
+    for (const spec of DOC_TEMPLATE_CRITICAL_SNIPPETS) {
+        const content = fs.readFileSync(path.join(docRoot, spec.relativePath), "utf8");
+        assertContentIncludesAll(content, spec.requiredSnippets, `${label}/${spec.relativePath} header critical contract`);
+    }
+}
+
+function assertHeaderAwareReadingContent(content, label) {
+    assertContentIncludesAll(content, HEADER_AWARE_AGENT_COMMON_SNIPPETS, `${label} header-aware reading`);
+    assertContentIncludesAny(content, [
+        "No header means legacy reading, never error.",
+        "no header means legacy reading, never error.",
+        "If no header exists, continue with normal legacy reading and never treat absence as an error.",
+    ], `${label} legacy header fallback`);
+}
+
+function assertHeaderAwareReadingInAgentSet(agentRoot, label, agentFiles = BASE_HEADER_AWARE_AGENT_FILES) {
+    for (const fileName of agentFiles) {
+        const content = fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+        assertHeaderAwareReadingContent(content, `${label}/${fileName}`);
+        assertContentIncludesAll(
+            content,
+            HEADER_AWARE_AGENT_CRITICAL_SNIPPETS[fileName] ?? [],
+            `${label}/${fileName} header-aware critical contract`
+        );
+    }
+}
+
+function assertHeaderAwareReadingInCodexAgents(repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        if (!BASE_HEADER_AWARE_AGENT_FILES.includes(fileName)) {
+            continue;
+        }
+
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+
+        assertHeaderAwareReadingContent(parsed.developer_instructions, `codex/${agentName}`);
+        assertContentIncludesAll(
+            parsed.developer_instructions,
+            HEADER_AWARE_AGENT_CRITICAL_SNIPPETS[fileName] ?? [],
+            `codex/${agentName} header-aware critical contract`
+        );
+    }
+}
+
 function assertCanonicalDesignerRoleClassInDocs(docRoot, label) {
     const checkedDocs = [
         path.join("agents", "AGENT-CONTRACT-SHAPE.md"),
@@ -1449,6 +2217,61 @@ function assertSingleConsistencyPolicyBlock(content, label) {
         !new RegExp(`^\\s*${escapeRegExp(CONSISTENCY_POLICY_LEGACY_MARKER)}\\s*$`, "m").test(content),
         `${label} não pode conter marcador legado com dois-pontos`
     );
+}
+
+function extractMarkdownSection(content, heading, label) {
+    const start = content.indexOf(heading);
+    assert(start >= 0, `${label} sem seção esperada: ${heading}`);
+
+    const nextHeading = content.indexOf("\n## ", start + heading.length);
+    const end = nextHeading >= 0 ? nextHeading + 1 : content.length;
+    return content.slice(start, end);
+}
+
+function extractStatusContract(content, label) {
+    const statusSection = extractMarkdownSection(content, "## Status it may emit", label);
+    return [...statusSection.matchAll(/^\s*-\s+`([^`]+)`\s*$/gm)].map((match) => match[1]);
+}
+
+function assertStatusContract(content, agentName, label) {
+    const expectedStatuses = STATUS_CONTRACT_BY_AGENT[agentName];
+
+    if (!expectedStatuses) {
+        return;
+    }
+
+    assert.deepEqual(
+        extractStatusContract(content, label),
+        expectedStatuses,
+        `${label} preservou status incorreto para ${agentName}`
+    );
+}
+
+function assertVscodeStatusContracts(repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+
+        if (!STATUS_CONTRACT_BY_AGENT[agentName]) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".github", "agents", fileName), "utf8");
+        assertStatusContract(content, agentName, `vscode/${fileName}`);
+    }
+}
+
+function assertCodexStatusContracts(repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+
+        if (!STATUS_CONTRACT_BY_AGENT[agentName]) {
+            continue;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        const parsed = parseToml(content, `${agentName}.toml`);
+        assertStatusContract(parsed.developer_instructions, agentName, `codex/${agentName}`);
+    }
 }
 
 function stripConsistencyPolicyBlock(content, label) {
@@ -1528,6 +2351,18 @@ function createControlledFixtureRepo(repoRoot) {
     }
 }
 
+function createNoIosFixtureRepo(repoRoot) {
+    ensureDir(repoRoot);
+
+    for (const [relativePath, content] of Object.entries(CONTROLLED_FIXTURE_FILES)) {
+        if (relativePath.startsWith(`ios${path.sep}`) || relativePath.startsWith("ios/")) {
+            continue;
+        }
+
+        writeFile(path.join(repoRoot, relativePath), content);
+    }
+}
+
 function materializeControlledContextDocs(skillRoot, repoRoot) {
     for (const spec of CONTROLLED_CONTEXT_DOC_SPECS) {
         const sourcePath = path.join(skillRoot, "reference", "docs", spec.sourcePath);
@@ -1538,6 +2373,98 @@ function materializeControlledContextDocs(skillRoot, repoRoot) {
 
         writeFile(path.join(repoRoot, spec.targetPath), content);
     }
+}
+
+function hasNativeIosSurface(repoRoot) {
+    return listRelativeFiles(repoRoot).some((relativePath) => {
+        if (
+            relativePath.endsWith(".xcodeproj") ||
+            relativePath.endsWith(".xcworkspace") ||
+            relativePath.endsWith("Package.swift")
+        ) {
+            return true;
+        }
+
+        if (!relativePath.endsWith(".swift")) {
+            return false;
+        }
+
+        const normalizedPath = relativePath.split(path.sep).join("/");
+        if (normalizedPath.startsWith("ios/") || normalizedPath.startsWith("Sources/iOS/")) {
+            return true;
+        }
+
+        const content = fs.readFileSync(path.join(repoRoot, relativePath), "utf8");
+        return /\bimport\s+(SwiftUI|UIKit)\b/.test(content);
+    });
+}
+
+function resolveActiveStackQualityGuardrails(repoRoot, controlledAgentFiles) {
+    const activeGuardrails = new Set(QUALITY_GUARDRAIL_SKILLS);
+    const hasMaterializedIosAgent = controlledAgentFiles.includes("coder-ios.agent.md");
+
+    if (!hasNativeIosSurface(repoRoot) && !hasMaterializedIosAgent) {
+        activeGuardrails.delete(IOS_QUALITY_GUARDRAIL_SKILL);
+    }
+
+    return activeGuardrails;
+}
+
+function pruneUnavailableIosGuardrail(content) {
+    return content
+        .replace(
+            "`stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, and/or `stnl_mobile_ios_swift_quality`",
+            "`stnl_frontend_quality`, `stnl_backend_quality`, and/or `stnl_backend_sql_quality`"
+        )
+        .replace(
+            "`stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, and `stnl_mobile_ios_swift_quality`",
+            "`stnl_frontend_quality`, `stnl_backend_quality`, and `stnl_backend_sql_quality`"
+        )
+        .replace(
+            "`stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, or `stnl_mobile_ios_swift_quality`",
+            "`stnl_frontend_quality`, `stnl_backend_quality`, or `stnl_backend_sql_quality`"
+        )
+        .replace(
+            ", and `stnl_mobile_ios_swift_quality` for native Swift/SwiftUI/UIKit iOS",
+            ""
+        )
+        .replace(
+            " and `stnl_mobile_ios_swift_quality` for native Swift/SwiftUI/UIKit iOS packages",
+            ""
+        )
+        .replace(
+            / Use `stnl_mobile_ios_swift_quality` for Swift\/SwiftUI\/UIKit boundaries, state, concurrency, lifecycle, navigation, networking, persistence, platform conventions, and testability\./g,
+            ""
+        )
+        .replace(
+            "Do not run a new guardrail review during finalization and do not edit `stnl_frontend_quality`, `stnl_backend_quality`, `stnl_backend_sql_quality`, or `stnl_mobile_ios_swift_quality`.",
+            "Do not run a new guardrail review during finalization and do not edit `stnl_frontend_quality`, `stnl_backend_quality`, or `stnl_backend_sql_quality`."
+        );
+}
+
+function pruneUnavailableIosAgentReferences(content) {
+    return content
+        .replace(
+            "Route web/browser client work to `coder-frontend.agent.md`, real Swift/SwiftUI native iOS work to `coder-ios.agent.md`, and API/service/persistence/auth/job/integration/runtime work to `coder-backend.agent.md`.",
+            "Route web/browser client work to `coder-frontend.agent.md` and API/service/persistence/auth/job/integration/runtime work to `coder-backend.agent.md`. Native iOS is out of scope unless a real Swift/SwiftUI/UIKit surface is materialized locally."
+        )
+        .replace(
+            "Parallelizable only: `coder-backend`, `coder-frontend`, `coder-ios`, `designer`, at most 3 active instances per role.",
+            "Parallelizable only: `coder-backend`, `coder-frontend`, `designer`, at most 3 active instances per role."
+        );
+}
+
+function pruneUnavailableStackQualityGuardrails(content, activeGuardrails) {
+    if (activeGuardrails.has(IOS_QUALITY_GUARDRAIL_SKILL)) {
+        return content;
+    }
+
+    const prunedContent = pruneUnavailableIosAgentReferences(pruneUnavailableIosGuardrail(content));
+    assert(
+        !prunedContent.includes(IOS_QUALITY_GUARDRAIL_SKILL),
+        "Pruning de guardrail iOS indisponível deixou referência residual no artifact final"
+    );
+    return prunedContent;
 }
 
 function buildSpecializedFrontmatter(baseFrontmatter, fileName, controlledAgentFiles) {
@@ -1600,13 +2527,18 @@ function readControlledAgentSourceContent(skillRoot, fileName, options = {}) {
 }
 
 function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, controlledAgentFiles);
+
     for (const fileName of controlledAgentFiles) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = readControlledAgentSourceContent(skillRoot, fileName, options);
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
-        const normalizedBody = fitControlledVscodeFixtureBody(
-            normalizeProtocolFixedConsistencyHeading(body),
-            fileName
+        const normalizedBody = pruneUnavailableStackQualityGuardrails(
+            fitControlledVscodeFixtureBody(
+                normalizeProtocolFixedConsistencyHeading(body),
+                fileName
+            ),
+            activeGuardrails
         );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
@@ -1616,6 +2548,47 @@ function materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles, 
 
         writeFile(
             path.join(repoRoot, ".github", "agents", fileName),
+            renderFrontmatter(specializedFrontmatter) + normalizedBody
+        );
+    }
+}
+
+function rebuildManagedVscodeAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles) {
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, controlledAgentFiles);
+
+    for (const fileName of controlledAgentFiles) {
+        const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
+
+        if (fs.existsSync(materializedPath)) {
+            const existingContent = fs.readFileSync(materializedPath, "utf8");
+            const { data: existingFrontmatter } = parseFrontmatter(existingContent, materializedPath);
+            assert.equal(
+                existingFrontmatter.managed_artifact,
+                true,
+                `Fixture de update gerenciado VS Code recebeu artifact sem managed_artifact: true: ${materializedPath}`
+            );
+        }
+
+        const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
+        const sourceContent = fs.readFileSync(sourcePath, "utf8");
+        const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
+        const normalizedBody = pruneUnavailableStackQualityGuardrails(
+            fitControlledVscodeFixtureBody(
+                normalizeProtocolFixedConsistencyHeading(body),
+                fileName
+            ),
+            activeGuardrails
+        );
+        const specializedFrontmatter = buildSpecializedFrontmatter(
+            baseFrontmatter,
+            fileName,
+            controlledAgentFiles
+        );
+
+        specializedFrontmatter.specialization_revision = 2;
+
+        writeFile(
+            materializedPath,
             renderFrontmatter(specializedFrontmatter) + normalizedBody
         );
     }
@@ -1663,13 +2636,18 @@ function renderBackendOnlySpecializedBody(body, fileName) {
 }
 
 function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES);
+
     for (const fileName of BACKEND_ONLY_SPECIALIZED_AGENT_FILES) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
-        const normalizedBody = fitBackendOnlyVscodeFixtureBody(
-            normalizeProtocolFixedConsistencyHeading(body),
-            fileName
+        const normalizedBody = pruneUnavailableStackQualityGuardrails(
+            fitBackendOnlyVscodeFixtureBody(
+                normalizeProtocolFixedConsistencyHeading(body),
+                fileName
+            ),
+            activeGuardrails
         );
         const specializedFrontmatter = buildSpecializedFrontmatter(
             baseFrontmatter,
@@ -1687,6 +2665,8 @@ function materializeBackendOnlySpecializedAgents(skillRoot, repoRoot) {
 }
 
 function materializeCompactedWeakBackendOnlyAgents(skillRoot, repoRoot) {
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES);
+
     for (const fileName of BACKEND_ONLY_SPECIALIZED_AGENT_FILES) {
         const sourcePath = path.join(skillRoot, "reference", "agents", fileName);
         const sourceContent = fs.readFileSync(sourcePath, "utf8");
@@ -1701,7 +2681,7 @@ function materializeCompactedWeakBackendOnlyAgents(skillRoot, repoRoot) {
 
         writeFile(
             path.join(repoRoot, ".github", "agents", fileName),
-            renderFrontmatter(specializedFrontmatter) + [
+            renderFrontmatter(specializedFrontmatter) + pruneUnavailableStackQualityGuardrails([
                 "## Mission",
                 "Backend-only specialized agent with compact operational guidance.",
                 "",
@@ -1711,7 +2691,7 @@ function materializeCompactedWeakBackendOnlyAgents(skillRoot, repoRoot) {
                 "## Handoff",
                 "Return a concise final status for downstream agents.",
                 "",
-            ].join("\n")
+            ].join("\n"), activeGuardrails)
         );
     }
 }
@@ -1722,10 +2702,22 @@ function buildCodexAgentList(agentNames) {
         .join("\n");
 }
 
+function formatBacktickList(values) {
+    if (values.length <= 1) {
+        return values.map((value) => `\`${value}\``).join("");
+    }
+
+    return `${values.slice(0, -1).map((value) => `\`${value}\``).join(", ")}, or \`${values.at(-1)}\``;
+}
+
 function renderCodexAgentsIndex(template, agentNames) {
     return template
         .replaceAll("{{PROJECT_NAME}}", SMOKE_FIXTURE_REPO_NAME)
         .replace("{{AGENT_LIST}}", buildCodexAgentList(agentNames))
+        .replace(
+            /Without explicit subagent authorization, do not spawn .*?\./,
+            `Without explicit subagent authorization, do not spawn ${formatBacktickList(agentNames)}.`
+        )
         .replace("{{LOCAL_NOTES}}", "- Smoke fixture for controlled Codex materialization.");
 }
 
@@ -1733,29 +2725,59 @@ function withCodexRoutingRuntimeHardening(agentName, body) {
     const hardening = agentName === "orchestrator"
         ? [
             "## Codex routing runtime",
-            "If explicitly invoked as a custom subagent, perform Sentinel routing within your runtime boundary.",
-            "Use native Codex custom subagent spawning by exact custom agent name for Sentinel handoff when available.",
-            "Wait for the subagent result before deciding the next gate.",
-            "You must never use `codex exec`, `codex`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff.",
+            "Coordinate the local Sentinel workflow when explicitly invoked as the `orchestrator` custom subagent for Codex.",
+            "For Codex, the main/root session is the human-visible workspace entrypoint and must not spawn this `orchestrator` automatically.",
+            "Skill/workflow requests are not subagent authorization; `Use stnl_spec_manager` runs in root/main unless the human also explicitly requests a custom subagent by exact agent name.",
+            "When the human explicitly requests `Use orchestrator`, this orchestrator owns gate routing and decides the current canonical owner by exact custom agent name.",
+            "The root/main session should send only a minimal, task-scoped routing payload.",
+            "Do not require full-history fork inheritance.",
+            "Read the durable Sentinel contract from `AGENTS.md`, your own developer instructions, and the allowed repository docs/codebase.",
+            "Never accept a full Sentinel contract pasted into a normal prompt as a substitute for native custom-agent spawning.",
+            "Codex Parent-Mediated Routing Contract.",
+            "The orchestrator must return a compact ROUTE_PACKET naming the next canonical owner.",
+            "The orchestrator must not spawn downstream Sentinel owners directly.",
+            "The root/main session then spawns the named owner as a native custom subagent by exact custom agent name.",
+            "The root/main must not choose owners on its own except from a valid ROUTE_PACKET.",
+            "This preserves the Codex primary visual layer and avoids nested owner threads.",
+            "After the owner returns compactly, root/main must return to orchestrator for the next routing decision.",
+            "ROUTE_PACKET shape: STATUS, CURRENT_GATE, NEXT_OWNER, REASON, PAYLOAD, and BLOCKER only when real.",
+            "ROUTE_PACKET must be compact and must not include full artifacts, full contracts, SPEC/checklist/logs/diffs, or broad transcript history.",
+            "Use native Codex custom subagent spawning by exact custom agent name for Sentinel handoff when explicitly authorized from root/main after ROUTE_PACKET.",
+            "A refused full-history fork is not itself failure when Codex still creates a native requested agent thread.",
+            "Wait for the owner result from root/main before deciding the next gate.",
+            "You must never use full-contract prompt replay, `codex exec`, `codex`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff.",
+            "You must never use `codex exec`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff.",
             "Never absorb downstream Sentinel roles locally.",
-            "If nested routing causes runtime/UI/depth limitations, native custom subagent spawning is unavailable, depth/config blocks routing, or the named custom agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.",
+            "If native custom-agent spawning cannot create an explicitly requested agent thread, root/main cannot spawn the owner named in a valid ROUTE_PACKET, depth/config blocks routing, or the named custom agent is unavailable, stop with `ROUTING_RUNTIME_BLOCKED`.",
             "`ROUTING_RUNTIME_BLOCKED` must include attempted owner, current gate, missing runtime capability or config, and minimum DEV action needed.",
-            "Do not claim that invoking `orchestrator` as a subagent is the default UI path.",
         ]
         : [
             "## Codex routing runtime",
             "You must not spawn downstream Sentinel agents.",
             "You must not call `codex exec` for handoff.",
             "You must not use shell/subprocess/script to perform handoff.",
-            "You must return owned artifact/status/formal handoff signal to the parent controller/orchestrator.",
-            "\"handoff to X\" means a formal signal for parent controller/orchestrator routing, not direct spawning.",
+            "You must return owned artifact/status/formal handoff signal to root/main for parent-mediated orchestrator routing.",
+            "\"handoff to X\" means a formal signal for root/main-mediated orchestrator routing, not direct spawning.",
         ];
 
-    return `${hardening.join("\n")}\n\n${body}`;
+    const compactReturnContract = [
+        "## Compact Agent Return Contract",
+        "Subagent returns must be compact and gate-oriented: return only the minimum needed for the parent to decide the next gate.",
+        "Default return shape: `STATUS`, `OWNER`, `GATE`, `FILES_CHANGED`, `NEXT_OWNER`, `VALIDATIONS`, `BLOCKER` only when real, and `NOTES` with max 3 short bullets.",
+        "Do not repeat the full Sentinel contract.",
+        "Do not paste full SPEC, checklist, logs, or diffs.",
+        "return durable artifact path only for files actually written by an authorized role, plus compact summary.",
+        "Use compact handoff summary/status for preparation handoffs.",
+        "Expand only on blocker, failure, critical validation evidence, or explicit human request.",
+        "Keep the main chat focused on routing/status deltas.",
+    ];
+
+    return `${hardening.join("\n")}\n\n${compactReturnContract.join("\n")}\n\n${body}`;
 }
 
 function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles, options = {}) {
     const agentNames = controlledAgentFiles.map((fileName) => canonicalAgentIdFromFileName(fileName));
+    const activeGuardrails = resolveActiveStackQualityGuardrails(repoRoot, controlledAgentFiles);
 
     for (const fileName of controlledAgentFiles) {
         const agentName = canonicalAgentIdFromFileName(fileName);
@@ -1769,7 +2791,10 @@ function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFi
         const { data: baseFrontmatter, body } = parseFrontmatter(sourceContent, sourcePath);
         const normalizedBody = withCodexRoutingRuntimeHardening(
             agentName,
-            normalizeProtocolFixedConsistencyHeading(body)
+            pruneUnavailableStackQualityGuardrails(
+                normalizeProtocolFixedConsistencyHeading(body),
+                activeGuardrails
+            )
         );
         const tomlContent = renderCodexAgentToml({
             name: agentName,
@@ -1792,10 +2817,30 @@ function materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFi
     writeFile(path.join(repoRoot, ".codex", "config.toml"), configTemplate);
 }
 
+function rebuildManagedCodexAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const fileName of controlledAgentFiles) {
+        const agentName = canonicalAgentIdFromFileName(fileName);
+        const materializedPath = path.join(repoRoot, ".codex", "agents", `${agentName}.toml`);
+
+        if (!fs.existsSync(materializedPath)) {
+            continue;
+        }
+
+        const existingContent = fs.readFileSync(materializedPath, "utf8");
+        assert(
+            existingContent.startsWith("# Sentinel managed artifact: true\n"),
+            `Fixture de update gerenciado Codex recebeu artifact sem header gerenciado: ${materializedPath}`
+        );
+    }
+
+    materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles);
+}
+
 function assertControlledContextMaterialization(repoRoot) {
     for (const spec of CONTROLLED_CONTEXT_DOC_SPECS) {
         const filePath = path.join(repoRoot, spec.targetPath);
         const content = assertFileHasRequiredShape(filePath, spec.requiredSnippets);
+        assertFilePurposeHeaderFields(content, `context doc materializado ${spec.targetPath}`);
 
         if (filePath.endsWith(path.join("core", "CONTEXT.md"))) {
             assert(
@@ -1819,7 +2864,8 @@ function assertControlledContextMaterialization(repoRoot) {
 
 function assertControlledReferenceDocs(skillRoot) {
     for (const spec of AGENT_REFERENCE_DOC_SPECS) {
-        assertFileHasRequiredShape(path.join(skillRoot, spec.relativePath), spec.requiredSnippets);
+        const content = assertFileHasRequiredShape(path.join(skillRoot, spec.relativePath), spec.requiredSnippets);
+        assertFilePurposeHeaderFields(content, `reference doc instalado ${spec.relativePath}`);
     }
 }
 
@@ -2114,6 +3160,154 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
     );
 }
 
+function assertEphemeralPreparationHandoffContractInAgentSet(agentRoot, label) {
+    const readAgent = (fileName) => fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+    const orchestratorContent = readAgent("orchestrator.agent.md");
+    const plannerContent = readAgent("planner.agent.md");
+    const validationDesignerContent = readAgent("validation-eval-designer.agent.md");
+    const packageDesignerContent = readAgent("execution-package-designer.agent.md");
+    const finalizerContent = readAgent("finalizer.agent.md");
+
+    for (const fileName of READ_ONLY_PREPARATION_HANDOFF_AGENT_FILES) {
+        assert(
+            !CONTROLLED_AGENT_TOOLSETS[fileName].includes("edit"),
+            `${label}: ${fileName} não deve receber edit para handoff efêmero`
+        );
+    }
+
+    assertContentIncludesAll(orchestratorContent, [
+        "These are ephemeral current-round handoffs, not required files.",
+        "missing persisted file is not invalid by itself",
+        "HANDOFF_READY` must not substitute for owner `READY` or create a second readiness gate",
+        "valid only from the current-round owner or orchestrator replay",
+        "Never search `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpads, or temp runtime files",
+        "regenerate via previous owner",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
+    ], `${label} orchestrator ephemeral handoff contract`);
+    for (const [fileName, content] of [
+        ["orchestrator.agent.md", orchestratorContent],
+        ["planner.agent.md", plannerContent],
+        ["validation-eval-designer.agent.md", validationDesignerContent],
+        ["execution-package-designer.agent.md", packageDesignerContent],
+    ]) {
+        assertContentExcludesAll(
+            content,
+            HANDOFF_READY_DIRECT_STATUS_SNIPPETS,
+            `${label} ${fileName} HANDOFF_READY não deve ser status emitido diretamente`
+        );
+    }
+
+    assertContentIncludesAll(plannerContent, [
+        "ephemeral operational handoff",
+        "not a durable plan or required SPEC file",
+        "do not create `execution_brief.md`",
+        "emit `STATUS: READY` and hand off the `EXECUTION BRIEF`",
+        "HANDOFF_READY` is not a substitute for this normal readiness",
+        "return compact handoff status",
+    ], `${label} planner ephemeral EXECUTION BRIEF`);
+
+    assertContentIncludesAll(validationDesignerContent, [
+        "ephemeral `VALIDATION PACK` handoff",
+        "not a required SPEC file",
+        "do not create `validation_pack.md`",
+        "emit `STATUS: READY` and hand off the `VALIDATION PACK`",
+        "HANDOFF_READY` is not a substitute for this normal readiness",
+        "STATUS: BLOCKED",
+        "REASON: required handoff missing or invalid",
+        "NEXT_OWNER: orchestrator",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ], `${label} validation-eval-designer ephemeral VALIDATION PACK`);
+
+    assertContentIncludesAll(packageDesignerContent, [
+        "ephemeral `EXECUTION PACKAGE` handoff",
+        "not a durable plan and not a required SPEC file",
+        "do not create `execution_package.md`",
+        "emit `STATUS: READY` and hand off the `EXECUTION PACKAGE`",
+        "HANDOFF_READY` is not a substitute for this normal readiness",
+        "STATUS: BLOCKED",
+        "REASON: required handoff missing or invalid",
+        "NEXT_OWNER: orchestrator",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ], `${label} execution-package-designer ephemeral EXECUTION PACKAGE`);
+
+    for (const coderFile of ["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"]) {
+        const content = readAgent(coderFile);
+        assertContentIncludesAll(content, [
+            "was not received from `execution-package-designer.agent.md` through the orchestrator in the current round",
+            "do not reconstruct it locally",
+            "STATUS: BLOCKED",
+            "REASON: required handoff missing or invalid",
+            "NEXT_OWNER: orchestrator",
+            "REQUEST: replay previous handoff or regenerate from owner",
+        ], `${label} ${coderFile} missing preparation handoff returns to orchestrator`);
+    }
+
+    assertContentIncludesAll(finalizerContent, [
+        "Do not require `execution_brief.md`, `validation_pack.md`, or `execution_package.md` to close a SPEC.",
+        "preparation handoffs, not required durable SPEC artifacts",
+        "`feature_spec.md`",
+        "`spec_slices.md`",
+        "`readiness_report.md`",
+        "`qa_checklist.md`",
+        "`decision_log.md`",
+        "`session_summary.md`",
+    ], `${label} finalizer durable SPEC evidence`);
+
+    if (fs.existsSync(path.join(agentRoot, "resync.agent.md"))) {
+        assertContentIncludesAll(readAgent("resync.agent.md"), [
+            "do not recover old `EXECUTION BRIEF`, `VALIDATION PACK`, or `EXECUTION PACKAGE` handoffs",
+            "`workspaceStorage`",
+            "`chat-session-resources`",
+            "`content.txt`",
+            "scratchpads",
+            "runtime temporary files",
+        ], `${label} resync does not recover old handoffs`);
+    }
+
+    for (const fileName of [
+        "orchestrator.agent.md",
+        "planner.agent.md",
+        "validation-eval-designer.agent.md",
+        "execution-package-designer.agent.md",
+        "coder-backend.agent.md",
+        "coder-frontend.agent.md",
+        "coder-ios.agent.md",
+        "finalizer.agent.md",
+    ]) {
+        const content = readAgent(fileName);
+        assertContentExcludesAll(
+            content,
+            EPHEMERAL_PREPARATION_HANDOFF_FORBIDDEN_PHRASES,
+            `${label} ${fileName} handoff não deve ser descrito como arquivo materializado`
+        );
+    }
+}
+
+function assertEphemeralPreparationHandoffContractInCanonicalSource() {
+    const sourceFiles = [
+        path.join(ROOT, "skills", "stnl_project_agent_specializer", "SKILL.md"),
+        path.join(ROOT, "skills", "stnl_project_agent_specializer", "reference", "templates", "codex", "AGENTS.md"),
+        path.join(ROOT, "templates", "docs", "agents", "AGENT-CONTRACT-SHAPE.md"),
+        path.join(ROOT, "templates", "docs", "agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+        path.join(ROOT, "templates", "docs", "workflow", "EXECUTION-LIFECYCLE.md"),
+        path.join(ROOT, "templates", "docs", "workflow", "STATUS-GATES.md"),
+    ];
+
+    for (const filePath of sourceFiles) {
+        const content = fs.readFileSync(filePath, "utf8");
+        assertContentIncludesAll(
+            content,
+            EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
+            `${path.relative(ROOT, filePath)} ephemeral preparation handoff coverage`
+        );
+        assertContentExcludesAll(
+            content,
+            EPHEMERAL_PREPARATION_HANDOFF_FORBIDDEN_PHRASES,
+            `${path.relative(ROOT, filePath)} forbidden persisted-handoff wording`
+        );
+    }
+}
+
 function assertProtocolHardeningInReferenceAgents(skillRoot) {
     const referenceAgentsRoot = path.join(skillRoot, "reference", "agents");
     const referenceAgentFiles = listRelativeFiles(referenceAgentsRoot)
@@ -2128,6 +3322,10 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
 
     for (const [fileName, content] of agentContents.entries()) {
         assertSingleConsistencyPolicyBlock(content, `${fileName} reference consistency policy`);
+        assert(
+            content.includes("Compact Agent Return Contract"),
+            `${fileName} reference sem Compact Agent Return Contract`
+        );
     }
 
     for (const coderFile of ["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"]) {
@@ -2158,6 +3356,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "Automatic correction cannot bypass package design",
         "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
         "Every terminal round outcome must pass through `finalizer.agent.md`",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "orchestrator consumer-side rejection");
 
     assertContentIncludesAll(agentContents.get("planner.agent.md"), [
@@ -2174,6 +3373,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "Do not paste full guardrails or add unrelated ones by reflex",
         "separates pre-execution proof design from post-execution validation",
         "Do not label weak proof as clean readiness",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "validation-eval-designer stack quality guardrail proof design");
 
     assertContentIncludesAll(agentContents.get("execution-package-designer.agent.md"), [
@@ -2184,6 +3384,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "does not run tests against new code",
         "orchestrator-routed `CORRECTION PACK`",
         "Do not transfer ambiguity to coder",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "execution-package-designer pre-execution readiness");
 
     assertContentIncludesAll(agentContents.get("validation-runner.agent.md"), [
@@ -2203,7 +3404,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "Do not invoke unrelated guardrails by reflex",
         "return exactly one formal `CORRECTION PACK` block to `orchestrator.agent.md`",
         "The block heading must be exactly `CORRECTION PACK`",
-        "When emitting `CORRECTION PACK`, do not emit `READY` or `BLOCKED` in the same handoff",
+        "When emitting `CORRECTION PACK`, do not emit `PASS` or `FAIL` in the same handoff",
         "material structural risk",
     ], "reviewer stack quality guardrail review");
 
@@ -2232,6 +3433,10 @@ function assertProtocolHardeningInTemplateAgents() {
     for (const fileName of templateAgentFiles) {
         const content = fs.readFileSync(path.join(templateAgentsRoot, fileName), "utf8");
         assertSingleConsistencyPolicyBlock(content, `${fileName} template consistency policy`);
+        assert(
+            content.includes("Compact Agent Return Contract"),
+            `${fileName} template sem Compact Agent Return Contract`
+        );
     }
 
     const designerContent = fs.readFileSync(path.join(templateAgentsRoot, "designer.agent.md"), "utf8");
@@ -2289,6 +3494,7 @@ function assertCorrectionLoopPolicyInTemplateDocs() {
         "Correção automática não pode virar bypass do package design",
         "Correction round é correção mínima, não replanejamento, redesign ou refactor amplo",
         "valida se o handoff está pronto para execução",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "templates/docs/workflow/EXECUTION-LIFECYCLE.md correction loop");
 
     assertContentIncludesAll(statusGatesContent, [
@@ -2301,7 +3507,105 @@ function assertCorrectionLoopPolicyInTemplateDocs() {
         "refactor amplo",
         "preservando correction pack residual e evidência",
         "Esse gate valida handoff/readiness, não roda teste de código novo",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "templates/docs/workflow/STATUS-GATES.md correction loop");
+}
+
+function assertQaChecklistValidationHandoffInAgentSet(agentRoot, label) {
+    const runnerContent = fs.readFileSync(path.join(agentRoot, "validation-runner.agent.md"), "utf8");
+    const finalizerContent = fs.readFileSync(path.join(agentRoot, "finalizer.agent.md"), "utf8");
+    const orchestratorContent = fs.readFileSync(path.join(agentRoot, "orchestrator.agent.md"), "utf8");
+
+    assertContentIncludesAll(runnerContent, [
+        "`QA CHECKLIST UPDATE`",
+        "check or acceptance ID",
+        "result `passed|failed|blocked|not_run`",
+        "Use `blocked` or `not_run` when evidence is missing",
+        "never mark `passed` from implementation inspection or intent",
+        "not permission to edit `qa_checklist.md`",
+        "`QA checklist evidence gate`",
+    ], `${label} validation-runner QA checklist handoff`);
+
+    assertContentIncludesAll(finalizerContent, [
+        "active SPEC has an applicable `qa_checklist.md`",
+        "runner's `QA CHECKLIST UPDATE`",
+        "record only check/AC, `passed|failed|blocked|not_run`, type, compact command or method, and short evidence",
+        "If runner evidence is absent or insufficient, record `blocked` or `not_run` instead of success.",
+        "If no checklist exists and the active SPEC is `Execution Ready` without explicit `qa_tracking: not_applicable`, do not create it as finalizer-owned content",
+        "report a SPEC lifecycle process gap and block clean finalization",
+        "If `MODE=CLOSE` requires compact closed SPEC cleanup, do not retain `qa_checklist.md` in the closed bundle.",
+    ], `${label} finalizer QA checklist reconciliation`);
+
+    assertContentIncludesAll(orchestratorContent, [
+        "preserving the runner's compact `QA CHECKLIST UPDATE` handoff",
+        "applicable `qa_checklist.md` reconciliation happens in the same finalizer round",
+        "Missing QA tracking is a SPEC lifecycle gap, not finalizer work",
+    ], `${label} orchestrator QA checklist routing`);
+}
+
+function assertQaChecklistValidationHandoffInCodexAgents(repoRoot, controlledAgentFiles) {
+    const requiredAgents = ["validation-runner", "finalizer", "orchestrator"];
+
+    for (const agentName of requiredAgents) {
+        assert(
+            controlledAgentFiles.includes(`${agentName}.agent.md`),
+            `Agent Codex esperado ausente do conjunto controlado: ${agentName}`
+        );
+    }
+
+    const readInstructions = (agentName) => {
+        const content = fs.readFileSync(path.join(repoRoot, ".codex", "agents", `${agentName}.toml`), "utf8");
+        return parseToml(content, `codex/${agentName}`).developer_instructions;
+    };
+
+    assertContentIncludesAll(readInstructions("validation-runner"), [
+        "`QA CHECKLIST UPDATE`",
+        "result `passed|failed|blocked|not_run`",
+        "never mark `passed` from implementation inspection or intent",
+        "`QA checklist evidence gate`",
+    ], "codex validation-runner QA checklist handoff");
+
+    assertContentIncludesAll(readInstructions("finalizer"), [
+        "active SPEC has an applicable `qa_checklist.md`",
+        "runner's `QA CHECKLIST UPDATE`",
+        "If runner evidence is absent or insufficient, record `blocked` or `not_run` instead of success.",
+        "If no checklist exists and the active SPEC is `Execution Ready` without explicit `qa_tracking: not_applicable`, do not create it as finalizer-owned content",
+        "If `MODE=CLOSE` requires compact closed SPEC cleanup, do not retain `qa_checklist.md` in the closed bundle.",
+    ], "codex finalizer QA checklist reconciliation");
+
+    assertContentIncludesAll(readInstructions("orchestrator"), [
+        "preserving the runner's compact `QA CHECKLIST UPDATE` handoff",
+        "same finalizer round",
+    ], "codex orchestrator QA checklist routing");
+}
+
+function assertQaChecklistValidationHandoffInDocs(docRoot, label) {
+    const lifecycleContent = fs.readFileSync(
+        path.join(docRoot, "workflow", "EXECUTION-LIFECYCLE.md"),
+        "utf8"
+    );
+    const statusGatesContent = fs.readFileSync(
+        path.join(docRoot, "workflow", "STATUS-GATES.md"),
+        "utf8"
+    );
+
+    assertContentIncludesAll(lifecycleContent, [
+        "SPEC executável deve entrar no ciclo com `qa_checklist.md` já materializado pela skill de SPEC",
+        "Validação executada deve virar checklist durável quando aplicável",
+        "`QA CHECKLIST UPDATE` compacto",
+        "`qa_checklist.md` não substitui o validation verdict nem closure",
+        "não pode registrar `passed` sem evidência real de execução ou observação",
+        "o arquivo não é retido no bundle fechado",
+    ], `${label}/workflow/EXECUTION-LIFECYCLE.md QA checklist handoff`);
+
+    assertContentIncludesAll(statusGatesContent, [
+        "`QA CHECKLIST UPDATE` é handoff compacto",
+        "ele alimenta `qa_checklist.md` aplicável na SPEC ativa",
+        "gap de lifecycle da SPEC, não não-aplicabilidade silenciosa",
+        "não substitui verdict, closure ou logs completos",
+        "`passed` exige execução ou observação real",
+        "Em fechamento compacto de SPEC, o checklist não é retido no bundle fechado.",
+    ], `${label}/workflow/STATUS-GATES.md QA checklist handoff`);
 }
 
 function assertProtocolHardeningInCanonicalRefs(skillRoot) {
@@ -2332,9 +3636,15 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "Seguir o padrão do projeto não significa copiar dívida técnica",
         "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
         "a propagação protocol-fixed deve ser validada comparando template/base agent canônico, `reference/agents/*.agent.md` instalado e artifact final materializado do target",
+        "Agents materializados são artifacts gerenciados, não documentos locais autoritativos do contrato Sentinel.",
+        "reconstruir o artifact final a partir do template/base agent canônico atual listado em `reference/MANIFEST.md`",
+        "bump de `base_agent_version`, `specialization_revision`, `model` ou metadata nunca é update suficiente quando o corpo canônico mudou",
+        "nunca entregar artifact híbrido com contrato antigo e contrato novo misturados",
         "REQUIRED_QUALITY_GUARDRAILS",
         "stnl_frontend_quality",
         "stnl_backend_sql_quality",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
+        ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
     ], "stnl_project_agent_specializer anti-drift");
 
     const qualityGateContent = fs.readFileSync(
@@ -2353,9 +3663,14 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "finalizer READY` sem `DONE` yes/no explícito ou sem resync yes/no explícito",
         "todo artifact gerenciado materializa `model`",
         "Consistency without legacy propagation check",
+        "Managed artifact canonical rebuild check",
+        "reviewer` materializado usa somente `PASS` e `FAIL` como status do papel",
+        "update de artifact gerenciado que altera apenas metadata",
         "Stack quality guardrail propagation check",
         "frases sentinela de consistencia presentes no template/base ou reference agent mas ausentes de `developer_instructions` em Codex",
         "compactacao ou normalizacao remove bloco protocol-fixed para caber no limite de 30.000 caracteres",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
+        ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
     ], "agent specialization quality gate hardening");
 
     const lifecycleContent = fs.readFileSync(
@@ -2371,6 +3686,7 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "## Contrato das stack quality guardrails",
         "Toda rodada terminal passa obrigatoriamente pelo `finalizer`",
         "`finalizer READY` exige closure ledger explícito",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "execution lifecycle hardening");
 }
 
@@ -2455,32 +3771,71 @@ function assertProtocolHardeningInCodexAgents(repoRoot, controlledAgentFiles) {
         const instructions = parsed.developer_instructions;
 
         assertSingleConsistencyPolicyBlock(instructions, `${agentName} codex developer_instructions consistency policy`);
+        assertContentIncludesAll(
+            instructions,
+            COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
+            `${agentName} codex compact return contract`
+        );
+        assertContentExcludesAll(
+            instructions,
+            COMPACT_AGENT_RETURN_FORBIDDEN_SNIPPETS,
+            `${agentName} codex compact return forbidden regressions`
+        );
 
         if (agentName === "orchestrator") {
             assertContentIncludesAll(instructions, [
-                "If explicitly invoked as a custom subagent",
+                "main/root session is the human-visible workspace entrypoint",
+                "must not spawn this `orchestrator` automatically",
+                "Skill/workflow requests are not subagent authorization",
+                "`Use stnl_spec_manager`",
+                "When the human explicitly requests `Use orchestrator`",
+                "minimal, task-scoped routing payload",
+                "Do not require full-history fork inheritance.",
+                "durable Sentinel contract from `AGENTS.md`",
+                "Never accept a full Sentinel contract pasted into a normal prompt",
+                "Codex Parent-Mediated Routing Contract",
+                "owns gate routing and decides the current canonical owner by exact custom agent name",
+                "orchestrator must return a compact ROUTE_PACKET",
+                "orchestrator must not spawn downstream Sentinel owners directly",
+                "root/main session then spawns the named owner",
+                "root/main must not choose owners on its own except from a valid ROUTE_PACKET",
+                "preserves the Codex primary visual layer",
+                "avoids nested owner threads",
+                "return to orchestrator for the next routing decision",
                 "native Codex custom subagent spawning",
                 "exact custom agent name",
-                "Wait for the subagent result",
+                "refused full-history fork is not itself failure",
+                "native requested agent thread",
+                "Wait for the owner result from root/main",
+                "full-contract prompt replay",
                 "never use `codex exec`",
                 "shell/subprocess/script/local continuation",
-                "nested routing causes runtime/UI/depth limitations",
+                "If native custom-agent spawning cannot create an explicitly requested agent thread",
+                "root/main cannot spawn the owner named in a valid ROUTE_PACKET",
                 "Never absorb downstream Sentinel roles locally.",
                 "ROUTING_RUNTIME_BLOCKED",
-                "Do not claim that invoking `orchestrator` as a subagent is the default UI path.",
             ], `${agentName} codex routing runtime hardening`);
             assertContentExcludesAll(instructions, [
-                "start with the custom subagent named `orchestrator`",
-                "always the first",
-                "default first task",
+                "If explicitly invoked as a custom subagent",
+                "not the default visual entrypoint",
+                "default first Sentinel subagent for Codex",
+                "must request this `orchestrator` as the default first Sentinel subagent",
+                "Do not claim that invoking `orchestrator` as a subagent is the default UI path.",
+                "pass the full contract in the prompt",
+                "preserves native handoff by name",
+                "call the orchestrator without fork and pass the full contract",
+                "full-history fork is required",
+                "continue locally as orchestrator",
+                "local continuation as orchestrator",
+                ...CODEX_PARENT_MEDIATED_ROUTING_FORBIDDEN_SNIPPETS,
             ], `${agentName} codex routing runtime default entrypoint regression`);
         } else {
             assertContentIncludesAll(instructions, [
                 "must not spawn downstream Sentinel agents",
                 "must not call `codex exec` for handoff",
                 "must not use shell/subprocess/script to perform handoff",
-                "return owned artifact/status/formal handoff signal to the parent controller/orchestrator",
-                "\"handoff to X\" means a formal signal for parent controller/orchestrator routing, not direct spawning",
+                "return owned artifact/status/formal handoff signal to root/main for parent-mediated orchestrator routing",
+                "\"handoff to X\" means a formal signal for root/main-mediated orchestrator routing, not direct spawning",
             ], `${agentName} codex routing runtime hardening`);
         }
 
@@ -2586,6 +3941,37 @@ function assertConsistencyPolicyPropagationToCodexAgents(skillRoot, repoRoot, co
     }
 }
 
+function assertCurrentCanonicalAgentSnippetsPropagateToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const [fileName, snippets] of Object.entries(MANAGED_UPDATE_CANONICAL_SNIPPETS_BY_AGENT)) {
+        if (!controlledAgentFiles.includes(fileName)) {
+            continue;
+        }
+
+        const templatePath = path.join(ROOT, "templates", "agents", fileName);
+        const referencePath = path.join(skillRoot, "reference", "agents", fileName);
+        const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
+        const templateContent = fs.readFileSync(templatePath, "utf8");
+        const referenceContent = fs.readFileSync(referencePath, "utf8");
+        const materializedContent = fs.readFileSync(materializedPath, "utf8");
+
+        assertContentIncludesAll(
+            templateContent,
+            snippets,
+            `templates/agents/${fileName} canonical managed-update snippets`
+        );
+        assertContentIncludesAll(
+            referenceContent,
+            snippets,
+            `reference/agents/${fileName} canonical managed-update snippets`
+        );
+        assertContentIncludesAll(
+            materializedContent,
+            snippets,
+            `vscode/${fileName} canonical managed-update snippets`
+        );
+    }
+}
+
 function assertBackendOnlySpecializedMaterialization(repoRoot) {
     const agentsRoot = path.join(repoRoot, ".github", "agents");
     const materializedFiles = listRelativeFiles(agentsRoot)
@@ -2634,6 +4020,121 @@ function assertBackendOnlySpecializedMaterialization(repoRoot) {
         collectVscodeOperationalIdentityRecords(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES)
     );
     assertProtocolHardeningInMaterializedAgents(repoRoot, BACKEND_ONLY_SPECIALIZED_AGENT_FILES);
+}
+
+function assertNoIosVscodeMaterialization(repoRoot) {
+    const agentsRoot = path.join(repoRoot, ".github", "agents");
+    const materializedFiles = listRelativeFiles(agentsRoot)
+        .filter((entry) => entry.endsWith(".agent.md"))
+        .sort();
+
+    assert(
+        !materializedFiles.includes("coder-ios.agent.md"),
+        "Fixture sem iOS não deve materializar coder-ios.agent.md"
+    );
+    assert.deepEqual(
+        materializedFiles,
+        [...NO_IOS_SPECIALIZED_AGENT_FILES].sort(),
+        `Especialização sem iOS materializou conjunto inesperado: ${agentsRoot}`
+    );
+
+    for (const fileName of materializedFiles) {
+        const materializedPath = path.join(agentsRoot, fileName);
+        const content = fs.readFileSync(materializedPath, "utf8");
+
+        assert(
+            !content.includes(IOS_QUALITY_GUARDRAIL_SKILL),
+            `Guardrail iOS indisponível vazou para artifact VS Code sem iOS: ${materializedPath}`
+        );
+    }
+
+    const orchestratorPath = path.join(agentsRoot, "orchestrator.agent.md");
+    const orchestratorContent = fs.readFileSync(orchestratorPath, "utf8");
+    const { data: orchestratorFrontmatter } = parseFrontmatter(orchestratorContent, orchestratorPath);
+
+    assert(
+        !orchestratorFrontmatter.agents.includes("coder-ios"),
+        "orchestrator VS Code sem iOS não deve listar coder-ios no frontmatter"
+    );
+    assert(
+        !orchestratorContent.includes("coder-ios"),
+        "orchestrator VS Code sem iOS não deve manter referência textual a coder-ios"
+    );
+    assertContentIncludesAll(orchestratorContent, [
+        "Native iOS is out of scope",
+        "stnl_frontend_quality",
+        "stnl_backend_quality",
+        "stnl_backend_sql_quality",
+        "QA CHECKLIST UPDATE",
+    ], "orchestrator VS Code sem iOS");
+
+    for (const fileName of [
+        "validation-runner.agent.md",
+        "finalizer.agent.md",
+        "orchestrator.agent.md",
+    ]) {
+        const content = fs.readFileSync(path.join(agentsRoot, fileName), "utf8");
+        assert(
+            content.includes("QA CHECKLIST UPDATE"),
+            `${fileName} sem iOS perdeu QA CHECKLIST UPDATE`
+        );
+    }
+
+    const reviewerContent = fs.readFileSync(path.join(agentsRoot, "reviewer.agent.md"), "utf8");
+    assertStatusContract(reviewerContent, "reviewer", "reviewer VS Code sem iOS");
+    assertVscodeOperationalIdentity(
+        collectVscodeOperationalIdentityRecords(repoRoot, NO_IOS_SPECIALIZED_AGENT_FILES)
+    );
+    assertProtocolHardeningInMaterializedAgents(repoRoot, NO_IOS_SPECIALIZED_AGENT_FILES);
+}
+
+function assertNoIosCodexMaterialization(repoRoot) {
+    const codexAgentsRoot = path.join(repoRoot, ".codex", "agents");
+    const materializedTomls = listRelativeFiles(codexAgentsRoot).filter((entry) => entry.endsWith(".toml"));
+    const materializedAgentNames = materializedTomls
+        .map((entry) => path.basename(entry, ".toml"))
+        .sort();
+
+    assert(
+        !materializedAgentNames.includes("coder-ios"),
+        "Fixture Codex sem iOS não deve materializar coder-ios.toml"
+    );
+    assert.deepEqual(
+        materializedAgentNames,
+        NO_IOS_SPECIALIZED_AGENT_FILES.map((fileName) => canonicalAgentIdFromFileName(fileName)).sort(),
+        `Especialização Codex sem iOS materializou conjunto inesperado: ${codexAgentsRoot}`
+    );
+
+    for (const relativePath of materializedTomls) {
+        const materializedPath = path.join(codexAgentsRoot, relativePath);
+        const content = fs.readFileSync(materializedPath, "utf8");
+        const parsed = parseToml(content, materializedPath);
+
+        assert(
+            !parsed.developer_instructions.includes(IOS_QUALITY_GUARDRAIL_SKILL),
+            `Guardrail iOS indisponível vazou para artifact Codex sem iOS: ${materializedPath}`
+        );
+    }
+
+    const orchestratorContent = fs.readFileSync(path.join(codexAgentsRoot, "orchestrator.toml"), "utf8");
+    const orchestratorParsed = parseToml(orchestratorContent, "codex/orchestrator.toml");
+    assert(
+        !orchestratorParsed.developer_instructions.includes("coder-ios"),
+        "orchestrator Codex sem iOS não deve manter referência textual a coder-ios"
+    );
+    assertContentIncludesAll(orchestratorParsed.developer_instructions, [
+        "Native iOS is out of scope",
+        "stnl_frontend_quality",
+        "stnl_backend_quality",
+        "stnl_backend_sql_quality",
+        "QA CHECKLIST UPDATE",
+    ], "orchestrator Codex sem iOS");
+
+    const agentsIndexContent = fs.readFileSync(path.join(repoRoot, "AGENTS.md"), "utf8");
+    assert(
+        !agentsIndexContent.includes("coder-ios"),
+        "AGENTS.md Codex sem iOS não deve listar coder-ios"
+    );
 }
 
 function assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(skillRoot) {
@@ -2747,6 +4248,190 @@ function assertConsistencyPolicyRepairsLegacyCodexMaterialization(skillRoot, con
     }
 }
 
+function buildLegacyReviewerBody() {
+    return [
+        "# Reviewer Agent",
+        "",
+        "## Mission",
+        "Legacy reviewer body kept from an older managed artifact.",
+        "",
+        "## Status it may emit",
+        "- `READY`",
+        "- `BLOCKED`",
+        "",
+        "This stale body mentions newer `PASS` and `FAIL` language elsewhere, making it a hybrid.",
+        LEGACY_REVIEWER_STATUS_MARKER,
+        "",
+        "## Handoff",
+        "Legacy handoff text.",
+        "",
+        "## Reading contract",
+        "Legacy reading contract.",
+        "",
+        "## Consistency without legacy propagation",
+        "Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.",
+        "",
+        "This policy does not authorize broad refactors.",
+        "",
+    ].join("\n");
+}
+
+function writeLegacyManagedVscodeReviewer(repoRoot) {
+    const frontmatter = {
+        name: "reviewer",
+        description: "Legacy managed reviewer fixture.",
+        target: "vscode",
+        tools: CONTROLLED_AGENT_TOOLSETS["reviewer.agent.md"],
+        model: getControlledModelForAgent("reviewer"),
+        base_agent_version: "2026.5.0",
+        specialization_revision: 1,
+        managed_artifact: true,
+        reading_scope_class: "review-minimal",
+    };
+
+    writeFile(
+        path.join(repoRoot, ".github", "agents", "reviewer.agent.md"),
+        renderFrontmatter(frontmatter) + buildLegacyReviewerBody()
+    );
+}
+
+function writeLegacyManagedCodexReviewer(repoRoot) {
+    writeFile(
+        path.join(repoRoot, ".codex", "agents", "reviewer.toml"),
+        renderCodexAgentToml({
+            name: "reviewer",
+            description: "Legacy managed reviewer fixture.",
+            model: getControlledModelForAgent("reviewer"),
+            model_reasoning_effort: EXPECTED_CODEX_AGENT_REASONING_EFFORT.reviewer,
+            sandbox_mode: EXPECTED_CODEX_AGENT_SANDBOX_MODE.reviewer,
+            developer_instructions: buildLegacyReviewerBody(),
+        }, "legacy-reviewer.toml")
+    );
+}
+
+function removeManagedUpdateCanonicalSnippets(content, fileName) {
+    let driftedContent = content;
+
+    for (const snippet of MANAGED_UPDATE_CANONICAL_SNIPPETS_BY_AGENT[fileName] ?? []) {
+        assert(
+            driftedContent.includes(snippet),
+            `Fixture de drift gerenciado não encontrou snippet canônico para remover em ${fileName}: ${snippet}`
+        );
+        driftedContent = driftedContent.replaceAll(snippet, "REMOVED_CANONICAL_TEMPLATE_SNIPPET");
+    }
+
+    return driftedContent;
+}
+
+function assertManagedVscodeUpdateRebuildsLegacyReviewer(skillRoot, controlledAgentFiles) {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-managed-update-vscode-"));
+
+    try {
+        createControlledFixtureRepo(repoRoot);
+        materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles);
+        writeLegacyManagedVscodeReviewer(repoRoot);
+
+        const stalePath = path.join(repoRoot, ".github", "agents", "reviewer.agent.md");
+        assert(
+            fs.readFileSync(stalePath, "utf8").includes(LEGACY_REVIEWER_STATUS_MARKER),
+            "Fixture VS Code deveria começar com reviewer gerenciado legado"
+        );
+
+        rebuildManagedVscodeAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles);
+
+        const rebuiltContent = fs.readFileSync(stalePath, "utf8");
+        const { data: frontmatter } = parseFrontmatter(rebuiltContent, stalePath);
+        assert.equal(frontmatter.base_agent_version, "2026.5.1", "reviewer VS Code não atualizou base_agent_version para 2026.5.1");
+        assert.equal(frontmatter.specialization_revision, 2, "reviewer VS Code gerenciado não incrementou specialization_revision no update");
+        assert(!rebuiltContent.includes(LEGACY_REVIEWER_STATUS_MARKER), "reviewer VS Code preservou corpo legado apos update gerenciado");
+        assertVscodeStatusContracts(repoRoot, controlledAgentFiles);
+        assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertManagedVscodeUpdateRebuildsCanonicalTemplateChange(skillRoot, controlledAgentFiles) {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-managed-template-update-vscode-"));
+
+    try {
+        createControlledFixtureRepo(repoRoot);
+        materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles);
+
+        const driftedFileNames = Object.keys(MANAGED_UPDATE_CANONICAL_SNIPPETS_BY_AGENT)
+            .filter((fileName) => controlledAgentFiles.includes(fileName));
+
+        assert(
+            driftedFileNames.length > 1,
+            "fixture deve cobrir múltiplos agents gerenciados"
+        );
+
+        for (const staleFileName of driftedFileNames) {
+            const stalePath = path.join(repoRoot, ".github", "agents", staleFileName);
+            const staleContent = removeManagedUpdateCanonicalSnippets(
+                fs.readFileSync(stalePath, "utf8"),
+                staleFileName
+            );
+            writeFile(stalePath, staleContent);
+        }
+
+        assert.throws(
+            () => assertCurrentCanonicalAgentSnippetsPropagateToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles),
+            /não contém o invariante esperado/,
+            "Quality gate deveria rejeitar agents gerenciados existentes sem snippets canônicos do template atual"
+        );
+        assert.throws(
+            () => assertEphemeralPreparationHandoffContractInAgentSet(path.join(repoRoot, ".github", "agents"), "vscode drifted template update"),
+            /não contém o invariante esperado/,
+            "Quality gate deveria rejeitar drift protocol-fixed de handoff efêmero antes do rebuild"
+        );
+
+        rebuildManagedVscodeAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles);
+
+        for (const staleFileName of driftedFileNames) {
+            const rebuiltPath = path.join(repoRoot, ".github", "agents", staleFileName);
+            const rebuiltContent = fs.readFileSync(rebuiltPath, "utf8");
+
+            assert(
+                !rebuiltContent.includes("REMOVED_CANONICAL_TEMPLATE_SNIPPET"),
+                `${staleFileName} preservou drift protocol-fixed apos update gerenciado`
+            );
+        }
+
+        assertCurrentCanonicalAgentSnippetsPropagateToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles);
+        assertEphemeralPreparationHandoffContractInAgentSet(path.join(repoRoot, ".github", "agents"), "vscode rebuilt template update");
+        assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertManagedCodexUpdateRebuildsLegacyReviewer(skillRoot, controlledAgentFiles) {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-managed-update-codex-"));
+
+    try {
+        createControlledFixtureRepo(repoRoot);
+        materializeControlledCodexAgents(skillRoot, repoRoot, controlledAgentFiles);
+        writeLegacyManagedCodexReviewer(repoRoot);
+
+        const stalePath = path.join(repoRoot, ".codex", "agents", "reviewer.toml");
+        assert(
+            fs.readFileSync(stalePath, "utf8").includes(LEGACY_REVIEWER_STATUS_MARKER),
+            "Fixture Codex deveria começar com reviewer gerenciado legado"
+        );
+
+        rebuildManagedCodexAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles);
+
+        const rebuiltContent = fs.readFileSync(stalePath, "utf8");
+        const parsed = parseToml(rebuiltContent, stalePath);
+        assert(!parsed.developer_instructions.includes(LEGACY_REVIEWER_STATUS_MARKER), "reviewer Codex preservou corpo legado apos update gerenciado");
+        assertCodexStatusContracts(repoRoot, controlledAgentFiles);
+        assertConsistencyPolicyPropagationToCodexAgents(skillRoot, repoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+}
+
 function assertControlledCodexAgentMaterialization(repoRoot, controlledAgentFiles) {
     const codexAgentsRoot = path.join(repoRoot, ".codex", "agents");
     const expectedAgentNames = controlledAgentFiles
@@ -2835,14 +4520,66 @@ function assertControlledCodexRuntimeConfig(repoRoot) {
         "# source_template: stnl_project_agent_specializer/reference/templates/codex/config.toml",
         "[agents]",
         "max_threads = 6",
-        "max_depth = 2",
+        "max_depth = 1",
     ]);
 
     const content = fs.readFileSync(configPath, "utf8");
     assert(
-        !content.includes("max_depth = 3") && !content.includes("max_depth = 4"),
-        `Config Codex controlada não deve elevar max_depth acima de 2: ${configPath}`
+        !content.includes("max_depth = 2") && !content.includes("max_depth = 3") && !content.includes("max_depth = 4"),
+        `Config Codex controlada deve preservar max_depth = 1 e bloquear profundidade 2+: ${configPath}`
     );
+}
+
+function assertCodexSourceTemplates() {
+    const configTemplatePath = path.join(
+        ROOT,
+        "skills",
+        "stnl_project_agent_specializer",
+        "reference",
+        "templates",
+        "codex",
+        "config.toml"
+    );
+    const agentsTemplatePath = path.join(
+        ROOT,
+        "skills",
+        "stnl_project_agent_specializer",
+        "reference",
+        "templates",
+        "codex",
+        "AGENTS.md"
+    );
+    const configContent = assertFileHasRequiredShape(configTemplatePath, [
+        "[agents]",
+        "max_threads = 6",
+        "max_depth = 1",
+    ]);
+    assert(
+        !configContent.includes("max_depth = 2"),
+        `Template Codex config não deve exigir max_depth = 2: ${configTemplatePath}`
+    );
+    const agentsContent = assertFileHasRequiredShape(agentsTemplatePath, [
+        "## File Purpose Header",
+        "do_not_use_for: Project facts, SPEC content, execution authorization, work packages, validation evidence, or agent role exactness.",
+        "canonical_source_not_for: Individual agent duties, project documentation, Sentinel source contracts, implementation plans, or validation results.",
+        "open the target agent TOML for role-specific accuracy",
+        "[agents].max_depth = 1",
+        ...CODEX_EXPLICIT_SUBAGENT_INVOCATION_SNIPPETS,
+        "Codex Parent-Mediated Routing Contract",
+        "ROUTE_PACKET",
+        "orchestrator must not spawn downstream Sentinel owners directly",
+        "root/main session then spawns the named owner",
+        "blocking nested owner threads below `orchestrator`",
+        "## Local Notes",
+        "Local Notes must stay compact and stable.",
+        "{{LOCAL_NOTES}}",
+    ]);
+    assertFilePurposeHeaderFields(agentsContent, "Codex AGENTS.md source template");
+    assertContentExcludesAll(agentsContent, [
+        "[agents].max_depth = 2",
+        "max_depth = 2",
+        ...CODEX_PARENT_MEDIATED_ROUTING_FORBIDDEN_SNIPPETS,
+    ], "Codex AGENTS.md source template");
 }
 
 function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
@@ -2852,39 +4589,86 @@ function assertControlledCodexAgentsIndex(repoRoot, controlledAgentFiles) {
         .sort();
     const content = assertFileHasRequiredShape(agentsIndexPath, [
         `# ${SMOKE_FIXTURE_REPO_NAME} Agents`,
+        "## File Purpose Header",
+        "do_not_use_for: Project facts, SPEC content, execution authorization, work packages, validation evidence, or agent role exactness.",
+        "canonical_source_not_for: Individual agent duties, project documentation, Sentinel source contracts, implementation plans, or validation results.",
+        "open the target agent TOML for role-specific accuracy",
         "## Runtime Contract",
         "## Runtime Hardening",
         "## Managed Agents",
         ".codex/agents/",
         ".codex/config.toml",
-        "main/root Codex session is the visual entrypoint",
-        "apply the Sentinel orchestrator boundary itself",
-        "spawn the next owner directly",
+        "main/root Codex session is the human-visible workspace entrypoint",
+        ...CODEX_EXPLICIT_SUBAGENT_INVOCATION_SNIPPETS,
+        "must not depend on full-history fork",
+        "minimal, task-scoped routing payload",
+        "durable Sentinel instructions must come from",
+        "AGENTS.md",
+        ".codex/agents/*.toml",
+        "Refusing a full-history fork is not itself a routing failure if Codex still creates a native agent thread for the requested custom subagent",
+        "prompt-emulated handoff is forbidden",
+        "do not call the orchestrator \"without fork\" by pasting the full Sentinel contract",
+        "do not claim that such prompt replay preserves native handoff",
+        "If explicit subagent authorization exists but native custom-agent spawning cannot create the requested agent thread, stop with `ROUTING_RUNTIME_BLOCKED`",
+        "orchestrator` custom subagent is the Sentinel routing controller when explicitly invoked",
+        ...CODEX_PARENT_MEDIATED_ROUTING_SNIPPETS,
+        "ROUTE_PACKET",
+        "STATUS: ROUTE_READY | BLOCKED | TERMINAL",
+        "If root/main cannot spawn the owner named in a valid `ROUTE_PACKET`",
+        "Direct root-to-owner spawning is not the default Sentinel-governed path",
         "native custom subagent spawn",
         "exact agent name",
-        "Do not spawn `orchestrator` as the default first task",
         "never emulate handoff with `codex exec`",
         "ROUTING_RUNTIME_BLOCKED",
-        "max_depth = 2",
+        "max_depth = 1",
+        "blocking nested owner threads below `orchestrator`",
+        "## Local Notes",
+        "Local Notes must stay compact and stable.",
+        "Smoke fixture for controlled Codex materialization.",
         "`model`",
         "`model_reasoning_effort`",
         "`sandbox_mode`",
         "`read-only`",
         "`workspace-write`",
+        ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
     ]);
+    assertFilePurposeHeaderFields(content, "AGENTS.md codex materializado");
     assertContentIncludesAll(content, [
-        "The `orchestrator` custom subagent exists as an available specialist, explicit fallback, and role-boundary reference.",
-        "The root/main session must spawn the current canonical owner directly.",
-    ], "AGENTS.md codex visual entrypoint contract");
+        "The `orchestrator` custom subagent is the Sentinel routing controller when explicitly invoked.",
+        "Skill/workflow requests are not subagent authorization.",
+        "If a requested task cannot be performed safely without a custom subagent and none was explicitly authorized, stop with `SUBAGENT_AUTH_REQUIRED`",
+        "The orchestrator must return a compact ROUTE_PACKET naming the next canonical owner.",
+        "The orchestrator must not spawn downstream Sentinel owners directly.",
+        "The root/main session then spawns the named owner as a native custom subagent by exact custom agent name",
+        "Direct root-to-owner spawning is not the default Sentinel-governed path.",
+    ], "AGENTS.md codex orchestrator-first contract");
     assertContentExcludesAll(content, [
-        "start with the custom subagent named `orchestrator`",
-    ], "AGENTS.md codex must not default to orchestrator task");
+        "spawn the next owner directly",
+        "Do not spawn `orchestrator` as the default first task",
+        "The root/main session must spawn the current canonical owner directly.",
+        "apply the Sentinel orchestrator boundary itself",
+        "passar o contrato completo no prompt",
+        "pass the full contract in the prompt",
+        "preserva o handoff nativo por nome",
+        "preserves native handoff by name",
+        "max_depth = 2",
+        "call the orchestrator without fork and pass the full contract",
+        "full-history fork is required",
+        "continue locally as orchestrator",
+        "local continuation as orchestrator",
+        "For Sentinel-governed work, the main/root Codex session is the human-visible workspace entrypoint, but the default first Sentinel subagent is `orchestrator`",
+        "`Use stnl_spec_manager` authorizes `orchestrator`",
+        "Skill/workflow requests authorize subagents",
+        "spawn custom subagents automatically by description",
+        ...CODEX_PARENT_MEDIATED_ROUTING_FORBIDDEN_SNIPPETS,
+        ...COMPACT_AGENT_RETURN_FORBIDDEN_SNIPPETS,
+    ], "AGENTS.md codex must not default to direct root-to-owner routing");
     const linkedAgentNames = [...content.matchAll(/\.codex\/agents\/([A-Za-z0-9_-]+)\.toml/g)]
         .map((match) => match[1])
         .sort();
 
     assert(
-        content.split(/\r?\n/).length <= 80,
+        content.split(/\r?\n/).length <= 112,
         `AGENTS.md codex ficou longo demais para shape plausível curto: ${agentsIndexPath}`
     );
     assert(
@@ -2925,6 +4709,8 @@ function runControlledMaterializationSmoke(targetHome) {
     const controlledAgentFiles = getControlledAgentFiles(agentSkillRoot);
     const vscodeRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-"));
     const backendOnlyRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-backend-only-"));
+    const noIosVscodeRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-vscode-no-ios-"));
+    const noIosCodexRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-no-ios-"));
     const codexRepoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-materialization-codex-"));
 
     try {
@@ -2935,7 +4721,24 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledContextMaterialization(vscodeRepoRoot);
         assertControlledReferenceDocs(agentSkillRoot);
         assertProtocolHardeningInTemplateAgents();
+        assertEphemeralPreparationHandoffContractInAgentSet(
+            path.join(ROOT, "templates", "agents"),
+            "templates/agents"
+        );
+        assertEphemeralPreparationHandoffContractInCanonicalSource();
         assertProtocolHardeningInReferenceAgents(agentSkillRoot);
+        assertQaChecklistValidationHandoffInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
+        assertEphemeralPreparationHandoffContractInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
+        assertHeaderAwareReadingInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
         assertRound1AntiInferenceHardeningInAgentSet(
             path.join(agentSkillRoot, "reference", "agents"),
             "reference/agents instalado"
@@ -2950,10 +4753,27 @@ function runControlledMaterializationSmoke(targetHome) {
         );
         assertProtocolHardeningInCanonicalRefs(agentSkillRoot);
         assertQualityGuardrailsInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
+        assertQaChecklistValidationHandoffInDocs(
+            path.join(agentSkillRoot, "reference", "docs"),
+            "reference/docs instalado"
+        );
         assertCanonicalDesignerRoleClassInDocs(path.join(agentSkillRoot, "reference", "docs"), "reference/docs instalado");
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertEphemeralPreparationHandoffContractInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
+        assertQaChecklistValidationHandoffInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
+        assertVscodeStatusContracts(vscodeRepoRoot, controlledAgentFiles);
+        assertHeaderAwareReadingInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
         assertRound1AntiInferenceHardeningInAgentSet(
             path.join(vscodeRepoRoot, ".github", "agents"),
             "vscode materializado"
@@ -2968,6 +4788,7 @@ function runControlledMaterializationSmoke(targetHome) {
         );
         assertQualityGuardrailPropagationInAgentSet(path.join(vscodeRepoRoot, ".github", "agents"), "vscode materializado");
         assertConsistencyPolicyPropagationToVscodeAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
+        assertCurrentCanonicalAgentSnippetsPropagateToVscodeAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(backendOnlyRepoRoot);
         materializeControlledContextDocs(contextSkillRoot, backendOnlyRepoRoot);
@@ -2976,6 +4797,17 @@ function runControlledMaterializationSmoke(targetHome) {
         assertProtocolHardeningRejectsCompactedBackendOnlyMaterialization(agentSkillRoot);
         assertConsistencyPolicyRejectsVscodeMaterializationDrift(agentSkillRoot, controlledAgentFiles);
         assertConsistencyPolicyRepairsLegacyVscodeMaterialization(agentSkillRoot, controlledAgentFiles);
+        assertManagedVscodeUpdateRebuildsLegacyReviewer(agentSkillRoot, controlledAgentFiles);
+        assertManagedVscodeUpdateRebuildsCanonicalTemplateChange(agentSkillRoot, controlledAgentFiles);
+
+        createNoIosFixtureRepo(noIosVscodeRepoRoot);
+        materializeControlledContextDocs(contextSkillRoot, noIosVscodeRepoRoot);
+        materializeControlledAgents(agentSkillRoot, noIosVscodeRepoRoot, NO_IOS_SPECIALIZED_AGENT_FILES);
+        assertNoIosVscodeMaterialization(noIosVscodeRepoRoot);
+
+        createNoIosFixtureRepo(noIosCodexRepoRoot);
+        materializeControlledCodexAgents(agentSkillRoot, noIosCodexRepoRoot, NO_IOS_SPECIALIZED_AGENT_FILES);
+        assertNoIosCodexMaterialization(noIosCodexRepoRoot);
 
         createControlledFixtureRepo(codexRepoRoot);
         materializeControlledCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
@@ -2984,6 +4816,9 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledCodexRuntimeConfig(codexRepoRoot);
         assertControlledCodexAgentsIndex(codexRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertQaChecklistValidationHandoffInCodexAgents(codexRepoRoot, controlledAgentFiles);
+        assertCodexStatusContracts(codexRepoRoot, controlledAgentFiles);
+        assertHeaderAwareReadingInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound1AntiInferenceHardeningInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound2OperationalAxesInCodexAgents(codexRepoRoot, controlledAgentFiles);
         assertRound3OrchestratorLadderInCodexAgents(codexRepoRoot);
@@ -2991,9 +4826,12 @@ function runControlledMaterializationSmoke(targetHome) {
         assertConsistencyPolicyPropagationToCodexAgents(agentSkillRoot, codexRepoRoot, controlledAgentFiles);
         assertConsistencyPolicyRejectsCodexMaterializationDrift(agentSkillRoot, controlledAgentFiles);
         assertConsistencyPolicyRepairsLegacyCodexMaterialization(agentSkillRoot, controlledAgentFiles);
+        assertManagedCodexUpdateRebuildsLegacyReviewer(agentSkillRoot, controlledAgentFiles);
     } finally {
         fs.rmSync(vscodeRepoRoot, { recursive: true, force: true });
         fs.rmSync(backendOnlyRepoRoot, { recursive: true, force: true });
+        fs.rmSync(noIosVscodeRepoRoot, { recursive: true, force: true });
+        fs.rmSync(noIosCodexRepoRoot, { recursive: true, force: true });
         fs.rmSync(codexRepoRoot, { recursive: true, force: true });
     }
 }
@@ -3007,14 +4845,20 @@ async function runSentinelSmoke() {
     assertOwnedRootsAreFullyBundled();
     assertExplicitRootEntries();
     assertQualityGuardrailSourceDefinitions();
+    assertDocumentationTemplateHeaders(path.join(ROOT, "templates", "docs"), "templates/docs");
+    assertDocumentationTemplateCriticalSnippets(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertQualityGuardrailsInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCanonicalDesignerRoleClassInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertCorrectionLoopPolicyInTemplateDocs();
+    assertQaChecklistValidationHandoffInDocs(path.join(ROOT, "templates", "docs"), "templates/docs");
     assertBaseAgentTemplateSizeLimit();
+    assertHeaderAwareReadingInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertQaChecklistValidationHandoffInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertQualityGuardrailPropagationInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound1AntiInferenceHardeningInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound2OperationalAxesInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
     assertRound3OrchestratorLadderInAgentSet(path.join(ROOT, "templates", "agents"), "templates/agents");
+    assertCodexSourceTemplates();
     assertAgentFrontmatterNamesMatchBasenames(
         path.join(ROOT, "templates", "agents"),
         "templates/agents"
@@ -3029,6 +4873,8 @@ async function runSentinelSmoke() {
     );
     assertNoOperationalArtifactsInSentinelRoot();
     assertNoLegacyDirectoryInSentinelRoot();
+    assert(isIgnoredEntry(".DS_Store"), ".DS_Store deve continuar ignorado pelo smoke/materialização");
+    assert(isIgnoredEntry("__MACOSX"), "__MACOSX deve continuar ignorado pelo smoke/materialização");
 
     console.log("Smoke Sentinel: install/doctor em HOME temporário");
     const tempHome = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-smoke-"));

@@ -13,8 +13,20 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
   - `codex` -> `.codex/agents/*.toml`
   - `codex` -> `.codex/config.toml`
   - `codex` -> `AGENTS.md` na raiz do repo alvo
-- no target `codex`, manter a main/root Codex session como default visual entrypoint do Sentinel, para que background tasks dos owners especialistas apareçam no chat principal
-- manter `orchestrator.toml` materializado em `codex` como agent disponível, fallback explícito e referência de boundary, mas nunca orientar spawn automático dele como primeiro task por default
+- no target `codex`, manter a main/root Codex session como superficie humana/visual do workspace
+- no target `codex`, nao spawnar custom subagents automaticamente; `Use stnl_*` e pedido de skill/workflow no root/main, nao autorizacao para agent
+- no target `codex`, manter `orchestrator.toml` como routing controller disponivel somente quando explicitamente invocado por exact custom agent name
+- no target `codex`, bloquear com `SUBAGENT_AUTH_REQUIRED` quando uma tarefa exigir custom subagent e o humano nao tiver autorizado um agent por nome exato
+- no target `codex`, manter `[agents].max_depth = 1`; isso permite subagents diretos do root/main quando explicitamente autorizados e bloqueia owners aninhados abaixo do `orchestrator`
+- no target `codex`, preservar parent-mediated routing quando `Use orchestrator` for explicito: `root/main -> orchestrator -> ROUTE_PACKET -> root/main spawns owner sibling/root-level -> root/main returns to orchestrator`
+- no target `codex`, `orchestrator` decide gate/owner e retorna `ROUTE_PACKET` compacto; ele nao spawna downstream owners diretamente no fluxo visual padrao
+- no target `codex`, root/main nao escolhe owner sem `ROUTE_PACKET` valido do `orchestrator`, salvo pedido humano explicito de custom agent por nome exato ou recovery/blocking documentado
+- no target `codex`, full-history fork nao e requisito Sentinel; agent thread nativa do custom subagent explicitamente solicitado basta para continuar
+- no target `codex`, payload para subagent explicitamente autorizado deve ser minimo e task-scoped, com contrato duravel vindo de `AGENTS.md`, `.codex/agents/*.toml`, docs/templates Sentinel e docs/codebase permitidos
+- no target `codex`, contrato completo no prompt e fallback proibido e nao pode ser descrito como handoff nativo preservado
+- no target `codex`, se a agent thread nativa necessaria nao subir, bloquear com `ROUTING_RUNTIME_BLOCKED`
+- no target `codex`, manter `Compact Agent Return Contract` em `AGENTS.md` e nos TOMLs gerenciados: subagents retornam só status/gate/evidencia minima, artifact path + resumo compacto, sem despejar contrato/SPEC/checklist/logs/diffs/artifacts completos no chat por default
+- preservar as melhorias novas de quality, model selection, sandbox e runtime hardening sem orientar root-to-owner direto como fluxo Sentinel default
 - nunca materializar artifacts finais no repo Sentinel Protocol; este repo mantém somente source of truth, templates internos, installer e smoke
 - manter os templates internos do target `codex` em `reference/templates/codex/AGENTS.md` e `reference/templates/codex/config.toml`; esses templates não são artifacts operacionais do repo Sentinel
 - nunca criar `.codex/config.toml` final na raiz do repo Sentinel; esse arquivo só deve existir como template interno ou como artifact final no repo alvo materializado
@@ -35,6 +47,8 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - não tratar `tools`, `agents`, `base_agent_version`, `specialization_revision` ou `managed_artifact` como campos obrigatórios nativos de `codex`
 - não serializar `tools` no TOML controlado de `codex`; usar `sandbox_mode` para hardening runtime e `developer_instructions` para preservar a política semântica de tools
 - tratar o specialized final como shape normalizado e remover legado residual por default durante create e update
+- tratar artifacts com `managed_artifact: true` ou marca gerenciada equivalente como artifacts reconstruiveis: update parte do template/base agent canônico atual, preservando somente slots locais explicitamente permitidos
+- nunca corrigir agent gerenciado por patch parcial do corpo antigo; isso pode gerar artifact hibrido entre contratos antigos e novos
 - não perpetuar `## Tools` no corpo nem `agent_version` no frontmatter sem ordem humana explícita
 - manter `model` como campo operacional obrigatório em todo agent materializado
 - manter `model_policy` como override avançado opcional; ausência de `model_policy` não deve exigir matriz longa nos prompts de uso diário

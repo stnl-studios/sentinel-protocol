@@ -13,6 +13,15 @@ Eles servem para copiar e colar no agente/skill correspondente, sem repetir cont
 - Quando uma regra fixa precisar mudar, altere a skill/base agent correspondente, não este prompt launcher.
 - Quando houver uma exceção real do projeto ou da rodada, registre em `Restrições excepcionais`.
 
+## SPEC ativa
+
+- SPEC ativa agora inclui `spec_slices.md` e ao menos `SL-001`.
+- Modos públicos explícitos de SPEC são somente `MODE=RESUME`, `MODE=PLANNING_INTERFACE` e `MODE=CLOSE`; `MODE=NEW` não existe como modo público.
+- Fluxos esperados: `new SPEC creation -> PLANNING_INTERFACE -> orchestrator` e `new SPEC creation -> RESUME -> PLANNING_INTERFACE -> orchestrator`.
+- `PLANNING_INTERFACE` é etapa de enriquecimento da SPEC ativa, não etapa de execução.
+- Launchers continuam finos; a regra completa vive na skill, agentes, templates e validações.
+- Quando houver `File Purpose Header`, agentes devem usá-lo como roteador de leitura, mas o launcher não precisa repetir headers.
+
 ## Natureza destes arquivos
 
 Estes templates não são usados automaticamente pelo runtime do Sentinel.
@@ -26,6 +35,7 @@ Por enquanto, eles são uma biblioteca operacional de copy/paste para reduzir at
 - `context-tbd-sync.md`
 - `spec-new.md`
 - `spec-resume.md`
+- `spec-planning-interface.md`
 - `spec-close.md`
 - `foundation.md`
 - `agents-vscode.md`

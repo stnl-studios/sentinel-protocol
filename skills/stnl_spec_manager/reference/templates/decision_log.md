@@ -1,5 +1,16 @@
 # Decision Log
 
+## File Purpose Header
+- purpose: Canonical register of decisions that were explicitly made or confirmed for the active SPEC.
+- read_when: A decision, rationale, source, affected scope, or reversal risk is needed to understand the SPEC or a target slice.
+- do_not_use_for: Open questions, speculative implementation, temporary assumptions, execution plans, or validation commands.
+- canonical_source_for: `D-*` decisions, rationale, owner/source, affected scope, alternatives considered, and reversal cost.
+- canonical_source_not_for: Open questions, unresolved assumptions, implementation speculation, closure evidence, or work packages.
+- update_owner: `stnl_spec_manager` while the SPEC is active.
+- downstream_consumers: `planner`, `orchestrator`, `validation-eval-designer`, `reviewer`, `finalizer`.
+- token_policy: Read decisions referenced by the target slice or acceptance criteria; avoid unrelated history.
+- related_files: `feature_spec.md`, `spec_slices.md`, `open_questions.md`, `assumptions.md`, `readiness_report.md`.
+
 > Use this file as the auditable trail behind the implementation-facing SPEC. Capture only decisions that were actually taken or explicitly confirmed as source of truth, why they were chosen, which alternatives were considered, what was discarded, and how hard they are to reverse.
 >
 > If a direction is still speculative, depends on missing validation, or has not been consciously closed, keep it in `assumptions.md` or `open_questions.md` instead of forcing it into the decision log. The existence of a decision entry alone never proves strong `Execution Ready`.

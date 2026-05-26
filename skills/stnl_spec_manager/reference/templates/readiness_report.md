@@ -1,8 +1,21 @@
 # Readiness Report
 
+## File Purpose Header
+- purpose: Working assessment of SPEC maturity and readiness while the SPEC is active.
+- read_when: Readiness status, blockers, rationale, required confirmations, or slice readiness need to be checked.
+- do_not_use_for: Implementation steps, execution plans, final closure summary, file paths, commands, or work packages.
+- canonical_source_for: Readiness status, blockers, rationale, required confirmations, gate checks, and current maturity limits.
+- canonical_source_not_for: Accepted behavior, final product decisions, implementation sequence, validation commands, or final closure summary.
+- update_owner: `stnl_spec_manager` while the SPEC is active.
+- downstream_consumers: `planner`, `orchestrator`, `validation-eval-designer`, `reviewer`, `finalizer`.
+- token_policy: Read Current Status, Blocking Issues, and Required Confirmations first; read detailed checks only for the relevant gate.
+- related_files: `feature_spec.md`, `spec_slices.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `qa_checklist.md`.
+
 > This is an optional working artifact for maturity assessment while the SPEC is still being structured or validated. Preserve every section when this file is used, but do not make future readers depend on it to understand a closed SPEC.
 >
 > Do not let `readiness_score` override blockers, critical gaps, unresolved validation, or explicit conditionality. Any final closure outcome or final decision needed for future understanding must be consolidated into `feature_spec.md`.
+>
+> If `MODE=CLOSE` produces `closed` or `closed_with_residuals`, this file is a working artifact and must be removed after durable closure content is absorbed into `feature_spec.md`. If this file is still needed to understand the SPEC, the honest closure result is `not_closed`.
 >
 > `Execution Ready` is prohibited while any open question has `blocking: yes`. Rebuild, resume, split, close, handoff, and report-generation flows must rerun this gate instead of preserving stale readiness.
 
@@ -18,6 +31,12 @@
 - spec_consumability: structured_but_not_yet_consumable | consumable_with_explicit_conditions | blocked_by_critical_gaps
 - recommendation: [Continue structuring | resolve blockers | close critical gaps | split spec | ready for downstream consumption]
 - rationale: [Explain why this recommendation is honest in terms of downstream SPEC consumption, without routing another agent.]
+
+## Blocking Issues
+- [Blocking issue or `none`]
+
+## Required Confirmations
+- [Required confirmation or `none`]
 
 ## Coverage Summary
 - coverage_summary: [Short synthesis of what is already SPEC-consumable and what still lacks confidence.]
@@ -85,6 +104,8 @@
 - critical_dependencies_visible: yes | no
 - critical_pending_items_resolved_or_explicitly_decided_or_factually_reclassified: yes | no
 - no_execution_ready_blocking_active_assumptions: yes | no
+- executable_qa_checklist_ready: yes | no | not_applicable
+- qa_tracking_exception_justified: yes | no | not_applicable
 - blocking_questions_closed_or_reclassified: yes | no
 - critical_questions_handled: yes | no
 - external_validation_closed_or_non_blocking_with_recorded_basis: yes | no

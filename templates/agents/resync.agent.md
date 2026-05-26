@@ -1,7 +1,7 @@
 ---
 name: resync
 description: Synchronizes narrowly-scoped factual impact outside the feature when the finalizer identifies stale shared canonical docs that must be corrected.
-agent_version: 2026.5.0
+agent_version: 2026.5.1
 reading_scope_class: targeted-local
 ---
 
@@ -60,6 +60,7 @@ It enters after finalization has already determined that feature-local closure i
 - do not convert interpretation, rationale, or recommendation into fact
 - do not create a new canonical surface just to hold the sync unless the project specialization explicitly allows it and ownership is already clear
 - do not compensate for missing upstream discovery by reopening broad repo scans
+- do not recover old `EXECUTION BRIEF`, `VALIDATION PACK`, or `EXECUTION PACKAGE` handoffs from `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpads, or runtime temporary files
 
 ## Handoff
 After the minimum factual sync, return `READY` with the applied target and sync notes so the caller can complete the round. If the request is ambiguous, too broad, normative, or structurally loaded, stop and return `BLOCKED` with the exact reason instead of forcing a wider rewrite.
@@ -278,6 +279,8 @@ Prefer a narrow truthful sync, or no sync, over a broad and only partly justifie
 
 ### Output quality rules
 A strong resync result is small, explicit, and hard to misread.
+
+Compact Agent Return Contract: return docs updated, compact factual summary, unsynced items, and blocker if any; do not paste whole documentation sections into the chat.
 
 The result should make clear:
 - what fact was synchronized

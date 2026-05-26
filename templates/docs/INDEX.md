@@ -1,5 +1,16 @@
 # Índice de Documentação
 
+## File Purpose Header
+- purpose: Roteador curto da documentação operacional do projeto.
+- read_when: Um agente precisa decidir qual doc canônica ler primeiro.
+- do_not_use_for: Execução, planejamento detalhado, comandos, pacotes de trabalho ou decisões técnicas.
+- canonical_source_for: Ordem de navegação entre `core`, `units`, `features`, `TBDS`, decisões e referências.
+- canonical_source_not_for: Fatos do projeto, regras, contratos, estado, testes, lacunas ou decisões.
+- update_owner: `stnl_project_context` ou `stnl_project_foundation`, conforme origem da base.
+- downstream_consumers: `orchestrator`, `planner`, `reviewer`, `finalizer`, `resync`, agents especializados.
+- token_policy: Ler este header e a seção do índice relevante; abrir o doc apontado para exatidão.
+- related_files: `docs/core/*`, `docs/TBDS.md`, `docs/units/*`, `docs/features/*`, `docs/decisions/*`, `docs/reference/*`.
+
 ## Objetivo
 Organizar a leitura da documentação do projeto e indicar a ordem prática de navegação sem substituir os docs factuais.
 

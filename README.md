@@ -1,6 +1,6 @@
 # Sentinel Protocol
 
-**Status:** Alpha Preview - `v2026.5.0-alpha.3`
+**Status:** Alpha Preview - `v2026.5.1-alpha.1`
 
 Sentinel Protocol é um kit pessoal e não oficial de protocolo para organizar trabalho de software assistido por IA em torno de contexto explícito de projeto, SPECs, agents especializados e execução controlada.
 
@@ -26,7 +26,7 @@ Sentinel é para mantenedores que querem uma estrutura leve para:
 - mapear contexto de projeto antes da execução;
 - criar ou retomar SPECs rastreáveis;
 - materializar agents específicos por projeto a partir de templates base;
-- conduzir implementação por um fluxo controlado pelo boundary de `orchestrator`; no target Codex, a sessão principal aplica esse boundary e spawna os owners especialistas diretamente.
+- conduzir implementação por um fluxo controlado por `orchestrator`; no target Codex, o roteamento é parent-mediated por `ROUTE_PACKET`, depende de autorização explícita para subagent nativo e respeita profundidade máxima controlada.
 
 Ele é útil quando o trabalho assistido por IA precisa de limites mais claros que prompts avulsos, mas ainda depende de julgamento humano.
 
@@ -41,22 +41,21 @@ Revisão humana é obrigatória. O smoke valida estrutura e wiring; ele não pro
 ![Sentinel — Fluxo Recomendado de Uso](assets/sentinel-flow.png)
 
 > Guia visual do fluxo recomendado.  
-> A fonte de verdade continua sendo os templates, skills e documentação versionada do projeto.
->
->
+> O PNG é visão macro; a fonte de verdade é o contrato textual versionado em templates, skills e documentação do projeto.
+
 Para repo existente:
 
 1. `stnl_project_context`
 2. `stnl_project_agent_specializer`
 3. `stnl_spec_manager`
-4. `orchestrator` ou, no target Codex, a sessão principal aplicando o boundary de `orchestrator`
+4. `orchestrator`; no target Codex, a sessão parent medeia `ROUTE_PACKET` com autorização explícita e max depth controlado
 
 Para projeto novo ou greenfield:
 
 1. `stnl_project_foundation`
 2. `stnl_project_agent_specializer`
 3. `stnl_spec_manager`
-4. `orchestrator` ou, no target Codex, a sessão principal aplicando o boundary de `orchestrator`
+4. `orchestrator`; no target Codex, a sessão parent medeia `ROUTE_PACKET` com autorização explícita e max depth controlado
 
 Targets suportados para materialização de agents:
 

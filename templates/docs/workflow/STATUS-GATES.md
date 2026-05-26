@@ -1,5 +1,16 @@
 # Status e Gates Canônicos
 
+## File Purpose Header
+- purpose: Tabela canônica de status, gates e ownership de vereditos do workflow.
+- read_when: Um agente precisa interpretar status, decidir gate atual ou validar handoff sem reler o lifecycle inteiro.
+- do_not_use_for: Sequência completa do workflow, autorização de execução, comandos, work packages ou fatos do projeto.
+- canonical_source_for: Significado dos status, gates, readiness e ownership dos vereditos.
+- canonical_source_not_for: Ordem detalhada do lifecycle, contrato dos agents, artifacts ricos ou validações concretas.
+- update_owner: `stnl_project_agent_specializer`.
+- downstream_consumers: `orchestrator`, `planner`, `validation-eval-designer`, `execution-package-designer`, `validation-runner`, `reviewer`, `finalizer`.
+- token_policy: Ler status/gate específico; abrir `EXECUTION-LIFECYCLE.md` quando a sequência importar.
+- related_files: `reference/docs/workflow/EXECUTION-LIFECYCLE.md`, `reference/docs/agents/AGENT-CONTRACT-SHAPE.md`, `reference/docs/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`.
+
 ## Objetivo
 Registrar os status e gates canônicos do workflow do Sentinel, o momento em que cada um aparece no fluxo, e deixar explícito que o fluxo já contempla proof pós-execução do artifact implementado e pode incluir review técnico semântico adicional do mesmo artifact.
 
@@ -24,19 +35,34 @@ Fluxo alvo:
 | `FAIL` | A validação mostrou que o objetivo não foi atingido ou que um check obrigatório executado falhou de forma material. | Emitido pelo `validation-runner` na run de validação/eval; consumido no fechamento, não reemitido pelo `finalizer`. |
 | `BLOCKED` | A validação não conseguiu provar honestamente o ciclo por impedimento real no path de prova. A origem do bloqueio deve ser nomeada. | Como verdict de validação, pertence ao `validation-runner`; quando houver bloqueio antes do runner, o fechamento deve preservá-lo explicitamente como bloqueio pré-validação, sem inventar verdict limpo. |
 
-## Artefatos do workflow
-- Os artefatos efêmeros do workflow são `EXECUTION BRIEF`, `VALIDATION PACK`, `EXECUTION PACKAGE` e `CORRECTION PACK` quando runner ou reviewer encontram problema corrigível dentro do escopo aprovado.
+## Handoffs efêmeros do workflow
+- `EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE` são handoffs efêmeros de rodada, não arquivos canônicos obrigatórios da SPEC.
+- Esses handoffs não precisam existir como `execution_brief.md`, `validation_pack.md`, `execution_package.md` ou qualquer outro arquivo persistido para o fluxo avançar.
+- Ausência de arquivo não é ausência de handoff. Um handoff de preparação é válido somente quando recebido diretamente do owner correto na rodada atual ou reenviado pelo `orchestrator` a partir do contexto vigente.
+- Nenhum agente deve buscar handoff de preparação em paths temporários de runtime, incluindo `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpad ou arquivo temporário de runtime.
+- `CORRECTION PACK` também é handoff operacional quando runner ou reviewer encontram problema corrigível dentro do escopo aprovado.
+- `QA CHECKLIST UPDATE` é handoff compacto do `validation-runner` para o `finalizer` quando validação foi executada ou tentada; ele alimenta `qa_checklist.md` aplicável na SPEC ativa, mas não substitui verdict, closure ou logs completos.
 - As stack quality guardrails ativas são metadados operacionais carregados por esses artefatos; elas não são agents e não substituem planner, package designer, coders, runner, reviewer ou finalizer.
 - `EXECUTION PACKAGE` pertence ao `execution-package-designer`, carrega 1..N work packages executáveis e não substitui o `orchestrator`.
 - `CORRECTION PACK` pertence ao agent que encontrou o problema como evidência de correção solicitada, mas o roteamento, o budget e a decisão de reutilizar ou redesenhar `EXECUTION PACKAGE` pertencem ao `orchestrator`.
 - A memória durável fica em `DONE`, `Feature CONTEXT` e docs factuais tocadas por Resync.
 
+## Estados operacionais de handoff
+| Status | Significado | Owner de decisão |
+| --- | --- | --- |
+| `HANDOFF_MISSING` | O handoff esperado não chegou ao consumidor na rodada atual. | Consumidor reporta; `orchestrator` decide replay, regen, gate anterior ou bloqueio. |
+| `HANDOFF_INVALID` | O handoff chegou, mas owner, status, shape, cut ou base estão inconsistentes. | Consumidor reporta; `orchestrator` decide owner anterior ou gate. |
+| `REQUEST_REPLAY_FROM_ORCHESTRATOR` | O consumidor precisa que o `orchestrator` reenvie o handoff vigente ainda presente no contexto da rodada. | `orchestrator`. |
+| `REQUEST_REGEN_FROM_OWNER` | O handoff não pode ser reaproveitado e precisa ser regenerado pelo owner anterior. | `orchestrator` roteia ao owner correto. |
+
+`HANDOFF_READY`, quando usado, é apenas metadado/substatus operacional de presença de handoff; não substitui `READY`, não é gate paralelo e não deve ser emitido como readiness principal pelos agents.
+
 ## Regra de handoff de preparação
-- `planner`, `validation-eval-designer` e `execution-package-designer` só podem liberar o próximo passo com artifact canônico claro e status explícito.
+- `planner`, `validation-eval-designer` e `execution-package-designer` só podem liberar o próximo passo com handoff efêmero claro e status explícito.
 - `READY` do `planner` exige `EXECUTION BRIEF` honesto e bounded; se o cut depender de requisito inventado, decisão de produto/arquitetura, conflito de fonte, escopo ampliado ou dependência não comprovada, o fluxo volta ao `orchestrator` com `NEEDS_DEV_DECISION_BASE` e a decisão/fato mínimo faltante.
 - `READY` do `validation-eval-designer` exige `VALIDATION PACK` honesto o suficiente para orientar proof e package readiness; se a suficiência depender de harness, evidência parcial ou testes, o fluxo para em `NEEDS_DEV_DECISION_HARNESS`, sem esconder prova fraca como readiness limpa.
 - `READY` do `execution-package-designer` exige `EXECUTION PACKAGE` seguro para coder; se boundaries, ownership, `DO_NOT_TOUCH`, guardrails, acceptance checks, riscos, blockers ou atualização de correction package exigirem replanejamento, redesign ou ampliação de escopo, o pacote emite `BLOCKED`.
-- Ausência de artifact claro, status ambíguo ou stop informal de preparação é handoff inválido; o `orchestrator` não roteia adiante e pede só a informação mínima necessária para destravar o artifact atual.
+- Ausência do handoff no contexto da rodada, status ambíguo ou stop informal de preparação é handoff inválido; o `orchestrator` não roteia adiante e decide entre reenviar o handoff vigente, chamar o owner anterior para regenerar, voltar um gate ou bloquear quando a SPEC canônica não bastar.
 
 ## Regra de readiness pré-execução
 - Antes do coder iniciar, o `EXECUTION PACKAGE` precisa estar pronto para execução com slice/cut correto, escopo aprovado, arquivos ou superfícies prováveis, guardrails aplicáveis e não aplicáveis com racional, critérios de aceite, validações esperadas, riscos relevantes, o que não pode mudar e blockers conhecidos.
@@ -60,6 +86,7 @@ Fluxo alvo:
 - Aceitar evidência parcial explicitamente exige que o `validation-eval-designer` registre no `VALIDATION PACK` a limitação de harness aceita, a prova ainda faltante, a evidência substituta, o risco residual visível e que a escolha foi decisão explícita do DEV antes de qualquer gate normal de execução.
 - Reduzir o cut invalida implicitamente o cut anterior como base de execução; readiness, `EXECUTION PACKAGE` e execution approval derivados do recorte anterior não valem para o novo recorte até existirem novo `EXECUTION BRIEF`, novo `VALIDATION PACK` e novo `EXECUTION PACKAGE`.
 - Sem proof/check mínimo relevante executado com resultado honesto, a rodada não fecha como "done limpo"; a lacuna, falha ou bloqueio precisa aparecer no verdict e no fechamento.
+- Quando validação executada ou tentada tiver evidência suficiente, o runner deve preservar `QA CHECKLIST UPDATE` com check/AC, resultado `passed|failed|blocked|not_run`, tipo, comando ou método compacto e evidência curta. `passed` exige execução ou observação real; inferência, green irrelevante, histórico antigo ou intenção viram `blocked` ou `not_run`.
 
 ## Regra de correction loop
 - Problemas corrigíveis dentro do escopo aprovado devem voltar ao `orchestrator` antes de fechamento terminal como `PARTIAL`, `FAIL`, `BLOCKED` ou entrega parcial honesta.
@@ -91,6 +118,8 @@ Fluxo alvo:
 - `validation-eval-designer` desenha o `VALIDATION PACK`; `execution-package-designer` garante pacote pronto para coder com critérios de qualidade e guardrails aplicáveis; coders implementam sem ampliar escopo.
 - O `reviewer` é owner do review semântico/arquitetural pós-execução quando ele entra na rodada; esse sinal não substitui o ownership de proof do runner.
 - O `finalizer` consome esses vereditos para consolidar memória durável, mas não os reemite como seus próprios status.
+- O `finalizer` reconcilia `qa_checklist.md` quando ele existir ou for exigido pela SPEC ativa e houver `QA CHECKLIST UPDATE`; se uma SPEC `Execution Ready` não trouxer checklist e não tiver `qa_tracking: not_applicable`, isso é gap de lifecycle da SPEC, não não-aplicabilidade silenciosa. Em fechamento compacto de SPEC, o checklist não é retido no bundle fechado.
+- `DONE` de rodada/marco não é closure canônico da SPEC: não criar `DONE.md` dentro de pasta de SPEC ativa com `closure_status: not_closed`; usar histórico da feature, como `docs/features/<feature>/done/DONE-YYYYMMDD-<entrega-real>.md`, ou apenas ledger quando o local seguro não for conhecido.
 - O `finalizer` também pode consumir o sinal do `reviewer` quando ele existir, sem absorver review técnico substituto, e preserva correction pack residual quando budget estoura ou correção automática não é permitida.
 - Em rodada de slice, o `finalizer` é o owner canônico da declaração pós-slice: slice trabalhada com ID `SL-001`, `SL-002`, etc., status final `concluida`, `parcial` ou `bloqueada`, evidências, pendências/blockers, necessidade de resync e próxima slice elegível quando aplicável.
 - Quando a execução bloqueia antes do runner, o `orchestrator` roteia o caso direto ao `finalizer` como bloqueio pré-validação, sem inventar veredito do runner nem closure otimista.

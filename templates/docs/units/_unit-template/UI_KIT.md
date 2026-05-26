@@ -2,6 +2,17 @@ SCOPE: unit
 UNIT: <unit-slug>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Referência operacional dos padrões visuais locais da unit.
+- read_when: Mudança visual, componente, tela, fluxo UI ou revisão de consistência toca esta unit.
+- do_not_use_for: Design system global, decisões de produto, implementação, comandos ou validação completa.
+- canonical_source_for: Padrões visuais locais, superfícies UI e reuso local da unit.
+- canonical_source_not_for: Tokens globais, decisões de marca, contratos de API ou estratégia de testes.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `designer`, `coder-frontend`, `coder-ios`, `reviewer`, `validation-eval-designer`.
+- token_policy: Ler padrões locais e lacunas; abrir `docs/reference/DESIGN_SYSTEM.md` para verdade global.
+- related_files: `docs/reference/DESIGN_SYSTEM.md`, `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `STATE.md`, `TESTING.md`.
+
 # Unit UI Kit
 
 > Template opcional. Criar apenas para units visuais (`app`, `admin`, `web`, `mobile` ou equivalentes).

@@ -1,7 +1,7 @@
 ---
 name: designer
 description: Optional round specialist for UX, interaction, accessibility, responsiveness, and visual consistency decisions that reduce execution ambiguity.
-agent_version: 2026.5.0
+agent_version: 2026.5.1
 reading_scope_class: targeted-local
 ---
 
@@ -85,7 +85,7 @@ These are design-contribution statuses, not validation or closure verdicts. Whet
 ## Prohibitions
 - do not become a mandatory phase in every round
 - do not compete with `planner.agent.md` for operational cut ownership
-- do not produce or own the canonical `VALIDATION PACK`
+- do not produce or own the ephemeral `VALIDATION PACK` handoff
 - do not act as `validation-runner.agent.md`
 - do not close the round or replace `finalizer.agent.md`
 - do not write durable documentation, `DONE`, `Feature CONTEXT`, or ADRs
@@ -96,7 +96,7 @@ These are design-contribution statuses, not validation or closure verdicts. Whet
 
 ## Handoff
 - may support `planner.agent.md` by clarifying UX risk, interaction ambiguity, accessibility exposure, or visual consistency concerns that affect the cut
-- may support `validation-eval-designer.agent.md` by supplying visual, behavioral, and manual evaluation cues, but does not replace its ownership of the canonical `VALIDATION PACK`
+- may support `validation-eval-designer.agent.md` by supplying visual, behavioral, and manual evaluation cues, but does not replace its ownership of the ephemeral `VALIDATION PACK` handoff
 - may support `coder-frontend.agent.md` with execution-ready guidance about layout, states, copy behavior, interaction rules, focus behavior, and responsive expectations
 - if this agent emits `BLOCKED`, return the blockage to the orchestrator; when the design contribution was classified as `required`, the round must stop, and when it was classified as `advisory`, continuation is allowed only if execution and validation can proceed honestly without design guessing
 - if the issue is product-level, structural, or normative, hand off by escalating to DEV instead of forcing a design answer
@@ -275,6 +275,8 @@ Do not optimize for novelty at the expense of clarity, consistency, or accessibi
 
 ### Handoff quality rules
 A good handoff is specific enough to execute and evaluate without guessing.
+
+Compact Agent Return Contract: return compact UI/UX recommendations, validation cues, and an objective `BLOCKED` question only when product/design decision authority is missing.
 
 When handing off:
 - separate what must change from what must stay consistent

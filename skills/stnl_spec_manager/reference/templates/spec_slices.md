@@ -1,77 +1,102 @@
 # Spec Slices
 
-## Split Rationale
-- parent_spec: <SPEC-001>
-- split_required: yes
-- reason: [Explain why the full spec should not be consumed as a single slice.]
-- split_principle: [Describe the vertical cut logic used to preserve meaningful end-to-end delivery without turning slices into a technical plan.]
+## File Purpose Header
+- purpose: Canonical consumption map for an active SPEC, including the minimum slice boundary required for downstream planning.
+- read_when: A downstream agent needs slice boundaries, readiness labels, dependencies by slice ID, or the Planning Interface state.
+- do_not_use_for: Execution authorization, execution plans, file paths, commands, work packages, validation packs, or closure decisions.
+- canonical_source_for: Slice IDs, slice boundaries, slice dependencies, slice readiness labels, and planning-facing constraints once activated.
+- canonical_source_not_for: Business acceptance, final product decisions, detailed questions, implementation sequencing, validation commands, or post-execution closure.
+- update_owner: `stnl_spec_manager` while the SPEC is active; closure removal follows the approved close flow.
+- downstream_consumers: `planner`, `orchestrator`, `validation-eval-designer`, `execution-package-designer`, `reviewer`, `finalizer`.
+- token_policy: Read Slice Model, Planning Interface, and the target slice first; read other slices only for declared dependencies.
+- related_files: `feature_spec.md`, `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `qa_checklist.md`.
 
-## Parent Spec Summary
-[Summarize the overall initiative in 3 to 6 lines.]
+## Slice Model
+- parent_spec: SPEC-001
+- split_required: pending | no | yes
+- slice_model: pending | single_slice | multi_slice
+- status: deferred | active | blocked
+- reason: [short reason]
+- rule: single-slice does not mean no slice; it means SL-001 represents the whole approved consumption boundary.
 
 ## Slice Identity Contract
 - canonical_id_format: `SL-001`, `SL-002`, `SL-003`, sequential and zero-padded with three digits
 - recommended_heading: `### SL-001 — [Short slice title]`
 - id_field_required: every slice must include `id: SL-001`
-- dependencies_must_use: canonical slice IDs only, for example `dependencies: [SL-001, SL-002]`
+- dependencies_must_use: canonical slice IDs only
 - prohibited_slice_identifiers: `S-001`, `Slice 1`, `SLICE - 001`, `S1`, `slice-1`, title-only references
 - id_stability: once assigned, a slice ID must not be renumbered or reused
-- migration_rule: when reviewing, closing, or resuming a SPEC with inconsistent slice labels, do not normalize silently; create a migration plan or ask for human confirmation when traceability could change
+- migration_rule: when labels are inconsistent, do not normalize silently; create a migration plan or ask for human confirmation when traceability could change
 
-## Post-Slice Closure Contract
-- owner: `finalizer`
-- applies_after_execution: yes
-- slice_reference_must_use: canonical `SL-001`, `SL-002`, `SL-003` IDs only
-- final_slice_status_values: `concluida`, `parcial`, `bloqueada`
-- required_closure_fields: slice ID, final status, evidence used for the status, pending work or blockers, resync yes/no, next eligible slice when applicable
-- rule: this template defines slice identity and execution readiness; only the `finalizer` declares post-execution slice closure state
+## Planning Interface
+- status: deferred
+- allowed_status_values: deferred | partial | active | blocked
+- reason: Planning constraints must not be generated before readiness is stable.
+- activation_condition: SPEC reaches Structured or Execution Ready with no blocking question that affects slice boundaries.
+- informs: Later planning consumption only.
+- does_not_authorize: execution
+- planning_intent: [Later planning consumption intent; describe what the planner needs to understand about the SPEC, without a plan, package, or sequence; pending until stable]
+- planning_inputs_required:
+  - [Confirmed input still needed before downstream planning can be precise; decision, evidence, or answer needed, not a task]
+- planning_focus:
+  - [Attention area for the planner, without technical sequence, file edit order, or execution decomposition]
+- likely_implementation_surfaces:
+  - [Semantic surface hint only, e.g. user settings UI or notification policy; never final path, owned path, package boundary, edit anchor, or ownership authorization]
+- validation_focus:
+  - [Validation or acceptance focus for later validation design; never command, script, suite list, executable matrix, or final validation pack]
+- anti_drift_constraints:
+  - [Decision ID, constraint ID, or stable rule the planner must preserve]
+- handoff_notes_for_planner:
+  - [Short durable notes for planner consumption; do not choose an agent, call orchestrator, route automatically, build an execution package, or list execution steps]
+- does_not_define:
+  - execution plan
+  - file paths
+  - commands
+  - work packages
+  - owned paths
+  - final owned paths
+  - final commands
+  - final validation pack
+- does_not_replace:
+  - `planner`
+  - `execution-package-designer`
+  - `validation-eval-designer`
+  - `finalizer`
+- rule: do not infer semantic dependencies, parallelization hints, or planning constraints while deferred.
 
 ## Slice Dependency Overview
 - SL-001 depends_on: []
-- SL-002 depends_on: [SL-001]
-- SL-003 depends_on: [SL-001, SL-002]
 
 ## Slices
-### SL-001 — [Short slice title]
-- id: SL-001
-- title: [Slice title]
-- objective: [What outcome this slice must deliver.]
-- in_scope:
-  - [Item 1]
-  - [Item 2]
-- out_of_scope:
-  - [Item 1]
-  - [Item 2]
-- key_flows:
-  - [Flow 1]
-  - [Flow 2]
-- dependencies: []
-- state: Draft | Structured | Execution Ready | Blocked
-- state_scope: SPEC readiness state only; post-execution closure status belongs to the `finalizer`
-- readiness_label: not_ready | ready_for_consumption | blocked
-- spec_dod_items_covered: [SDOD-001, SDOD-002]
-- classification_strength: preliminary | conditional | strong
-- why_this_is_a_good_consumption_cut: [Explain why this slice is coherent and does not over-fragment downstream consumption.]
-- open_questions: [Q-001]
-- assumptions: [A-001]
-- decisions: [D-001]
 
-### SL-002 — [Short slice title]
-- id: SL-002
-- title: [Slice title]
-- objective: [Outcome]
+### SL-001 — Pending approved consumption boundary
+- id: SL-001
+- title: Pending approved consumption boundary
+- objective: [Pending stable objective]
 - in_scope:
-  - [Item 1]
+  - [Pending]
 - out_of_scope:
-  - [Item 1]
-- key_flows:
-  - [Flow 1]
-- dependencies: [SL-001]
-- state: Draft | Structured | Execution Ready | Blocked
-- readiness_label: not_ready | ready_for_consumption | blocked
-- spec_dod_items_covered: [SDOD-003]
-- classification_strength: preliminary | conditional | strong
-- why_this_is_a_good_consumption_cut: [Rationale]
-- open_questions: [Q-002]
-- assumptions: [A-002]
-- decisions: [D-002]
+  - [Pending]
+- dependencies: []
+- state: deferred
+- readiness_label: blocked
+- planning_status: blocked_for_planning
+- must_satisfy_acceptance: []
+- must_preserve_decisions: []
+- must_not_infer: []
+- planning_blockers:
+  - Waiting for SPEC readiness stabilization.
+- planning_notes:
+  - [Pending boundary and consumption notes for the slice; no step-by-step implementation]
+- implementation_surface_hints:
+  - [Pending semantic surface hints; not final paths, owned paths, mandatory modules, or ownership authorization]
+- validation_hints:
+  - [Pending risks or acceptance hints for later validation; not commands, scripts, suites, or final validation pack]
+- qa_checklist_reference:
+  - [Use `qa_checklist.md` once this slice is `Execution Ready`; if omitted, explain explicit `qa_tracking: not_applicable`.]
+- risks_for_planner:
+  - [Pending risks that could affect later planning, including ambiguity, dependency, uncertain sequence, or missing decision]
+- downstream_handoff_expectations:
+  - [Pending expectations for downstream consumption; do not assemble an execution package, work package, or agent call]
+- can_be_planned_independently: no
+- parallelization_hint: unknown

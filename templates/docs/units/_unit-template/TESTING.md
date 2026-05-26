@@ -2,6 +2,17 @@ SCOPE: unit
 UNIT: <unit-slug>
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Estratégia local de validação e harness mínimo desta unit.
+- read_when: Um agente precisa provar mudança local, escolher checks ou registrar limitação de harness nesta unit.
+- do_not_use_for: Prova global completa, implementação, regras de domínio, contratos ou evidência inventada.
+- canonical_source_for: Checks, níveis de prova e mínimos de validação locais.
+- canonical_source_not_for: Política global de testes, aceite de produto, contratos locais ou fechamento pós-execução.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `validation-eval-designer`, `execution-package-designer`, coders, `validation-runner`, `reviewer`, `finalizer`.
+- token_policy: Ler mínimos e harness da unit; voltar para `docs/core/TESTING.md` para política global.
+- related_files: `docs/core/TESTING.md`, `docs/units/<unit-slug>/CONTEXT.md`, `RULES.md`, `CONTRACTS.md`, `STATE.md`.
+
 # Unit Testing
 
 ## Objetivo

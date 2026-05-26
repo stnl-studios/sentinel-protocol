@@ -3,6 +3,17 @@ PROJECT: <project-name>
 REPO SHAPE: single-unit | multi-unit | TBD
 LAST UPDATED: YYYYMMDD
 
+## File Purpose Header
+- purpose: Visão factual global do projeto para orientar leitura inicial.
+- read_when: Um agente precisa entender domínio, escopo, superfícies, integrações ou hot paths globais.
+- do_not_use_for: Regras, contratos detalhados, matriz de testes, execução, comandos ou work packages.
+- canonical_source_for: Contexto global, repo shape, superfícies principais e linguagem do domínio.
+- canonical_source_not_for: Regras ativas, contratos sensíveis, estado estrutural completo, harness ou lacunas consolidadas.
+- update_owner: `stnl_project_context`; em greenfield, `stnl_project_foundation` até handoff.
+- downstream_consumers: `orchestrator`, `planner`, `execution-package-designer`, coders, `reviewer`, `resync`.
+- token_policy: Ler header, visão factual e hot paths; ir para `RULES`, `STATE`, `CONTRACTS` ou `TESTING` quando precisar de precisão.
+- related_files: `docs/INDEX.md`, `docs/core/RULES.md`, `docs/core/STATE.md`, `docs/core/CONTRACTS.md`, `docs/core/TESTING.md`, `docs/TBDS.md`.
+
 # Core Context
 
 ## Objetivo
