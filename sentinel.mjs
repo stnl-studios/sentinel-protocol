@@ -24,7 +24,6 @@ function getTargets(homeDir = HOME) {
     return [
         path.join(homeDir, ".agents", "skills"),
         path.join(homeDir, ".github", "skills"),
-        path.join(homeDir, ".gemini", "antigravity", "skills"),
     ];
 }
 
