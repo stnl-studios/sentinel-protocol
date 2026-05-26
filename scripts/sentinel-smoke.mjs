@@ -559,6 +559,52 @@ const CONSISTENCY_WITHOUT_LEGACY_PROPAGATION_SNIPPETS = [
 const CONSISTENCY_POLICY_CANONICAL_HEADING = "## Consistency without legacy propagation";
 const CONSISTENCY_POLICY_LEGACY_MARKER = "Consistency without legacy propagation:";
 const LEGACY_REVIEWER_STATUS_MARKER = "LEGACY_REVIEWER_READY_BLOCKED_STATUS_MARKER";
+const MANAGED_UPDATE_CANONICAL_SNIPPETS_BY_AGENT = {
+    "orchestrator.agent.md": [
+        "These are ephemeral current-round handoffs, not required files.",
+        "missing persisted file is not invalid by itself",
+        "HANDOFF_READY` must not substitute for owner `READY` or create a second readiness gate",
+        "valid only from the current-round owner or orchestrator replay",
+        "Never search `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpads, or temp runtime files",
+        "regenerate via previous owner",
+    ],
+    "planner.agent.md": [
+        "do not create `execution_brief.md`",
+        "When ready, emit `STATUS: READY` and hand off the `EXECUTION BRIEF`",
+    ],
+    "validation-eval-designer.agent.md": [
+        "do not create `validation_pack.md`",
+        "When ready, emit `STATUS: READY` and hand off the `VALIDATION PACK`",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "execution-package-designer.agent.md": [
+        "do not create `execution_package.md`",
+        "When ready, emit `STATUS: READY` and hand off the `EXECUTION PACKAGE`",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "coder-frontend.agent.md": [
+        "do not reconstruct it locally",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "coder-backend.agent.md": [
+        "do not reconstruct it locally",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "coder-ios.agent.md": [
+        "do not reconstruct it locally",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ],
+    "validation-runner.agent.md": [
+        "the required `VALIDATION PACK` is absent from current-round context",
+        "do not search runtime temp paths",
+    ],
+    "finalizer.agent.md": [
+        "Do not require `execution_brief.md`, `validation_pack.md`, or `execution_package.md` to close a SPEC.",
+    ],
+    "resync.agent.md": [
+        "do not recover old `EXECUTION BRIEF`, `VALIDATION PACK`, or `EXECUTION PACKAGE` handoffs",
+    ],
+};
 const STATUS_CONTRACT_BY_AGENT = {
     "reviewer": ["PASS", "FAIL"],
     "coder-backend": ["READY", "BLOCKED"],
@@ -3895,6 +3941,37 @@ function assertConsistencyPolicyPropagationToCodexAgents(skillRoot, repoRoot, co
     }
 }
 
+function assertCurrentCanonicalAgentSnippetsPropagateToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles) {
+    for (const [fileName, snippets] of Object.entries(MANAGED_UPDATE_CANONICAL_SNIPPETS_BY_AGENT)) {
+        if (!controlledAgentFiles.includes(fileName)) {
+            continue;
+        }
+
+        const templatePath = path.join(ROOT, "templates", "agents", fileName);
+        const referencePath = path.join(skillRoot, "reference", "agents", fileName);
+        const materializedPath = path.join(repoRoot, ".github", "agents", fileName);
+        const templateContent = fs.readFileSync(templatePath, "utf8");
+        const referenceContent = fs.readFileSync(referencePath, "utf8");
+        const materializedContent = fs.readFileSync(materializedPath, "utf8");
+
+        assertContentIncludesAll(
+            templateContent,
+            snippets,
+            `templates/agents/${fileName} canonical managed-update snippets`
+        );
+        assertContentIncludesAll(
+            referenceContent,
+            snippets,
+            `reference/agents/${fileName} canonical managed-update snippets`
+        );
+        assertContentIncludesAll(
+            materializedContent,
+            snippets,
+            `vscode/${fileName} canonical managed-update snippets`
+        );
+    }
+}
+
 function assertBackendOnlySpecializedMaterialization(repoRoot) {
     const agentsRoot = path.join(repoRoot, ".github", "agents");
     const materializedFiles = listRelativeFiles(agentsRoot)
@@ -4232,6 +4309,20 @@ function writeLegacyManagedCodexReviewer(repoRoot) {
     );
 }
 
+function removeManagedUpdateCanonicalSnippets(content, fileName) {
+    let driftedContent = content;
+
+    for (const snippet of MANAGED_UPDATE_CANONICAL_SNIPPETS_BY_AGENT[fileName] ?? []) {
+        assert(
+            driftedContent.includes(snippet),
+            `Fixture de drift gerenciado não encontrou snippet canônico para remover em ${fileName}: ${snippet}`
+        );
+        driftedContent = driftedContent.replaceAll(snippet, "REMOVED_CANONICAL_TEMPLATE_SNIPPET");
+    }
+
+    return driftedContent;
+}
+
 function assertManagedVscodeUpdateRebuildsLegacyReviewer(skillRoot, controlledAgentFiles) {
     const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-managed-update-vscode-"));
 
@@ -4255,6 +4346,61 @@ function assertManagedVscodeUpdateRebuildsLegacyReviewer(skillRoot, controlledAg
         assert(!rebuiltContent.includes(LEGACY_REVIEWER_STATUS_MARKER), "reviewer VS Code preservou corpo legado apos update gerenciado");
         assertVscodeStatusContracts(repoRoot, controlledAgentFiles);
         assertConsistencyPolicyPropagationToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles);
+    } finally {
+        fs.rmSync(repoRoot, { recursive: true, force: true });
+    }
+}
+
+function assertManagedVscodeUpdateRebuildsCanonicalTemplateChange(skillRoot, controlledAgentFiles) {
+    const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), "sentinel-managed-template-update-vscode-"));
+
+    try {
+        createControlledFixtureRepo(repoRoot);
+        materializeControlledAgents(skillRoot, repoRoot, controlledAgentFiles);
+
+        const driftedFileNames = Object.keys(MANAGED_UPDATE_CANONICAL_SNIPPETS_BY_AGENT)
+            .filter((fileName) => controlledAgentFiles.includes(fileName));
+
+        assert(
+            driftedFileNames.length > 1,
+            "fixture deve cobrir múltiplos agents gerenciados"
+        );
+
+        for (const staleFileName of driftedFileNames) {
+            const stalePath = path.join(repoRoot, ".github", "agents", staleFileName);
+            const staleContent = removeManagedUpdateCanonicalSnippets(
+                fs.readFileSync(stalePath, "utf8"),
+                staleFileName
+            );
+            writeFile(stalePath, staleContent);
+        }
+
+        assert.throws(
+            () => assertCurrentCanonicalAgentSnippetsPropagateToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles),
+            /não contém o invariante esperado/,
+            "Quality gate deveria rejeitar agents gerenciados existentes sem snippets canônicos do template atual"
+        );
+        assert.throws(
+            () => assertEphemeralPreparationHandoffContractInAgentSet(path.join(repoRoot, ".github", "agents"), "vscode drifted template update"),
+            /não contém o invariante esperado/,
+            "Quality gate deveria rejeitar drift protocol-fixed de handoff efêmero antes do rebuild"
+        );
+
+        rebuildManagedVscodeAgentsFromCanonical(skillRoot, repoRoot, controlledAgentFiles);
+
+        for (const staleFileName of driftedFileNames) {
+            const rebuiltPath = path.join(repoRoot, ".github", "agents", staleFileName);
+            const rebuiltContent = fs.readFileSync(rebuiltPath, "utf8");
+
+            assert(
+                !rebuiltContent.includes("REMOVED_CANONICAL_TEMPLATE_SNIPPET"),
+                `${staleFileName} preservou drift protocol-fixed apos update gerenciado`
+            );
+        }
+
+        assertCurrentCanonicalAgentSnippetsPropagateToVscodeAgents(skillRoot, repoRoot, controlledAgentFiles);
+        assertEphemeralPreparationHandoffContractInAgentSet(path.join(repoRoot, ".github", "agents"), "vscode rebuilt template update");
+        assertProtocolHardeningInMaterializedAgents(repoRoot, controlledAgentFiles);
     } finally {
         fs.rmSync(repoRoot, { recursive: true, force: true });
     }
@@ -4642,6 +4788,7 @@ function runControlledMaterializationSmoke(targetHome) {
         );
         assertQualityGuardrailPropagationInAgentSet(path.join(vscodeRepoRoot, ".github", "agents"), "vscode materializado");
         assertConsistencyPolicyPropagationToVscodeAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
+        assertCurrentCanonicalAgentSnippetsPropagateToVscodeAgents(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
 
         createControlledFixtureRepo(backendOnlyRepoRoot);
         materializeControlledContextDocs(contextSkillRoot, backendOnlyRepoRoot);
@@ -4651,6 +4798,7 @@ function runControlledMaterializationSmoke(targetHome) {
         assertConsistencyPolicyRejectsVscodeMaterializationDrift(agentSkillRoot, controlledAgentFiles);
         assertConsistencyPolicyRepairsLegacyVscodeMaterialization(agentSkillRoot, controlledAgentFiles);
         assertManagedVscodeUpdateRebuildsLegacyReviewer(agentSkillRoot, controlledAgentFiles);
+        assertManagedVscodeUpdateRebuildsCanonicalTemplateChange(agentSkillRoot, controlledAgentFiles);
 
         createNoIosFixtureRepo(noIosVscodeRepoRoot);
         materializeControlledContextDocs(contextSkillRoot, noIosVscodeRepoRoot);

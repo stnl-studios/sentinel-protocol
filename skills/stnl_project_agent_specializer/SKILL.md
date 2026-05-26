@@ -500,13 +500,19 @@ Regras operacionais:
 Agents materializados são artifacts gerenciados, não documentos locais autoritativos do contrato Sentinel.
 
 Quando um artifact existente indicar `managed_artifact: true` em `vscode` ou marca gerenciada equivalente em `codex`:
+- gerar primeiro a versão esperada do artifact a partir do template/base agent canônico atual, contrato protocol-fixed atual, modelo factual intermediário atual e especialização local permitida
+- comparar o artifact existente contra essa versão esperada antes de concluir; existência do arquivo ou coerência do conjunto de nomes nunca significa que o artifact está atualizado
 - reconstruir o artifact final a partir do template/base agent canônico atual listado em `reference/MANIFEST.md`
 - reaplicar a especialização factual local apenas pelos slots permitidos e pelo modelo factual intermediário vigente
+- preservar somente slots locais explicitamente permitidos; diferenças fora desses slots em protocol-fixed, base contract, tools, role, status, handoff, compact return, routing, guardrails ou runtime hardening devem ser substituídas pelo contrato canônico vigente
+- quando a diferença existente for somente em slot local permitido, preservar o conteúdo local depois de revalidar contra role class, target shape e blocos protocol-fixed atuais
+- quando houver edição manual fora de slot permitido, reportar como drift manual descartado ou bloquear por autoria ambígua; nunca reportar `already current`
 - protocol-fixed sections do template/base agent canônico vencem sempre sobre o corpo antigo materializado
 - corpo operacional, status, gates, handoffs, role class, reading scope, compact return contract e hardening de runtime devem refletir o template atual
 - bump de `base_agent_version`, `specialization_revision`, `model` ou metadata nunca é update suficiente quando o corpo canônico mudou
 - nunca preservar parágrafos antigos por diffs aproximados, conveniência ou tentativa de patch parcial
 - nunca entregar artifact híbrido com contrato antigo e contrato novo misturados
+- retornar `already current` somente quando a comparação final provar que nenhum arquivo gerenciado mudou e que todos os snippets protocol-fixed do template/base agent atual aparecem no artifact final do target
 
 Áreas de customização local:
 - preservar somente conteúdo que a própria skill tenha emitido dentro de slot explicitamente permitido, como `## Project specialization` em agents VS Code/GitHub ou `Local Notes` compactas em `AGENTS.md` Codex
