@@ -44,7 +44,7 @@ When `orchestrator` is explicitly requested, Sentinel routing is parent-mediated
 
 This preserves the Codex primary visual layer and avoids nested owner threads while keeping orchestrator-owned gate routing. root/main must not choose owners on its own except from a valid ROUTE_PACKET, explicit human request for a specific custom agent by exact name, or documented recovery/blocking behavior. Direct root-to-owner spawning is not the default Sentinel-governed path. A root/main owner spawn is valid only after a valid ROUTE_PACKET or an explicit custom-agent request by exact name.
 
-`ROUTE_PACKET` shape: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, and `BLOCKER` only when real. It must be compact, must not include full artifacts, full contracts, SPEC/checklist/logs/diffs, and should return path plus compact summary when rich artifacts are needed.
+`ROUTE_PACKET` shape: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, and `BLOCKER` only when real. It must be compact, must not include full artifacts, full contracts, SPEC/checklist/logs/diffs, and should return durable artifact paths only for files actually written by an authorized role. For `EXECUTION BRIEF`, `VALIDATION PACK`, and `EXECUTION PACKAGE`, return compact handoff summary/status rather than a required path.
 
 ## Runtime Hardening
 Sentinel-managed Codex agents must declare `model`, `model_reasoning_effort`, and `sandbox_mode` in their `.codex/agents/*.toml` definitions.
@@ -73,7 +73,7 @@ Default return shape:
 - `BLOCKER: <only if real blocker>`
 - `NOTES: <max 3 short bullets>`
 
-Do not repeat the full Sentinel contract, the full user prompt, or long reasoning. Do not paste full SPEC, checklist, logs, or diffs. Do not paste complete artifacts into chat when they were written to files; return artifact path plus compact summary.
+Do not repeat the full Sentinel contract, the full user prompt, or long reasoning. Do not paste full SPEC, checklist, logs, or diffs. Do not paste complete artifacts into chat when they were written to files; return durable artifact path only for files actually written by an authorized role, plus compact summary. Preparation handoffs stay ephemeral and should be summarized by status, owner, and current cut.
 
 Expand only on blocker, failure, critical validation evidence, or explicit human request. Keep the main chat focused on routing/status deltas.
 
@@ -85,6 +85,8 @@ Expand only on blocker, failure, critical validation evidence, or explicit human
 - Do not treat this file as the source of truth for project facts; project facts come from `docs/**` and the project codebase when the workflow allows it.
 - Do not materialize or edit Sentinel-managed agents outside `.codex/agents/` unless the active specialization run is explicitly targeting Codex and updating this generated file.
 - Keep rich intermediate artifacts inside the owning agent handoff by default; do not dump execution briefs, validation packs, or long evidence bundles into the main chat unless the human asks for them.
+- Treat `EXECUTION BRIEF`, `VALIDATION PACK`, and `EXECUTION PACKAGE` as ephemeral current-round handoffs. They do not require `execution_brief.md`, `validation_pack.md`, `execution_package.md`, or any other file and must not be recovered from `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpads, or other runtime temp paths.
+- Use `HANDOFF_MISSING`, `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR`, and `REQUEST_REGEN_FROM_OWNER` when preparation handoff presence or shape is disputed. `HANDOFF_READY`, if present, is only operational metadata/substatus and must not replace `READY` or create a parallel readiness gate.
 
 ## Local Notes
 Local Notes must stay compact and stable. They may include target repo shape, docs entrypoints, command/gap notes, and local constraints, but must not duplicate the Sentinel contract, SPEC contents, checklists, logs, diffs, or large artifacts.

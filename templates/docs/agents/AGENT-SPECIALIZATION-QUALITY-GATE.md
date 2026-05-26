@@ -87,7 +87,7 @@ Verificar:
 - para `target=codex`, `AGENTS.md` contem contrato de main/root Codex session como human-visible workspace entrypoint, proibe spawn automatico de custom subagents, diferencia skill/workflow request (`Use stnl_spec_manager`, `Use stnl_project_context`, `Use stnl_project_agent_specializer`) de custom subagent request por exact agent name, contem `SUBAGENT_AUTH_REQUIRED`, preserva Codex Parent-Mediated Routing Contract quando `Use orchestrator` for explicito, `ROUTE_PACKET` compacto, native custom subagent spawning por root/main e exact agent name apos autorizacao explicita/`ROUTE_PACKET` valido, nao dependencia de full-history fork, payload minimo/task-scoped e bloqueio de emulacao por contrato completo no prompt, `codex exec`, shell, subprocesso, script ou continuacao local
 - para `target=codex`, `orchestrator` permanece materializado como routing controller explicitamente invocavel e route decision owner do fluxo Sentinel no Codex, contem hardening contra full-contract prompt replay, `codex exec`, shell/subprocess/script/local continuation, role absorption, runtime sem agent thread nativa e root/main incapaz de spawnar owner nomeado, bloqueando com `ROUTING_RUNTIME_BLOCKED`, e nao absorve papeis especialistas nem spawna downstream owners diretamente
 - para `target=codex`, agents nao-orchestrator nao spawnam downstream Sentinel agents e retornam artifact/status/formal handoff signal ao root/main para roteamento mediado por `orchestrator`
-- para `target=codex`, `AGENTS.md` e cada `.codex/agents/*.toml` contem `Compact Agent Return Contract`, `return only the minimum needed for the parent to decide the next gate`, `Do not repeat the full Sentinel contract`, `Do not paste full SPEC, checklist, logs, or diffs`, `return artifact path plus compact summary`, `Expand only on blocker, failure, critical validation evidence, or explicit human request` e `main chat focused on routing/status deltas`
+- para `target=codex`, `AGENTS.md` e cada `.codex/agents/*.toml` contem `Compact Agent Return Contract`, `return only the minimum needed for the parent to decide the next gate`, `Do not repeat the full Sentinel contract`, `Do not paste full SPEC, checklist, logs, or diffs`, `return durable artifact path only for files actually written`, `compact handoff summary/status`, `Expand only on blocker, failure, critical validation evidence, or explicit human request` e `main chat focused on routing/status deltas`
 - para `target=codex`, `AGENTS.md` preserva `Local Notes` compactas quando houver notas locais, sem duplicar contrato Sentinel, SPEC, checklists, logs, diffs ou artifacts grandes
 - para `target=codex`, `tools` nao e serializado no TOML controlado
 - remocao de campos legados nao permitidos
@@ -143,6 +143,11 @@ Verificar no minimo:
 - politica de paralelizacao segura aparece apenas onde fizer sentido e nao transforma singleton em worker paralelo por acidente
 - o `orchestrator` trata paralelizacao como politica de coordenacao, nao como promessa de runtime
 - rich artifacts e precondicoes de handoff continuam alinhados com os owners corretos
+- `EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE` sao preservados como handoffs efemeros de rodada, nao arquivos obrigatorios da SPEC
+- ausencia de `execution_brief.md`, `validation_pack.md` ou `execution_package.md` nao bloqueia o fluxo por si so
+- specializeds nao buscam handoffs em `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpad ou paths temporarios de runtime
+- `READY` continua sendo readiness canonica dos owners no fluxo feliz: planner pronto entrega `EXECUTION BRIEF`, validation-eval-designer pronto entrega `VALIDATION PACK`, e execution-package-designer pronto entrega `EXECUTION PACKAGE`
+- estados `HANDOFF_MISSING`, `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR` e `REQUEST_REGEN_FROM_OWNER` aparecem quando o fluxo precisa lidar com presenca ou shape de handoff; `HANDOFF_READY`, se aparecer, e apenas metadado/substatus operacional e nao substitui `READY`
 - handoff inválido de executor não pode parecer sucesso operacional: handoff ausente, implícito, ambíguo, intermediário, narrativo, log operacional, promessa, diff parcial ou `READY` sem evidência aplicada deve bloquear como `EXECUTOR_HANDOFF_INVALID`
 - `validation-runner` só pode aparecer depois de artifact validável produzido por executor `READY` válido
 - protocol-fixed blocks sao non-compressible: executor terminal handoff contract, partial-edit blocking, invalid terminal forms, orchestrator `EXECUTOR_HANDOFF_INVALID`, validation-runner entry evidence gate, finalizer closure ledger, e separacao entre status do finalizer `READY/BLOCKED` e verdict do runner `PASS/PARTIAL/FAIL/BLOCKED`
@@ -151,6 +156,9 @@ Verificar no minimo:
 Hard fails:
 - `orchestrator.agents` lista agent nao materializado
 - qualquer handoff canonico referencia arquivo inexistente ou owner que nao existe no conjunto atual
+- specialized exige `execution_brief.md`, `validation_pack.md` ou `execution_package.md` como arquivo para avançar
+- specialized recupera handoff de preparação por `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpad ou path temporario de runtime
+- `planner`, `validation-eval-designer` ou `execution-package-designer` recebe `edit` por causa de handoff de preparação
 - coders materializados sem `execution-package-designer` quando o fluxo exigir pacote executavel
 - `orchestrator` sem handoff explicito para `execution-package-designer` antes dos coders
 - singleton role aparece como paralelizavel por acidente
@@ -232,7 +240,7 @@ Verificar no `validation-eval-designer`:
 - role class `proof-design` preservada
 - ausencia de tools excessivas herdadas por acidente
 - ausencia de wording que compense leitura que `orchestrator` ou `planner` deixaram de fazer
-- `VALIDATION PACK` mantido como artifact local e orientado a prova
+- `VALIDATION PACK` mantido como handoff efemero orientado a prova
 - budget operacional local e curto
 - consumo explicito de `docs/core/TESTING.md` como base factual de comandos canonicos, paths manuais aceitos, pre-requisitos e limites de harness quando esse doc existir
 - a matriz local informa o pack sem ser copiada inteira nem virar checklist universal

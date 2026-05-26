@@ -64,9 +64,51 @@ const COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS = [
     "return only the minimum needed for the parent to decide the next gate",
     "Do not repeat the full Sentinel contract",
     "Do not paste full SPEC, checklist, logs, or diffs",
-    "return artifact path plus compact summary",
+    "return durable artifact path only for files actually written",
+    "compact handoff summary/status",
     "Expand only on blocker, failure, critical validation evidence, or explicit human request",
     "main chat focused on routing/status deltas",
+];
+const EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS = [
+    "EXECUTION BRIEF",
+    "VALIDATION PACK",
+    "EXECUTION PACKAGE",
+    "handoff",
+    "HANDOFF_MISSING",
+    "HANDOFF_INVALID",
+    "REQUEST_REPLAY_FROM_ORCHESTRATOR",
+    "REQUEST_REGEN_FROM_OWNER",
+    "workspaceStorage",
+    "chat-session-resources",
+    "content.txt",
+    "scratchpad",
+];
+const EPHEMERAL_PREPARATION_HANDOFF_FILE_NAMES = [
+    "execution_brief.md",
+    "validation_pack.md",
+    "execution_package.md",
+];
+const READ_ONLY_PREPARATION_HANDOFF_AGENT_FILES = [
+    "planner.agent.md",
+    "validation-eval-designer.agent.md",
+    "execution-package-designer.agent.md",
+];
+const HANDOFF_READY_DIRECT_STATUS_SNIPPETS = [
+    "\n- `HANDOFF_READY`\n",
+    "operational handoff states `HANDOFF_READY`",
+    "Use `HANDOFF_READY`,",
+];
+const EPHEMERAL_PREPARATION_HANDOFF_FORBIDDEN_PHRASES = [
+    "must materialize `execution_brief.md`",
+    "must persist `validation_pack.md`",
+    "must create `execution_package.md`",
+    "deve materializar `execution_brief.md`",
+    "deve persistir `validation_pack.md`",
+    "deve criar `execution_package.md`",
+    "path do `EXECUTION BRIEF`",
+    "path do `VALIDATION PACK`",
+    "path do `EXECUTION PACKAGE`",
+    "`VALIDATION PACK` mantido como artifact local",
 ];
 const COMPACT_AGENT_RETURN_FORBIDDEN_SNIPPETS = [
     "paste the full artifact into the chat",
@@ -857,7 +899,7 @@ function assertSpecManagerContract() {
         "`ARTIFACTS UPDATED`",
         "`PLANNING_INTERFACE STATUS`",
         "`NEXT STEP`",
-        "a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes",
+        "a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md` e qualquer `validation_pack.md` legado/acidental ou equivalente não canônico",
         "SPEC fechada continua compacta e não retém `spec_slices.md` depois do close flow canônico",
         "o `qa_checklist.md` executável é artefato da própria SPEC: `stnl_spec_manager` materializa antes do ciclo do `orchestrator`",
         "uma SPEC ou slice `Execution Ready` sem `qa_checklist.md` e sem `qa_tracking: not_applicable` explícito é contrato incompleto",
@@ -1663,7 +1705,7 @@ const ROUND3_ORCHESTRATOR_LADDER_SNIPPETS = [
     "3. Detect `FLOW`.",
     "4. Apply defaults: `MODE=standard`, `FLOW=supervised`, `RUN=execute`.",
     "5. Identify the current gate.",
-    "6. Check the required artifact for that gate.",
+    "6. Check the required handoff for that gate.",
     "7. Check handoff validity.",
     "8. Route to the owning agent.",
     "9. Stop if DEV decision is needed.",
@@ -2678,7 +2720,8 @@ function withCodexRoutingRuntimeHardening(agentName, body) {
         "Default return shape: `STATUS`, `OWNER`, `GATE`, `FILES_CHANGED`, `NEXT_OWNER`, `VALIDATIONS`, `BLOCKER` only when real, and `NOTES` with max 3 short bullets.",
         "Do not repeat the full Sentinel contract.",
         "Do not paste full SPEC, checklist, logs, or diffs.",
-        "Do not paste complete artifacts into chat when they were written to files; return artifact path plus compact summary.",
+        "return durable artifact path only for files actually written by an authorized role, plus compact summary.",
+        "Use compact handoff summary/status for preparation handoffs.",
         "Expand only on blocker, failure, critical validation evidence, or explicit human request.",
         "Keep the main chat focused on routing/status deltas.",
     ];
@@ -3071,6 +3114,154 @@ function assertExecutionPackageFlowCoherence(skillRoot, repoRoot, controlledAgen
     );
 }
 
+function assertEphemeralPreparationHandoffContractInAgentSet(agentRoot, label) {
+    const readAgent = (fileName) => fs.readFileSync(path.join(agentRoot, fileName), "utf8");
+    const orchestratorContent = readAgent("orchestrator.agent.md");
+    const plannerContent = readAgent("planner.agent.md");
+    const validationDesignerContent = readAgent("validation-eval-designer.agent.md");
+    const packageDesignerContent = readAgent("execution-package-designer.agent.md");
+    const finalizerContent = readAgent("finalizer.agent.md");
+
+    for (const fileName of READ_ONLY_PREPARATION_HANDOFF_AGENT_FILES) {
+        assert(
+            !CONTROLLED_AGENT_TOOLSETS[fileName].includes("edit"),
+            `${label}: ${fileName} não deve receber edit para handoff efêmero`
+        );
+    }
+
+    assertContentIncludesAll(orchestratorContent, [
+        "These are ephemeral current-round handoffs, not required files.",
+        "missing persisted file is not invalid by itself",
+        "HANDOFF_READY` must not substitute for owner `READY` or create a second readiness gate",
+        "valid only from the current-round owner or orchestrator replay",
+        "Never search `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpads, or temp runtime files",
+        "regenerate via previous owner",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
+    ], `${label} orchestrator ephemeral handoff contract`);
+    for (const [fileName, content] of [
+        ["orchestrator.agent.md", orchestratorContent],
+        ["planner.agent.md", plannerContent],
+        ["validation-eval-designer.agent.md", validationDesignerContent],
+        ["execution-package-designer.agent.md", packageDesignerContent],
+    ]) {
+        assertContentExcludesAll(
+            content,
+            HANDOFF_READY_DIRECT_STATUS_SNIPPETS,
+            `${label} ${fileName} HANDOFF_READY não deve ser status emitido diretamente`
+        );
+    }
+
+    assertContentIncludesAll(plannerContent, [
+        "ephemeral operational handoff",
+        "not a durable plan or required SPEC file",
+        "do not create `execution_brief.md`",
+        "emit `STATUS: READY` and hand off the `EXECUTION BRIEF`",
+        "HANDOFF_READY` is not a substitute for this normal readiness",
+        "return compact handoff status",
+    ], `${label} planner ephemeral EXECUTION BRIEF`);
+
+    assertContentIncludesAll(validationDesignerContent, [
+        "ephemeral `VALIDATION PACK` handoff",
+        "not a required SPEC file",
+        "do not create `validation_pack.md`",
+        "emit `STATUS: READY` and hand off the `VALIDATION PACK`",
+        "HANDOFF_READY` is not a substitute for this normal readiness",
+        "STATUS: BLOCKED",
+        "REASON: required handoff missing or invalid",
+        "NEXT_OWNER: orchestrator",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ], `${label} validation-eval-designer ephemeral VALIDATION PACK`);
+
+    assertContentIncludesAll(packageDesignerContent, [
+        "ephemeral `EXECUTION PACKAGE` handoff",
+        "not a durable plan and not a required SPEC file",
+        "do not create `execution_package.md`",
+        "emit `STATUS: READY` and hand off the `EXECUTION PACKAGE`",
+        "HANDOFF_READY` is not a substitute for this normal readiness",
+        "STATUS: BLOCKED",
+        "REASON: required handoff missing or invalid",
+        "NEXT_OWNER: orchestrator",
+        "REQUEST: replay previous handoff or regenerate from owner",
+    ], `${label} execution-package-designer ephemeral EXECUTION PACKAGE`);
+
+    for (const coderFile of ["coder-backend.agent.md", "coder-frontend.agent.md", "coder-ios.agent.md"]) {
+        const content = readAgent(coderFile);
+        assertContentIncludesAll(content, [
+            "was not received from `execution-package-designer.agent.md` through the orchestrator in the current round",
+            "do not reconstruct it locally",
+            "STATUS: BLOCKED",
+            "REASON: required handoff missing or invalid",
+            "NEXT_OWNER: orchestrator",
+            "REQUEST: replay previous handoff or regenerate from owner",
+        ], `${label} ${coderFile} missing preparation handoff returns to orchestrator`);
+    }
+
+    assertContentIncludesAll(finalizerContent, [
+        "Do not require `execution_brief.md`, `validation_pack.md`, or `execution_package.md` to close a SPEC.",
+        "preparation handoffs, not required durable SPEC artifacts",
+        "`feature_spec.md`",
+        "`spec_slices.md`",
+        "`readiness_report.md`",
+        "`qa_checklist.md`",
+        "`decision_log.md`",
+        "`session_summary.md`",
+    ], `${label} finalizer durable SPEC evidence`);
+
+    if (fs.existsSync(path.join(agentRoot, "resync.agent.md"))) {
+        assertContentIncludesAll(readAgent("resync.agent.md"), [
+            "do not recover old `EXECUTION BRIEF`, `VALIDATION PACK`, or `EXECUTION PACKAGE` handoffs",
+            "`workspaceStorage`",
+            "`chat-session-resources`",
+            "`content.txt`",
+            "scratchpads",
+            "runtime temporary files",
+        ], `${label} resync does not recover old handoffs`);
+    }
+
+    for (const fileName of [
+        "orchestrator.agent.md",
+        "planner.agent.md",
+        "validation-eval-designer.agent.md",
+        "execution-package-designer.agent.md",
+        "coder-backend.agent.md",
+        "coder-frontend.agent.md",
+        "coder-ios.agent.md",
+        "finalizer.agent.md",
+    ]) {
+        const content = readAgent(fileName);
+        assertContentExcludesAll(
+            content,
+            EPHEMERAL_PREPARATION_HANDOFF_FORBIDDEN_PHRASES,
+            `${label} ${fileName} handoff não deve ser descrito como arquivo materializado`
+        );
+    }
+}
+
+function assertEphemeralPreparationHandoffContractInCanonicalSource() {
+    const sourceFiles = [
+        path.join(ROOT, "skills", "stnl_project_agent_specializer", "SKILL.md"),
+        path.join(ROOT, "skills", "stnl_project_agent_specializer", "reference", "templates", "codex", "AGENTS.md"),
+        path.join(ROOT, "templates", "docs", "agents", "AGENT-CONTRACT-SHAPE.md"),
+        path.join(ROOT, "templates", "docs", "agents", "AGENT-SPECIALIZATION-QUALITY-GATE.md"),
+        path.join(ROOT, "templates", "docs", "workflow", "EXECUTION-LIFECYCLE.md"),
+        path.join(ROOT, "templates", "docs", "workflow", "STATUS-GATES.md"),
+    ];
+
+    for (const filePath of sourceFiles) {
+        const content = fs.readFileSync(filePath, "utf8");
+        assertContentIncludesAll(
+            content,
+            EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
+            `${path.relative(ROOT, filePath)} ephemeral preparation handoff coverage`
+        );
+        assertContentExcludesAll(
+            content,
+            EPHEMERAL_PREPARATION_HANDOFF_FORBIDDEN_PHRASES,
+            `${path.relative(ROOT, filePath)} forbidden persisted-handoff wording`
+        );
+    }
+}
+
 function assertProtocolHardeningInReferenceAgents(skillRoot) {
     const referenceAgentsRoot = path.join(skillRoot, "reference", "agents");
     const referenceAgentFiles = listRelativeFiles(referenceAgentsRoot)
@@ -3119,6 +3310,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "Automatic correction cannot bypass package design",
         "do not treat a missing, implicit, ambiguous, intermediate, narrative, or evidence-free executor handoff as operational success",
         "Every terminal round outcome must pass through `finalizer.agent.md`",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "orchestrator consumer-side rejection");
 
     assertContentIncludesAll(agentContents.get("planner.agent.md"), [
@@ -3135,6 +3327,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "Do not paste full guardrails or add unrelated ones by reflex",
         "separates pre-execution proof design from post-execution validation",
         "Do not label weak proof as clean readiness",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "validation-eval-designer stack quality guardrail proof design");
 
     assertContentIncludesAll(agentContents.get("execution-package-designer.agent.md"), [
@@ -3145,6 +3338,7 @@ function assertProtocolHardeningInReferenceAgents(skillRoot) {
         "does not run tests against new code",
         "orchestrator-routed `CORRECTION PACK`",
         "Do not transfer ambiguity to coder",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "execution-package-designer pre-execution readiness");
 
     assertContentIncludesAll(agentContents.get("validation-runner.agent.md"), [
@@ -3254,6 +3448,7 @@ function assertCorrectionLoopPolicyInTemplateDocs() {
         "Correção automática não pode virar bypass do package design",
         "Correction round é correção mínima, não replanejamento, redesign ou refactor amplo",
         "valida se o handoff está pronto para execução",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "templates/docs/workflow/EXECUTION-LIFECYCLE.md correction loop");
 
     assertContentIncludesAll(statusGatesContent, [
@@ -3266,6 +3461,7 @@ function assertCorrectionLoopPolicyInTemplateDocs() {
         "refactor amplo",
         "preservando correction pack residual e evidência",
         "Esse gate valida handoff/readiness, não roda teste de código novo",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "templates/docs/workflow/STATUS-GATES.md correction loop");
 }
 
@@ -3296,8 +3492,8 @@ function assertQaChecklistValidationHandoffInAgentSet(agentRoot, label) {
 
     assertContentIncludesAll(orchestratorContent, [
         "preserving the runner's compact `QA CHECKLIST UPDATE` handoff",
-        "applicable `qa_checklist.md` reconciliation happens in the same finalizer round instead of an extra user round",
-        "Missing executable QA tracking is a SPEC lifecycle gap, not a finalizer responsibility",
+        "applicable `qa_checklist.md` reconciliation happens in the same finalizer round",
+        "Missing QA tracking is a SPEC lifecycle gap, not finalizer work",
     ], `${label} orchestrator QA checklist routing`);
 }
 
@@ -3333,7 +3529,7 @@ function assertQaChecklistValidationHandoffInCodexAgents(repoRoot, controlledAge
 
     assertContentIncludesAll(readInstructions("orchestrator"), [
         "preserving the runner's compact `QA CHECKLIST UPDATE` handoff",
-        "same finalizer round instead of an extra user round",
+        "same finalizer round",
     ], "codex orchestrator QA checklist routing");
 }
 
@@ -3401,6 +3597,7 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "REQUIRED_QUALITY_GUARDRAILS",
         "stnl_frontend_quality",
         "stnl_backend_sql_quality",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
         ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
     ], "stnl_project_agent_specializer anti-drift");
 
@@ -3426,6 +3623,7 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "Stack quality guardrail propagation check",
         "frases sentinela de consistencia presentes no template/base ou reference agent mas ausentes de `developer_instructions` em Codex",
         "compactacao ou normalizacao remove bloco protocol-fixed para caber no limite de 30.000 caracteres",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
         ...COMPACT_AGENT_RETURN_CONTRACT_SNIPPETS,
     ], "agent specialization quality gate hardening");
 
@@ -3442,6 +3640,7 @@ function assertProtocolHardeningInCanonicalRefs(skillRoot) {
         "## Contrato das stack quality guardrails",
         "Toda rodada terminal passa obrigatoriamente pelo `finalizer`",
         "`finalizer READY` exige closure ledger explícito",
+        ...EPHEMERAL_PREPARATION_HANDOFF_SNIPPETS,
     ], "execution lifecycle hardening");
 }
 
@@ -4376,8 +4575,17 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledContextMaterialization(vscodeRepoRoot);
         assertControlledReferenceDocs(agentSkillRoot);
         assertProtocolHardeningInTemplateAgents();
+        assertEphemeralPreparationHandoffContractInAgentSet(
+            path.join(ROOT, "templates", "agents"),
+            "templates/agents"
+        );
+        assertEphemeralPreparationHandoffContractInCanonicalSource();
         assertProtocolHardeningInReferenceAgents(agentSkillRoot);
         assertQaChecklistValidationHandoffInAgentSet(
+            path.join(agentSkillRoot, "reference", "agents"),
+            "reference/agents instalado"
+        );
+        assertEphemeralPreparationHandoffContractInAgentSet(
             path.join(agentSkillRoot, "reference", "agents"),
             "reference/agents instalado"
         );
@@ -4407,6 +4615,10 @@ function runControlledMaterializationSmoke(targetHome) {
         assertControlledAgentMaterialization(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertExecutionPackageFlowCoherence(agentSkillRoot, vscodeRepoRoot, controlledAgentFiles);
         assertProtocolHardeningInMaterializedAgents(vscodeRepoRoot, controlledAgentFiles);
+        assertEphemeralPreparationHandoffContractInAgentSet(
+            path.join(vscodeRepoRoot, ".github", "agents"),
+            "vscode materializado"
+        );
         assertQaChecklistValidationHandoffInAgentSet(
             path.join(vscodeRepoRoot, ".github", "agents"),
             "vscode materializado"

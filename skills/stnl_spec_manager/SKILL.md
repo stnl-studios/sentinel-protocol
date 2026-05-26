@@ -297,7 +297,7 @@ Regras:
 - nenhum artefato auxiliar pode carregar sozinho regra de negócio, escopo final, aceite final, decisão final, resíduo relevante ou fechamento que sejam necessários para entender a SPEC encerrada
 - se algum auxiliar ainda for necessário para entender a SPEC, a SPEC não está pronta para fechamento canônico e o resultado deve ser `not_closed`
 - quando `MODE=CLOSE` resultar em `closed` ou `closed_with_residuals`, a pasta da SPEC deve terminar contendo somente `feature_spec.md`
-- a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md`, `validation_pack.md` ou equivalentes
+- a limpeza pós-close canônico deve remover todos os demais arquivos da pasta da SPEC, incluindo `open_questions.md`, `assumptions.md`, `decision_log.md`, `readiness_report.md`, `session_summary.md`, `spec_slices.md`, `qa_checklist.md` e qualquer `validation_pack.md` legado/acidental ou equivalente não canônico
 - essa obrigatoriedade de `spec_slices.md` vale para SPEC ativa; SPEC fechada continua compacta e não retém `spec_slices.md` depois do close flow canônico
 - entradas ignoradas pelo sistema, como `__MACOSX` e `.DS_Store`, continuam ignoradas e não entram na contagem do contrato de pasta fechada
 - `closed_with_residuals` significa SPEC fechada com resíduos, limites ou validações pendentes resumidos dentro de `feature_spec.md`; não autoriza manter arquivos auxiliares, bundle residual, checklist, readiness report, histórico técnico ou trilha de maturação

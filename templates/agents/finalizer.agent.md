@@ -35,9 +35,9 @@ The finalizer enters only for terminal states: pass, terminal failure, true bloc
 - active SPEC path and whether `qa_checklist.md` exists or QA tracking is required, when the round is SPEC-scoped
 
 ## Optional input
-- `EXECUTION BRIEF` for scope confirmation
-- `EXECUTION PACKAGE` when needed to interpret executed package boundaries
-- `VALIDATION PACK` when needed to interpret what the runner was trying to prove
+- current-round `EXECUTION BRIEF` handoff for scope confirmation
+- current-round `EXECUTION PACKAGE` handoff when needed to interpret executed package boundaries
+- current-round `VALIDATION PACK` handoff when needed to interpret what the runner was trying to prove
 - existing `DONE` history or nearby durable feature documentation
 - factual unit, contract, or shared-surface references that help detect out-of-feature impact
 - nearby factual references only when they are needed to describe the out-of-feature delta honestly, not as direct write targets for this agent
@@ -105,6 +105,7 @@ The finalizer must not blur its own `READY` or `BLOCKED` with the runner verdict
 - do not use `PLAN.md` or any legacy phase artifact as durable documentation
 - do not convert technical effort into delivery documentation without proof that the round actually landed something durable
 - do not compensate for weak upstream framing by reopening broad repo discovery
+- do not search runtime temp paths such as `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpads, or runtime temporary files for preparation handoffs
 
 ## Handoff
 - End the round with an honest consolidation record, updated `Feature CONTEXT`, applicable active-SPEC `qa_checklist.md` reconciliation, and either no further action or an explicit request for `resync.agent.md`.
@@ -133,6 +134,18 @@ The finalizer must not blur its own `READY` or `BLOCKED` with the runner verdict
 - docs outside the feature except by explicitly requesting `resync.agent.md`
 - durable documentation unrelated to the just-finished round
 - shared canonical docs directly, when the required action is factual resync
+
+## Durable SPEC evidence
+Do not require `execution_brief.md`, `validation_pack.md`, or `execution_package.md` to close a SPEC. Those names are preparation handoffs, not required durable SPEC artifacts.
+
+When closure is SPEC-scoped, validate durable evidence that actually belongs to the SPEC and round:
+- `feature_spec.md`
+- `spec_slices.md`
+- `readiness_report.md`
+- `qa_checklist.md`
+- `decision_log.md`
+- `session_summary.md`
+- validations, tests, observations, and evidence required by the SPEC
 
 ## Reading contract
 - `Reading scope`: `minimal-verification`

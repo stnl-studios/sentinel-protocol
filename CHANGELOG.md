@@ -14,6 +14,7 @@ Melhoria da interface de consumo de SPECs na linha Alpha Preview.
 
 - Corrigidas inconsistências entre README, manifests, prompt map, templates de SPEC e contrato de retorno do `reviewer`.
 - Corrigida a política de update de agents gerenciados para reconstruir artifacts a partir do template canônico atual, evitando híbridos entre contratos antigos e novos.
+- Corrigido o contrato de `EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE` para tratá-los como handoffs efêmeros de rodada, sem arquivos obrigatórios nem leitura de paths temporários de runtime.
 
 ## v2026.5.0-alpha.3
 

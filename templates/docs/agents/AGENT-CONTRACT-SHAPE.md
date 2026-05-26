@@ -127,7 +127,7 @@ Regras:
 - return only the minimum needed for the parent to decide the next gate
 - Do not repeat the full Sentinel contract
 - Do not paste full SPEC, checklist, logs, or diffs
-- return artifact path plus compact summary quando o artifact foi gravado/atualizado em arquivo
+- return durable artifact path only for files actually written by an authorized role, plus compact summary; use compact handoff summary/status for `EXECUTION BRIEF`, `VALIDATION PACK`, and `EXECUTION PACKAGE`
 - Expand only on blocker, failure, critical validation evidence, or explicit human request
 - main chat focused on routing/status deltas
 - detalhes completos pertencem ao artifact owner ou ao arquivo de artifact, nao ao retorno textual por default
@@ -135,9 +135,9 @@ Regras:
 
 Regras por role class:
 - `router`: gate atual, proximo owner, blocker real ou status terminal; sem narrar decisoes internas
-- `planning`: path do `EXECUTION BRIEF` e ate 3 bullets; sem colar brief inteiro
-- `proof-design`: path do `VALIDATION PACK` ou resumo curto; checks planejados em lista compacta
-- `execution-package-design`: path do `EXECUTION PACKAGE`, `OWNED_PATHS` e proximo coder; sem colar package inteiro
+- `planning`: status do `EXECUTION BRIEF` e ate 3 bullets; sem colar brief inteiro nem exigir path
+- `proof-design`: status do `VALIDATION PACK` e resumo curto; checks planejados em lista compacta, sem exigir path
+- `execution-package-design`: status do `EXECUTION PACKAGE`, `OWNED_PATHS` e owner candidato; sem colar package inteiro nem exigir path
 - `design-contributor`: recomendacoes UI/UX compactas; `BLOCKED` com pergunta objetiva quando houver decisao de produto/design
 - `executor`: arquivos alterados, resumo semantico curto, comandos e gaps; logs completos somente em falha e no trecho minimo
 - `proof-execution`: verdict, comandos, pass/fail, gaps e blocker; sem logs completos quando passou
@@ -174,10 +174,12 @@ Budgets minimos por role class:
 ## Parte fixa do protocolo
 E a parte canonica que define o contrato do agent base no ecossistema Sentinel. Inclui papel, limites, statuses, gatilhos de entrada e saida, classe de leitura, budget operacional, ownership de artifacts e posicao no workflow.
 
-Artefatos efemeros canonicos do fluxo de execucao:
+Handoffs efemeros canonicos do fluxo de execucao:
 - `EXECUTION BRIEF`: owned by `planner`; define cut, boundary e constraints em nivel de planejamento.
 - `VALIDATION PACK`: owned by `validation-eval-designer`; define prova, harness e checks deterministicos.
 - `EXECUTION PACKAGE`: owned by `execution-package-designer`; compila 1..N work packages executaveis para coders especialistas-executores.
+
+Esses handoffs nao exigem `execution_brief.md`, `validation_pack.md` ou `execution_package.md`, nao devem ser recuperados de `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpad ou paths temporarios de runtime, e usam `READY` como readiness canonica no fluxo feliz. Quando presenca ou shape estiver em disputa, os estados principais de recuperacao sao `HANDOFF_MISSING`, `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR` e `REQUEST_REGEN_FROM_OWNER`; `HANDOFF_READY`, se aparecer, e apenas metadado/substatus operacional e nao substitui `READY`.
 
 Contrato minimo do `EXECUTION PACKAGE`:
 - `WORK_PACKAGE_ID`

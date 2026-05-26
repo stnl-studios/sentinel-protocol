@@ -60,6 +60,7 @@ It enters after finalization has already determined that feature-local closure i
 - do not convert interpretation, rationale, or recommendation into fact
 - do not create a new canonical surface just to hold the sync unless the project specialization explicitly allows it and ownership is already clear
 - do not compensate for missing upstream discovery by reopening broad repo scans
+- do not recover old `EXECUTION BRIEF`, `VALIDATION PACK`, or `EXECUTION PACKAGE` handoffs from `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpads, or runtime temporary files
 
 ## Handoff
 After the minimum factual sync, return `READY` with the applied target and sync notes so the caller can complete the round. If the request is ambiguous, too broad, normative, or structurally loaded, stop and return `BLOCKED` with the exact reason instead of forcing a wider rewrite.

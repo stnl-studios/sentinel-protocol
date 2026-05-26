@@ -12,17 +12,17 @@
 - related_files: `reference/docs/workflow/STATUS-GATES.md`, `reference/docs/agents/AGENT-CONTRACT-SHAPE.md`, `reference/docs/agents/AGENT-SPECIALIZATION-QUALITY-GATE.md`.
 
 ## Objetivo
-Descrever a ordem operacional canônica do Sentinel com mais precisão que `STATUS-GATES.md`, deixando explícito onde entram o quality gate pós-execução e o review técnico semântico e quem é owner de cada artifact ou verdict.
+Descrever a ordem operacional canônica do Sentinel com mais precisão que `STATUS-GATES.md`, deixando explícito onde entram o quality gate pós-execução e o review técnico semântico, quem é owner de cada handoff efêmero ou verdict, e quais dados continuam sendo memória durável da SPEC.
 
 ## Ordem do fluxo
 1. `orchestrator` aplica os gates canônicos e roteia a rodada sem absorver planejamento, execução, validação ou fechamento.
-2. `planner` define o cut autorizado, marca as stack quality guardrails ativas quando relevantes e produz `EXECUTION BRIEF`.
-3. `validation-eval-designer` transforma o brief em `VALIDATION PACK`, definindo obrigações de prova, estratégia de evidência, limites de harness, checks determinísticos relevantes ao cut e checks derivados das stack quality guardrails ativas.
+2. `planner` define o cut autorizado, marca as stack quality guardrails ativas quando relevantes e produz `EXECUTION BRIEF` como handoff efêmero da rodada.
+3. `validation-eval-designer` transforma o brief recebido em `VALIDATION PACK` efêmero, definindo obrigações de prova, estratégia de evidência, limites de harness, checks determinísticos relevantes ao cut e checks derivados das stack quality guardrails ativas.
 4. O fluxo resolve o gate de harness e o gate de aprovação de execução antes de qualquer implementação. Em mudança simples e local, ausência de testes pode continuar não-bloqueante quando a prova leve do cut for honesta; em mudança de risco relevante sem cobertura mínima da surface tocada, o fluxo para em `NEEDS_DEV_DECISION_HARNESS`.
-5. Se o DEV escolher adicionar testes focados na SPEC agora, a escolha não libera execução por si só: o `validation-eval-designer` atualiza o `VALIDATION PACK` com a nova prova exigida, e quando a decisão alterar materialmente o cut o fluxo reabre `planner -> validation-eval-designer` antes de qualquer approval.
-6. Se o DEV escolher aceitar evidência parcial explicitamente, o fluxo volta ao `validation-eval-designer` para registrar no `VALIDATION PACK` a limitação aceita, a prova faltante, a evidência substituta, o risco residual visível e que o compromisso foi decisão explícita do DEV; só depois disso o fluxo retorna ao gate normal de execução.
+5. Se o DEV escolher adicionar testes focados na SPEC agora, a escolha não libera execução por si só: o `validation-eval-designer` regenera o `VALIDATION PACK` efêmero com a nova prova exigida, e quando a decisão alterar materialmente o cut o fluxo reabre `planner -> validation-eval-designer` antes de qualquer approval.
+6. Se o DEV escolher aceitar evidência parcial explicitamente, o fluxo volta ao `validation-eval-designer` para registrar no `VALIDATION PACK` efêmero a limitação aceita, a prova faltante, a evidência substituta, o risco residual visível e que o compromisso foi decisão explícita do DEV; só depois disso o fluxo retorna ao gate normal de execução.
 7. Se o DEV escolher reduzir o cut, o cut anterior deixa de valer como base de execução: o fluxo volta obrigatoriamente ao `planner` para um novo `EXECUTION BRIEF`, depois ao `validation-eval-designer` para um novo `VALIDATION PACK`, e readiness ou approval anteriores não sobrevivem automaticamente.
-8. `execution-package-designer` compila `EXECUTION PACKAGE` a partir do `EXECUTION BRIEF` e do `VALIDATION PACK`, com readiness pré-execução explícita, 1..N work packages executáveis e `REQUIRED_QUALITY_GUARDRAILS` por pacote quando aplicável. Ele não coordena coders, não chama agents, não implementa e não substitui o `orchestrator`.
+8. `execution-package-designer` compila `EXECUTION PACKAGE` efêmero a partir do `EXECUTION BRIEF` e do `VALIDATION PACK` recebidos na rodada, com readiness pré-execução explícita, 1..N work packages executáveis e `REQUIRED_QUALITY_GUARDRAILS` por pacote quando aplicável. Ele não coordena coders, não chama agents, não implementa e não substitui o `orchestrator`.
 9. O `orchestrator` consome o `EXECUTION PACKAGE`, decide sequência ou paralelização dos coders, confirma capability e só então roteia os coders especialistas-executores.
 10. Os coders executam apenas o `WORK_PACKAGE_ID` autorizado e aplicam as stack quality guardrails exigidas para o pacote. Execução real devolve handoff terminal explícito: `READY` com artifact aplicável e evidência de alteração aplicada, ou `BLOCKED` com causa objetiva. Resposta descritiva, pacote recompilado localmente, progresso intermediário, log operacional, promessa, diff parcial, status implícito ou scope ampliado não substitui artifact.
 11. O `orchestrator` rejeita handoff ausente, implícito, ambíguo, intermediário, narrativo ou `READY` sem evidência aplicada como `EXECUTOR_HANDOFF_INVALID`; a rodada bloqueia operacionalmente e não entra no `validation-runner`.
@@ -38,9 +38,24 @@ Fluxo alvo resumido:
 `orchestrator -> planner -> validation-eval-designer -> execution-package-designer -> orchestrator -> coder(s) -> validation-runner -> reviewer quando aplicável -> correction loop quando corrigível e houver budget -> finalizer`
 
 ## Contrato de parada na preparação
-Preparação só avança com artifact canônico claro e status explícito. `planner READY` exige `EXECUTION BRIEF` bounded; `validation-eval-designer READY` exige `VALIDATION PACK` honesto para proof e package readiness; `execution-package-designer READY` exige `EXECUTION PACKAGE` seguro para coder.
+## Contrato de handoffs efêmeros de rodada
+`EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE` são comunicação operacional da rodada. Eles não são arquivos canônicos obrigatórios da SPEC, não exigem path persistido e não devem ser descritos como materializados quando apenas foram recebidos em contexto.
 
-Quando um preparador não consegue produzir seu artifact sem inventar, inferir demais, esconder conflito, ampliar escopo ou transferir ambiguidade, ele para antes do próximo agente. O handoff de parada deve informar o artifact bloqueado, a decisão ou fato mínimo faltante, por que isso bloqueia o artifact atual, e qual owner precisa destravar. Stop informal, status ambíguo ou artifact parcial especulativo é handoff inválido para o `orchestrator`.
+Um handoff de preparação é válido somente quando:
+- veio diretamente do owner correto na rodada atual; ou
+- foi reenviado pelo `orchestrator` a partir do contexto vigente da mesma rodada; e
+- preserva owner, status, cut, shape mínimo e relação com o handoff anterior.
+
+Consumidores downstream não podem inventar handoff ausente, procurar em `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpad ou arquivo temporário de runtime, nem reabrir escopo sozinhos. Se perderem, não receberem ou invalidarem um handoff, devem retornar ao `orchestrator` com `HANDOFF_MISSING`, `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR` ou `REQUEST_REGEN_FROM_OWNER`.
+
+O `orchestrator` é dono da continuidade: ele decide reenviar o handoff se ainda estiver no contexto, chamar novamente o owner anterior para regenerar, voltar um gate ou bloquear quando a SPEC canônica não for suficiente.
+
+Quando o owner produz handoff válido no fluxo feliz, o status canônico continua sendo `READY` com o artefato efêmero correspondente. `HANDOFF_READY`, se aparecer, é apenas metadado/substatus operacional de presença e nunca substitui `READY` nem cria gate paralelo. Quando o consumidor não consegue usar o handoff, usa `HANDOFF_MISSING`, `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR` ou `REQUEST_REGEN_FROM_OWNER` em vez de avançar por inferência.
+
+## Contrato de parada na preparação
+Preparação só avança com handoff efêmero claro e status explícito. `planner READY` exige `EXECUTION BRIEF` bounded; `validation-eval-designer READY` exige `VALIDATION PACK` honesto para proof e package readiness; `execution-package-designer READY` exige `EXECUTION PACKAGE` seguro para coder.
+
+Quando um preparador não consegue produzir seu handoff sem inventar, inferir demais, esconder conflito, ampliar escopo ou transferir ambiguidade, ele para antes do próximo agente. O handoff de parada deve informar o handoff bloqueado, a decisão ou fato mínimo faltante, por que isso bloqueia o handoff atual, e qual owner precisa destravar. Stop informal, status ambíguo ou handoff parcial especulativo é handoff inválido para o `orchestrator`.
 
 ## Contrato do pacote de execução
 O `EXECUTION PACKAGE` é efêmero, operacional e leve. Ele deve permitir que coders especialistas-executores apliquem a mudança sem reinterpretar arquitetura local.
@@ -116,7 +131,7 @@ O `orchestrator` marca as guardrails ativas por superfície, o `planner` preserv
 - Em cuts que tocam lógica de negócio, state, services, facades, repositories, data access, guards, resolvers, interceptors, contratos compartilhados, libs compartilhadas, auth, autorização, segurança, PIN, token, sessão, fluxos assíncronos, multi-step ou comportamento com risco de regressão transversal, ausência de testes relevantes existentes ou de harness minimamente confiável para a surface tocada deve acionar `NEEDS_DEV_DECISION_HARNESS` antes da execução.
 - Quando o DEV optar por investir em prova nova nesse gate, a exigência é de testes focados na SPEC e nos fluxos críticos prometidos pelo cut, não de cobertura ampla do projeto.
 - `NEEDS_DEV_DECISION_HARNESS` é gate de decisão, não atalho para execução: depois da escolha do DEV, o fluxo sempre volta ao owner do artifact afetado antes de qualquer approval ou handoff para executor.
-- `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL` e qualquer leitura de readiness valem apenas para o conjunto vigente `EXECUTION BRIEF` + `VALIDATION PACK` + `EXECUTION PACKAGE`, nunca para versões anteriores do recorte.
+- `NEEDS_DEV_APPROVAL_EXECUTION`, `APPROVED_EXECUTION`, `SKIP_EXECUTION_APPROVAL` e qualquer leitura de readiness valem apenas para o conjunto vigente de handoffs `EXECUTION BRIEF` + `VALIDATION PACK` + `EXECUTION PACKAGE`, nunca para versões anteriores do recorte nem para arquivos temporários do runtime.
 - O `validation-runner` executa e julga esses checks no escopo do cut. O runner não vira smoke runner genérico repo-wide e não redesenha o pack durante a run.
 - O `validation-runner` entrega `QA CHECKLIST UPDATE` compacto quando validação for executada ou tentada: check/AC, resultado `passed|failed|blocked|not_run`, tipo de validação, comando ou método compacto e evidência curta. Esse bloco é handoff para o `finalizer`, não closure nem autorização para inventar sucesso.
 - Quando o runner encontra problema corrigível dentro do escopo aprovado e há budget, ele emite `CORRECTION PACK` e devolve ao `orchestrator`; quando não for corrigível automaticamente, preserva a evidência para fechamento terminal via `finalizer`.

@@ -72,6 +72,17 @@ Regras complementares:
 - usar `web` só depois da leitura séria do projeto e apenas quando contexto externo atual realmente mudar a qualidade da especialização
 - o quality gate pós-geração valida contra o modelo factual intermediário e as referências já mapeadas; ele não é licença para um scan amplo novo por inércia
 
+## Regra de handoffs efêmeros de rodada
+`EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE` são handoffs operacionais de rodada. A skill deve preservar essa regra em todo specialized gerado:
+- não criar nem exigir `execution_brief.md`, `validation_pack.md` ou `execution_package.md`;
+- não conceder `edit` para `planner`, `validation-eval-designer` ou `execution-package-designer` por causa desses handoffs;
+- não descrever esses handoffs como materializados quando não foram escritos por um workflow autorizado distinto;
+- validar handoff de preparação apenas quando recebido do owner correto na rodada atual ou reenviado pelo `orchestrator`;
+- impedir busca em `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpad ou paths temporários de runtime como fonte Sentinel;
+- quando um consumidor downstream perder, não receber ou invalidar um handoff, ele deve retornar `HANDOFF_MISSING`, `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR` ou `REQUEST_REGEN_FROM_OWNER` ao `orchestrator`, sem inventar conteúdo, reabrir escopo ou buscar arquivo temporário.
+
+O `orchestrator` é o único dono da continuidade entre handoffs efêmeros: ele reenvia o handoff se ainda estiver no contexto, chama novamente o owner anterior para regenerar, volta um gate, ou bloqueia se a SPEC canônica não for suficiente.
+
 ## Escopo operacional
 - descobrir quais agents locais fazem sentido para o repo alvo
 - construir um modelo factual intermediário normalizado antes de gerar qualquer specialized
@@ -209,7 +220,7 @@ Quando `target=codex`, a semântica de handoff Sentinel é runtime-native:
 - The durable Sentinel contract must live in `AGENTS.md`, `.codex/agents/*.toml`, Sentinel source docs/templates, and allowed repo documentation/codebase, not in a full contract pasted into the prompt.
 - The parent must wait for the subagent result before deciding the next gate.
 - `ROUTE_PACKET` must be compact: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, and `BLOCKER` only when real.
-- `ROUTE_PACKET` must not include full artifacts, full contracts, SPEC/checklist/logs/diffs, or broad transcript history; if a rich artifact is needed, return path plus compact summary.
+- `ROUTE_PACKET` must not include full artifacts, full contracts, SPEC/checklist/logs/diffs, or broad transcript history; if a rich current-round handoff is needed, return a compact handoff summary or identifier, not a required file path.
 - If the orchestrator tries to spawn a downstream Sentinel owner directly in Codex visual mode, that is a contract violation.
 - If root/main chooses a Sentinel owner without a valid `ROUTE_PACKET` or explicit human request for that exact custom agent name, that is a contract violation.
 - If a requested task cannot be performed safely without a custom subagent and none was explicitly authorized, stop with `SUBAGENT_AUTH_REQUIRED`; include the needed agent, short reason, and the minimum prompt preserving objective/context so the human can rerun with `Use <agent>`.
@@ -242,7 +253,7 @@ Regras globais:
 - Do not repeat the full Sentinel contract
 - Do not paste full SPEC, checklist, logs, or diffs
 - não repetir contrato Sentinel completo, prompt do usuário inteiro, SPEC, checklist, docs, logs, diff ou artifact completo no retorno textual
-- quando um artifact rico existir em arquivo ou handoff interno, return artifact path plus compact summary
+- quando um artifact rico existir em arquivo durável, return durable artifact path only for files actually written by an authorized role, plus compact summary; quando for `EXECUTION BRIEF`, `VALIDATION PACK` ou `EXECUTION PACKAGE`, return compact handoff summary/status without requiring a path
 - command output completo só aparece quando falhou e apenas no trecho mínimo necessário para diagnóstico
 - Expand only on blocker, failure, critical validation evidence, or explicit human request
 - root/main e `orchestrator` devem manter a main chat focused on routing/status deltas
@@ -1110,7 +1121,7 @@ Verificar no `validation-eval-designer`:
 - role class `proof-design` preservada
 - ausência de tools excessivas herdadas por acidente
 - ausência de wording que compense leitura que `orchestrator` ou `planner` deixaram de fazer
-- `VALIDATION PACK` mantido como artifact local e orientado a prova
+- `VALIDATION PACK` mantido como handoff efêmero orientado a prova
 - consumo explícito de `docs/core/TESTING.md` como base de comandos canônicos, paths manuais aceitos, pré-requisitos e limites de harness quando esse doc existir, preservando semântica observada em base `stnl_project_context` e semântica declarada/estratégica em base `stnl_project_foundation` até evidência na codebase
 - a matriz local informa o pack sem ser copiada inteira nem virar checklist universal
 - ausência ou fraqueza da matriz local aparece explicitamente no harness judgment quando relevante
@@ -1185,6 +1196,10 @@ Verificar:
 - adicionar testes focados sem mudança material de cut volta ao `validation-eval-designer`; com mudança material de cut volta a `planner` antes do `validation-eval-designer`
 - evidência parcial explícita volta ao `validation-eval-designer` para atualizar o `VALIDATION PACK` antes de qualquer gate normal de execução
 - estreitar ou alterar materialmente o cut invalida readiness ou approval anteriores e volta obrigatoriamente a `planner` antes de regenerar o pack
+- handoffs de preparação usam `READY` com `EXECUTION BRIEF`, `VALIDATION PACK` ou `EXECUTION PACKAGE` no fluxo feliz; quando presença/shape estiver em disputa, usam `HANDOFF_MISSING`, `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR` e `REQUEST_REGEN_FROM_OWNER`
+- `HANDOFF_READY`, se aparecer, é somente metadado/substatus operacional e não substitui `READY` nem cria gate paralelo
+- ausência de `execution_brief.md`, `validation_pack.md` ou `execution_package.md` nunca é blocker por si só, porque esses handoffs são efêmeros
+- agents downstream não buscam `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpad ou path temporário para recuperar handoff perdido
 - `validation-eval-designer READY` segue para `execution-package-designer`, não diretamente para coders
 - `execution-package-designer READY` devolve `EXECUTION PACKAGE` para o `orchestrator`, não para coders
 - coders só entram com `WORK_PACKAGE_ID` explícito do pacote vigente
@@ -1365,7 +1380,7 @@ Route only to agents that are actually materialized for Codex in `.codex/agents/
 
 When explicitly invoked in Codex visual mode, Sentinel routing is parent-mediated. You must return a compact `ROUTE_PACKET` to root/main and must not spawn downstream Sentinel owners directly. The root/main session spawns the named owner as a native custom subagent by exact custom agent name, returns the compact owner result to you, and comes back to you for the next routing decision.
 
-`ROUTE_PACKET` shape: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, and `BLOCKER` only when real. Keep it compact: do not include full artifacts, full contracts, SPEC/checklist/logs/diffs, or broad transcript history; return path plus compact summary when rich artifacts are needed.
+`ROUTE_PACKET` shape: `STATUS: ROUTE_READY | BLOCKED | TERMINAL`, `CURRENT_GATE`, `NEXT_OWNER`, `REASON`, `PAYLOAD`, and `BLOCKER` only when real. Keep it compact: do not include full artifacts, full contracts, SPEC/checklist/logs/diffs, or broad transcript history; return durable artifact path only for files actually written by an authorized role, and use compact handoff summary/status for `EXECUTION BRIEF`, `VALIDATION PACK`, or `EXECUTION PACKAGE`.
 
 For Codex, handoff means native Codex custom subagent spawning by exact custom agent name when explicitly authorized, executed by root/main after a valid `ROUTE_PACKET`. A refused full-history fork is not itself failure when Codex still creates a native requested agent thread. Wait for the owner result from root/main before deciding the next gate. Never use full-contract prompt replay, `codex exec`, shell, subprocesses, scripts, local CLI calls, local continuation, or local role absorption to simulate downstream Sentinel work. You must never use `codex exec`, shell/subprocess/script/local continuation, or local role absorption to simulate handoff. If native custom-agent spawning cannot create an explicitly requested agent thread, root/main cannot spawn the owner named in a valid `ROUTE_PACKET`, spawning is blocked by `.codex/config.toml`, or the target custom agent is missing, stop with `ROUTING_RUNTIME_BLOCKED` and include attempted owner, current gate, missing capability/config, and minimum DEV action.
 

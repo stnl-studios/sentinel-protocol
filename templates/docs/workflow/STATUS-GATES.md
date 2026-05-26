@@ -35,20 +35,34 @@ Fluxo alvo:
 | `FAIL` | A validação mostrou que o objetivo não foi atingido ou que um check obrigatório executado falhou de forma material. | Emitido pelo `validation-runner` na run de validação/eval; consumido no fechamento, não reemitido pelo `finalizer`. |
 | `BLOCKED` | A validação não conseguiu provar honestamente o ciclo por impedimento real no path de prova. A origem do bloqueio deve ser nomeada. | Como verdict de validação, pertence ao `validation-runner`; quando houver bloqueio antes do runner, o fechamento deve preservá-lo explicitamente como bloqueio pré-validação, sem inventar verdict limpo. |
 
-## Artefatos do workflow
-- Os artefatos efêmeros do workflow são `EXECUTION BRIEF`, `VALIDATION PACK`, `EXECUTION PACKAGE` e `CORRECTION PACK` quando runner ou reviewer encontram problema corrigível dentro do escopo aprovado.
+## Handoffs efêmeros do workflow
+- `EXECUTION BRIEF`, `VALIDATION PACK` e `EXECUTION PACKAGE` são handoffs efêmeros de rodada, não arquivos canônicos obrigatórios da SPEC.
+- Esses handoffs não precisam existir como `execution_brief.md`, `validation_pack.md`, `execution_package.md` ou qualquer outro arquivo persistido para o fluxo avançar.
+- Ausência de arquivo não é ausência de handoff. Um handoff de preparação é válido somente quando recebido diretamente do owner correto na rodada atual ou reenviado pelo `orchestrator` a partir do contexto vigente.
+- Nenhum agente deve buscar handoff de preparação em paths temporários de runtime, incluindo `workspaceStorage`, `chat-session-resources`, `content.txt`, scratchpad ou arquivo temporário de runtime.
+- `CORRECTION PACK` também é handoff operacional quando runner ou reviewer encontram problema corrigível dentro do escopo aprovado.
 - `QA CHECKLIST UPDATE` é handoff compacto do `validation-runner` para o `finalizer` quando validação foi executada ou tentada; ele alimenta `qa_checklist.md` aplicável na SPEC ativa, mas não substitui verdict, closure ou logs completos.
 - As stack quality guardrails ativas são metadados operacionais carregados por esses artefatos; elas não são agents e não substituem planner, package designer, coders, runner, reviewer ou finalizer.
 - `EXECUTION PACKAGE` pertence ao `execution-package-designer`, carrega 1..N work packages executáveis e não substitui o `orchestrator`.
 - `CORRECTION PACK` pertence ao agent que encontrou o problema como evidência de correção solicitada, mas o roteamento, o budget e a decisão de reutilizar ou redesenhar `EXECUTION PACKAGE` pertencem ao `orchestrator`.
 - A memória durável fica em `DONE`, `Feature CONTEXT` e docs factuais tocadas por Resync.
 
+## Estados operacionais de handoff
+| Status | Significado | Owner de decisão |
+| --- | --- | --- |
+| `HANDOFF_MISSING` | O handoff esperado não chegou ao consumidor na rodada atual. | Consumidor reporta; `orchestrator` decide replay, regen, gate anterior ou bloqueio. |
+| `HANDOFF_INVALID` | O handoff chegou, mas owner, status, shape, cut ou base estão inconsistentes. | Consumidor reporta; `orchestrator` decide owner anterior ou gate. |
+| `REQUEST_REPLAY_FROM_ORCHESTRATOR` | O consumidor precisa que o `orchestrator` reenvie o handoff vigente ainda presente no contexto da rodada. | `orchestrator`. |
+| `REQUEST_REGEN_FROM_OWNER` | O handoff não pode ser reaproveitado e precisa ser regenerado pelo owner anterior. | `orchestrator` roteia ao owner correto. |
+
+`HANDOFF_READY`, quando usado, é apenas metadado/substatus operacional de presença de handoff; não substitui `READY`, não é gate paralelo e não deve ser emitido como readiness principal pelos agents.
+
 ## Regra de handoff de preparação
-- `planner`, `validation-eval-designer` e `execution-package-designer` só podem liberar o próximo passo com artifact canônico claro e status explícito.
+- `planner`, `validation-eval-designer` e `execution-package-designer` só podem liberar o próximo passo com handoff efêmero claro e status explícito.
 - `READY` do `planner` exige `EXECUTION BRIEF` honesto e bounded; se o cut depender de requisito inventado, decisão de produto/arquitetura, conflito de fonte, escopo ampliado ou dependência não comprovada, o fluxo volta ao `orchestrator` com `NEEDS_DEV_DECISION_BASE` e a decisão/fato mínimo faltante.
 - `READY` do `validation-eval-designer` exige `VALIDATION PACK` honesto o suficiente para orientar proof e package readiness; se a suficiência depender de harness, evidência parcial ou testes, o fluxo para em `NEEDS_DEV_DECISION_HARNESS`, sem esconder prova fraca como readiness limpa.
 - `READY` do `execution-package-designer` exige `EXECUTION PACKAGE` seguro para coder; se boundaries, ownership, `DO_NOT_TOUCH`, guardrails, acceptance checks, riscos, blockers ou atualização de correction package exigirem replanejamento, redesign ou ampliação de escopo, o pacote emite `BLOCKED`.
-- Ausência de artifact claro, status ambíguo ou stop informal de preparação é handoff inválido; o `orchestrator` não roteia adiante e pede só a informação mínima necessária para destravar o artifact atual.
+- Ausência do handoff no contexto da rodada, status ambíguo ou stop informal de preparação é handoff inválido; o `orchestrator` não roteia adiante e decide entre reenviar o handoff vigente, chamar o owner anterior para regenerar, voltar um gate ou bloquear quando a SPEC canônica não bastar.
 
 ## Regra de readiness pré-execução
 - Antes do coder iniciar, o `EXECUTION PACKAGE` precisa estar pronto para execução com slice/cut correto, escopo aprovado, arquivos ou superfícies prováveis, guardrails aplicáveis e não aplicáveis com racional, critérios de aceite, validações esperadas, riscos relevantes, o que não pode mudar e blockers conhecidos.
