@@ -20,6 +20,7 @@ Contrato experimental do orchestrator kernel: `reference/orchestrator_kernel/CON
 Minimum safe bundle do orchestrator kernel: `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`.
 Module index experimental do orchestrator kernel: `reference/orchestrator_kernel/MODULE_INDEX.md`.
 Activation gates experimentais do orchestrator kernel: `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
+Materialização experimental isolada do orchestrator kernel: `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
 
 ## Missão
 Ler a base documental consolidada de um repo alvo já preparado por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`, construir um modelo factual intermediário normalizado e materializar, com validação e repair controlado, o conjunto mínimo útil de agents locais no runtime indicado por `target`.

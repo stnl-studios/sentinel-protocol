@@ -272,49 +272,56 @@ defined in this phase.
 ### `materialization.experimental`
 
 - `module_id`: `materialization.experimental`
-- `status`: `unavailable_until_future_contract_gates_checks_and_tests`
+- `status`: `blocked_with_phase_5_contract_unavailable_until_future_checks_tests_authorization_and_isolated_execution_path`
 - `purpose`: Represent future isolated experimental materialization for the
-  orchestrator kernel after a later phase defines the contract, activation
-  gates, checks, and tests.
+  orchestrator kernel. The Phase 5 contract exists at
+  `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`, but the
+  module remains unavailable until later phases define static checks, critical
+  golden tests, explicit authorization, and an isolated execution/materialization
+  path.
 - `activation_signals`:
-  - none executable in Phase 3
+  - none executable in Phase 5
   - future explicit authorization for experimental materialization
-  - future materialization contract exists
+  - Phase 5 materialization contract exists
   - future activation gates, checks, and golden tests pass
 - `required_context`:
-  - future materialization contract
+  - Phase 5 materialization contract
   - future activation-gate decision
+  - canonical base orchestrator available
   - explicit authority to write experimental artifacts
   - isolated allowed paths
   - target/runtime boundary
   - checks and tests proving the experimental path is safe
 - `outputs`:
-  - none in Phase 3
+  - none in Phase 5
   - future isolated materialization plan or result only after later phases define
     and authorize it
 - `dependencies`:
   - kernel contract
   - minimum safe bundle
-  - future materialization contract
+  - Phase 5 materialization contract
   - future activation gates
   - future static checks
   - future golden critical tests
   - explicit human or workflow authorization
+  - future isolated execution/materialization path
 - `conflicts`:
   - production skill or production template writes
   - final target artifact writes without future authorization
   - main-flow replacement
-  - missing contract, gates, checks, or tests
+  - missing checks, tests, authorization, or isolated execution path
+  - attempt to materialize all agents
   - attempt to use materialization as fallback routing
 - `safe_to_auto_activate`: No.
 - `token_cost_hint`: `high`
 - `fallback_behavior`: Treat as unavailable and safe stop if materialization is
   required.
 - `out_of_scope`:
-  - implementation in Phase 3
+  - implementation in Phase 5
   - overwriting the main flow
   - writing production templates
   - writing final target artifacts
+  - creating unmarked experimental artifacts
   - replacing existing materialization behavior
   - bypassing checks, tests, or authority
 
