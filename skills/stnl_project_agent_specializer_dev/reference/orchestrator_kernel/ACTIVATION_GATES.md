@@ -139,7 +139,7 @@ This mapping is an experimental contract, not a runtime implementation.
 | `context.missing_info` | Gate 1 candidate | Missing-context classification candidate, but not auto-activatable in runtime in this phase. |
 | `validation.boundary` | Gate 1 candidate | Lightweight boundary validation candidate, but not auto-activatable in runtime in this phase. |
 | `routing.execution_package` | Gate 2 conditional | Requires valid upstream context, explicit scope, and stronger owner/workflow authority. |
-| `materialization.experimental` | Gate 3 stop/block | Blocked until future materialization contract, gates, checks, tests, and authorization exist. |
+| `materialization.experimental` | Gate 3 stop/block | Phase 5 materialization contract exists, but real materialization remains blocked until executable checks, executable golden-test harnesses, explicit authorization, and an isolated execution path exist. |
 | `checks.static` | Gate 3 stop/block | Phase 6 check contract exists, but real execution remains blocked until an implementation, harness, and authorized execution rules exist; checks do not grant authority or release materialization by themselves. |
 | `tests.golden_critical` | Gate 3 stop/block | Phase 7 contract exists for exactly two critical golden tests, but real execution remains blocked until an implementation, fixtures, expected outputs, harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
 
@@ -310,8 +310,9 @@ Expected output:
 - Gates cannot authorize writing to final artifacts.
 - Gates cannot authorize execution, deletion, validation, closure, or review by
   themselves.
-- Gates cannot activate experimental materialization without future
-  materialization contract, checks, golden tests, and explicit authorization.
+- Gates cannot activate experimental materialization without the documented
+  materialization, static-check, and golden-test contracts plus future
+  executable harnesses, explicit authorization, and an isolated execution path.
 - Gates cannot treat missing static checks as a pass.
 - Gates cannot treat missing golden tests as regression proof.
 - Gates cannot use optional behavior to alter the main Sentinel flow.
@@ -339,8 +340,12 @@ This activation-gates contract answers the Phase 4 questions as follows:
 - Why do materialization, checks, and golden tests remain blocked?
   `checks.static` has a Phase 6 contract, but real check execution still
   requires future implementation, harness, explicit execution rules, and
-  later-phase adoption. Materialization still also requires critical golden
-  tests and explicit authorization; static checks alone do not grant authority.
+  later-phase adoption. `tests.golden_critical` has a Phase 7 contract for
+  exactly two critical tests, but real execution still requires fixtures,
+  expected outputs, a harness, explicit execution rules, and later-phase
+  adoption. Materialization still also requires executable checks, executable
+  golden tests, explicit authorization, and an isolated path; static checks or
+  golden tests alone do not grant authority.
 
 ## Explicitly Out Of Scope For Phase 4
 

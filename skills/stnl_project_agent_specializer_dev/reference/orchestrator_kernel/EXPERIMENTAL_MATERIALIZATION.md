@@ -31,10 +31,11 @@ protections.
 It does not write final artifacts in Phase 5. This phase only defines the
 contract that a later implementation would have to satisfy.
 
-It still depends on future static checks and critical golden tests. Without
-those checks and tests, the experimental path must remain blocked because there
-is no cheap proof that isolation, canonicality, forbidden outputs, and expected
-blocking behavior are preserved.
+It still depends on the documented static-check and critical golden-test
+contracts plus future executable harnesses. Without those future harnesses, the
+experimental path must remain blocked because there is no cheap proof that
+isolation, canonicality, forbidden outputs, and expected blocking behavior are
+preserved.
 
 ## Canonical Source And Experimental Boundary
 
@@ -51,6 +52,8 @@ The experiment must operate only over the dev skill's experimental contracts:
 - `reference/orchestrator_kernel/MODULE_INDEX.md`
 - `reference/orchestrator_kernel/ACTIVATION_GATES.md`
 - `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`
+- `reference/orchestrator_kernel/STATIC_CHECKS.md`
+- `reference/orchestrator_kernel/GOLDEN_TESTS.md`
 
 Any future experimental artifact must be isolated in an explicitly allowed
 experimental path and explicitly marked as experimental.
@@ -73,8 +76,10 @@ all of the following inputs exist and are explicitly available:
 - explicit target runtime when applicable
 - explicitly allowed experimental paths
 - explicit authorization for experimental materialization
-- static checks defined
-- critical golden tests defined
+- static-check contract defined
+- critical golden-test contract defined
+- future executable static-check harness
+- future executable golden-test harness
 - experiment scope limited to `orchestrator`
 
 Missing, ambiguous, stale, or unauthorized input blocks materialization.
@@ -130,14 +135,15 @@ Experimental materialization must block when any of the following is true:
 - canonical base orchestrator is missing
 - explicit authorization is missing
 - experimental target or path is ambiguous
-- static checks do not exist
-- critical golden tests do not exist
+- future executable static-check harness does not exist
+- future executable golden-test harness does not exist
 - the attempt includes all agents
 - the attempt tries to overwrite or bypass the main flow
 - the attempt writes a production final artifact
 
 Blocking is the default when the path cannot prove that it is isolated,
-authorized, limited to `orchestrator`, and covered by future checks and tests.
+authorized, limited to `orchestrator`, and covered by documented checks/tests
+plus future executable harnesses.
 
 ## Relationship To Existing Documents
 
@@ -155,7 +161,8 @@ dependencies, conflicts, outputs, and fallback behavior.
 
 `reference/orchestrator_kernel/ACTIVATION_GATES.md` classifies
 `materialization.experimental` as Gate 3 stop/block until later phases provide
-the missing contracts, checks, tests, authorization, and execution path.
+the documented checks/tests, future executable harnesses, authorization, and
+execution path.
 
 This document does not duplicate those contracts. It defines only the future
 experimental materialization boundary.
@@ -175,9 +182,10 @@ The experimental path must remain separate from:
 - smoke behavior
 - materialization of agents other than `orchestrator`
 
-Isolation also makes future checks and golden tests meaningful: they can verify
-that the experiment did not write forbidden outputs, did not mutate canonical
-sources, and did not expand beyond the authorized `orchestrator` scope.
+Isolation also makes documented checks and golden tests meaningful once future
+harnesses exist: they can verify that the experiment did not write forbidden
+outputs, did not mutate canonical sources, and did not expand beyond the
+authorized `orchestrator` scope.
 
 ## Phase 5 Acceptance Criteria
 
@@ -185,8 +193,8 @@ This contract answers the Phase 5 questions as follows:
 
 - What is experimental materialization? A future isolated path for producing an
   explicitly experimental `orchestrator` artifact from the orchestrator kernel
-  contracts after later phases define the missing checks, tests, authorization,
-  and execution path.
+  contracts after later phases provide the missing executable harnesses,
+  authorization, and execution path.
 - Why is it isolated? To prevent changes to production templates, final target
   artifacts, installer behavior, smoke behavior, base agents, and the main
   Sentinel flow.
@@ -196,8 +204,8 @@ This contract answers the Phase 5 questions as follows:
 - Which inputs are mandatory in the future? The kernel contract, minimum safe
   bundle, module index, activation gates, canonical base orchestrator, explicit
   target runtime when applicable, allowed experimental paths, explicit
-  authorization, static checks, critical golden tests, and scope limited to
-  `orchestrator`.
+  authorization, documented static checks, documented critical golden tests,
+  future executable harnesses, and scope limited to `orchestrator`.
 - Which outputs may be permitted in the future? A materialization decision
   report, activated/considered module list, isolated experimental orchestrator
   artifact, and experimental metadata.

@@ -272,18 +272,18 @@ defined in this phase.
 ### `materialization.experimental`
 
 - `module_id`: `materialization.experimental`
-- `status`: `blocked_with_phase_5_contract_unavailable_until_future_checks_tests_authorization_and_isolated_execution_path`
+- `status`: `phase_5_contract_documented_blocked_until_future_harnesses_authorization_and_isolated_execution_path`
 - `purpose`: Represent future isolated experimental materialization for the
   orchestrator kernel. The Phase 5 contract exists at
   `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`, but the
-  module remains unavailable until later phases define static checks, critical
-  golden tests, explicit authorization, and an isolated execution/materialization
-  path.
+  module remains unavailable for real materialization until later phases provide
+  executable static-check and golden-test harnesses, explicit authorization, and
+  an isolated execution/materialization path.
 - `activation_signals`:
   - none executable in Phase 5
   - future explicit authorization for experimental materialization
   - Phase 5 materialization contract exists
-  - future activation gates, checks, and golden tests pass
+  - future executable checks and golden-test harnesses pass
 - `required_context`:
   - Phase 5 materialization contract
   - future activation-gate decision
@@ -291,7 +291,8 @@ defined in this phase.
   - explicit authority to write experimental artifacts
   - isolated allowed paths
   - target/runtime boundary
-  - checks and tests proving the experimental path is safe
+  - documented checks and tests plus future executable harnesses proving the
+    experimental path is safe
 - `outputs`:
   - none in Phase 5
   - future isolated materialization plan or result only after later phases define
@@ -301,15 +302,16 @@ defined in this phase.
   - minimum safe bundle
   - Phase 5 materialization contract
   - future activation gates
-  - future static checks
-  - future golden critical tests
+  - Phase 6 static-check contract and future executable harness
+  - Phase 7 golden-test contract and future executable harness
   - explicit human or workflow authorization
   - future isolated execution/materialization path
 - `conflicts`:
   - production skill or production template writes
   - final target artifact writes without future authorization
   - main-flow replacement
-  - missing checks, tests, authorization, or isolated execution path
+  - missing executable check harness, golden-test harness, authorization, or
+    isolated execution path
   - attempt to materialize all agents
   - attempt to use materialization as fallback routing
 - `safe_to_auto_activate`: No.
@@ -354,7 +356,8 @@ defined in this phase.
   - activation gates
   - Phase 6 static-check contract
   - future executable implementation and harness before real execution
-  - future golden critical tests before materialization can be considered
+  - Phase 7 golden-test contract and future executable harness before
+    materialization can be considered
 - `conflicts`:
   - broad filesystem scan outside authorized paths
   - checks that mutate files
@@ -371,7 +374,7 @@ defined in this phase.
   - fixing files
   - creating a full validation suite
   - authorizing materialization
-  - replacing future golden critical tests
+  - replacing the documented critical golden tests
 
 ### `tests.golden_critical`
 
@@ -438,10 +441,12 @@ This module index answers the Phase 3 questions as follows:
 - What output may each module produce? Each entry defines `outputs`.
 - Which modules are unavailable until future phases? `materialization.experimental`,
   `checks.static`, and `tests.golden_critical` are unavailable until later phases
-  define the required contracts, gates, checks, tests, implementation, or
-  harnesses. `checks.static` has a Phase 6 contract, but no executable script
-  and no authority to release materialization. All other cataloged modules still
-  require future activation gates before activation.
+  provide the required implementation, executable harnesses, authorization, or
+  isolated execution path. `checks.static` has a Phase 6 contract, but no
+  executable script and no authority to release materialization.
+  `tests.golden_critical` has a Phase 7 contract for exactly two critical
+  tests, but no executable harness. All other cataloged modules still require
+  future runtime activation support before activation.
 - What happens when a module, dependency, or context is absent? The module must
   block, reduce to narrower safe behavior allowed by the kernel and safe bundle,
   request minimum context when authorized, or safe stop with a concrete blocker.

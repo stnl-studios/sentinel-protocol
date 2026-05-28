@@ -1,6 +1,6 @@
 # Sentinel managed artifact: true
 # target: codex
-# source_template: stnl_project_agent_specializer/reference/templates/codex/config.toml
+# source_template: stnl_project_agent_specializer_dev/reference/templates/codex/config.toml
 
 [agents]
 max_threads = 6

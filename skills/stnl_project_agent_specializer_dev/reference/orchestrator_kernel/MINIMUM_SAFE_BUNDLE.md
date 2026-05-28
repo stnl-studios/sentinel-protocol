@@ -8,6 +8,9 @@ It complements `reference/orchestrator_kernel/CONTRACT.md` without duplicating t
 
 The Phase 3 module index catalog is defined in `reference/orchestrator_kernel/MODULE_INDEX.md`.
 The Phase 4 activation-gates contract is defined in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
+The Phase 5 experimental-materialization contract is defined in `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
+The Phase 6 static-checks contract is defined in `reference/orchestrator_kernel/STATIC_CHECKS.md`.
+The Phase 7 critical golden-tests contract is defined in `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
 
 ## Purpose
 

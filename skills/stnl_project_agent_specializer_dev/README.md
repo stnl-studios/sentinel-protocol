@@ -59,9 +59,9 @@ O contrato operacional vive em `SKILL.md`. Este README existe só para manutenç
 - nunca serializar effort operacional no frontmatter `.agent.md` de VS Code/GitHub
 - manter o gate de 30.000 caracteres para prompts Markdown de `.agent.md` VS Code/GitHub
 - preservar a política `Consistency without legacy propagation`: consistência com o projeto não autoriza copiar dívida técnica acidental nem fazer refactor amplo escondido
-- manter gate explícito de propagação protocol-fixed entre `templates/agents`, `reference/agents` instalado e artifact final materializado; Codex deve carregar esses blocos em `developer_instructions`
-- manter o bundle de referências alinhado aos base agents canônicos e às docs `AGENT-CONTRACT-SHAPE`, `AGENT-SPECIALIZATION-QUALITY-GATE`, `EXECUTION-LIFECYCLE` e `STATUS-GATES`
+- manter gate explícito de propagação protocol-fixed entre fontes canônicas explicitamente listadas no manifest da própria skill dev e artifact final materializado; Codex deve carregar esses blocos em `developer_instructions`
+- manter o bundle de referências alinhado ao manifest da própria skill dev; no source dev atual, `reference/agents/**` e `reference/docs/**` não são exigidos
 - evitar que este README ou detalhes internos do repo virem parte do contrato final da skill
 
 ## Relação com as referências canônicas
-Esta skill depende dos base agents canônicos e das docs de contrato, quality gate e workflow do Sentinel apenas como referência. Na v1, essas referências não devem ser materializadas no repo alvo.
+Esta skill dev mantém somente as referências declaradas em `reference/MANIFEST.md`. Na v1, referências canônicas externas não devem ser materializadas no repo alvo nem buscadas por fallback fora do bundle dev.

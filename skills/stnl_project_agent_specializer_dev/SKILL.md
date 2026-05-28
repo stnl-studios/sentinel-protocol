@@ -174,11 +174,10 @@ Contrato obrigatório do bundle interno:
 - nunca reconstruir, adivinhar, simplificar ou procurar substituto para base agent, template ou contrato interno ausente
 
 Referências internas esperadas devem vir do manifest instalado, incluindo:
-- base agents canônicos em `reference/agents/`
 - template Codex em `reference/templates/codex/AGENTS.md`
 - template Codex de runtime config em `reference/templates/codex/config.toml`
-- contratos de agent em `reference/docs/agents/`
-- contratos de workflow em `reference/docs/workflow/`
+- contratos experimentais do orchestrator kernel em `reference/orchestrator_kernel/*.md`
+- esta skill dev source não exige `reference/agents/**` nem `reference/docs/**`; se uma rodada futura precisar dessas referências, elas devem ser adicionadas explicitamente ao manifest da própria skill dev, sem fallback para skill produtiva, `templates/**`, `~/.agents/**` ou filesystem externo
 
 ## Contrato de `target`
 `target` define o runtime operacional para o qual a skill vai materializar artifacts no repo alvo.
@@ -427,7 +426,7 @@ Regras operacionais:
   - `codex`: `<agent>.toml`
 - identidade operacional em `vscode`: `basename` do arquivo sem `.agent.md` == `frontmatter.name` == referência em `orchestrator.agents`
 - em `vscode`, `frontmatter.name` é ID lógico canônico operacional em kebab-case; nunca usar title-case, display label ou versão humanizada nesse campo
-- nos templates fonte `templates/agents/*.agent.md` e no bundle instalado `reference/agents/*.agent.md`, `frontmatter.name` também deve ser exatamente o basename sem `.agent.md`; labels humanos pertencem somente ao heading Markdown, descrição ou corpo
+- em qualquer base agent ou reference agent explicitamente listado no manifest da própria skill dev, `frontmatter.name` também deve ser exatamente o basename sem `.agent.md`; labels humanos pertencem somente ao heading Markdown, descrição ou corpo
 - não renomear o agent para outro papel só porque o projeto é diferente
 - manter a parte fixa do protocolo, os status canônicos, o ownership dos gates e o papel central de cada base agent
 - usar `agent-contract-shape` como referência de governança do shape especializado
@@ -562,7 +561,7 @@ Estratégia obrigatória de especialização:
 - o marcador `Consistency without legacy propagation` deve permanecer como heading canônico exato `## Consistency without legacy propagation`; nunca substituir por `Consistency without legacy propagation:`, título solto, bullet, resumo ou heading de outro nível
 - se a fonte instalada ou artifact gerenciado existente trouxer a variante legada `Consistency without legacy propagation:`, a geração deve reparar somente esse marcador para `## Consistency without legacy propagation` antes da validação final
 - o repair automático desse marcador é permitido antes do gate porque é normalização protocol-fixed por construção; o gate continua obrigatório e deve falhar se o artifact final ainda contiver a variante com `:` ou contiver zero/mais de uma ocorrência do heading canônico
-- a propagação protocol-fixed deve ser validada comparando template/base agent canônico, `reference/agents/*.agent.md` instalado e artifact final materializado do target; se a fonte contém um bloco protocol-fixed e o artifact final não contém as frases sentinela correspondentes, a rodada deve falhar
+- a propagação protocol-fixed deve ser validada comparando as fontes canônicas explicitamente listadas no manifest da própria skill dev e o artifact final materializado do target; se a fonte contém um bloco protocol-fixed e o artifact final não contém as frases sentinela correspondentes, a rodada deve falhar
 - se um invariant protocol-fixed obrigatório não couber no formato final, a skill deve bloquear a materialização antes de escrever ou reparar imediatamente o artifact e revalidar; nunca entregar agent fraco com hardening resumido
 - se uma regra local do projeto entrar em tensão com bloco protocol-fixed, a regra local perde; se a tensão impedir materialização honesta, bloquear em vez de relaxar o protocolo
 
@@ -1077,7 +1076,7 @@ Verificar:
 - quando `target=codex`, `orchestrator` contém hardening contra full-contract prompt replay, `codex exec`, shell/subprocess/script/local continuation, role absorption e falta de runtime nativo, reportando `ROUTING_RUNTIME_BLOCKED` quando há autorização explícita mas uma agent thread nativa necessária não é criada ou root/main não consegue spawnar o owner nomeado no `ROUTE_PACKET`, e declara que é o routing controller e route decision owner do fluxo Sentinel no Codex somente quando explicitamente invocado, sem absorver papéis especialistas nem spawnar downstream owners diretamente
 - quando `target=codex`, agents não-orchestrator não podem spawnar downstream Sentinel agents e devem retornar artifact/status/formal handoff signal ao root/main para roteamento mediado por `orchestrator`
 - quando `target=codex`, `developer_instructions` preserva a missão, role class, ownership, gates, sequencing, handoffs e regras operacionais do specialized que em `vscode` ficariam no corpo Markdown
-- para qualquer target, blocos protocol-fixed existentes no template/base agent e no `reference/agents/*.agent.md` usado pela skill aparecem no artifact final materializado com frases sentinela verificáveis
+- para qualquer target, blocos protocol-fixed existentes nas fontes canônicas explicitamente listadas no manifest da própria skill dev aparecem no artifact final materializado com frases sentinela verificáveis
 - em especial, `Consistency without legacy propagation`, `Do not copy fragile, duplicated, insecure, accidental, or legacy project patterns into new code just because they exist.` e `This policy does not authorize broad refactors` aparecem no corpo final de `.github/agents/*.agent.md` e em `developer_instructions` de `.codex/agents/*.toml`
 - quando `target=codex`, `tools`, `agents`, `target`, `base_agent_version`, `specialization_revision`, `managed_artifact` e `reading_scope_class` não são tratados como campos obrigatórios do TOML
 - quando `target=codex`, `sandbox_mode` é tratado como obrigatório pela política Sentinel e não como requisito nativo mínimo do Codex; qualquer outro campo opcional é compatível com o runtime e não é apresentado como requisito nativo do Codex
@@ -1377,7 +1376,7 @@ managed_artifact: true
 ```toml
 # Sentinel managed artifact: true
 # target: codex
-# source_template: stnl_project_agent_specializer/reference/templates/codex/config.toml
+# source_template: stnl_project_agent_specializer_dev/reference/templates/codex/config.toml
 
 [agents]
 max_threads = 6

@@ -172,7 +172,7 @@ A request to experimentally materialize the orchestrator kernel.
 - activation gates exist
 - experimental materialization contract exists
 - static-check contract exists
-- golden tests still have no executable harness
+- golden-test contracts still have no executable harness
 - no explicit authorization exists for writing an experimental artifact
 - no isolated materialization path is implemented
 
@@ -182,7 +182,7 @@ A request to experimentally materialize the orchestrator kernel.
 - `materialization.experimental` is identified as relevant, but blocked.
 - `checks.static` is recognized as an existing contract, but without real
   execution or harness.
-- `tests.golden_critical` is recognized as a contract in definition, but
+- `tests.golden_critical` is recognized as a documented contract, but
   without real execution or harness.
 - Output must be `BLOCKED` or `SAFE_STOP`.
 - The block must mention missing prerequisites.

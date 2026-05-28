@@ -3,7 +3,7 @@
 <!--
 managed_artifact: true
 target: codex
-source_template: stnl_project_agent_specializer/reference/templates/codex/AGENTS.md
+source_template: stnl_project_agent_specializer_dev/reference/templates/codex/AGENTS.md
 This file is generated in the target repository. Do not edit it directly when the
 Sentinel-managed agent system is being regenerated.
 -->
@@ -14,7 +14,7 @@ Sentinel-managed agent system is being regenerated.
 - do_not_use_for: Project facts, SPEC content, execution authorization, work packages, validation evidence, or agent role exactness.
 - canonical_source_for: Codex target routing contract, explicit subagent invocation rules, managed agent list, and local notes.
 - canonical_source_not_for: Individual agent duties, project documentation, Sentinel source contracts, implementation plans, or validation results.
-- update_owner: `stnl_project_agent_specializer` during target `codex` materialization.
+- update_owner: `stnl_project_agent_specializer_dev` during target `codex` materialization.
 - downstream_consumers: root/main Codex session, `orchestrator`, managed `.codex/agents/*.toml`, specialized agents.
 - token_policy: Read this header, Runtime Contract, Managed Agents, and Local Notes first; open the target agent TOML for role-specific accuracy.
 - related_files: `.codex/agents/*.toml`, `.codex/config.toml`, `docs/**`, Sentinel source templates/docs.
@@ -31,7 +31,7 @@ When a custom subagent is explicitly authorized, the handoff must use Codex nati
 The `orchestrator` custom subagent is the Sentinel routing controller when explicitly invoked. The orchestrator owns gate routing and specialist handoffs, while preserving role boundaries and never absorbing implementation, validation, review, package design, or finalization responsibilities.
 
 ## Explicit Subagent Invocation Contract
-Skill/workflow requests are not subagent authorization. `Use stnl_spec_manager`, `Use stnl_project_context`, or `Use stnl_project_agent_specializer` means run that skill/workflow from root/main unless the human also explicitly requests a custom subagent by exact agent name.
+Skill/workflow requests are not subagent authorization. `Use stnl_spec_manager`, `Use stnl_project_context`, or `Use stnl_project_agent_specializer_dev` means run that skill/workflow from root/main unless the human also explicitly requests a custom subagent by exact agent name.
 
 When the human explicitly requests `Use orchestrator`, root/main may spawn `orchestrator` and must use Codex Parent-Mediated Routing Contract: `orchestrator` returns a compact `ROUTE_PACKET`; root/main spawns the named owner as a sibling/root-level native custom subagent; root/main returns to `orchestrator` for the next routing decision.
 

@@ -7,6 +7,9 @@ This document defines the minimum contract for a future `orchestrator kernel` in
 Phase 2 defines the companion minimum safe bundle in `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`.
 Phase 3 defines the companion module index catalog in `reference/orchestrator_kernel/MODULE_INDEX.md`.
 Phase 4 defines the companion activation-gates contract in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
+Phase 5 defines the companion experimental-materialization contract in `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
+Phase 6 defines the companion static-checks contract in `reference/orchestrator_kernel/STATIC_CHECKS.md`.
+Phase 7 defines the companion critical golden-tests contract in `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
 
 ## What the orchestrator kernel is
 
