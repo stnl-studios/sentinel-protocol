@@ -11,8 +11,8 @@ which context each one requires, what output each one may produce, and which
 limits apply before any future activation or use.
 
 The module index does not activate modules by itself. Activation gates are not
-defined in this phase and must be specified later before optional behavior can
-change routing, execution, checks, tests, or materialization.
+defined in Phase 3. The Phase 4 activation-gates contract is specified in
+`reference/orchestrator_kernel/ACTIVATION_GATES.md`.
 
 A module absent from this index must be treated as unavailable. Absence means
 the kernel cannot assume the module exists, cannot reconstruct it from memory,

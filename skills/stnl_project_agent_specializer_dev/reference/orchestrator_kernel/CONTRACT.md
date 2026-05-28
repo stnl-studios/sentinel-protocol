@@ -6,6 +6,7 @@ This document defines the minimum contract for a future `orchestrator kernel` in
 
 Phase 2 defines the companion minimum safe bundle in `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`.
 Phase 3 defines the companion module index catalog in `reference/orchestrator_kernel/MODULE_INDEX.md`.
+Phase 4 defines the companion activation-gates contract in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
 
 ## What the orchestrator kernel is
 
