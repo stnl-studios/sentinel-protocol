@@ -140,7 +140,7 @@ This mapping is an experimental contract, not a runtime implementation.
 | `validation.boundary` | Gate 1 candidate | Lightweight boundary validation candidate, but not auto-activatable in runtime in this phase. |
 | `routing.execution_package` | Gate 2 conditional | Requires valid upstream context, explicit scope, and stronger owner/workflow authority. |
 | `materialization.experimental` | Gate 3 stop/block | Blocked until future materialization contract, gates, checks, tests, and authorization exist. |
-| `checks.static` | Gate 3 stop/block | Blocked until the future checks phase defines check contracts and execution rules. |
+| `checks.static` | Gate 3 stop/block | Phase 6 check contract exists, but real execution remains blocked until an implementation, harness, and authorized execution rules exist; checks do not grant authority or release materialization by themselves. |
 | `tests.golden_critical` | Gate 3 stop/block | Blocked until the future golden-tests phase defines fixtures, expected outputs, and harness. |
 
 `safe_to_auto_activate` in the module index means only that a module may be a
@@ -270,8 +270,9 @@ Minimum requirements:
 Permitted signals:
 
 - module is marked unavailable for the current phase
-- materialization, static checks, or golden tests are requested before their
-  future contracts exist
+- materialization, executable static checks, or golden tests are requested
+  before their required contracts, implementations, harnesses, authorization,
+  or execution rules exist
 - dependencies, checks, tests, harnesses, or expected outputs are absent
 - conflict cannot be resolved into narrower Gate 0 behavior
 
@@ -335,9 +336,11 @@ This activation-gates contract answers the Phase 4 questions as follows:
 - Why are gates not an authorization mechanism? Gates classify eligibility to
   consider optional modules; they do not grant human, root/main, owner, runtime,
   write, delete, execution, validation, closure, or materialization authority.
-- Why do materialization, checks, and golden tests remain blocked? Their modules
-  require future contracts, future checks or tests, future harnesses, explicit
-  authority, and later-phase adoption. Phase 4 defines eligibility rules only.
+- Why do materialization, checks, and golden tests remain blocked?
+  `checks.static` has a Phase 6 contract, but real check execution still
+  requires future implementation, harness, explicit execution rules, and
+  later-phase adoption. Materialization still also requires critical golden
+  tests and explicit authorization; static checks alone do not grant authority.
 
 ## Explicitly Out Of Scope For Phase 4
 

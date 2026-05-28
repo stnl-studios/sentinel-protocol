@@ -328,44 +328,50 @@ defined in this phase.
 ### `checks.static`
 
 - `module_id`: `checks.static`
-- `status`: `unavailable_until_future_checks_phase`
+- `status`: `phase_6_contract_documented_execution_unavailable_until_future_harness`
 - `purpose`: Represent future cheap static checks for the experimental
-  orchestrator kernel and its module contracts.
+  orchestrator kernel and its module contracts. The Phase 6 contract exists at
+  `reference/orchestrator_kernel/STATIC_CHECKS.md`, but there is still no
+  executable script, runtime loader integration, or harness.
 - `activation_signals`:
-  - none executable in Phase 3
-  - future check definitions exist
+  - none executable in Phase 6
+  - Phase 6 static-check contract exists
   - future activation gates allow static checking
   - candidate artifacts or contracts are present in authorized paths
 - `required_context`:
-  - future static-check contract
+  - Phase 6 static-check contract
+  - future executable implementation and harness before real execution
   - authorized paths to inspect
   - expected module-index and kernel-document shape
   - explicit check target
 - `outputs`:
-  - none in Phase 3
+  - none in Phase 6
   - future pass/fail findings with concrete file references
 - `dependencies`:
   - kernel contract
   - minimum safe bundle
   - module index
-  - future activation gates
-  - future check definitions
+  - activation gates
+  - Phase 6 static-check contract
+  - future executable implementation and harness before real execution
+  - future golden critical tests before materialization can be considered
 - `conflicts`:
   - broad filesystem scan outside authorized paths
   - checks that mutate files
   - checks that decide semantic acceptance alone
   - checks used as materialization authority
-- `safe_to_auto_activate`: No for Phase 3. Future cheap checks may be evaluated
-  only after gates and check contracts exist.
+- `safe_to_auto_activate`: No. Future cheap checks may be evaluated only after
+  an implementation, harness, and authorized execution rules exist.
 - `token_cost_hint`: `low`
 - `fallback_behavior`: Treat checks as unavailable; do not infer pass from the
   absence of checks.
 - `out_of_scope`:
-  - implementing checks in Phase 3
+  - implementing checks in Phase 6
   - running checks as gates
   - fixing files
   - creating a full validation suite
   - authorizing materialization
+  - replacing future golden critical tests
 
 ### `tests.golden_critical`
 
@@ -423,8 +429,10 @@ This module index answers the Phase 3 questions as follows:
 - What output may each module produce? Each entry defines `outputs`.
 - Which modules are unavailable until future phases? `materialization.experimental`,
   `checks.static`, and `tests.golden_critical` are unavailable until later phases
-  define the required contracts, gates, checks, tests, or harnesses. All other
-  cataloged modules still require future activation gates before activation.
+  define the required contracts, gates, checks, tests, implementation, or
+  harnesses. `checks.static` has a Phase 6 contract, but no executable script
+  and no authority to release materialization. All other cataloged modules still
+  require future activation gates before activation.
 - What happens when a module, dependency, or context is absent? The module must
   block, reduce to narrower safe behavior allowed by the kernel and safe bundle,
   request minimum context when authorized, or safe stop with a concrete blocker.
