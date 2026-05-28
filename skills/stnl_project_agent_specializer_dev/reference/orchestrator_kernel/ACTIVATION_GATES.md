@@ -1,6 +1,6 @@
 # Orchestrator Kernel Activation Gates
 
-Status: experimental contract for Phase 4.
+Status: experimental activation-gates contract.
 
 This document defines the activation gates for the future experimental
 `orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
@@ -79,7 +79,7 @@ themselves, replace an owner, grant authority, or substitute for a canonical
 base agent.
 
 Gate 1 means candidate eligibility only. It does not mean current runtime
-auto-activation in Phase 4.
+runtime auto-activation now.
 
 ### Gate 2 - Conditional
 
@@ -116,7 +116,7 @@ Future gate evaluation must follow this safe order:
 1. Apply Gate 0 always.
 2. Verify authority for the requested decision and possible next action.
 3. Verify scope, including repo boundary, allowed paths, forbidden paths,
-   target boundary, and requested phase boundary.
+   target boundary, and requested work boundary.
 4. Verify that the module exists in
    `reference/orchestrator_kernel/MODULE_INDEX.md`.
 5. Verify the module status in the module index.
@@ -133,15 +133,15 @@ status, context, dependency, or conflict must reduce behavior or block.
 
 This mapping is an experimental contract, not a runtime implementation.
 
-| Module | Initial gate | Phase 4 meaning |
+| Module | Initial gate | Meaning |
 | --- | --- | --- |
-| `routing.basic` | Gate 1 candidate | Small routing-support candidate, but not auto-activatable in runtime in this phase. |
-| `context.missing_info` | Gate 1 candidate | Missing-context classification candidate, but not auto-activatable in runtime in this phase. |
-| `validation.boundary` | Gate 1 candidate | Lightweight boundary validation candidate, but not auto-activatable in runtime in this phase. |
+| `routing.basic` | Gate 1 candidate | Small routing-support candidate, but not auto-activatable in runtime by this contract. |
+| `context.missing_info` | Gate 1 candidate | Missing-context classification candidate, but not auto-activatable in runtime by this contract. |
+| `validation.boundary` | Gate 1 candidate | Lightweight boundary validation candidate, but not auto-activatable in runtime by this contract. |
 | `routing.execution_package` | Gate 2 conditional | Requires valid upstream context, explicit scope, and stronger owner/workflow authority. |
-| `materialization.experimental` | Gate 3 stop/block | Phase 5 materialization contract exists, but real materialization remains blocked until executable checks, executable golden-test harnesses, explicit authorization, and an isolated execution path exist. |
-| `checks.static` | Gate 3 stop/block | Phase 6 check contract and Phase 9 read-only local harness exist, but runtime module activation and materialization remain blocked; checks do not grant authority or release materialization by themselves. |
-| `tests.golden_critical` | Gate 3 stop/block | Phase 7 contract exists for exactly two critical golden tests and the Phase 10 read-only local structural harness exists, but real execution remains blocked until fixtures, expected outputs, runtime harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
+| `materialization.experimental` | Gate 3 stop/block | The materialization contract exists, but real materialization remains blocked until executable checks, executable golden-test harnesses, explicit authorization, and an isolated execution path exist. |
+| `checks.static` | Gate 3 stop/block | static-check contract and local read-only static-check harness exist, but runtime module activation and materialization remain blocked; checks do not grant authority or release materialization by themselves. |
+| `tests.golden_critical` | Gate 3 stop/block | golden-test contract exists for exactly two critical golden tests and the local read-only golden-test harness exists, but real execution remains blocked until fixtures, expected outputs, runtime harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
 
 `safe_to_auto_activate` in the module index means only that a module may be a
 future candidate. It does not mean automatic activation is available now.
@@ -191,7 +191,7 @@ Minimum requirements:
 - authority boundary is explicit and sufficient for consideration
 - scope is explicit and compatible
 - dependencies are present
-- no conflict with Gate 0, canonical owners, or requested phase
+- no conflict with Gate 0, canonical owners, or requested boundary
 
 Permitted signals:
 
@@ -236,7 +236,7 @@ Permitted signals:
 
 - authorized planning output or equivalent upstream brief is available
 - next safe owner appears to require execution-package design
-- current phase permits conditional handoff preparation
+- current authorized boundary permits conditional handoff preparation
 - module dependencies and owner references are available
 
 Blockers:
@@ -269,7 +269,7 @@ Minimum requirements:
 
 Permitted signals:
 
-- module is marked unavailable for the current phase
+- module is marked unavailable for the current authorized boundary
 - materialization, executable static checks, or golden tests are requested
   before their required contracts, implementations, harnesses, authorization,
   or execution rules exist
@@ -317,9 +317,9 @@ Expected output:
 - Gates cannot treat missing golden tests as regression proof.
 - Gates cannot use optional behavior to alter the main Sentinel flow.
 
-## Phase 4 Acceptance Criteria
+## Acceptance Criteria
 
-This activation-gates contract answers the Phase 4 questions as follows:
+This activation-gates contract answers the gate questions as follows:
 
 - How to decide whether a module can be considered? Apply Gate 0, verify
   authority, scope, module-index presence, status, required context,
@@ -327,7 +327,7 @@ This activation-gates contract answers the Phase 4 questions as follows:
 - Which gates exist? Gate 0 always-on, Gate 1 auto-safe candidate, Gate 2
   conditional, and Gate 3 stop/block.
 - Which modules enter which initial gate? The initial mapping is defined in
-  this document and covers every module in the Phase 3 module index.
+  this document and covers every module in the module index.
 - What happens when there is ambiguity? The future evaluator must choose the
   most restrictive gate, reduce behavior, request minimum context when
   authorized, or safe stop.
@@ -338,20 +338,20 @@ This activation-gates contract answers the Phase 4 questions as follows:
   consider optional modules; they do not grant human, root/main, owner, runtime,
   write, delete, execution, validation, closure, or materialization authority.
 - Why do materialization, checks, and golden tests remain blocked?
-  `checks.static` has a Phase 6 contract and a Phase 9 read-only local harness
+  `checks.static` has a static-check contract and a local read-only static-check harness
   for CH-001 through CH-008, but runtime module activation, broader execution
-  rules, and materialization authority still require later-phase adoption.
-  `tests.golden_critical` has a Phase 7 contract for exactly two critical
-  tests and a Phase 10 read-only local structural harness, but real execution
+  rules, and materialization authority still require authorized adoption.
+  `tests.golden_critical` has a golden-test contract for exactly two critical
+  tests and a local read-only golden-test harness, but real execution
   still requires fixtures, expected outputs, a runtime harness, explicit
-  execution rules, and later-phase adoption. Materialization still also
+  execution rules, and authorized adoption. Materialization still also
   requires executable checks, executable golden tests, explicit authorization,
   and an isolated path; static checks or golden tests alone do not grant
   authority.
 
-## Explicitly Out Of Scope For Phase 4
+## Explicitly Out Of Scope
 
-This phase does not implement:
+This contract does not implement:
 
 - runtime loader
 - experimental materialization
@@ -364,5 +364,5 @@ This phase does not implement:
 - smoke changes
 - real gate execution
 
-Phase 4 only defines the formal activation-gates contract for the future
+This document only defines the formal activation-gates contract for the future
 experimental orchestrator kernel.

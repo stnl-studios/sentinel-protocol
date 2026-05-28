@@ -1,6 +1,6 @@
 # Orchestrator Kernel Module Index
 
-Status: experimental catalog for Phase 3.
+Status: experimental module catalog.
 
 This document defines the initial module index for the future experimental
 `orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
@@ -11,7 +11,7 @@ which context each one requires, what output each one may produce, and which
 limits apply before any future activation or use.
 
 The module index does not activate modules by itself. Activation gates are not
-defined in Phase 3. The Phase 4 activation-gates contract is specified in
+defined here. The activation-gates contract is specified in
 `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
 
 A module absent from this index must be treated as unavailable. Absence means
@@ -45,7 +45,7 @@ Each module entry must include the following fields:
 - `purpose`: The narrow reason the module exists.
 - `activation_signals`: Informational signals that may later help activation
   gates decide whether the module is relevant. These are not executable gates in
-  this phase.
+  this contract.
 - `required_context`: Minimum context that must be present before the module can
   be considered by future gates.
 - `outputs`: Outputs the module may produce if future gates allow it.
@@ -60,8 +60,7 @@ Each module entry must include the following fields:
   dependency is absent.
 - `out_of_scope`: Behaviors this module must not perform.
 
-Markdown is the source format for Phase 3. No JSON or YAML representation is
-defined in this phase.
+Markdown is the source format for this catalog. No JSON or YAML representation is defined here.
 
 ## Global Rules
 
@@ -77,8 +76,7 @@ defined in this phase.
   behavior.
 - The index does not grant authority.
 - The index does not authorize writing to final artifacts.
-- `activation_signals` are informational signals, not executable gates in Phase
-  3.
+- `activation_signals` are informational signals, not executable gates in this catalog.
 - The kernel must treat stale, incomplete, or ambiguous module-index information
   as insufficient for optional behavior.
 - Optional module output cannot make unauthorized execution, materialization,
@@ -95,14 +93,14 @@ defined in this phase.
   keeping the module small.
 - `activation_signals`:
   - request needs routing-level classification
-  - current phase, scope, and authority are explicit
+  - current scope, gate, and authority are explicit
   - no deeper owner-specific reasoning is needed
   - future activation gates mark basic routing support as eligible
 - `required_context`:
   - human request and objective
   - active repo boundary
   - allowed and forbidden paths when provided
-  - current phase or gate when relevant
+  - current gate or authorized boundary when relevant
   - authority boundary for route, stop, or request-context decisions
   - canonical owner set available from the base-agent references when an owner
     must be named
@@ -123,7 +121,7 @@ defined in this phase.
   - request requires execution, materialization, validation design, validation
     execution, review, closure, or resync work instead of routing
 - `safe_to_auto_activate`: Candidate for future auto-safe activation only after
-  gates exist. It is not auto-activatable in Phase 3.
+  gates exist. It is not auto-activatable in this catalog.
 - `token_cost_hint`: `low`
 - `fallback_behavior`: Use kernel minimum routing if sufficient; otherwise safe
   stop with the concrete missing context, authority, owner, or scope blocker.
@@ -168,7 +166,7 @@ defined in this phase.
   - speculative inference of unavailable artifacts, paths, modules, or owners
   - using hidden assumptions as context
 - `safe_to_auto_activate`: Candidate for future auto-safe activation only after
-  gates exist. It is not auto-activatable in Phase 3.
+  gates exist. It is not auto-activatable in this catalog.
 - `token_cost_hint`: `low`
 - `fallback_behavior`: Safe stop or ask for the minimum missing context when
   asking is authorized.
@@ -238,7 +236,7 @@ defined in this phase.
   - operation may cross authority or target boundaries
   - future activation gates allow boundary validation
 - `required_context`:
-  - requested phase
+  - requested boundary
   - allowed paths and forbidden paths
   - repo root and target boundary when relevant
   - authority level for the requested action
@@ -255,10 +253,10 @@ defined in this phase.
   - ambiguous repo root
   - absent path authority
   - request to edit forbidden paths
-  - request to continue beyond the requested phase
+  - request to continue beyond the requested boundary
   - attempt to convert this module into a full validation suite
 - `safe_to_auto_activate`: Candidate for future auto-safe activation only after
-  gates exist. It is not auto-activatable in Phase 3.
+  gates exist. It is not auto-activatable in this catalog.
 - `token_cost_hint`: `low`
 - `fallback_behavior`: Apply kernel and safe-bundle boundary rules directly; if
   the boundary cannot be proven safe, stop.
@@ -272,20 +270,20 @@ defined in this phase.
 ### `materialization.experimental`
 
 - `module_id`: `materialization.experimental`
-- `status`: `phase_5_contract_documented_blocked_until_future_harnesses_authorization_and_isolated_execution_path`
+- `status`: `materialization_contract_documented_blocked_until_harnesses_authorization_and_isolated_execution_path`
 - `purpose`: Represent future isolated experimental materialization for the
-  orchestrator kernel. The Phase 5 contract exists at
+  orchestrator kernel. The materialization contract exists at
   `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`, but the
-  module remains unavailable for real materialization until later phases provide
+  module remains unavailable for real materialization until later authorized contracts provide
   executable static-check and golden-test harnesses, explicit authorization, and
   an isolated execution/materialization path.
 - `activation_signals`:
-  - none executable in Phase 5
+  - none executable as real materialization
   - future explicit authorization for experimental materialization
-  - Phase 5 materialization contract exists
+  - materialization contract exists
   - future executable checks and golden-test harnesses pass
 - `required_context`:
-  - Phase 5 materialization contract
+  - materialization contract
   - future activation-gate decision
   - canonical base orchestrator available
   - explicit authority to write experimental artifacts
@@ -294,16 +292,16 @@ defined in this phase.
   - documented checks and tests plus future executable harnesses proving the
     experimental path is safe
 - `outputs`:
-  - none in Phase 5
-  - future isolated materialization plan or result only after later phases define
+  - none as final artifacts
+  - future isolated materialization plan or result only after later authorized contracts define
     and authorize it
 - `dependencies`:
   - kernel contract
   - minimum safe bundle
-  - Phase 5 materialization contract
+  - materialization contract
   - future activation gates
-  - Phase 6 static-check contract and future executable harness
-  - Phase 7 golden-test contract and future executable harness
+  - static-check contract and future executable harness
+  - golden-test contract and future executable harness
   - explicit human or workflow authorization
   - future isolated execution/materialization path
 - `conflicts`:
@@ -319,7 +317,7 @@ defined in this phase.
 - `fallback_behavior`: Treat as unavailable and safe stop if materialization is
   required.
 - `out_of_scope`:
-  - implementation in Phase 5
+  - real materialization implementation
   - overwriting the main flow
   - writing production templates
   - writing final target artifacts
@@ -330,21 +328,20 @@ defined in this phase.
 ### `checks.static`
 
 - `module_id`: `checks.static`
-- `status`: `phase_9_read_only_harness_available_no_materialization_authority`
+- `status`: `local_read_only_static_check_harness_available_no_materialization_authority`
 - `purpose`: Represent cheap static checks for the experimental orchestrator
-  kernel and its module contracts. The Phase 6 contract exists at
-  `reference/orchestrator_kernel/STATIC_CHECKS.md`, and the Phase 9 read-only
-  local harness exists at `reference/orchestrator_kernel/check-static.mjs`, but
+  kernel and its module contracts. The static-check contract exists at
+  `reference/orchestrator_kernel/STATIC_CHECKS.md`, and the local read-only static-check harness exists at `reference/orchestrator_kernel/check-static.mjs`, but
   there is still no runtime loader integration, runtime golden-test execution,
   real materialization path, or authority to release materialization.
 - `activation_signals`:
-  - Phase 9 read-only local harness exists for CH-001 through CH-008
-  - Phase 6 static-check contract exists
+  - local read-only static-check harness exists for CH-001 through CH-008
+  - static-check contract exists
   - future activation gates allow static checking
   - candidate artifacts or contracts are present in authorized paths
 - `required_context`:
-  - Phase 6 static-check contract
-  - Phase 9 read-only local harness before local static-check execution
+  - static-check contract
+  - local read-only static-check harness before local static-check execution
   - authorized paths to inspect
   - expected module-index and kernel-document shape
   - explicit check target
@@ -356,9 +353,9 @@ defined in this phase.
   - minimum safe bundle
   - module index
   - activation gates
-  - Phase 6 static-check contract
-  - Phase 9 read-only local harness for CH-001 through CH-008
-  - Phase 7 golden-test contract and Phase 10 read-only local golden harness
+  - static-check contract
+  - local read-only static-check harness for CH-001 through CH-008
+  - golden-test contract and local read-only golden-test harness
     before local structural golden checks
   - future runtime/fixture golden-test harness before materialization can be
     considered
@@ -384,38 +381,36 @@ defined in this phase.
 ### `tests.golden_critical`
 
 - `module_id`: `tests.golden_critical`
-- `status`: `phase_10_read_only_harness_available_no_materialization_authority`
+- `status`: `local_read_only_harness_available_no_materialization_authority`
 - `purpose`: Represent the exactly two critical golden tests for the
-  experimental orchestrator kernel path. The Phase 7 contract exists at
-  `reference/orchestrator_kernel/GOLDEN_TESTS.md`, and the Phase 10 read-only
-  local structural harness exists at
+  experimental orchestrator kernel path. The golden-test contract exists at
+  `reference/orchestrator_kernel/GOLDEN_TESTS.md`, and the local read-only golden-test harness exists at
   `reference/orchestrator_kernel/check-golden.mjs`, but there are still no real
   fixtures, no runtime execution, and no materialization authority.
 - `activation_signals`:
-  - none executable as runtime behavior in Phase 10
-  - Phase 7 golden-test contract exists
-  - Phase 10 read-only local structural harness exists
+  - none executable as runtime behavior
+  - golden-test contract exists
+  - local read-only golden-test harness exists
   - future test fixtures, expected outputs, and runtime harness exist
   - future activation gates allow golden-test evaluation
   - kernel behavior change requires critical regression proof
 - `required_context`:
-  - Phase 7 golden-test contract
+  - golden-test contract
   - exactly two defined critical scenarios, not a full suite
-  - Phase 10 read-only local structural harness for `GT-001` and `GT-002`
+  - local read-only golden-test harness for `GT-001` and `GT-002`
   - future expected outputs
   - authorized test location
   - future runnable test harness
 - `outputs`:
   - local structural pass/fail result for `GT-001` and `GT-002`
-  - future runtime critical golden-test pass/fail result only after later
-    phases define and authorize it
+  - future runtime critical golden-test pass/fail result only after an authorized runtime harness defines and authorizes it
 - `dependencies`:
   - kernel contract
   - minimum safe bundle
   - module index
   - activation gates
-  - Phase 7 golden-test contract
-  - Phase 10 read-only local structural harness
+  - golden-test contract
+  - local read-only golden-test harness
   - static checks before materialization can be considered
   - future runnable test harness
   - explicit authorization and isolated materialization path before any
@@ -433,16 +428,16 @@ defined in this phase.
   materialization readiness without a future harness and explicit
   authorization.
 - `out_of_scope`:
-  - implementing runtime tests in Phase 10
+  - implementing runtime tests
   - defining a full test suite
   - implementing a runtime/fixture harness
   - authorizing runtime behavior
   - authorizing materialization by themselves
   - replacing semantic review or validation-runner responsibilities
 
-## Phase 3 Acceptance Criteria
+## Acceptance Criteria
 
-This module index answers the Phase 3 questions as follows:
+This module index answers the catalog questions as follows:
 
 - Which initial modules exist? The initial catalog contains `routing.basic`,
   `context.missing_info`, `routing.execution_package`,
@@ -451,14 +446,12 @@ This module index answers the Phase 3 questions as follows:
 - What is each module for? Each entry defines a narrow `purpose`.
 - What context does each module require? Each entry defines `required_context`.
 - What output may each module produce? Each entry defines `outputs`.
-- Which modules are unavailable until future phases? `materialization.experimental`
-  and `tests.golden_critical` are unavailable until later phases provide the
+- Which modules are unavailable until authorized implementation? `materialization.experimental`
+  and `tests.golden_critical` are unavailable until authorized implementation provides the
   required implementation, executable harnesses, authorization, or isolated
-  execution path. `checks.static` has a Phase 6 contract and a Phase 9 read-only
-  local harness, but no runtime loader integration and no authority to release
+  execution path. `checks.static` has a static-check contract and a local read-only static-check harness, but no runtime loader integration and no authority to release
   materialization.
-  `tests.golden_critical` has a Phase 7 contract for exactly two critical
-  tests and a Phase 10 read-only local structural harness, but no
+  `tests.golden_critical` has a golden-test contract for exactly two critical tests and a local read-only golden-test harness, but no
   runtime/fixture executable harness. All other cataloged modules still require
   future runtime activation support before activation.
 - What happens when a module, dependency, or context is absent? The module must
@@ -469,9 +462,9 @@ This module index answers the Phase 3 questions as follows:
   authorize writes, and cannot override the kernel contract, minimum safe bundle,
   human request, canonical owners, or target/runtime boundaries.
 
-## Explicitly Out Of Scope For Phase 3
+## Explicitly Out Of Scope
 
-This phase does not implement:
+This catalog does not implement:
 
 - activation gates
 - runtime loader
@@ -484,5 +477,5 @@ This phase does not implement:
 - production template changes
 - smoke changes
 
-Phase 3 only defines the formal module index catalog for the future experimental
+This document only defines the formal module index catalog for the future experimental
 orchestrator kernel.

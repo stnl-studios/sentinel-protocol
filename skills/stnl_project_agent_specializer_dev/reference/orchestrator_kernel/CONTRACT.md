@@ -1,15 +1,15 @@
 # Orchestrator Kernel Contract
 
-Status: experimental contract for Phase 1.
+Status: experimental kernel contract.
 
 This document defines the minimum contract for a future `orchestrator kernel` inside `stnl_project_agent_specializer_dev`. It is a design contract only. It does not implement kernel logic, module loading, activation gates, materialization, checks, or tests.
 
-Phase 2 defines the companion minimum safe bundle in `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`.
-Phase 3 defines the companion module index catalog in `reference/orchestrator_kernel/MODULE_INDEX.md`.
-Phase 4 defines the companion activation-gates contract in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
-Phase 5 defines the companion experimental-materialization contract in `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
-Phase 6 defines the companion static-checks contract in `reference/orchestrator_kernel/STATIC_CHECKS.md`.
-Phase 7 defines the companion critical golden-tests contract in `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
+The companion minimum safe bundle is defined in `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`.
+The companion module index catalog is defined in `reference/orchestrator_kernel/MODULE_INDEX.md`.
+The companion activation-gates contract is defined in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
+The companion experimental-materialization contract is defined in `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
+The companion static-checks contract is defined in `reference/orchestrator_kernel/STATIC_CHECKS.md`.
+The companion critical golden-tests contract is defined in `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
 
 ## What the orchestrator kernel is
 
@@ -21,7 +21,7 @@ The kernel is not a blind reduced copy of the current base `orchestrator`. It mu
 
 The kernel does not replace the base agents. The canonical base agents remain the source of truth for their roles, gates, ownership, handoffs, and protocol-fixed protections.
 
-The kernel does not retire the main flow. The existing Sentinel workflow remains canonical unless a future phase explicitly defines, validates, and adopts a compatible experimental path.
+The kernel does not retire the main flow. The existing Sentinel workflow remains canonical unless an authorized experimental contract explicitly defines, validates, and adopts a compatible experimental path.
 
 The kernel is experimental. It may inform future materialization and routing design, but by itself it does not authorize any change to the production skill, templates, agents, targets, or workflow.
 
@@ -70,7 +70,7 @@ The kernel should remain a routing and safety nucleus. Knowledge that is large, 
 
 ## Layer boundary
 
-Future phases may split the orchestration system into the following layers.
+Future evolution may split the orchestration system into the following layers.
 
 ### Kernel
 
@@ -104,9 +104,9 @@ Optional modules must be additive. They cannot own the right to make unsafe exec
 
 ### Experimental materialization
 
-Experimental materialization is a future layer that may write or update artifacts after a later phase defines the contract, gates, checks, and tests.
+Experimental materialization is a future layer that may write or update artifacts only after an authorized contract defines the required gates, checks, and tests.
 
-The Phase 1 kernel contract does not authorize experimental materialization. Until future phases implement it, the kernel must treat materialization as unavailable.
+This kernel contract does not authorize experimental materialization. Until that path is implemented and authorized, the kernel must treat materialization as unavailable.
 
 ## Kernel invariants
 
@@ -123,7 +123,7 @@ The Phase 1 kernel contract does not authorize experimental materialization. Unt
 - The kernel must preserve role ownership and must not absorb specialist roles.
 - The kernel must prefer asking for context or blocking over overclaiming certainty.
 
-## Acceptance criteria for Phase 1
+## Acceptance Criteria
 
 ### Minimum knowledge required to remain safe
 
@@ -199,9 +199,9 @@ When required context is missing, the kernel must:
 
 The default is closed failure, not optimistic continuation.
 
-## Explicitly out of scope for Phase 1
+## Explicitly Out Of Scope
 
-This phase does not implement:
+This contract does not implement:
 
 - minimum safe bundle
 - module index
@@ -217,4 +217,4 @@ This phase does not implement:
 - runtime behavior
 - artifact generation logic
 
-Phase 1 only defines the contract for the future `orchestrator kernel`.
+This document only defines the contract for the future `orchestrator kernel`.

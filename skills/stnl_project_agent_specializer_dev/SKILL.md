@@ -7,7 +7,7 @@ description: Descobre, materializa, revisa, atualiza e remove o conjunto minimo 
 
 > Experimental: esta skill dev é uma cópia isolada para evolução controlada e não substitui `stnl_project_agent_specializer`.
 
-Foco inicial previsto, sem implementação nesta fase:
+Foco experimental documentado, sem ativação runtime ou materialização real:
 - orchestrator kernel
 - activation gates
 - module index

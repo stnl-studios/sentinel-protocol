@@ -1,6 +1,6 @@
 # Orchestrator Kernel Experimental Materialization
 
-Status: experimental contract for Phase 5.
+Status: experimental materialization contract.
 
 This document defines the contract for future isolated experimental
 materialization of the `orchestrator` through the experimental orchestrator
@@ -28,8 +28,7 @@ It does not retire base agents. Canonical base agents remain the source of truth
 for roles, ownership, gates, handoffs, status language, and protocol-fixed
 protections.
 
-It does not write final artifacts in Phase 5. This phase only defines the
-contract that a later implementation would have to satisfy.
+It does not write final artifacts. This contract only defines the requirements that a later authorized implementation would have to satisfy.
 
 It still depends on the documented static-check and critical golden-test
 contracts plus future executable harnesses. Without those future harnesses, the
@@ -65,7 +64,7 @@ fallback to a similar artifact.
 
 ## Future Minimum Inputs
 
-Real experimental materialization may be considered only in a future phase after
+Real experimental materialization may be considered only after
 all of the following inputs exist and are explicitly available:
 
 - kernel contract
@@ -86,7 +85,7 @@ Missing, ambiguous, stale, or unauthorized input blocks materialization.
 
 ## Future Permitted Outputs
 
-Only a future phase may permit outputs, and only after the required inputs,
+Only a later authorized implementation may permit outputs, and only after the required inputs,
 gates, checks, tests, authorization, and isolated execution path exist.
 
 Potential future outputs are limited to:
@@ -104,7 +103,7 @@ Potential future outputs are limited to:
   - experimental status
   - blocked/unavailable reasons
 
-None of these outputs may be created as final artifacts in Phase 5.
+None of these outputs may be created as final artifacts by this contract.
 
 ## Prohibited Outputs
 
@@ -160,7 +159,7 @@ materialization decision.
 dependencies, conflicts, outputs, and fallback behavior.
 
 `reference/orchestrator_kernel/ACTIVATION_GATES.md` classifies
-`materialization.experimental` as Gate 3 stop/block until later phases provide
+`materialization.experimental` as Gate 3 stop/block until later authorized contracts provide
 the documented checks/tests, future executable harnesses, authorization, and
 execution path.
 
@@ -187,18 +186,18 @@ harnesses exist: they can verify that the experiment did not write forbidden
 outputs, did not mutate canonical sources, and did not expand beyond the
 authorized `orchestrator` scope.
 
-## Phase 5 Acceptance Criteria
+## Acceptance Criteria
 
-This contract answers the Phase 5 questions as follows:
+This contract answers the materialization-boundary questions as follows:
 
 - What is experimental materialization? A future isolated path for producing an
   explicitly experimental `orchestrator` artifact from the orchestrator kernel
-  contracts after later phases provide the missing executable harnesses,
+  contracts after later authorized contracts provide the missing executable harnesses,
   authorization, and execution path.
 - Why is it isolated? To prevent changes to production templates, final target
   artifacts, installer behavior, smoke behavior, base agents, and the main
   Sentinel flow.
-- Why does it not write final artifacts yet? Phase 5 is only a documentation
+- Why does it not write final artifacts yet? This is only a documentation
   contract, and the required static checks, critical golden tests,
   authorization, and isolated execution path do not exist yet.
 - Which inputs are mandatory in the future? The kernel contract, minimum safe
@@ -221,12 +220,11 @@ This contract answers the Phase 5 questions as follows:
   boundaries are enforced.
 - Why is it limited to `orchestrator`? The orchestrator kernel experiment is
   scoped to the routing controller only; kernelizing or materializing the other
-  agents would expand ownership, role contracts, fixtures, and risk beyond this
-  phase.
+  agents would expand ownership, role contracts, fixtures, and risk beyond this contract.
 
-## Explicitly Out Of Scope For Phase 5
+## Explicitly Out Of Scope
 
-This phase does not implement:
+This contract does not implement:
 
 - runtime loader
 - final artifact writes
@@ -240,5 +238,5 @@ This phase does not implement:
 - smoke changes
 - installer changes
 
-Phase 5 only defines the formal contract for future isolated experimental
+This document only defines the formal contract for future isolated experimental
 materialization of `orchestrator`.

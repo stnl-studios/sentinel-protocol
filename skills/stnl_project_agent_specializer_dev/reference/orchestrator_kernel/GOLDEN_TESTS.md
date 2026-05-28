@@ -1,12 +1,11 @@
 # Orchestrator Kernel Critical Golden Tests
 
-Status: experimental contract for Phase 7 with a Phase 10 read-only local
-structural harness.
+Status: experimental golden-test contract with a local read-only golden-test harness.
 
 This document defines the two critical golden tests for the future experimental
 `orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
 
-This document is a documentation contract. The Phase 10 local harness
+This document is a documentation contract. The local read-only golden-test harness
 `reference/orchestrator_kernel/check-golden.mjs` validates only `GT-001` and
 `GT-002` at contractual/structural level. It is read-only and uses
 `check-static.mjs` as a fail-closed precondition.
@@ -39,7 +38,7 @@ materialization, forbidden output writes, and treating missing prerequisites as
 success.
 
 They are a precondition for experimental materialization, but not sufficient by
-themselves. The Phase 10 structural harness prevents contract regression only;
+themselves. The local read-only golden-test harness prevents contract regression only;
 it does not prove runtime behavior, fixtures, real agent execution, or
 materialization safety.
 
@@ -68,8 +67,7 @@ outputs used by the experimental-materialization scenario.
 checks. Static checks and golden tests are both future preconditions, but
 neither one authorizes materialization by itself.
 
-`reference/orchestrator_kernel/check-golden.mjs` is the Phase 10 read-only local
-harness for these two critical contracts. It implements exactly `GT-001` and
+`reference/orchestrator_kernel/check-golden.mjs` is the local read-only golden-test harness for these two critical contracts. It implements exactly `GT-001` and
 `GT-002`, performs structural checks only, and does not authorize or perform
 materialization.
 
@@ -183,7 +181,7 @@ A request to experimentally materialize the orchestrator kernel.
 - activation gates exist
 - experimental materialization contract exists
 - static-check contract exists
-- the Phase 10 golden-test structural harness exists locally but does not
+- the local read-only golden-test harness exists locally but does not
   authorize materialization
 - no runtime/fixture golden-test harness exists
 - no explicit authorization exists for writing an experimental artifact
@@ -266,7 +264,7 @@ until every required precondition exists.
 
 ## Golden Tests Explicitly Out Of Scope
 
-Phase 7 does not define:
+The golden-test contract does not define:
 
 - executable harness
 - real fixtures
@@ -296,14 +294,14 @@ If the golden tests are absent, incomplete, unavailable, or failing,
 If static checks pass but these golden tests are absent or failing,
 `materialization.experimental` must remain blocked.
 
-If these golden tests pass in the Phase 10 structural harness but static
+If these golden tests pass in the local read-only golden-test harness but static
 checks, authorization, isolated paths, runtime/materialization paths, or final
 artifact authority are missing, `materialization.experimental` must remain
 blocked.
 
-## Phase 7 Acceptance Criteria
+## Acceptance Criteria
 
-This contract answers the Phase 7 questions as follows:
+This contract answers the golden-test questions as follows:
 
 - Which critical golden tests exist? Exactly two tests are defined: `GT-001`
   and `GT-002`.
@@ -330,11 +328,11 @@ This contract answers the Phase 7 questions as follows:
 - What remains missing before real materialization? Runtime/fixture
   golden-test harness, real fixtures, explicit write authorization, isolated
   materialization path, runtime/materialization path, final artifact authority,
-  and a later phase that authorizes real experimental materialization.
+  and an explicit authorization that enables real experimental materialization.
 
-## Explicitly Out Of Scope For Phase 7
+## Explicitly Out Of Scope
 
-This phase does not implement:
+This contract does not implement:
 
 - executable harness
 - real fixtures
@@ -348,5 +346,5 @@ This phase does not implement:
 - smoke changes
 - installer changes
 
-Phase 7 only defines the formal contract for the two critical golden tests of
+This document only defines the formal contract for the two critical golden tests of
 the future experimental orchestrator kernel.

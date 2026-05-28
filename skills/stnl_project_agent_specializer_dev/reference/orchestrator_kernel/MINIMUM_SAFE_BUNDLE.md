@@ -1,16 +1,16 @@
 # Orchestrator Kernel Minimum Safe Bundle
 
-Status: experimental contract for Phase 2.
+Status: experimental minimum safe-bundle contract.
 
 This document defines the minimum safe bundle that must always accompany the future experimental `orchestrator kernel` in `stnl_project_agent_specializer_dev`.
 
 It complements `reference/orchestrator_kernel/CONTRACT.md` without duplicating the full kernel contract. The kernel contract defines the kernel boundary. This document defines the non-optional protection bundle that keeps that boundary safe when no optional orchestration module is active.
 
-The Phase 3 module index catalog is defined in `reference/orchestrator_kernel/MODULE_INDEX.md`.
-The Phase 4 activation-gates contract is defined in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
-The Phase 5 experimental-materialization contract is defined in `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
-The Phase 6 static-checks contract is defined in `reference/orchestrator_kernel/STATIC_CHECKS.md`.
-The Phase 7 critical golden-tests contract is defined in `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
+The module index catalog is defined in `reference/orchestrator_kernel/MODULE_INDEX.md`.
+The activation-gates contract is defined in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
+The experimental-materialization contract is defined in `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
+The static-checks contract is defined in `reference/orchestrator_kernel/STATIC_CHECKS.md`.
+The critical golden-tests contract is defined in `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
 
 ## Purpose
 
@@ -33,7 +33,7 @@ Optional modules may add precision, richer routing, target-specific knowledge, a
 
 ### Scope
 
-- The kernel must enforce explicit allowed paths, forbidden paths, repo boundaries, target runtime boundaries, and requested phase boundaries.
+- The kernel must enforce explicit allowed paths, forbidden paths, repo boundaries, target runtime boundaries, and requested work boundaries.
 - Scope restrictions from the human request are hard constraints.
 - The kernel must not expand scope because an optional module has broader knowledge or because a shortcut appears cheaper.
 - If scope cannot be determined concretely, the kernel must stop or request the minimum missing context.
@@ -55,7 +55,7 @@ Optional modules may add precision, richer routing, target-specific knowledge, a
 ### No Invented Templates, Paths, Or Artifacts
 
 - The kernel must never invent templates, base agents, paths, docs, configs, target artifacts, module names, module contents, generated files, handoff files, or workflow contracts.
-- The kernel may use only references that are present, authorized, and discoverable through the allowed contract for the current phase.
+- The kernel may use only references that are present, authorized, and discoverable through the allowed contract for the current authorized boundary.
 - Absence of a reference means absence, not permission to reconstruct it from memory or similarity.
 - Optional modules cannot make guessed artifacts acceptable.
 
@@ -69,7 +69,7 @@ Optional modules may add precision, richer routing, target-specific knowledge, a
 ### No Override Of The Main Flow
 
 - The experimental kernel cannot replace, bypass, or silently alter the main Sentinel workflow.
-- The current base agents and main flow remain canonical unless a future phase explicitly defines, validates, and adopts a compatible experimental path.
+- The current base agents and main flow remain canonical unless an authorized experimental contract explicitly defines, validates, and adopts a compatible experimental path.
 - The kernel must not use optional modules as a backdoor to change gate ownership, role ownership, handoff semantics, or closure rules.
 
 ### Base Agents Remain Canonical
@@ -83,7 +83,7 @@ Optional modules may add precision, richer routing, target-specific knowledge, a
 
 - The kernel may decide only the next safe routing-level action: plan, route, validate, stop, or request minimum context.
 - The routing decision must identify the canonical owner class or state why no safe owner can be selected.
-- Minimum routing must include objective, current gate or phase, relevant scope limits, authority constraints, and blocker when present.
+- Minimum routing must include objective, current gate or authorized boundary, relevant scope limits, authority constraints, and blocker when present.
 - The kernel must not perform the owner's work in order to avoid a handoff.
 
 ### Minimum Safe Handoff
@@ -117,7 +117,7 @@ The minimum safe bundle contains only compact protections that must be present e
 - authority rules distinguishing human, root/main, orchestrator, owner, skill, and generated artifact authority
 - anti-guessing rules against invented templates, paths, artifacts, modules, docs, configs, contracts, or base agents
 - isolation rules for experimental materialization and dev-only kernel work
-- minimum decision and routing format: status, gate or phase, next safe action, owner when safe, reason, payload boundary, blocker
+- minimum decision and routing format: status, gate or authorized boundary, next safe action, owner when safe, reason, payload boundary, blocker
 - minimum conditions to proceed or block
 - behavior when module index or activation gates are missing, incomplete, stale, or incompatible
 - preservation of canonical base agents as the source of role and workflow truth
@@ -153,9 +153,9 @@ This document defines the mandatory compact protection set that the kernel relie
 
 The contract answers "what is the kernel?". The minimum safe bundle answers "what can never become optional around the kernel?".
 
-If the two documents appear to conflict, the stricter safety interpretation wins until a future phase explicitly updates both documents.
+If the two documents appear to conflict, the stricter safety interpretation wins until an authorized contract explicitly updates both documents.
 
-## Phase 2 Acceptance Criteria
+## Acceptance Criteria
 
 The minimum safe bundle answers the required safety questions as follows:
 
@@ -166,9 +166,9 @@ The minimum safe bundle answers the required safety questions as follows:
 - What forces safe stop? The stop/block criteria require closed failure whenever safe routing, context, authority, owner, gate, module availability, target, path, or artifact identity is insufficient.
 - Which protections cannot move to optional modules? Authority, scope, safe stop, missing-context handling, anti-guessing, no unauthorized execution, no main-flow override, base-agent canonicality, minimum routing, minimum handoff, experimental isolation, and missing-module/gate behavior.
 
-## Explicitly Out Of Scope For Phase 2
+## Explicitly Out Of Scope
 
-This phase does not implement:
+This contract does not implement:
 
 - module index
 - activation gates
@@ -183,4 +183,4 @@ This phase does not implement:
 - template changes
 - target artifact generation
 
-Phase 2 only defines the formal minimum safe bundle for the future experimental orchestrator kernel.
+This document only defines the formal minimum safe bundle for the future experimental orchestrator kernel.

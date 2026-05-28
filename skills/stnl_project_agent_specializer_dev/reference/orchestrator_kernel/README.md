@@ -6,13 +6,13 @@ Nothing in this directory implements runtime loading, module execution, runtime-
 
 Read in this order:
 
-1. `CONTRACT.md` - Phase 1 kernel boundary and non-delegable routing safety.
-2. `MINIMUM_SAFE_BUNDLE.md` - Phase 2 mandatory protections that cannot become optional.
-3. `MODULE_INDEX.md` - Phase 3 catalog of known future modules and their limits.
-4. `ACTIVATION_GATES.md` - Phase 4 eligibility gates and blocked-module mapping.
-5. `EXPERIMENTAL_MATERIALIZATION.md` - Phase 5 isolated materialization boundary for `orchestrator` only.
-6. `STATIC_CHECKS.md` - Phase 6 cheap structural check contract, without execution.
-7. `GOLDEN_TESTS.md` - Phase 7 exactly two critical golden-test contracts, with a Phase 10 read-only structural harness.
+1. `CONTRACT.md` - kernel boundary and non-delegable routing safety.
+2. `MINIMUM_SAFE_BUNDLE.md` - mandatory protections that cannot become optional.
+3. `MODULE_INDEX.md` - catalog of known future modules and their limits.
+4. `ACTIVATION_GATES.md` - eligibility gates and blocked-module mapping.
+5. `EXPERIMENTAL_MATERIALIZATION.md` - isolated materialization boundary for `orchestrator` only.
+6. `STATIC_CHECKS.md` - static-check contract, without execution.
+7. `GOLDEN_TESTS.md` - exactly two critical golden-test contracts, with a local read-only golden-test harness.
 
 Read-only local static harness: `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/check-static.mjs`.
 Read-only local golden harness: `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/check-golden.mjs`.
