@@ -7,7 +7,8 @@ description: Descobre, materializa, revisa, atualiza e remove o conjunto minimo 
 
 > Experimental: esta skill dev é uma cópia isolada para evolução controlada e não substitui `stnl_project_agent_specializer`.
 
-Foco experimental documentado, sem ativação runtime ou materialização real:
+Foco experimental do `orchestrator kernel`, documentado sem ativação runtime ou
+materialização real nesse kernel experimental:
 - orchestrator kernel
 - activation gates
 - module index
@@ -15,6 +16,11 @@ Foco experimental documentado, sem ativação runtime ou materialização real:
 - materialização experimental
 - checks estáticos
 - 2 golden tests críticos
+
+Esse bloqueio vale para o escopo do `orchestrator kernel` experimental. Ele não
+altera a missão geral desta skill como especializadora/materializadora de agents
+locais para um repo alvo selecionado quando o bundle de referências exigido
+estiver completo e autorizado.
 
 Contrato experimental do orchestrator kernel: `reference/orchestrator_kernel/CONTRACT.md`.
 Minimum safe bundle do orchestrator kernel: `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`.
@@ -178,7 +184,11 @@ Referências internas esperadas devem vir do manifest instalado, incluindo:
 - template Codex em `reference/templates/codex/AGENTS.md`
 - template Codex de runtime config em `reference/templates/codex/config.toml`
 - contratos experimentais do orchestrator kernel em `reference/orchestrator_kernel/*.md`
-- esta skill dev source não exige `reference/agents/**` nem `reference/docs/**`; se uma rodada futura precisar dessas referências, elas devem ser adicionadas explicitamente ao manifest da própria skill dev, sem fallback para skill produtiva, `templates/**`, `~/.agents/**` ou filesystem externo
+- esta skill dev source atual não inclui nem exige `reference/agents/**` ou `reference/docs/**`
+- qualquer tentativa de full materialization pela dev que dependa dessas referências canônicas deve bloquear antes de gerar ou escrever artifacts
+- essas referências só podem ser usadas se forem adicionadas explicitamente ao manifest da própria skill dev
+- não usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou filesystem externo
+- este bloqueio é específico do bundle dev atual e não altera o comportamento da skill produtiva `stnl_project_agent_specializer`
 
 ## Contrato de `target`
 `target` define o runtime operacional para o qual a skill vai materializar artifacts no repo alvo.

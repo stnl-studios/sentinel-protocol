@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 const scriptPath = fileURLToPath(import.meta.url);
 const kernelRoot = path.dirname(scriptPath);
 const devSkillRoot = path.resolve(kernelRoot, "..", "..");
+const realDevSkillRoot = fs.realpathSync.native(devSkillRoot);
 const staticHarnessPath = path.join(kernelRoot, "check-static.mjs");
 
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
@@ -40,10 +41,18 @@ function toDevPath(relativePath) {
   return { ignored: false, path: absolutePath };
 }
 
+function realPathInsideDev(absolutePath) {
+  const realPath = fs.realpathSync.native(absolutePath);
+  if (!isInside(realPath, realDevSkillRoot)) {
+    throw new Error(`path escapes dev skill after realpath: ${absolutePath}`);
+  }
+  return realPath;
+}
+
 function readText(relativePath) {
   const resolved = toDevPath(relativePath);
   if (resolved.ignored) return "";
-  return fs.readFileSync(resolved.path, "utf8");
+  return fs.readFileSync(realPathInsideDev(resolved.path), "utf8");
 }
 
 function sectionFromH2(markdown, headingPattern) {
@@ -73,15 +82,21 @@ function fail(id, blocker, detail) {
 }
 
 function runStaticPrecondition() {
-  if (!isInside(staticHarnessPath, devSkillRoot)) {
+  let realStaticHarnessPath;
+  try {
+    if (!isInside(staticHarnessPath, devSkillRoot)) {
+      throw new Error("check-static.mjs escapes dev skill");
+    }
+    realStaticHarnessPath = realPathInsideDev(staticHarnessPath);
+  } catch (error) {
     return fail(
       "STATIC",
       "BLOCKED_GOLDEN_STATIC_CHECKS_FAILED",
-      "check-static.mjs escapes dev skill",
+      error instanceof Error ? error.message : String(error),
     );
   }
 
-  const result = spawnSync(process.execPath, [staticHarnessPath], {
+  const result = spawnSync(process.execPath, [realStaticHarnessPath], {
     cwd: devSkillRoot,
     encoding: "utf8",
     stdio: "pipe",

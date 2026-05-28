@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 const scriptPath = fileURLToPath(import.meta.url);
 const kernelRoot = path.dirname(scriptPath);
 const devSkillRoot = path.resolve(kernelRoot, "..", "..");
+const realDevSkillRoot = fs.realpathSync.native(devSkillRoot);
 
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 
@@ -65,12 +66,23 @@ function toDevPath(relativePath) {
   return { ignored: false, path: absolutePath };
 }
 
+function realPathInsideDev(absolutePath) {
+  const realPath = fs.realpathSync.native(absolutePath);
+  if (!isInside(realPath, realDevSkillRoot)) {
+    throw new Error(`path escapes dev skill after realpath: ${absolutePath}`);
+  }
+  return realPath;
+}
+
 function existsFile(relativePath) {
   const resolved = toDevPath(relativePath);
   if (resolved.ignored) return true;
 
   try {
-    return fs.statSync(resolved.path).isFile();
+    const stats = fs.statSync(resolved.path);
+    if (!stats.isFile()) return false;
+    realPathInsideDev(resolved.path);
+    return true;
   } catch (error) {
     if (error?.code === "ENOENT") return false;
     throw error;
@@ -80,7 +92,7 @@ function existsFile(relativePath) {
 function readText(relativePath) {
   const resolved = toDevPath(relativePath);
   if (resolved.ignored) return "";
-  return fs.readFileSync(resolved.path, "utf8");
+  return fs.readFileSync(realPathInsideDev(resolved.path), "utf8");
 }
 
 function sectionFromHeading(markdown, headingPattern) {
@@ -233,7 +245,7 @@ function checkBlockedModulesStayBlocked() {
   }
 
   const staticAuthorityText = `${checksEntry}\n${activationGates}\n${staticChecks}`;
-  if (!/(not a materialization grant|do not grant authority or release materialization|do not authorize real materialization|authorizing materialization)/i.test(staticAuthorityText)) {
+  if (!/(not a materialization grant|do not grant authority or release materialization|do not authorize real materialization|does not authorize (?:real )?materialization|not (?:as )?materialization authority|no authority to release materialization)/i.test(staticAuthorityText)) {
     failures.push("checks.static lacks materialization-authority prohibition");
   }
 
@@ -244,7 +256,7 @@ function checkBlockedModulesStayBlocked() {
   if (!/(does not implement an executable harness|no executable harness|without a future harness|future runnable test harness)/i.test(goldenAuthorityText)) {
     failures.push("tests.golden_critical lacks executable-proof limitation");
   }
-  if (!/(do not grant authority or release materialization by themselves|neither one authorizes materialization by itself|authorizing materialization by themselves)/i.test(goldenAuthorityText)) {
+  if (!/(do not grant authority or release materialization by themselves|neither one authorizes materialization by itself|does not authorize (?:or perform )?(?:real )?materialization|not as authorization for materialization|do not authorize materialization by themselves)/i.test(goldenAuthorityText)) {
     failures.push("tests.golden_critical lacks materialization-authority limitation");
   }
 

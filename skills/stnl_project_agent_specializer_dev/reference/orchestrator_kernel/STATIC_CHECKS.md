@@ -2,10 +2,10 @@
 
 Status: experimental static-check contract with a local read-only static-check harness.
 
-This document defines the minimum static checks for the future experimental
+This document defines the minimum static checks for the experimental
 `orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
 
-It is a documentation and structural-check contract. The local read-only static-check harness
+It is contract text and a structural-check contract. The local read-only static-check harness
 `reference/orchestrator_kernel/check-static.mjs` implements only CH-001 through
 CH-008 as read-only checks over the dev skill contracts.
 
@@ -16,7 +16,7 @@ writes.
 ## Purpose
 
 The minimum static checks are cheap, focused checks intended to catch structural
-regressions before any future experimental materialization can be considered.
+regressions before any later experimental materialization can be considered.
 
 They are cheap because they inspect a small, explicit set of dev-skill contract
 files, required references, module ids, gate mappings, and forbidden-output
@@ -32,12 +32,13 @@ They do not replace golden tests. The critical golden-test contract in
 specific high-risk behavior expected from the experimental path in a future
 executable harness.
 
-They do not replace `reviewer`, `validation-runner`, smoke checks, or any
-authorized validation owner. Static checks can report structural pass/fail
-signals only; they cannot perform semantic acceptance or closure.
+They are not a `reviewer`, `validation-runner`, or smoke replacement. Static
+checks can report structural pass/fail signals only; they cannot perform
+semantic acceptance or closure.
 
 They do not authorize real materialization by themselves. A static-check pass is
-only one future precondition. Materialization remains blocked without critical
+only one later precondition. The local harness exists, but does not authorize
+materialization. Materialization remains blocked without critical
 golden tests, explicit authorization, an isolated execution/materialization
 path, and authorized adoption.
 
@@ -57,7 +58,8 @@ including `checks.static`, `materialization.experimental`, and
 
 `reference/orchestrator_kernel/ACTIVATION_GATES.md` maps every initial module to
 its conservative gate and keeps `checks.static` in Gate 3 for runtime module
-activation and materialization authority even after the local read-only static-check harness exists.
+activation and materialization authority even after the local read-only
+static-check harness exists.
 
 `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md` defines the
 future isolated materialization boundary and prohibited outputs that static
@@ -72,7 +74,7 @@ replace them.
 
 ## Check Result Shape
 
-Each future static check should produce a compact result with:
+Each static check result should be compact and include:
 
 - check id
 - status: `PASS` or `FAIL`
@@ -115,8 +117,9 @@ repository scans.
 - FAIL condition: Any listed file is absent, renamed, outside the dev skill, or
   only available from a prohibited fallback path.
 - Blocker produced: `BLOCKED_STATIC_REQUIRED_FILE_MISSING`.
-- Requirement status: Mandatory check for the future static-check harness;
-  This contract is documentation-only.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check; no runtime-integrated execution.
 
 ### CH-002 - Dev `SKILL.md` References Exist
 
@@ -130,8 +133,9 @@ repository scans.
 - FAIL condition: Any such reference is missing, misspelled, points outside the
   dev skill, or depends on production skill paths.
 - Blocker produced: `BLOCKED_STATIC_SKILL_REFERENCE_BROKEN`.
-- Requirement status: Mandatory check for the future static-check harness;
-  This contract is documentation-only.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check; no runtime-integrated execution.
 
 ### CH-003 - Module Index Contains All Initial Modules
 
@@ -152,8 +156,9 @@ repository scans.
 - FAIL condition: Any required module id is absent, renamed, duplicated in a way
   that makes the entry ambiguous, or present only outside the module index.
 - Blocker produced: `BLOCKED_STATIC_MODULE_INDEX_INCOMPLETE`.
-- Requirement status: Mandatory check for the future static-check harness;
-  This contract is documentation-only.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check; no runtime-integrated execution.
 
 ### CH-004 - Activation Gates Cover All Module-Index Modules
 
@@ -166,8 +171,9 @@ repository scans.
 - FAIL condition: Any initial module is missing from the gate mapping, mapped
   ambiguously, or mapped in a way that cannot be matched to the module index.
 - Blocker produced: `BLOCKED_STATIC_GATE_MAPPING_INCOMPLETE`.
-- Requirement status: Mandatory check for the future static-check harness;
-  This contract is documentation-only.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check; no runtime-integrated execution.
 
 ### CH-005 - Blocked Modules Stay Blocked
 
@@ -188,8 +194,9 @@ repository scans.
   critical golden tests are already a full/existing executable proof suite or
   can authorize materialization by themselves.
 - Blocker produced: `BLOCKED_STATIC_BLOCKED_MODULE_WEAKENED`.
-- Requirement status: Mandatory check for the future static-check harness;
-  This contract is documentation-only.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check; no runtime-integrated execution.
 
 ### CH-006 - Experimental Materialization Prohibits Forbidden Outputs
 
@@ -211,8 +218,9 @@ repository scans.
 - FAIL condition: Any forbidden output is absent from the prohibited-output
   list, described as permitted, or made conditional on static checks alone.
 - Blocker produced: `BLOCKED_STATIC_FORBIDDEN_OUTPUT_WEAKENED`.
-- Requirement status: Mandatory check for the future static-check harness;
-  This contract is documentation-only.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check; no runtime-integrated execution.
 
 ### CH-007 - Safe Bundle Is Not Optional
 
@@ -230,8 +238,9 @@ repository scans.
   replaceable, weaker than optional modules, or unnecessary after a static-check
   pass.
 - Blocker produced: `BLOCKED_STATIC_SAFE_BUNDLE_WEAKENED`.
-- Requirement status: Mandatory check for the future static-check harness;
-  This contract is documentation-only.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check; no runtime-integrated execution.
 
 ### CH-008 - Static Checks Require Nothing Outside The Dev Skill
 
@@ -240,8 +249,8 @@ repository scans.
   `skills/stnl_project_agent_specializer_dev/**`.
 - Input:
   - `reference/orchestrator_kernel/STATIC_CHECKS.md`
-  - future static-check target list when a harness exists
-- PASS condition: The static checks are defined as documentation-only checks
+- local static-check target list
+- PASS condition: The static checks are defined as structural checks
   over dev-skill contract files and do not require production skill edits,
   final artifact writes, runtime loader changes, installer changes, smoke
   changes, or broad repository scans.
@@ -249,8 +258,11 @@ repository scans.
   outputs, harness dependencies, or validation inputs outside
   `skills/stnl_project_agent_specializer_dev/**` for this contract.
 - Blocker produced: `BLOCKED_STATIC_SCOPE_ESCAPED_DEV_SKILL`.
-- Requirement status: Mandatory check for the future static-check harness;
-  This contract is documentation-only.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check; no runtime-integrated execution.
+- Authority status: Local harness exists, but does not authorize
+  materialization.
 
 ## Checks Explicitly Out Of Scope
 
@@ -329,5 +341,5 @@ This contract and the read-only harness do not implement:
 - smoke changes
 - installer changes
 
-This document only defines the formal contract for the minimum static checks of the
-future experimental orchestrator kernel.
+This document only defines the formal contract for the minimum static checks of
+the experimental orchestrator kernel.
