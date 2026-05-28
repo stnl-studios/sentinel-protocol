@@ -2,7 +2,7 @@
 
 Status: experimental documentation index for `stnl_project_agent_specializer_dev`.
 
-Nothing in this directory implements runtime loading, module execution, static-check execution, golden-test execution, harnesses, final artifacts, or real materialization.
+Nothing in this directory implements runtime loading, module execution, runtime-integrated check execution, runtime golden-test execution, final artifacts, or real materialization. The local harnesses here are read-only structural checks only.
 
 Read in this order:
 
@@ -12,8 +12,9 @@ Read in this order:
 4. `ACTIVATION_GATES.md` - Phase 4 eligibility gates and blocked-module mapping.
 5. `EXPERIMENTAL_MATERIALIZATION.md` - Phase 5 isolated materialization boundary for `orchestrator` only.
 6. `STATIC_CHECKS.md` - Phase 6 cheap structural check contract, without execution.
-7. `GOLDEN_TESTS.md` - Phase 7 exactly two critical golden-test contracts, without harness.
+7. `GOLDEN_TESTS.md` - Phase 7 exactly two critical golden-test contracts, with a Phase 10 read-only structural harness.
 
 Read-only local static harness: `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/check-static.mjs`.
+Read-only local golden harness: `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/check-golden.mjs`.
 
 The productive skill, productive templates, final target artifacts, `.github/**`, `.codex/**`, `AGENTS.md`, `sentinel.mjs`, and `scripts/sentinel-smoke.mjs` remain untouched by these contracts.

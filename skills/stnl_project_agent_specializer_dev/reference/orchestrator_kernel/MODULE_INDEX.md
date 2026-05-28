@@ -335,8 +335,8 @@ defined in this phase.
   kernel and its module contracts. The Phase 6 contract exists at
   `reference/orchestrator_kernel/STATIC_CHECKS.md`, and the Phase 9 read-only
   local harness exists at `reference/orchestrator_kernel/check-static.mjs`, but
-  there is still no runtime loader integration, golden-test harness, real
-  materialization path, or authority to release materialization.
+  there is still no runtime loader integration, runtime golden-test execution,
+  real materialization path, or authority to release materialization.
 - `activation_signals`:
   - Phase 9 read-only local harness exists for CH-001 through CH-008
   - Phase 6 static-check contract exists
@@ -358,8 +358,10 @@ defined in this phase.
   - activation gates
   - Phase 6 static-check contract
   - Phase 9 read-only local harness for CH-001 through CH-008
-  - Phase 7 golden-test contract and future executable harness before
-    materialization can be considered
+  - Phase 7 golden-test contract and Phase 10 read-only local golden harness
+    before local structural golden checks
+  - future runtime/fixture golden-test harness before materialization can be
+    considered
 - `conflicts`:
   - broad filesystem scan outside authorized paths
   - checks that mutate files
@@ -382,32 +384,38 @@ defined in this phase.
 ### `tests.golden_critical`
 
 - `module_id`: `tests.golden_critical`
-- `status`: `phase_7_contract_documented_execution_unavailable_until_future_harness`
+- `status`: `phase_10_read_only_harness_available_no_materialization_authority`
 - `purpose`: Represent the exactly two critical golden tests for the
   experimental orchestrator kernel path. The Phase 7 contract exists at
-  `reference/orchestrator_kernel/GOLDEN_TESTS.md`, but there is still no
-  executable harness, no fixtures, and no runtime execution.
+  `reference/orchestrator_kernel/GOLDEN_TESTS.md`, and the Phase 10 read-only
+  local structural harness exists at
+  `reference/orchestrator_kernel/check-golden.mjs`, but there are still no real
+  fixtures, no runtime execution, and no materialization authority.
 - `activation_signals`:
-  - none executable in Phase 7
+  - none executable as runtime behavior in Phase 10
   - Phase 7 golden-test contract exists
-  - future test fixtures, expected outputs, and harness exist
+  - Phase 10 read-only local structural harness exists
+  - future test fixtures, expected outputs, and runtime harness exist
   - future activation gates allow golden-test evaluation
   - kernel behavior change requires critical regression proof
 - `required_context`:
   - Phase 7 golden-test contract
   - exactly two defined critical scenarios, not a full suite
+  - Phase 10 read-only local structural harness for `GT-001` and `GT-002`
   - future expected outputs
   - authorized test location
   - future runnable test harness
 - `outputs`:
-  - none in Phase 7
-  - future critical golden-test pass/fail result
+  - local structural pass/fail result for `GT-001` and `GT-002`
+  - future runtime critical golden-test pass/fail result only after later
+    phases define and authorize it
 - `dependencies`:
   - kernel contract
   - minimum safe bundle
   - module index
   - activation gates
   - Phase 7 golden-test contract
+  - Phase 10 read-only local structural harness
   - static checks before materialization can be considered
   - future runnable test harness
   - explicit authorization and isolated materialization path before any
@@ -420,13 +428,14 @@ defined in this phase.
   - treating golden tests as materialization authority by themselves
 - `safe_to_auto_activate`: No.
 - `token_cost_hint`: `medium`
-- `fallback_behavior`: Treat golden tests as documented but unavailable for
-  execution; do not claim critical regression proof or materialization readiness
-  without a future harness and explicit authorization.
+- `fallback_behavior`: Treat golden tests as structurally checkable only by the
+  local read-only harness; do not claim runtime regression proof or
+  materialization readiness without a future harness and explicit
+  authorization.
 - `out_of_scope`:
-  - implementing tests in Phase 7
+  - implementing runtime tests in Phase 10
   - defining a full test suite
-  - implementing a harness
+  - implementing a runtime/fixture harness
   - authorizing runtime behavior
   - authorizing materialization by themselves
   - replacing semantic review or validation-runner responsibilities
@@ -449,7 +458,8 @@ This module index answers the Phase 3 questions as follows:
   local harness, but no runtime loader integration and no authority to release
   materialization.
   `tests.golden_critical` has a Phase 7 contract for exactly two critical
-  tests, but no executable harness. All other cataloged modules still require
+  tests and a Phase 10 read-only local structural harness, but no
+  runtime/fixture executable harness. All other cataloged modules still require
   future runtime activation support before activation.
 - What happens when a module, dependency, or context is absent? The module must
   block, reduce to narrower safe behavior allowed by the kernel and safe bundle,

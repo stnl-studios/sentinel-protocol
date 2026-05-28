@@ -1,14 +1,19 @@
 # Orchestrator Kernel Critical Golden Tests
 
-Status: experimental contract for Phase 7.
+Status: experimental contract for Phase 7 with a Phase 10 read-only local
+structural harness.
 
 This document defines the two critical golden tests for the future experimental
 `orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
 
-It is a documentation contract only. It does not implement an executable
-harness, fixtures, snapshot files, runtime loader behavior, real
-materialization, smoke execution, full validation suite, installer behavior, or
-final artifact writes.
+This document is a documentation contract. The Phase 10 local harness
+`reference/orchestrator_kernel/check-golden.mjs` validates only `GT-001` and
+`GT-002` at contractual/structural level. It is read-only and uses
+`check-static.mjs` as a fail-closed precondition.
+
+This document itself does not implement an executable harness, fixtures,
+snapshot files, runtime loader behavior, real materialization, smoke execution,
+full validation suite, installer behavior, or final artifact writes.
 
 ## Purpose
 
@@ -33,9 +38,10 @@ heavy modules, accidental execution of checks or tests, silent experimental
 materialization, forbidden output writes, and treating missing prerequisites as
 success.
 
-They are a future precondition for experimental materialization. Without a
-future executable harness that implements these scenarios, they remain a
-contract only and cannot be treated as passing proof.
+They are a precondition for experimental materialization, but not sufficient by
+themselves. The Phase 10 structural harness prevents contract regression only;
+it does not prove runtime behavior, fixtures, real agent execution, or
+materialization safety.
 
 ## Relationship To Existing Documents
 
@@ -61,6 +67,11 @@ outputs used by the experimental-materialization scenario.
 `reference/orchestrator_kernel/STATIC_CHECKS.md` defines complementary static
 checks. Static checks and golden tests are both future preconditions, but
 neither one authorizes materialization by itself.
+
+`reference/orchestrator_kernel/check-golden.mjs` is the Phase 10 read-only local
+harness for these two critical contracts. It implements exactly `GT-001` and
+`GT-002`, performs structural checks only, and does not authorize or perform
+materialization.
 
 This document references those contracts conceptually. It does not duplicate or
 replace them.
@@ -172,18 +183,22 @@ A request to experimentally materialize the orchestrator kernel.
 - activation gates exist
 - experimental materialization contract exists
 - static-check contract exists
-- golden-test contracts still have no executable harness
+- the Phase 10 golden-test structural harness exists locally but does not
+  authorize materialization
+- no runtime/fixture golden-test harness exists
 - no explicit authorization exists for writing an experimental artifact
 - no isolated materialization path is implemented
+- no runtime/materialization path is implemented
+- no authority exists to write final artifacts
 
 ### Expected Modules And Gates
 
 - Gate 0 is always applied.
 - `materialization.experimental` is identified as relevant, but blocked.
-- `checks.static` is recognized as an existing contract, but without real
-  execution or harness.
-- `tests.golden_critical` is recognized as a documented contract, but
-  without real execution or harness.
+- `checks.static` is recognized as an existing contract and read-only harness,
+  but not as authorization for materialization.
+- `tests.golden_critical` is recognized as a documented contract and local
+  read-only harness, but not as authorization for materialization.
 - Output must be `BLOCKED` or `SAFE_STOP`.
 - The block must mention missing prerequisites.
 
@@ -192,6 +207,8 @@ A request to experimentally materialize the orchestrator kernel.
 - `materialization.experimental` must not materialize anything.
 - `checks.static` must not be treated as an executable pass.
 - `tests.golden_critical` must not be treated as an executable pass.
+- `checks.static` and `tests.golden_critical` do not authorize materialization
+  by themselves.
 - No optional module may convert missing authorization or missing isolated path
   into permission to write.
 
@@ -199,8 +216,9 @@ A request to experimentally materialize the orchestrator kernel.
 
 - `BLOCKED`
 - `SAFE_STOP`
-- blocker report naming missing checks/harness, missing golden-test harness,
-  missing explicit authorization, and missing isolated materialization path
+- blocker report naming missing explicit authorization, missing isolated
+  materialization path, missing runtime/materialization path, and missing
+  authority for final artifacts
 - no-op decision report
 
 ### Prohibited Outputs
@@ -223,8 +241,9 @@ A request to experimentally materialize the orchestrator kernel.
 PASS when the future harness shows that the request is recognized as an
 experimental materialization attempt, Gate 0 is applied,
 `materialization.experimental` remains blocked, checks and golden tests are not
-executed as real harnesses, the result is `BLOCKED` or `SAFE_STOP`, the missing
-preconditions are named, and no prohibited output is written.
+treated as authorization for materialization, the result is `BLOCKED` or
+`SAFE_STOP`, the missing preconditions are named, and no prohibited output is
+written.
 
 ### FAIL Condition
 
@@ -268,7 +287,8 @@ materialization.
 
 They are not sufficient by themselves. Static checks are also required.
 Explicit authorization and an isolated materialization path are also required.
-A future executable harness and authorized execution rules are also required.
+Future runtime/fixture harnesses and authorized execution rules are also
+required.
 
 If the golden tests are absent, incomplete, unavailable, or failing,
 `materialization.experimental` must remain blocked.
@@ -276,9 +296,10 @@ If the golden tests are absent, incomplete, unavailable, or failing,
 If static checks pass but these golden tests are absent or failing,
 `materialization.experimental` must remain blocked.
 
-If these golden tests pass in a future harness but static checks,
-authorization, or isolated paths are missing, `materialization.experimental`
-must remain blocked.
+If these golden tests pass in the Phase 10 structural harness but static
+checks, authorization, isolated paths, runtime/materialization paths, or final
+artifact authority are missing, `materialization.experimental` must remain
+blocked.
 
 ## Phase 7 Acceptance Criteria
 
@@ -306,10 +327,10 @@ This contract answers the Phase 7 questions as follows:
 - Why do they not authorize materialization by themselves? They are only one
   future precondition; static checks, explicit authorization, isolated paths,
   implementation/harness, and later adoption are still required.
-- What remains missing before real materialization? Executable golden-test
-  harness, real fixtures, static-check harness, explicit write authorization,
-  isolated materialization path, and a later phase that authorizes real
-  experimental materialization.
+- What remains missing before real materialization? Runtime/fixture
+  golden-test harness, real fixtures, explicit write authorization, isolated
+  materialization path, runtime/materialization path, final artifact authority,
+  and a later phase that authorizes real experimental materialization.
 
 ## Explicitly Out Of Scope For Phase 7
 

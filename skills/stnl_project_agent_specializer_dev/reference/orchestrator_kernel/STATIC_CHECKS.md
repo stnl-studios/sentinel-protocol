@@ -66,8 +66,9 @@ future isolated materialization boundary and prohibited outputs that static
 checks must protect before any later materialization attempt.
 
 `reference/orchestrator_kernel/GOLDEN_TESTS.md` defines the exactly two
-critical golden tests that complement static checks. The golden tests remain
-documentation only until a future executable harness exists.
+critical golden tests that complement static checks. The Phase 10 read-only
+local harness checks those contracts structurally, but it is not runtime
+execution, fixture proof, or materialization authority.
 
 This document references those contracts conceptually. It does not duplicate or
 replace them.
@@ -306,10 +307,10 @@ This static-checks contract answers the Phase 6 questions as follows:
 - Why do they not authorize materialization by themselves? They only detect
   structural readiness; materialization still requires golden tests, explicit
   authorization, isolated execution/materialization path, and later adoption.
-- What remains missing before real materialization? Critical golden tests, a
-  golden-test harness, explicit write authorization, isolated allowed outputs,
-  runtime-integrated adoption, and a later phase that authorizes the
-  experimental path.
+- What remains missing before real materialization? Runtime/fixture golden-test
+  harness, explicit write authorization, isolated allowed outputs,
+  runtime/materialization path, runtime-integrated adoption, and a later phase
+  that authorizes the experimental path.
 - How do they protect against structural regression? They fail closed when core
   files disappear, references break, module/gate coverage drifts, blocked
   modules weaken, forbidden outputs are removed, the safe bundle becomes

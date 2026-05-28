@@ -141,7 +141,7 @@ This mapping is an experimental contract, not a runtime implementation.
 | `routing.execution_package` | Gate 2 conditional | Requires valid upstream context, explicit scope, and stronger owner/workflow authority. |
 | `materialization.experimental` | Gate 3 stop/block | Phase 5 materialization contract exists, but real materialization remains blocked until executable checks, executable golden-test harnesses, explicit authorization, and an isolated execution path exist. |
 | `checks.static` | Gate 3 stop/block | Phase 6 check contract and Phase 9 read-only local harness exist, but runtime module activation and materialization remain blocked; checks do not grant authority or release materialization by themselves. |
-| `tests.golden_critical` | Gate 3 stop/block | Phase 7 contract exists for exactly two critical golden tests, but real execution remains blocked until an implementation, fixtures, expected outputs, harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
+| `tests.golden_critical` | Gate 3 stop/block | Phase 7 contract exists for exactly two critical golden tests and the Phase 10 read-only local structural harness exists, but real execution remains blocked until fixtures, expected outputs, runtime harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
 
 `safe_to_auto_activate` in the module index means only that a module may be a
 future candidate. It does not mean automatic activation is available now.
@@ -342,11 +342,12 @@ This activation-gates contract answers the Phase 4 questions as follows:
   for CH-001 through CH-008, but runtime module activation, broader execution
   rules, and materialization authority still require later-phase adoption.
   `tests.golden_critical` has a Phase 7 contract for exactly two critical
-  tests, but real execution still requires fixtures, expected outputs, a
-  harness, explicit execution rules, and later-phase adoption. Materialization
-  still also requires executable checks, executable golden tests, explicit
-  authorization, and an isolated path; static checks or golden tests alone do
-  not grant authority.
+  tests and a Phase 10 read-only local structural harness, but real execution
+  still requires fixtures, expected outputs, a runtime harness, explicit
+  execution rules, and later-phase adoption. Materialization still also
+  requires executable checks, executable golden tests, explicit authorization,
+  and an isolated path; static checks or golden tests alone do not grant
+  authority.
 
 ## Explicitly Out Of Scope For Phase 4
 
