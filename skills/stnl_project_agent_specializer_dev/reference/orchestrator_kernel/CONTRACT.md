@@ -5,6 +5,7 @@ Status: experimental contract for Phase 1.
 This document defines the minimum contract for a future `orchestrator kernel` inside `stnl_project_agent_specializer_dev`. It is a design contract only. It does not implement kernel logic, module loading, activation gates, materialization, checks, or tests.
 
 Phase 2 defines the companion minimum safe bundle in `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`.
+Phase 3 defines the companion module index catalog in `reference/orchestrator_kernel/MODULE_INDEX.md`.
 
 ## What the orchestrator kernel is
 

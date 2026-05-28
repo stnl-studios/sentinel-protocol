@@ -6,6 +6,8 @@ This document defines the minimum safe bundle that must always accompany the fut
 
 It complements `reference/orchestrator_kernel/CONTRACT.md` without duplicating the full kernel contract. The kernel contract defines the kernel boundary. This document defines the non-optional protection bundle that keeps that boundary safe when no optional orchestration module is active.
 
+The Phase 3 module index catalog is defined in `reference/orchestrator_kernel/MODULE_INDEX.md`.
+
 ## Purpose
 
 The minimum safe bundle is mandatory.
