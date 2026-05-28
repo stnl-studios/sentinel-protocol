@@ -16,6 +16,8 @@ Foco inicial previsto, sem implementação nesta fase:
 - checks estáticos
 - 2 golden tests críticos
 
+Contrato experimental do orchestrator kernel: `reference/orchestrator_kernel/CONTRACT.md`.
+
 ## Missão
 Ler a base documental consolidada de um repo alvo já preparado por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`, construir um modelo factual intermediário normalizado e materializar, com validação e repair controlado, o conjunto mínimo útil de agents locais no runtime indicado por `target`.
 
