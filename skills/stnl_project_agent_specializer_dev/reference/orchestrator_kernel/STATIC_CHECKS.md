@@ -1,13 +1,18 @@
 # Orchestrator Kernel Static Checks
 
-Status: experimental contract for Phase 6.
+Status: experimental contract for Phase 6 with a Phase 9 read-only local
+harness.
 
 This document defines the minimum static checks for the future experimental
 `orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
 
-It is a documentation contract only. It does not implement an executable
-script, runtime loader, real materialization path, golden tests, full validation
-suite, installer behavior, smoke behavior, or final artifact writes.
+It is a documentation and structural-check contract. The Phase 9 local harness
+`reference/orchestrator_kernel/check-static.mjs` implements only CH-001 through
+CH-008 as read-only checks over the dev skill contracts.
+
+It does not implement a runtime loader, real materialization path, golden tests,
+full validation suite, installer behavior, smoke behavior, or final artifact
+writes.
 
 ## Purpose
 
@@ -52,8 +57,9 @@ including `checks.static`, `materialization.experimental`, and
 `tests.golden_critical`.
 
 `reference/orchestrator_kernel/ACTIVATION_GATES.md` maps every initial module to
-its conservative gate and keeps `checks.static` in Gate 3 until executable
-implementation and authorized harness rules exist.
+its conservative gate and keeps `checks.static` in Gate 3 for runtime module
+activation and materialization authority even after the Phase 9 read-only local
+harness exists.
 
 `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md` defines the
 future isolated materialization boundary and prohibited outputs that static
@@ -79,6 +85,18 @@ Each future static check should produce a compact result with:
 
 A missing, incomplete, or unavailable static-check harness must not be treated
 as pass.
+
+## Phase 9 Read-Only Harness
+
+`reference/orchestrator_kernel/check-static.mjs` is a Node.js ESM harness that
+implements CH-001 through CH-008 only.
+
+The harness is read-only, uses only native Node.js modules, and inspects only
+files under `skills/stnl_project_agent_specializer_dev/**`. These checks are
+documental and structural. They do not require production skill edits, final
+artifact writes, runtime loader changes, installer changes, smoke changes,
+golden-test harnesses, materialization, generated artifacts, or broad
+repository scans.
 
 ## Minimum Required Checks
 
@@ -238,7 +256,7 @@ as pass.
 
 ## Checks Explicitly Out Of Scope
 
-Phase 6 does not define:
+Phase 6 and the Phase 9 read-only harness do not define:
 
 - smoke execution
 - full suite
@@ -288,19 +306,20 @@ This static-checks contract answers the Phase 6 questions as follows:
 - Why do they not authorize materialization by themselves? They only detect
   structural readiness; materialization still requires golden tests, explicit
   authorization, isolated execution/materialization path, and later adoption.
-- What remains missing before real materialization? Executable checks, a
-  harness, critical golden tests, explicit write authorization, isolated allowed
-  outputs, and a later phase that authorizes the experimental path.
+- What remains missing before real materialization? Critical golden tests, a
+  golden-test harness, explicit write authorization, isolated allowed outputs,
+  runtime-integrated adoption, and a later phase that authorizes the
+  experimental path.
 - How do they protect against structural regression? They fail closed when core
   files disappear, references break, module/gate coverage drifts, blocked
   modules weaken, forbidden outputs are removed, the safe bundle becomes
   optional, or this phase starts depending on files outside the dev skill.
 
-## Explicitly Out Of Scope For Phase 6
+## Explicitly Out Of Scope For Phase 6 And The Phase 9 Harness
 
-This phase does not implement:
+This phase and the read-only harness do not implement:
 
-- executable script
+- runtime-integrated check execution
 - runtime loader
 - real materialization
 - golden tests

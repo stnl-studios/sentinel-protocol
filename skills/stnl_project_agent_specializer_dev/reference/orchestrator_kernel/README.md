@@ -14,4 +14,6 @@ Read in this order:
 6. `STATIC_CHECKS.md` - Phase 6 cheap structural check contract, without execution.
 7. `GOLDEN_TESTS.md` - Phase 7 exactly two critical golden-test contracts, without harness.
 
+Read-only local static harness: `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/check-static.mjs`.
+
 The productive skill, productive templates, final target artifacts, `.github/**`, `.codex/**`, `AGENTS.md`, `sentinel.mjs`, and `scripts/sentinel-smoke.mjs` remain untouched by these contracts.

@@ -330,32 +330,34 @@ defined in this phase.
 ### `checks.static`
 
 - `module_id`: `checks.static`
-- `status`: `phase_6_contract_documented_execution_unavailable_until_future_harness`
-- `purpose`: Represent future cheap static checks for the experimental
-  orchestrator kernel and its module contracts. The Phase 6 contract exists at
-  `reference/orchestrator_kernel/STATIC_CHECKS.md`, but there is still no
-  executable script, runtime loader integration, or harness.
+- `status`: `phase_9_read_only_harness_available_no_materialization_authority`
+- `purpose`: Represent cheap static checks for the experimental orchestrator
+  kernel and its module contracts. The Phase 6 contract exists at
+  `reference/orchestrator_kernel/STATIC_CHECKS.md`, and the Phase 9 read-only
+  local harness exists at `reference/orchestrator_kernel/check-static.mjs`, but
+  there is still no runtime loader integration, golden-test harness, real
+  materialization path, or authority to release materialization.
 - `activation_signals`:
-  - none executable in Phase 6
+  - Phase 9 read-only local harness exists for CH-001 through CH-008
   - Phase 6 static-check contract exists
   - future activation gates allow static checking
   - candidate artifacts or contracts are present in authorized paths
 - `required_context`:
   - Phase 6 static-check contract
-  - future executable implementation and harness before real execution
+  - Phase 9 read-only local harness before local static-check execution
   - authorized paths to inspect
   - expected module-index and kernel-document shape
   - explicit check target
 - `outputs`:
-  - none in Phase 6
-  - future pass/fail findings with concrete file references
+  - local structural pass/fail findings with concrete file references
+  - no materialization decision or authority
 - `dependencies`:
   - kernel contract
   - minimum safe bundle
   - module index
   - activation gates
   - Phase 6 static-check contract
-  - future executable implementation and harness before real execution
+  - Phase 9 read-only local harness for CH-001 through CH-008
   - Phase 7 golden-test contract and future executable harness before
     materialization can be considered
 - `conflicts`:
@@ -363,13 +365,14 @@ defined in this phase.
   - checks that mutate files
   - checks that decide semantic acceptance alone
   - checks used as materialization authority
-- `safe_to_auto_activate`: No. Future cheap checks may be evaluated only after
-  an implementation, harness, and authorized execution rules exist.
+- `safe_to_auto_activate`: No. The local harness may be run directly as a
+  read-only document/structure check, but runtime module activation and
+  materialization remain unavailable without later authorization and adoption.
 - `token_cost_hint`: `low`
-- `fallback_behavior`: Treat checks as unavailable; do not infer pass from the
-  absence of checks.
+- `fallback_behavior`: Treat unavailable, absent, or failing checks as blocked;
+  do not infer pass from the absence of checks.
 - `out_of_scope`:
-  - implementing checks in Phase 6
+  - runtime-integrated check execution
   - running checks as gates
   - fixing files
   - creating a full validation suite
@@ -439,11 +442,12 @@ This module index answers the Phase 3 questions as follows:
 - What is each module for? Each entry defines a narrow `purpose`.
 - What context does each module require? Each entry defines `required_context`.
 - What output may each module produce? Each entry defines `outputs`.
-- Which modules are unavailable until future phases? `materialization.experimental`,
-  `checks.static`, and `tests.golden_critical` are unavailable until later phases
-  provide the required implementation, executable harnesses, authorization, or
-  isolated execution path. `checks.static` has a Phase 6 contract, but no
-  executable script and no authority to release materialization.
+- Which modules are unavailable until future phases? `materialization.experimental`
+  and `tests.golden_critical` are unavailable until later phases provide the
+  required implementation, executable harnesses, authorization, or isolated
+  execution path. `checks.static` has a Phase 6 contract and a Phase 9 read-only
+  local harness, but no runtime loader integration and no authority to release
+  materialization.
   `tests.golden_critical` has a Phase 7 contract for exactly two critical
   tests, but no executable harness. All other cataloged modules still require
   future runtime activation support before activation.

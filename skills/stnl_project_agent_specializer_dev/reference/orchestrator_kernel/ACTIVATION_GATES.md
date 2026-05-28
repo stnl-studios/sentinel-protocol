@@ -140,7 +140,7 @@ This mapping is an experimental contract, not a runtime implementation.
 | `validation.boundary` | Gate 1 candidate | Lightweight boundary validation candidate, but not auto-activatable in runtime in this phase. |
 | `routing.execution_package` | Gate 2 conditional | Requires valid upstream context, explicit scope, and stronger owner/workflow authority. |
 | `materialization.experimental` | Gate 3 stop/block | Phase 5 materialization contract exists, but real materialization remains blocked until executable checks, executable golden-test harnesses, explicit authorization, and an isolated execution path exist. |
-| `checks.static` | Gate 3 stop/block | Phase 6 check contract exists, but real execution remains blocked until an implementation, harness, and authorized execution rules exist; checks do not grant authority or release materialization by themselves. |
+| `checks.static` | Gate 3 stop/block | Phase 6 check contract and Phase 9 read-only local harness exist, but runtime module activation and materialization remain blocked; checks do not grant authority or release materialization by themselves. |
 | `tests.golden_critical` | Gate 3 stop/block | Phase 7 contract exists for exactly two critical golden tests, but real execution remains blocked until an implementation, fixtures, expected outputs, harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
 
 `safe_to_auto_activate` in the module index means only that a module may be a
@@ -338,14 +338,15 @@ This activation-gates contract answers the Phase 4 questions as follows:
   consider optional modules; they do not grant human, root/main, owner, runtime,
   write, delete, execution, validation, closure, or materialization authority.
 - Why do materialization, checks, and golden tests remain blocked?
-  `checks.static` has a Phase 6 contract, but real check execution still
-  requires future implementation, harness, explicit execution rules, and
-  later-phase adoption. `tests.golden_critical` has a Phase 7 contract for
-  exactly two critical tests, but real execution still requires fixtures,
-  expected outputs, a harness, explicit execution rules, and later-phase
-  adoption. Materialization still also requires executable checks, executable
-  golden tests, explicit authorization, and an isolated path; static checks or
-  golden tests alone do not grant authority.
+  `checks.static` has a Phase 6 contract and a Phase 9 read-only local harness
+  for CH-001 through CH-008, but runtime module activation, broader execution
+  rules, and materialization authority still require later-phase adoption.
+  `tests.golden_critical` has a Phase 7 contract for exactly two critical
+  tests, but real execution still requires fixtures, expected outputs, a
+  harness, explicit execution rules, and later-phase adoption. Materialization
+  still also requires executable checks, executable golden tests, explicit
+  authorization, and an isolated path; static checks or golden tests alone do
+  not grant authority.
 
 ## Explicitly Out Of Scope For Phase 4
 

@@ -22,6 +22,7 @@ Module index experimental do orchestrator kernel: `reference/orchestrator_kernel
 Activation gates experimentais do orchestrator kernel: `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
 Materialização experimental isolada do orchestrator kernel: `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
 Checks estáticos mínimos do orchestrator kernel: `reference/orchestrator_kernel/STATIC_CHECKS.md`.
+Harness read-only local dos checks CH-001 a CH-008: `reference/orchestrator_kernel/check-static.mjs`.
 Golden tests críticos do orchestrator kernel: `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
 
 ## Missão
