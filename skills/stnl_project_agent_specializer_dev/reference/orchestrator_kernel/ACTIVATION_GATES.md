@@ -141,7 +141,7 @@ This mapping is an experimental contract, not a runtime implementation.
 | `routing.execution_package` | Gate 2 conditional | Requires valid upstream context, explicit scope, and stronger owner/workflow authority. |
 | `materialization.experimental` | Gate 3 stop/block | Blocked until future materialization contract, gates, checks, tests, and authorization exist. |
 | `checks.static` | Gate 3 stop/block | Phase 6 check contract exists, but real execution remains blocked until an implementation, harness, and authorized execution rules exist; checks do not grant authority or release materialization by themselves. |
-| `tests.golden_critical` | Gate 3 stop/block | Blocked until the future golden-tests phase defines fixtures, expected outputs, and harness. |
+| `tests.golden_critical` | Gate 3 stop/block | Phase 7 contract exists for exactly two critical golden tests, but real execution remains blocked until an implementation, fixtures, expected outputs, harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
 
 `safe_to_auto_activate` in the module index means only that a module may be a
 future candidate. It does not mean automatic activation is available now.

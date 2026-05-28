@@ -376,44 +376,53 @@ defined in this phase.
 ### `tests.golden_critical`
 
 - `module_id`: `tests.golden_critical`
-- `status`: `unavailable_until_future_golden_tests_phase`
-- `purpose`: Represent the two future critical golden tests for the experimental
-  orchestrator kernel path.
+- `status`: `phase_7_contract_documented_execution_unavailable_until_future_harness`
+- `purpose`: Represent the exactly two critical golden tests for the
+  experimental orchestrator kernel path. The Phase 7 contract exists at
+  `reference/orchestrator_kernel/GOLDEN_TESTS.md`, but there is still no
+  executable harness, no fixtures, and no runtime execution.
 - `activation_signals`:
-  - none executable in Phase 3
-  - future test fixtures and expected outputs exist
+  - none executable in Phase 7
+  - Phase 7 golden-test contract exists
+  - future test fixtures, expected outputs, and harness exist
   - future activation gates allow golden-test evaluation
   - kernel behavior change requires critical regression proof
 - `required_context`:
-  - future golden-test contract
-  - exactly defined critical scenarios
-  - expected outputs
+  - Phase 7 golden-test contract
+  - exactly two defined critical scenarios, not a full suite
+  - future expected outputs
   - authorized test location
-  - runnable test harness
+  - future runnable test harness
 - `outputs`:
-  - none in Phase 3
+  - none in Phase 7
   - future critical golden-test pass/fail result
 - `dependencies`:
   - kernel contract
   - minimum safe bundle
   - module index
-  - future activation gates
-  - future static checks when required by the later test contract
+  - activation gates
+  - Phase 7 golden-test contract
+  - static checks before materialization can be considered
   - future runnable test harness
+  - explicit authorization and isolated materialization path before any
+    materialization can be considered
 - `conflicts`:
   - creating a full suite in place of two critical tests
   - test fixtures that encode unauthorized materialization
   - tests that bless main-flow changes without adoption
   - missing expected output or harness
+  - treating golden tests as materialization authority by themselves
 - `safe_to_auto_activate`: No.
 - `token_cost_hint`: `medium`
-- `fallback_behavior`: Treat golden tests as unavailable; do not claim critical
-  regression proof.
+- `fallback_behavior`: Treat golden tests as documented but unavailable for
+  execution; do not claim critical regression proof or materialization readiness
+  without a future harness and explicit authorization.
 - `out_of_scope`:
-  - creating tests in Phase 3
+  - implementing tests in Phase 7
   - defining a full test suite
   - implementing a harness
   - authorizing runtime behavior
+  - authorizing materialization by themselves
   - replacing semantic review or validation-runner responsibilities
 
 ## Phase 3 Acceptance Criteria

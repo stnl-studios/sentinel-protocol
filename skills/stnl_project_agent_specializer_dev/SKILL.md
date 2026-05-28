@@ -22,6 +22,7 @@ Module index experimental do orchestrator kernel: `reference/orchestrator_kernel
 Activation gates experimentais do orchestrator kernel: `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
 Materialização experimental isolada do orchestrator kernel: `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
 Checks estáticos mínimos do orchestrator kernel: `reference/orchestrator_kernel/STATIC_CHECKS.md`.
+Golden tests críticos do orchestrator kernel: `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
 
 ## Missão
 Ler a base documental consolidada de um repo alvo já preparado por `stnl_project_context` ou, em greenfield, por `stnl_project_foundation`, construir um modelo factual intermediário normalizado e materializar, com validação e repair controlado, o conjunto mínimo útil de agents locais no runtime indicado por `target`.

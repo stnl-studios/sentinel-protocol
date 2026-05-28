@@ -23,8 +23,10 @@ They are not a full suite. They do not prove that the future kernel behaves
 correctly, that generated agents are acceptable, that all owner contracts are
 preserved, or that every workflow path is valid.
 
-They do not replace golden tests. Future critical golden tests are still needed
-to prove the specific high-risk behavior expected from the experimental path.
+They do not replace golden tests. The Phase 7 critical golden-test contract in
+`reference/orchestrator_kernel/GOLDEN_TESTS.md` is still needed to prove the
+specific high-risk behavior expected from the experimental path in a future
+executable harness.
 
 They do not replace `reviewer`, `validation-runner`, smoke checks, or any
 authorized validation owner. Static checks can report structural pass/fail
@@ -56,6 +58,10 @@ implementation and authorized harness rules exist.
 `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md` defines the
 future isolated materialization boundary and prohibited outputs that static
 checks must protect before any later materialization attempt.
+
+`reference/orchestrator_kernel/GOLDEN_TESTS.md` defines the exactly two
+critical golden tests that complement static checks. The golden tests remain
+documentation only until a future executable harness exists.
 
 This document references those contracts conceptually. It does not duplicate or
 replace them.
@@ -158,11 +164,12 @@ as pass.
 - PASS condition:
   - `materialization.experimental` is not auto-activatable.
   - `checks.static` is not described as materialization authority.
-  - `tests.golden_critical` is not described as a full suite or as proof that
-    already exists.
+  - `tests.golden_critical` is not described as a full suite, as proof that
+    already executes, or as materialization authority by itself.
 - FAIL condition: Any checked document implies that experimental materialization
   can auto-activate, that static checks alone authorize materialization, or that
-  critical golden tests are already a full/existing proof suite.
+  critical golden tests are already a full/existing executable proof suite or
+  can authorize materialization by themselves.
 - Blocker produced: `BLOCKED_STATIC_BLOCKED_MODULE_WEAKENED`.
 - Requirement status: Mandatory check for the future static-check harness;
   Phase 6 only documents the contract.
@@ -252,9 +259,10 @@ If static checks are absent, incomplete, unavailable, or failing,
 `materialization.experimental` must remain blocked.
 
 Even when static checks pass in a future harness, they are insufficient by
-themselves. Critical golden tests, explicit authorization, isolated allowed
-paths, a real implementation/harness, and later-phase adoption are still
-required before real experimental materialization can be considered.
+themselves. Critical golden tests are complementary and also insufficient by
+themselves. Explicit authorization, isolated allowed paths, real
+implementations/harnesses, and later-phase adoption are still required before
+real experimental materialization can be considered.
 
 The checks protect the future experiment by catching structural regressions
 early: missing kernel files, broken dev-skill references, missing module-index
