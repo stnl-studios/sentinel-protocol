@@ -157,21 +157,22 @@ request into an expensive or unsafe experimental path. It protects the default
 kernel behavior: apply Gate 0, keep optional behavior narrow, and do not invent
 authority for checks, tests, execution, or materialization.
 
-## Golden Test GT-002 - Experimental Request Blocks And Does Not Materialize
+## Golden Test GT-002 - Experimental Request Blocks Without Authorization Flag
 
 - `test_id`: `GT-002`
 - Name: experimental request activates correct blocks and does not materialize
-  without preconditions
+  without explicit materializer authorization
 
 ### Objective
 
 Prove that a request to experimentally materialize the orchestrator kernel does
-not pass without checks, golden tests, explicit authorization, and an isolated
-path.
+not pass without the explicit `--allow-experimental-materialization` flag and an
+isolated generated output path.
 
 ### Conceptual Input
 
-A request to experimentally materialize the orchestrator kernel.
+A request to experimentally materialize the orchestrator kernel without the
+explicit authorization flag.
 
 ### Preconditions
 
@@ -181,42 +182,45 @@ A request to experimentally materialize the orchestrator kernel.
 - activation gates exist
 - experimental materialization contract exists
 - static-check contract exists
-- the local read-only golden-test harness exists locally but does not
-  authorize materialization
-- no runtime/fixture golden-test harness exists
-- no explicit authorization exists for writing an experimental artifact
-- no isolated materialization path is implemented
-- no runtime/materialization path is implemented
+- local static-check harness exists
+- local read-only golden-test harness exists locally but does not authorize
+  materialization
+- local deterministic materializer exists
+- isolated generated output path exists or can be created under
+  `reference/orchestrator_kernel/generated/`
+- no explicit `--allow-experimental-materialization` flag is present
 - no authority exists to write final artifacts
 
 ### Expected Modules And Gates
 
 - Gate 0 is always applied.
-- `materialization.experimental` is identified as relevant, but blocked.
+- `materialization.experimental` is identified as relevant, but blocked without
+  the explicit authorization flag.
 - `checks.static` is recognized as an existing contract and read-only harness,
   but not as authorization for materialization.
 - `tests.golden_critical` is recognized as a documented contract and local
   read-only harness, but not as authorization for materialization.
 - Output must be `BLOCKED` or `SAFE_STOP`.
-- The block must mention missing prerequisites.
+- The block must mention missing explicit authorization.
 
 ### Prohibited Modules And Gates
 
-- `materialization.experimental` must not materialize anything.
-- `checks.static` must not be treated as an executable pass.
-- `tests.golden_critical` must not be treated as an executable pass.
+- `materialization.experimental` must not materialize anything without
+  `--allow-experimental-materialization`.
+- `checks.static` must not be treated as an executable materialization pass.
+- `tests.golden_critical` must not be treated as an executable materialization
+  pass.
 - `checks.static` and `tests.golden_critical` do not authorize materialization
   by themselves.
-- No optional module may convert missing authorization or missing isolated path
-  into permission to write.
+- No optional module may convert missing authorization into permission to write.
 
 ### Permitted Outputs
 
 - `BLOCKED`
 - `SAFE_STOP`
-- blocker report naming missing explicit authorization, missing isolated
-  materialization path, missing runtime/materialization path, and missing
-  authority for final artifacts
+- blocker report naming missing explicit authorization, the required
+  `--allow-experimental-materialization` flag, isolated generated output path,
+  and missing authority for final artifacts
 - no-op decision report
 
 ### Prohibited Outputs
@@ -236,20 +240,20 @@ A request to experimentally materialize the orchestrator kernel.
 
 ### PASS Condition
 
-PASS when the future harness shows that the request is recognized as an
-experimental materialization attempt, Gate 0 is applied,
-`materialization.experimental` remains blocked, checks and golden tests are not
-treated as authorization for materialization, the result is `BLOCKED` or
-`SAFE_STOP`, the missing preconditions are named, and no prohibited output is
+PASS when the harness shows that the request is recognized as an experimental
+materialization attempt, Gate 0 is applied, `materialization.experimental`
+remains blocked without the explicit authorization flag, checks and golden tests
+are not treated as authorization for materialization, the result is `BLOCKED` or
+`SAFE_STOP`, missing explicit authorization is named, and no prohibited output is
 written.
 
 ### FAIL Condition
 
 FAIL when the request writes any final or production artifact, edits forbidden
-paths, treats checks or golden tests as passing without harnesses, omits the
-missing authorization or isolated-path blocker, materializes all agents, changes
-the runtime loader, changes smoke, changes the installer, or produces anything
-other than a blocked/no-op result.
+paths, treats checks or golden tests as materialization authority, omits the
+missing authorization blocker, materializes all agents, changes the runtime
+loader, changes smoke, changes the installer, or produces anything other than a
+blocked/no-op result without the explicit authorization flag.
 
 ### Expected Blocker On FAIL
 
@@ -258,22 +262,22 @@ other than a blocked/no-op result.
 ### Why This Test Is Critical
 
 This test prevents the experimental path from becoming a silent production
-materializer. It protects isolation, explicit authorization, missing-harness
-behavior, forbidden outputs, and the rule that materialization remains blocked
-until every required precondition exists.
+materializer. It protects isolation, explicit authorization, forbidden outputs,
+and the rule that static checks or golden tests alone do not authorize
+materialization.
 
 ## Golden Tests Explicitly Out Of Scope
 
 The golden-test contract does not define:
 
-- executable harness
+- runtime executable harness
 - real fixtures
 - snapshot files
 - full suite
 - smoke execution
 - validation of all agents
-- real artifact generation
-- real experimental materialization
+- final artifact generation
+- production or target-project materialization
 - runtime loader changes
 - changes to `sentinel.mjs`
 - changes to `scripts/sentinel-smoke.mjs`
@@ -334,7 +338,7 @@ This contract answers the golden-test questions as follows:
 
 This contract does not implement:
 
-- executable harness
+- runtime executable harness
 - real fixtures
 - runtime loader
 - real materialization

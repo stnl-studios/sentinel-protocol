@@ -284,9 +284,9 @@ function checkGt002(markdown) {
       any: [/Gate 0 is always applied/i, /Gate 0 always applies/i],
     },
     {
-      label: "materialization.experimental relevant but blocked",
-      allText: ["materialization.experimental"],
-      allPatterns: [/identified as relevant,\s+but blocked/i],
+      label: "materialization.experimental relevant but blocked without flag",
+      allText: ["materialization.experimental", "--allow-experimental-materialization"],
+      allPatterns: [/identified as relevant,\s+but blocked without/i],
     },
     {
       label: "checks.static read-only contract/harness not materialization authorization",
@@ -306,8 +306,8 @@ function checkGt002(markdown) {
       label: "missing preconditions named",
       allPatterns: [
         /explicit authorization/i,
-        /isolated materialization path/i,
-        /runtime\/materialization path/i,
+        /--allow-experimental-materialization/i,
+        /isolated generated output path/i,
         /authority for final artifacts?|authority to write final artifacts?/i,
       ],
     },
@@ -352,7 +352,7 @@ function checkGt002(markdown) {
     );
   }
 
-  return pass("GT-002", "experimental materialization block contract holds");
+  return pass("GT-002", "experimental materialization authorization block contract holds");
 }
 
 function printResult(result) {

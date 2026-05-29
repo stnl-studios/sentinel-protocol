@@ -11,7 +11,8 @@ const realDevSkillRoot = fs.realpathSync.native(devSkillRoot);
 
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 
-const requiredContractFiles = [
+const requiredExperimentFiles = [
+  "reference/agents/orchestrator.agent.md",
   "reference/orchestrator_kernel/CONTRACT.md",
   "reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md",
   "reference/orchestrator_kernel/MODULE_INDEX.md",
@@ -19,6 +20,8 @@ const requiredContractFiles = [
   "reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md",
   "reference/orchestrator_kernel/STATIC_CHECKS.md",
   "reference/orchestrator_kernel/GOLDEN_TESTS.md",
+  "reference/orchestrator_kernel/materialize-orchestrator-kernel.mjs",
+  "reference/orchestrator_kernel/check-materialized.mjs",
 ];
 
 const initialModules = [
@@ -30,6 +33,10 @@ const initialModules = [
   "checks.static",
   "tests.golden_critical",
 ];
+
+const allowedGeneratedRoot = "reference/orchestrator_kernel/generated";
+const materializerPath = "reference/orchestrator_kernel/materialize-orchestrator-kernel.mjs";
+const materializedCheckPath = "reference/orchestrator_kernel/check-materialized.mjs";
 
 const forbiddenOutputs = [
   ".github/agents/orchestrator.agent.md",
@@ -129,7 +136,7 @@ function fail(id, blocker, detail) {
 }
 
 function checkRequiredFiles() {
-  const missing = requiredContractFiles.filter((file) => !existsFile(file));
+  const missing = requiredExperimentFiles.filter((file) => !existsFile(file));
   if (missing.length > 0) {
     return fail(
       "CH-001",
@@ -137,7 +144,7 @@ function checkRequiredFiles() {
       detailList(missing, "missing"),
     );
   }
-  return pass("CH-001", "required contracts present");
+  return pass("CH-001", "required experiment files present");
 }
 
 function checkSkillReferences() {
@@ -350,7 +357,7 @@ function checkDevSkillScope() {
   if (!/do not require production skill edits,\s+final\s+artifact writes,\s+runtime\s+loader changes,\s+installer changes,\s+smoke changes/i.test(staticChecks)) {
     failures.push("missing outside-edit prohibition");
   }
-  if (!/without runtime execution,\s+broad discovery,\s+generated artifacts,\s+or semantic review/i.test(staticChecks)) {
+  if (!/without runtime execution,\s+broad discovery,\s+generated artifact(?: execution)?s?,\s+or semantic review/i.test(staticChecks)) {
     failures.push("missing cheap structural input limitation");
   }
 
@@ -365,6 +372,74 @@ function checkDevSkillScope() {
   return pass("CH-008", "static checks scoped to dev skill");
 }
 
+function checkExperimentalMaterializerGuards() {
+  const failures = [];
+  if (!existsFile(materializerPath)) {
+    failures.push(`missing ${materializerPath}`);
+  }
+  if (!existsFile(materializedCheckPath)) {
+    failures.push(`missing ${materializedCheckPath}`);
+  }
+
+  if (failures.length === 0) {
+    const materializer = readText(materializerPath);
+    if (!materializer.includes("--allow-experimental-materialization")) {
+      failures.push("missing authorization flag");
+    }
+    if (!materializer.includes(allowedGeneratedRoot)) {
+      failures.push("missing generated output root");
+    }
+    for (const output of forbiddenOutputs) {
+      if (!materializer.includes(output)) {
+        failures.push(`missing forbidden guard ${output}`);
+      }
+    }
+  }
+
+  if (failures.length > 0) {
+    return fail(
+      "CH-009",
+      "BLOCKED_STATIC_EXPERIMENTAL_MATERIALIZER_GUARD_MISSING",
+      detailList(failures, "guard issue"),
+    );
+  }
+
+  return pass("CH-009", "experimental materializer guards present");
+}
+
+function checkDevManifest() {
+  const manifestPath = "reference/MANIFEST.md";
+  if (!existsFile(manifestPath)) {
+    return fail(
+      "CH-010",
+      "BLOCKED_STATIC_DEV_MANIFEST_AMBIGUOUS",
+      "missing: reference/MANIFEST.md",
+    );
+  }
+
+  const manifest = readText(manifestPath);
+  const required = [
+    "reference/agents/orchestrator.agent.md",
+    materializerPath,
+    materializedCheckPath,
+  ];
+  const missing = required.filter((entry) => !manifest.includes(`\`${entry}\``));
+  const ambiguous = [
+    "`reference/agents/**`",
+    "`reference/docs/**`",
+  ].filter((entry) => manifest.includes(entry));
+
+  if (missing.length > 0 || ambiguous.length > 0) {
+    const detail = [
+      missing.length > 0 ? detailList(missing, "missing") : null,
+      ambiguous.length > 0 ? detailList(ambiguous, "ambiguous") : null,
+    ].filter(Boolean).join("; ");
+    return fail("CH-010", "BLOCKED_STATIC_DEV_MANIFEST_AMBIGUOUS", detail);
+  }
+
+  return pass("CH-010", "dev manifest lists real experiment files only");
+}
+
 const checks = [
   { id: "CH-001", run: checkRequiredFiles },
   { id: "CH-002", run: checkSkillReferences },
@@ -374,6 +449,8 @@ const checks = [
   { id: "CH-006", run: checkForbiddenOutputs },
   { id: "CH-007", run: checkSafeBundleMandatory },
   { id: "CH-008", run: checkDevSkillScope },
+  { id: "CH-009", run: checkExperimentalMaterializerGuards },
+  { id: "CH-010", run: checkDevManifest },
 ];
 
 let failed = false;

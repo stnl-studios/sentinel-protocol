@@ -139,7 +139,7 @@ This mapping is an experimental contract, not a runtime implementation.
 | `context.missing_info` | Gate 1 candidate | Missing-context classification candidate, but not auto-activatable in runtime by this contract. |
 | `validation.boundary` | Gate 1 candidate | Lightweight boundary validation candidate, but not auto-activatable in runtime by this contract. |
 | `routing.execution_package` | Gate 2 conditional | Requires valid upstream context, explicit scope, and stronger owner/workflow authority. |
-| `materialization.experimental` | Gate 3 stop/block | The materialization contract exists, but real materialization remains blocked until executable checks, executable golden-test harnesses, explicit authorization, and an isolated execution path exist. |
+| `materialization.experimental` | Gate 3 stop/block | Runtime/main-flow materialization remains blocked. The local dev-skill materializer may run only with explicit flag authorization and isolated generated output paths. |
 | `checks.static` | Gate 3 stop/block | static-check contract and local read-only static-check harness exist, but runtime module activation and materialization remain blocked; checks do not grant authority or release materialization by themselves. |
 | `tests.golden_critical` | Gate 3 stop/block | golden-test contract exists for exactly two critical golden tests and the local read-only golden-test harness exists, but real execution remains blocked until fixtures, expected outputs, runtime harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
 
@@ -310,9 +310,10 @@ Expected output:
 - Gates cannot authorize writing to final artifacts.
 - Gates cannot authorize execution, deletion, validation, closure, or review by
   themselves.
-- Gates cannot activate experimental materialization without the documented
-  materialization, static-check, and golden-test contracts plus future
-  executable harnesses, explicit authorization, and an isolated execution path.
+- Gates cannot activate runtime/main-flow experimental materialization without the documented
+  materialization, static-check, and golden-test contracts plus explicit
+  authorization and an isolated execution path. The local dev-skill materializer
+  is command-authorized only and does not grant production write authority.
 - Gates cannot treat missing static checks as a pass.
 - Gates cannot treat missing golden tests as regression proof.
 - Gates cannot use optional behavior to alter the main Sentinel flow.
@@ -339,15 +340,16 @@ This activation-gates contract answers the gate questions as follows:
   write, delete, execution, validation, closure, or materialization authority.
 - Why do materialization, checks, and golden tests remain blocked?
   `checks.static` has a static-check contract and a local read-only static-check harness
-  for CH-001 through CH-008, but runtime module activation, broader execution
+  for CH-001 through CH-010, but runtime module activation, broader execution
   rules, and materialization authority still require authorized adoption.
   `tests.golden_critical` has a golden-test contract for exactly two critical
   tests and a local read-only golden-test harness, but real execution
   still requires fixtures, expected outputs, a runtime harness, explicit
-  execution rules, and authorized adoption. Materialization still also
+  execution rules, and authorized adoption. Runtime/main-flow materialization still also
   requires executable checks, executable golden tests, explicit authorization,
-  and an isolated path; static checks or golden tests alone do not grant
-  authority.
+  and an isolated adoption path; static checks or golden tests alone do not grant
+  authority. The local generated experiment requires the explicit materializer flag
+  and remains confined to `reference/orchestrator_kernel/generated/`.
 
 ## Explicitly Out Of Scope
 

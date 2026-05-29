@@ -6,8 +6,8 @@ This document defines the minimum static checks for the experimental
 `orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
 
 It is contract text and a structural-check contract. The local read-only static-check harness
-`reference/orchestrator_kernel/check-static.mjs` implements only CH-001 through
-CH-008 as read-only checks over the dev skill contracts.
+`reference/orchestrator_kernel/check-static.mjs` implements CH-001 through
+CH-010 as read-only checks over the dev skill contracts and local experiment files.
 
 It does not implement a runtime loader, real materialization path, golden tests,
 full validation suite, installer behavior, smoke behavior, or final artifact
@@ -59,7 +59,7 @@ including `checks.static`, `materialization.experimental`, and
 `reference/orchestrator_kernel/ACTIVATION_GATES.md` maps every initial module to
 its conservative gate and keeps `checks.static` in Gate 3 for runtime module
 activation and materialization authority even after the local read-only
-static-check harness exists.
+static-check harness exists. The local materializer is checked structurally but is not executed by static checks.
 
 `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md` defines the
 future isolated materialization boundary and prohibited outputs that static
@@ -89,7 +89,7 @@ as pass.
 ## Local Read-Only Static-Check Harness
 
 `reference/orchestrator_kernel/check-static.mjs` is a Node.js ESM harness that
-implements CH-001 through CH-008 only.
+implements CH-001 through CH-010 only.
 
 The harness is read-only, uses only native Node.js modules, and inspects only
 files under `skills/stnl_project_agent_specializer_dev/**`. These checks are
@@ -112,6 +112,9 @@ repository scans.
   - `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`
   - `reference/orchestrator_kernel/STATIC_CHECKS.md`
   - `reference/orchestrator_kernel/GOLDEN_TESTS.md`
+  - `reference/agents/orchestrator.agent.md`
+  - `reference/orchestrator_kernel/materialize-orchestrator-kernel.mjs`
+  - `reference/orchestrator_kernel/check-materialized.mjs`
 - PASS condition: Every listed file exists under
   `skills/stnl_project_agent_specializer_dev/**`.
 - FAIL condition: Any listed file is absent, renamed, outside the dev skill, or
@@ -264,6 +267,45 @@ repository scans.
 - Authority status: Local harness exists, but does not authorize
   materialization.
 
+### CH-009 - Experimental Materializer Has Explicit Guards
+
+- Objective: Verify that the local materializer and generated-artifact checker
+  are present and visibly constrained to the isolated experiment.
+- Input:
+  - `reference/orchestrator_kernel/materialize-orchestrator-kernel.mjs`
+  - `reference/orchestrator_kernel/check-materialized.mjs`
+- PASS condition:
+  - both files exist inside `skills/stnl_project_agent_specializer_dev/**`;
+  - the materializer requires `--allow-experimental-materialization`;
+  - the materializer names `reference/orchestrator_kernel/generated` as the only
+    generated output root;
+  - the materializer names the forbidden production outputs protected by CH-006.
+- FAIL condition: The materializer or checker is absent, escapes the dev skill,
+  lacks the explicit authorization flag, lacks the generated output boundary, or
+  omits forbidden-output guards.
+- Blocker produced: `BLOCKED_STATIC_EXPERIMENTAL_MATERIALIZER_GUARD_MISSING`.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check only; the materializer is not run by CH-009.
+
+### CH-010 - Dev Manifest Does Not Encode Absent Glob Paths As Required Inputs
+
+- Objective: Verify that the dev manifest lists real bundled files and does not
+  encode absent `reference/agents/**` or `reference/docs/**` globs as parseable
+  required entries.
+- Input:
+  - `reference/MANIFEST.md`
+- PASS condition:
+  - manifest includes the copied base orchestrator, materializer, and checker;
+  - manifest does not contain backticked absent glob entries for
+    `reference/agents/**` or `reference/docs/**`.
+- FAIL condition: The manifest omits required local experiment files or presents
+  absent glob paths as parseable required references.
+- Blocker produced: `BLOCKED_STATIC_DEV_MANIFEST_AMBIGUOUS`.
+- Requirement status: Contract text; implemented by local read-only
+  static-check harness.
+- Execution status: Structural check only.
+
 ## Checks Explicitly Out Of Scope
 
 The static-check contract and local read-only harness do not define:
@@ -273,7 +315,7 @@ The static-check contract and local read-only harness do not define:
 - deep semantic validation
 - validation of all agents
 - massive snapshot comparison
-- materialization execution
+- materializer execution by static checks
 - final artifact writes
 - installation in `~/.agents`
 - changes to `sentinel.mjs`
@@ -281,35 +323,34 @@ The static-check contract and local read-only harness do not define:
 
 ## Relationship To Experimental Materialization
 
-Static checks are a future precondition for experimental materialization, not a
+Static checks are a precondition for experimental materialization, not a
 materialization grant.
 
 If static checks are absent, incomplete, unavailable, or failing,
 `materialization.experimental` must remain blocked.
 
-Even when static checks pass in a future harness, they are insufficient by
-themselves. Critical golden tests are complementary and also insufficient by
-themselves. Explicit authorization, isolated allowed paths, real
-implementations/harnesses, and authorized adoption are still required before
-real experimental materialization can be considered.
+Even when static checks pass, they are insufficient by themselves. Critical
+golden tests are complementary and also insufficient by themselves. Explicit
+authorization, isolated allowed paths, the local materializer, and generated
+artifact checks are still required before experimental materialization can run.
 
 The checks protect the future experiment by catching structural regressions
 early: missing kernel files, broken dev-skill references, missing module-index
 entries, missing gate coverage, weakened blocked-module rules, weakened
-forbidden-output rules, weakened safe-bundle rules, and accidental scope escape
-outside the dev skill.
+forbidden-output rules, weakened safe-bundle rules, missing materializer guards,
+ambiguous manifest entries, and accidental scope escape outside the dev skill.
 
 ## Acceptance Criteria
 
 This static-checks contract answers the static-check questions as follows:
 
-- Which minimum checks exist? CH-001 through CH-008 define the minimum required
+- Which minimum checks exist? CH-001 through CH-010 define the minimum required
   structural checks.
 - What does each check validate? Each check defines its objective and input.
 - What is PASS or FAIL? Each check defines explicit PASS and FAIL conditions.
 - Why are these checks cheap? They inspect a small, explicit set of dev-skill
   Markdown contracts and references without runtime execution, broad discovery,
-  generated artifacts, or semantic review.
+  generated artifact execution, or semantic review.
 - Why are they not a full suite? They do not execute the workflow, validate all
   agents, compare broad snapshots, prove generated behavior, or replace
   reviewer/validation-runner/smoke responsibilities.
@@ -317,13 +358,14 @@ This static-checks contract answers the static-check questions as follows:
   structural readiness; materialization still requires golden tests, explicit
   authorization, isolated execution/materialization path, and later adoption.
 - What remains missing before real materialization? Runtime/fixture golden-test
-  harness, explicit write authorization, isolated allowed outputs,
-  runtime/materialization path, runtime-integrated adoption, and an explicit authorization
-  that enables the experimental path.
+  harness, explicit write authorization, isolated allowed outputs for any future
+  target path, runtime-integrated adoption, and explicit authorization for any
+  path beyond the local generated experiment.
 - How do they protect against structural regression? They fail closed when core
   files disappear, references break, module/gate coverage drifts, blocked
   modules weaken, forbidden outputs are removed, the safe bundle becomes
-  optional, or this contract starts depending on files outside the dev skill.
+  optional, materializer guards disappear, manifest entries become ambiguous, or
+  this contract starts depending on files outside the dev skill.
 
 ## Explicitly Out Of Scope
 
@@ -331,7 +373,7 @@ This contract and the read-only harness do not implement:
 
 - runtime-integrated check execution
 - runtime loader
-- real materialization
+- production or target-project materialization
 - golden tests
 - full suite
 - kernelization of the other agents

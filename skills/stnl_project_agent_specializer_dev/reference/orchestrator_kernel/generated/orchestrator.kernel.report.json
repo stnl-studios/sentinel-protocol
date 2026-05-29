@@ -1,0 +1,67 @@
+{
+  "status": "MATERIALIZED_EXPERIMENTAL",
+  "generated_at": "2026-05-28T23:43:55.670Z",
+  "output": "reference/orchestrator_kernel/generated/orchestrator.kernel.agent.md",
+  "report": "reference/orchestrator_kernel/generated/orchestrator.kernel.report.json",
+  "scope": "orchestrator-only",
+  "installable": false,
+  "final_artifact": false,
+  "source_files": {
+    "baseOrchestrator": {
+      "path": "reference/agents/orchestrator.agent.md",
+      "sha256": "5e2138a45fd3fd8f510b441636b09888f66d799952e1891d3497abda576edab6",
+      "bytes": 27995,
+      "bullet_count": 179
+    },
+    "kernelContract": {
+      "path": "reference/orchestrator_kernel/CONTRACT.md",
+      "sha256": "37a438f63404999180284a9958a2854f3714e03844eb2e67e25eb686ea8b5433",
+      "bytes": 11637,
+      "bullet_count": 92
+    },
+    "minimumSafeBundle": {
+      "path": "reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md",
+      "sha256": "0732626c6c362865c495a9d9484b5d3f463eb9bc3ebbbf83fddbd09b4bfe8ce3",
+      "bytes": 12113,
+      "bullet_count": 89
+    },
+    "moduleIndex": {
+      "path": "reference/orchestrator_kernel/MODULE_INDEX.md",
+      "sha256": "c2c336fd15a661aef56da0d3687d469d72fa72409437e04eaf52a4009755d446",
+      "bytes": 21285,
+      "bullet_count": 323
+    },
+    "activationGates": {
+      "path": "reference/orchestrator_kernel/ACTIVATION_GATES.md",
+      "sha256": "dc638008b6d7f2a3eeeaefda50a02d83d767ae35a260fa329c66c68ed46b81e0",
+      "bytes": 15626,
+      "bullet_count": 96
+    },
+    "materializationContract": {
+      "path": "reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md",
+      "sha256": "5f5b60012f12c3933f36aecbe7186a0401fff6ada4c63fe15e2b1df532c58f88",
+      "bytes": 10640,
+      "bullet_count": 91
+    }
+  },
+  "generated": {
+    "sha256": "2b28677afc86515651fbf8e95aeb6fc69d8fec074bbcc172ceb6cb1b1082b901",
+    "bytes": 16108,
+    "line_count": 244
+  },
+  "comparison": {
+    "base_bytes": 27995,
+    "generated_bytes": 16108,
+    "generated_to_base_ratio": 0.5754
+  },
+  "forbidden_outputs": [
+    ".github/agents/orchestrator.agent.md",
+    ".codex/agents/orchestrator.toml",
+    ".codex/config.toml",
+    "AGENTS.md",
+    "templates/agents/orchestrator.agent.md",
+    "sentinel.mjs",
+    "scripts/sentinel-smoke.mjs"
+  ],
+  "allowed_output_root": "reference/orchestrator_kernel/generated"
+}

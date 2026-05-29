@@ -270,27 +270,26 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
 ### `materialization.experimental`
 
 - `module_id`: `materialization.experimental`
-- `status`: `materialization_contract_documented_blocked_until_harnesses_authorization_and_isolated_execution_path`
-- `purpose`: Represent future isolated experimental materialization for the
+- `status`: `local_materializer_available_blocked_without_explicit_authorization`
+- `purpose`: Represent isolated experimental materialization for the
   orchestrator kernel. The materialization contract exists at
-  `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`, but the
-  module remains unavailable for real materialization until later authorized contracts provide
-  executable static-check and golden-test harnesses, explicit authorization, and
-  an isolated execution/materialization path.
+  `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`, and the local
+  deterministic materializer exists at
+  `reference/orchestrator_kernel/materialize-orchestrator-kernel.mjs`, but the
+  module remains unavailable for runtime/main-flow materialization and blocks
+  unless explicit local authorization and isolated generated paths are present.
 - `activation_signals`:
-  - none executable as real materialization
-  - future explicit authorization for experimental materialization
+  - none auto-executable as runtime materialization
+  - explicit `--allow-experimental-materialization` flag for the local harness
   - materialization contract exists
-  - future executable checks and golden-test harnesses pass
+  - local static and golden structural harnesses pass
 - `required_context`:
   - materialization contract
-  - future activation-gate decision
-  - canonical base orchestrator available
-  - explicit authority to write experimental artifacts
-  - isolated allowed paths
-  - target/runtime boundary
-  - documented checks and tests plus future executable harnesses proving the
-    experimental path is safe
+  - activation-gate decision
+  - copied base orchestrator available at `reference/agents/orchestrator.agent.md`
+  - explicit authority to write experimental generated artifacts
+  - isolated allowed paths under `reference/orchestrator_kernel/generated/`
+  - documented checks and local structural harnesses proving the path is isolated
 - `outputs`:
   - none as final artifacts
   - future isolated materialization plan or result only after later authorized contracts define
@@ -333,11 +332,11 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
   kernel and its module contracts. The static-check contract exists at
   `reference/orchestrator_kernel/STATIC_CHECKS.md`, and the local read-only static-check harness exists at `reference/orchestrator_kernel/check-static.mjs`, but
   there is still no runtime loader integration, runtime golden-test execution,
-  real materialization path, or authority to release materialization.
+  runtime-integrated materialization path, or authority to release production materialization.
 - `activation_signals`:
-  - local read-only static-check harness exists for CH-001 through CH-008
+  - local read-only static-check harness exists for CH-001 through CH-010
   - static-check contract exists
-  - future activation gates allow static checking
+  - activation gates allow static checking
   - candidate artifacts or contracts are present in authorized paths
 - `required_context`:
   - static-check contract
@@ -392,7 +391,7 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
   - golden-test contract exists
   - local read-only golden-test harness exists
   - future test fixtures, expected outputs, and runtime harness exist
-  - future activation gates allow golden-test evaluation
+  - activation gates allow golden-test evaluation
   - kernel behavior change requires critical regression proof
 - `required_context`:
   - golden-test contract
@@ -447,10 +446,11 @@ This module index answers the catalog questions as follows:
 - What context does each module require? Each entry defines `required_context`.
 - What output may each module produce? Each entry defines `outputs`.
 - Which modules are unavailable until authorized implementation? `materialization.experimental`
-  and `tests.golden_critical` are unavailable until authorized implementation provides the
-  required implementation, executable harnesses, authorization, or isolated
-  execution path. `checks.static` has a static-check contract and a local read-only static-check harness, but no runtime loader integration and no authority to release
-  materialization.
+  is unavailable for runtime/main-flow use unless authorized implementation provides
+  the required adoption path. The local dev-skill materializer is available only
+  with explicit flag authorization and isolated generated outputs.
+  `checks.static` has a static-check contract and a local read-only static-check harness, but no runtime loader integration and no authority to release
+  production materialization.
   `tests.golden_critical` has a golden-test contract for exactly two critical tests and a local read-only golden-test harness, but no
   runtime/fixture executable harness. All other cataloged modules still require
   future runtime activation support before activation.
@@ -468,7 +468,7 @@ This catalog does not implement:
 
 - activation gates
 - runtime loader
-- experimental materialization
+- runtime/main-flow experimental materialization
 - static checks
 - golden tests
 - kernelization of the other agents
