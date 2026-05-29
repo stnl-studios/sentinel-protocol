@@ -270,57 +270,50 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
 ### `materialization.experimental`
 
 - `module_id`: `materialization.experimental`
-- `status`: `local_materializer_available_blocked_without_explicit_authorization`
-- `purpose`: Represent isolated experimental materialization for the
-  orchestrator kernel. The materialization contract exists at
-  `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`, and the local
-  deterministic materializer exists at
-  `reference/orchestrator_kernel/materialize-orchestrator-kernel.mjs`, but the
-  module remains unavailable for runtime/main-flow materialization and blocks
-  unless explicit local authorization and isolated generated paths are present.
+- `status`: `frozen_no_active_materializer`
+- `purpose`: Record that standalone experimental materialization for the
+  orchestrator kernel is frozen. The boundary note exists at
+  `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`, but no local
+  materializer, generated artifact, generated report, runtime/main-flow
+  materialization, or target-repo materialization is active.
 - `activation_signals`:
-  - none auto-executable as runtime materialization
-  - explicit `--allow-experimental-materialization` flag for the local harness
-  - materialization contract exists
-  - local static and golden structural harnesses pass
+  - none executable as materialization
+  - request asks to recreate the frozen standalone materializer
+  - request asks for generated artifacts or generated reports
+  - request asks for target-repo materialization from this dev area
 - `required_context`:
-  - materialization contract
-  - activation-gate decision
-  - copied base orchestrator available at `reference/agents/orchestrator.agent.md`
-  - explicit authority to write experimental generated artifacts
-  - isolated allowed paths under `reference/orchestrator_kernel/generated/`
-  - documented checks and local structural harnesses proving the path is isolated
+  - freeze document
+  - kernel-lab route
+  - copied base orchestrator when comparison work is requested
+  - explicit confirmation that the requested work remains documentation-only
 - `outputs`:
   - none as final artifacts
-  - future isolated materialization plan or result only after later authorized contracts define
-    and authorize it
+  - blocker or documentation-only comparison guidance
 - `dependencies`:
   - kernel contract
   - minimum safe bundle
-  - materialization contract
-  - future activation gates
-  - static-check contract and future executable harness
-  - golden-test contract and future executable harness
-  - explicit human or workflow authorization
-  - future isolated execution/materialization path
+  - materialization freeze document
+  - kernel lab README
+  - static and golden structural support when checking documentation drift
 - `conflicts`:
   - production skill or production template writes
-  - final target artifact writes without future authorization
+  - final target artifact writes
   - main-flow replacement
-  - missing executable check harness, golden-test harness, authorization, or
-    isolated execution path
+  - standalone materializer recreation
+  - generated artifact or generated report creation
   - attempt to materialize all agents
   - attempt to use materialization as fallback routing
 - `safe_to_auto_activate`: No.
 - `token_cost_hint`: `high`
-- `fallback_behavior`: Treat as unavailable and safe stop if materialization is
-  required.
+- `fallback_behavior`: Treat as unavailable and safe stop if materialization,
+  generated artifacts, or target writes are required.
 - `out_of_scope`:
   - real materialization implementation
+  - standalone materializer implementation
   - overwriting the main flow
   - writing production templates
   - writing final target artifacts
-  - creating unmarked experimental artifacts
+  - creating generated artifacts as an active deliverable
   - replacing existing materialization behavior
   - bypassing checks, tests, or authority
 
@@ -446,9 +439,8 @@ This module index answers the catalog questions as follows:
 - What context does each module require? Each entry defines `required_context`.
 - What output may each module produce? Each entry defines `outputs`.
 - Which modules are unavailable until authorized implementation? `materialization.experimental`
-  is unavailable for runtime/main-flow use unless authorized implementation provides
-  the required adoption path. The local dev-skill materializer is available only
-  with explicit flag authorization and isolated generated outputs.
+  is frozen and unavailable for runtime/main-flow use, standalone script use,
+  generated artifacts, generated reports, or target-repo materialization.
   `checks.static` has a static-check contract and a local read-only static-check harness, but no runtime loader integration and no authority to release
   production materialization.
   `tests.golden_critical` has a golden-test contract for exactly two critical tests and a local read-only golden-test harness, but no

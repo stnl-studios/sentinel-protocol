@@ -135,11 +135,11 @@ The following must remain outside the minimum safe bundle:
 - long examples
 - golden tests
 - static checks
-- experimental materializer
+- experimental materializer or any replacement standalone materializer
 - detailed activation gates
 - complete module index
 - target-specific materialization policy
-- generated artifact normalization rules
+- generated or target artifact normalization rules
 - full validation matrix design
 - broad stack or surface heuristics
 

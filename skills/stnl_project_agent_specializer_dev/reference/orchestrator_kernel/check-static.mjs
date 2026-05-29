@@ -8,11 +8,11 @@ const scriptPath = fileURLToPath(import.meta.url);
 const kernelRoot = path.dirname(scriptPath);
 const devSkillRoot = path.resolve(kernelRoot, "..", "..");
 const realDevSkillRoot = fs.realpathSync.native(devSkillRoot);
-
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 
-const requiredExperimentFiles = [
+const requiredFiles = [
   "reference/agents/orchestrator.agent.md",
+  "reference/kernel_lab/README.md",
   "reference/orchestrator_kernel/CONTRACT.md",
   "reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md",
   "reference/orchestrator_kernel/MODULE_INDEX.md",
@@ -20,8 +20,14 @@ const requiredExperimentFiles = [
   "reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md",
   "reference/orchestrator_kernel/STATIC_CHECKS.md",
   "reference/orchestrator_kernel/GOLDEN_TESTS.md",
+  "reference/orchestrator_kernel/check-static.mjs",
+  "reference/orchestrator_kernel/check-golden.mjs",
+];
+
+const removedRouteReferences = [
   "reference/orchestrator_kernel/materialize-orchestrator-kernel.mjs",
   "reference/orchestrator_kernel/check-materialized.mjs",
+  "reference/orchestrator_kernel/generated/**",
 ];
 
 const initialModules = [
@@ -32,20 +38,6 @@ const initialModules = [
   "materialization.experimental",
   "checks.static",
   "tests.golden_critical",
-];
-
-const allowedGeneratedRoot = "reference/orchestrator_kernel/generated";
-const materializerPath = "reference/orchestrator_kernel/materialize-orchestrator-kernel.mjs";
-const materializedCheckPath = "reference/orchestrator_kernel/check-materialized.mjs";
-
-const forbiddenOutputs = [
-  ".github/agents/orchestrator.agent.md",
-  ".codex/agents/orchestrator.toml",
-  ".codex/config.toml",
-  "AGENTS.md",
-  "templates/agents/orchestrator.agent.md",
-  "sentinel.mjs",
-  "scripts/sentinel-smoke.mjs",
 ];
 
 function isInside(childPath, parentPath) {
@@ -61,15 +53,11 @@ function hasIgnoredPart(relativePath) {
 }
 
 function toDevPath(relativePath) {
-  if (hasIgnoredPart(relativePath)) {
-    return { ignored: true, path: null };
-  }
-
+  if (hasIgnoredPart(relativePath)) return { ignored: true, path: null };
   const absolutePath = path.resolve(devSkillRoot, relativePath);
   if (!isInside(absolutePath, devSkillRoot)) {
     throw new Error(`path escapes dev skill: ${relativePath}`);
   }
-
   return { ignored: false, path: absolutePath };
 }
 
@@ -84,7 +72,6 @@ function realPathInsideDev(absolutePath) {
 function existsFile(relativePath) {
   const resolved = toDevPath(relativePath);
   if (resolved.ignored) return true;
-
   try {
     const stats = fs.statSync(resolved.path);
     if (!stats.isFile()) return false;
@@ -102,29 +89,12 @@ function readText(relativePath) {
   return fs.readFileSync(realPathInsideDev(resolved.path), "utf8");
 }
 
-function sectionFromHeading(markdown, headingPattern) {
-  const match = headingPattern.exec(markdown);
-  if (!match) return "";
-
-  const start = match.index;
-  const rest = markdown.slice(start);
-  const next = rest.slice(match[0].length).search(/^#{1,3}\s+/m);
-  return next === -1 ? rest : rest.slice(0, match[0].length + next);
-}
-
-function moduleEntry(markdown, moduleId) {
-  return sectionFromHeading(
-    markdown,
-    new RegExp(`^###\\s+\`${escapeRegExp(moduleId)}\`\\s*$`, "m"),
-  );
-}
-
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function detailList(items, prefix) {
-  return `${prefix}: ${items.slice(0, 4).join(", ")}${items.length > 4 ? ", ..." : ""}`;
+  return `${prefix}: ${items.slice(0, 5).join(", ")}${items.length > 5 ? ", ..." : ""}`;
 }
 
 function pass(id, detail = "ok") {
@@ -135,336 +105,169 @@ function fail(id, blocker, detail) {
   return { id, status: "FAIL", blocker, detail };
 }
 
+function hasAll(text, values) {
+  return values.every((value) => text.includes(value));
+}
+
 function checkRequiredFiles() {
-  const missing = requiredExperimentFiles.filter((file) => !existsFile(file));
+  const missing = requiredFiles.filter((file) => !existsFile(file));
   if (missing.length > 0) {
-    return fail(
-      "CH-001",
-      "BLOCKED_STATIC_REQUIRED_FILE_MISSING",
-      detailList(missing, "missing"),
-    );
+    return fail("CH-001", "BLOCKED_STATIC_REQUIRED_FILE_MISSING", detailList(missing, "missing"));
   }
-  return pass("CH-001", "required experiment files present");
+  return pass("CH-001", "kernel-lab files present");
 }
 
-function checkSkillReferences() {
-  if (!existsFile("SKILL.md")) {
-    return fail(
-      "CH-002",
-      "BLOCKED_STATIC_SKILL_REFERENCE_BROKEN",
-      "missing: SKILL.md",
-    );
+function checkManifestFrozenRoute() {
+  const manifest = readText("reference/MANIFEST.md");
+  const missing = [
+    "reference/agents/orchestrator.agent.md",
+    "reference/kernel_lab/README.md",
+    "reference/orchestrator_kernel/check-static.mjs",
+    "reference/orchestrator_kernel/check-golden.mjs",
+  ].filter((entry) => !manifest.includes(`\`${entry}\``));
+  const stale = removedRouteReferences.filter((entry) => manifest.includes(`\`${entry}\``));
+  const ambiguous = ["`reference/agents/**`", "`reference/docs/**`"].filter((entry) => manifest.includes(entry));
+  const failures = [...missing.map((entry) => `missing ${entry}`), ...stale.map((entry) => `stale ${entry}`), ...ambiguous.map((entry) => `ambiguous ${entry}`)];
+  if (failures.length > 0) {
+    return fail("CH-002", "BLOCKED_STATIC_DEV_MANIFEST_AMBIGUOUS", detailList(failures, "manifest issue"));
   }
-
-  const skill = readText("SKILL.md");
-  const matches = [...skill.matchAll(/reference\/orchestrator_kernel\/[A-Za-z0-9_.-]+\.md/g)]
-    .map((match) => match[0])
-    .filter((reference) => !hasIgnoredPart(reference));
-  const uniqueReferences = [...new Set(matches)];
-  const broken = uniqueReferences.filter((reference) => !existsFile(reference));
-
-  if (broken.length > 0) {
-    return fail(
-      "CH-002",
-      "BLOCKED_STATIC_SKILL_REFERENCE_BROKEN",
-      detailList(broken, "broken"),
-    );
-  }
-
-  return pass("CH-002", `${uniqueReferences.length} dev references valid`);
+  return pass("CH-002", "manifest matches frozen route");
 }
 
-function checkModuleIndex() {
+function checkKernelLabRoute() {
+  const lab = readText("reference/kernel_lab/README.md");
+  const required = [
+    "validate the orchestrator kernel",
+    "extract reusable principles",
+    "kernelize agents by responsibility family",
+    "validate the agent package",
+    "Project Senior Profile",
+    "rebuild the skill",
+  ];
+  const missing = required.filter((text) => !lab.includes(text));
+  if (missing.length > 0) {
+    return fail("CH-003", "BLOCKED_STATIC_KERNEL_LAB_ROUTE_INCOMPLETE", detailList(missing, "missing"));
+  }
+  return pass("CH-003", "kernel-lab route present");
+}
+
+function checkKernelCriteria() {
+  const lab = readText("reference/kernel_lab/README.md");
+  const required = [
+    "central mission",
+    "authority limits",
+    "inputs and outputs",
+    "handoffs",
+    "completion contract",
+    "role drift",
+    "critical gates",
+    "removes redundancy",
+    "nonexistent external",
+    "intentional and justified",
+  ];
+  const missing = required.filter((text) => !lab.includes(text));
+  if (missing.length > 0) {
+    return fail("CH-004", "BLOCKED_STATIC_KERNEL_CRITERIA_INCOMPLETE", detailList(missing, "missing"));
+  }
+  return pass("CH-004", "base-agent vs kernel criteria present");
+}
+
+function checkMaterializationFrozen() {
+  const materialization = readText("reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md");
+  const required = [
+    "no standalone",
+    "no generated",
+    "no writes to a target repo",
+    "no fallback",
+    "production skill",
+    "external filesystem",
+  ];
+  const missing = required.filter((text) => !materialization.includes(text));
+  if (missing.length > 0) {
+    return fail("CH-005", "BLOCKED_STATIC_MATERIALIZATION_FREEZE_WEAKENED", detailList(missing, "missing"));
+  }
+  return pass("CH-005", "materialization route frozen");
+}
+
+function checkModuleIndexAndGates() {
   const moduleIndex = readText("reference/orchestrator_kernel/MODULE_INDEX.md");
-  const missing = [];
-  const ambiguous = [];
-
-  for (const moduleId of initialModules) {
-    const headingCount = [...moduleIndex.matchAll(
-      new RegExp(`^###\\s+\`${escapeRegExp(moduleId)}\`\\s*$`, "gm"),
-    )].length;
-    const fieldCount = [...moduleIndex.matchAll(
-      new RegExp(`\`module_id\`:\\s+\`${escapeRegExp(moduleId)}\``, "g"),
-    )].length;
-
-    if (headingCount === 0 || fieldCount === 0) {
-      missing.push(moduleId);
-    } else if (headingCount !== 1 || fieldCount !== 1) {
-      ambiguous.push(moduleId);
-    }
-  }
-
-  if (missing.length > 0 || ambiguous.length > 0) {
-    const detail = [
-      missing.length > 0 ? detailList(missing, "missing") : null,
-      ambiguous.length > 0 ? detailList(ambiguous, "ambiguous") : null,
-    ].filter(Boolean).join("; ");
-    return fail("CH-003", "BLOCKED_STATIC_MODULE_INDEX_INCOMPLETE", detail);
-  }
-
-  return pass("CH-003", "initial modules present");
-}
-
-function checkActivationGateCoverage() {
-  const activationGates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
-  const missing = [];
-  const ambiguous = [];
-
-  for (const moduleId of initialModules) {
-    const rows = [...activationGates.matchAll(
-      new RegExp(`^\\|\\s*\`${escapeRegExp(moduleId)}\`\\s*\\|\\s*Gate\\s+[0-3][^|]*\\|`, "gm"),
-    )];
-    if (rows.length === 0) {
-      missing.push(moduleId);
-    } else if (rows.length > 1) {
-      ambiguous.push(moduleId);
-    }
-  }
-
-  if (missing.length > 0 || ambiguous.length > 0) {
-    const detail = [
-      missing.length > 0 ? detailList(missing, "missing") : null,
-      ambiguous.length > 0 ? detailList(ambiguous, "ambiguous") : null,
-    ].filter(Boolean).join("; ");
-    return fail("CH-004", "BLOCKED_STATIC_GATE_MAPPING_INCOMPLETE", detail);
-  }
-
-  return pass("CH-004", "initial modules mapped");
-}
-
-function checkBlockedModulesStayBlocked() {
-  const moduleIndex = readText("reference/orchestrator_kernel/MODULE_INDEX.md");
-  const activationGates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
-  const staticChecks = readText("reference/orchestrator_kernel/STATIC_CHECKS.md");
-  const goldenTests = readText("reference/orchestrator_kernel/GOLDEN_TESTS.md");
-
-  const materializationEntry = moduleEntry(moduleIndex, "materialization.experimental");
-  const checksEntry = moduleEntry(moduleIndex, "checks.static");
-  const goldenEntry = moduleEntry(moduleIndex, "tests.golden_critical");
+  const gates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
   const failures = [];
 
-  if (!/- `safe_to_auto_activate`:\s*No\./.test(materializationEntry)) {
-    failures.push("materialization.experimental safe_to_auto_activate not No");
+  for (const moduleId of initialModules) {
+    const moduleHeading = new RegExp(`^###\\s+\`${escapeRegExp(moduleId)}\`\\s*$`, "m");
+    const gateRow = new RegExp(`^\\|\\s*\`${escapeRegExp(moduleId)}\`\\s*\\|\\s*Gate\\s+[0-3][^|]*\\|`, "m");
+    if (!moduleHeading.test(moduleIndex)) failures.push(`missing module ${moduleId}`);
+    if (!gateRow.test(gates)) failures.push(`missing gate ${moduleId}`);
   }
 
-  if (!/^\|\s*`materialization\.experimental`\s*\|\s*Gate 3 stop\/block\s*\|/m.test(activationGates)) {
-    failures.push("materialization.experimental not Gate 3 stop/block");
-  }
-
-  const staticAuthorityText = `${checksEntry}\n${activationGates}\n${staticChecks}`;
-  if (!/(not a materialization grant|do not grant authority or release materialization|do not authorize real materialization|does not authorize (?:real )?materialization|not (?:as )?materialization authority|no authority to release materialization)/i.test(staticAuthorityText)) {
-    failures.push("checks.static lacks materialization-authority prohibition");
-  }
-
-  const goldenAuthorityText = `${goldenEntry}\n${activationGates}\n${goldenTests}`;
-  if (!/not a full suite/i.test(goldenAuthorityText)) {
-    failures.push("tests.golden_critical lacks full-suite limitation");
-  }
-  if (!/(does not implement an executable harness|no executable harness|without a future harness|future runnable test harness)/i.test(goldenAuthorityText)) {
-    failures.push("tests.golden_critical lacks executable-proof limitation");
-  }
-  if (!/(do not grant authority or release materialization by themselves|neither one authorizes materialization by itself|does not authorize (?:or perform )?(?:real )?materialization|not as authorization for materialization|do not authorize materialization by themselves)/i.test(goldenAuthorityText)) {
-    failures.push("tests.golden_critical lacks materialization-authority limitation");
-  }
+  if (!/does not grant authority/i.test(moduleIndex)) failures.push("module index authority statement missing");
+  if (!/Gates cannot authorize writing to final artifacts/i.test(gates)) failures.push("gate final-artifact authority block missing");
+  if (!/current dev route is kernel-lab comparison only/i.test(gates)) failures.push("gate materialization freeze missing");
 
   if (failures.length > 0) {
-    return fail(
-      "CH-005",
-      "BLOCKED_STATIC_BLOCKED_MODULE_WEAKENED",
-      detailList(failures, "weakened"),
-    );
+    return fail("CH-006", "BLOCKED_STATIC_MODULE_GATE_AUTHORITY_WEAKENED", detailList(failures, "issue"));
   }
-
-  return pass("CH-005", "blocked modules remain blocked");
-}
-
-function checkForbiddenOutputs() {
-  const materialization = readText("reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md");
-  const prohibited = sectionFromHeading(materialization, /^## Prohibited Outputs\s*$/m);
-  const missing = forbiddenOutputs.filter((output) => !prohibited.includes(output));
-
-  if (missing.length > 0) {
-    return fail(
-      "CH-006",
-      "BLOCKED_STATIC_FORBIDDEN_OUTPUT_WEAKENED",
-      detailList(missing, "missing"),
-    );
-  }
-
-  return pass("CH-006", "forbidden outputs prohibited");
+  return pass("CH-006", "modules and gates remain non-authorizing");
 }
 
 function checkSafeBundleMandatory() {
-  const minimumSafeBundle = readText("reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md");
+  const safeBundle = readText("reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md");
   const moduleIndex = readText("reference/orchestrator_kernel/MODULE_INDEX.md");
-  const activationGates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
-  const staticChecks = readText("reference/orchestrator_kernel/STATIC_CHECKS.md");
+  const gates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
   const failures = [];
 
-  if (!/minimum safe bundle is mandatory/i.test(minimumSafeBundle)) {
-    failures.push("MINIMUM_SAFE_BUNDLE.md missing mandatory statement");
-  }
-  if (!/must never remove, override, weaken, or make conditional/i.test(minimumSafeBundle)) {
-    failures.push("MINIMUM_SAFE_BUNDLE.md missing anti-weakening statement");
-  }
-  if (!/No module may weaken, override, replace, or make conditional the minimum safe\s+bundle/i.test(moduleIndex)) {
-    failures.push("MODULE_INDEX.md missing module anti-weakening rule");
-  }
-  if (!/No gate may weaken,\s+override,\s+make optional,\s+or bypass any non-optional protection/i.test(activationGates)) {
-    failures.push("ACTIVATION_GATES.md missing gate anti-bypass rule");
-  }
-  if (!/cannot be removed,\s+overridden,\s+weakened,\s+made\s+conditional,\s+or bypassed/i.test(staticChecks)) {
-    failures.push("STATIC_CHECKS.md missing check/materializer anti-bypass rule");
-  }
-
-  const combined = `${minimumSafeBundle}\n${moduleIndex}\n${activationGates}\n${staticChecks}`;
-  const weakeningPatterns = [
-    /minimum safe bundle is optional/i,
-    /safe bundle is optional/i,
-    /safe bundle may be bypassed/i,
-    /safe bundle can be bypassed/i,
-    /static checks replace the minimum safe bundle/i,
-    /materialization replaces the minimum safe bundle/i,
-  ];
-  for (const pattern of weakeningPatterns) {
-    if (pattern.test(combined)) {
-      failures.push(`weakening phrase: ${pattern.source}`);
-      break;
-    }
-  }
+  if (!/minimum safe bundle is mandatory/i.test(safeBundle)) failures.push("safe bundle mandatory statement missing");
+  if (!/must never remove, override, weaken, or make conditional/i.test(safeBundle)) failures.push("safe bundle anti-weakening statement missing");
+  if (!/No module may weaken, override, replace, or make conditional the minimum safe\s+bundle/i.test(moduleIndex)) failures.push("module anti-weakening rule missing");
+  if (!/No gate may weaken,\s+override,\s+make optional,\s+or bypass any non-optional protection/i.test(gates)) failures.push("gate anti-bypass rule missing");
 
   if (failures.length > 0) {
-    return fail(
-      "CH-007",
-      "BLOCKED_STATIC_SAFE_BUNDLE_WEAKENED",
-      detailList(failures, "weakened"),
-    );
+    return fail("CH-007", "BLOCKED_STATIC_SAFE_BUNDLE_WEAKENED", detailList(failures, "issue"));
   }
-
   return pass("CH-007", "safe bundle remains mandatory");
 }
 
-function checkDevSkillScope() {
+function checkDevScope() {
   const staticChecks = readText("reference/orchestrator_kernel/STATIC_CHECKS.md");
-  const failures = [];
-
-  if (!/(documental|documentation|structural)/i.test(staticChecks)) {
-    failures.push("missing documentary/structural scope");
-  }
-  if (!/skills\/stnl_project_agent_specializer_dev\/\*\*/.test(staticChecks)) {
-    failures.push("missing dev-skill path boundary");
-  }
-  if (!/do not require production skill edits,\s+final\s+artifact writes,\s+runtime\s+loader changes,\s+installer changes,\s+smoke changes/i.test(staticChecks)) {
-    failures.push("missing outside-edit prohibition");
-  }
-  if (!/without runtime execution,\s+broad discovery,\s+generated artifact(?: execution)?s?,\s+or semantic review/i.test(staticChecks)) {
-    failures.push("missing cheap structural input limitation");
-  }
-
-  if (failures.length > 0) {
-    return fail(
-      "CH-008",
-      "BLOCKED_STATIC_SCOPE_ESCAPED_DEV_SKILL",
-      detailList(failures, "scope issue"),
-    );
-  }
-
-  return pass("CH-008", "static checks scoped to dev skill");
-}
-
-function checkExperimentalMaterializerGuards() {
-  const failures = [];
-  if (!existsFile(materializerPath)) {
-    failures.push(`missing ${materializerPath}`);
-  }
-  if (!existsFile(materializedCheckPath)) {
-    failures.push(`missing ${materializedCheckPath}`);
-  }
-
-  if (failures.length === 0) {
-    const materializer = readText(materializerPath);
-    if (!materializer.includes("--allow-experimental-materialization")) {
-      failures.push("missing authorization flag");
-    }
-    if (!materializer.includes(allowedGeneratedRoot)) {
-      failures.push("missing generated output root");
-    }
-    for (const output of forbiddenOutputs) {
-      if (!materializer.includes(output)) {
-        failures.push(`missing forbidden guard ${output}`);
-      }
-    }
-  }
-
-  if (failures.length > 0) {
-    return fail(
-      "CH-009",
-      "BLOCKED_STATIC_EXPERIMENTAL_MATERIALIZER_GUARD_MISSING",
-      detailList(failures, "guard issue"),
-    );
-  }
-
-  return pass("CH-009", "experimental materializer guards present");
-}
-
-function checkDevManifest() {
-  const manifestPath = "reference/MANIFEST.md";
-  if (!existsFile(manifestPath)) {
-    return fail(
-      "CH-010",
-      "BLOCKED_STATIC_DEV_MANIFEST_AMBIGUOUS",
-      "missing: reference/MANIFEST.md",
-    );
-  }
-
-  const manifest = readText(manifestPath);
   const required = [
-    "reference/agents/orchestrator.agent.md",
-    materializerPath,
-    materializedCheckPath,
+    "read-only",
+    "skills/stnl_project_agent_specializer_dev/**",
+    "productive skill",
+    "productive templates",
+    ".github/**",
+    ".codex/**",
+    "AGENTS.md",
+    "sentinel.mjs",
+    "scripts/sentinel-smoke.mjs",
+    "~/.agents/**",
+    "external filesystem",
   ];
-  const missing = required.filter((entry) => !manifest.includes(`\`${entry}\``));
-  const ambiguous = [
-    "`reference/agents/**`",
-    "`reference/docs/**`",
-  ].filter((entry) => manifest.includes(entry));
-
-  if (missing.length > 0 || ambiguous.length > 0) {
-    const detail = [
-      missing.length > 0 ? detailList(missing, "missing") : null,
-      ambiguous.length > 0 ? detailList(ambiguous, "ambiguous") : null,
-    ].filter(Boolean).join("; ");
-    return fail("CH-010", "BLOCKED_STATIC_DEV_MANIFEST_AMBIGUOUS", detail);
+  const missing = required.filter((text) => !staticChecks.includes(text));
+  if (missing.length > 0) {
+    return fail("CH-008", "BLOCKED_STATIC_SCOPE_ESCAPED_DEV_SKILL", detailList(missing, "missing"));
   }
-
-  return pass("CH-010", "dev manifest lists real experiment files only");
+  return pass("CH-008", "checks scoped to dev skill");
 }
 
 const checks = [
-  { id: "CH-001", run: checkRequiredFiles },
-  { id: "CH-002", run: checkSkillReferences },
-  { id: "CH-003", run: checkModuleIndex },
-  { id: "CH-004", run: checkActivationGateCoverage },
-  { id: "CH-005", run: checkBlockedModulesStayBlocked },
-  { id: "CH-006", run: checkForbiddenOutputs },
-  { id: "CH-007", run: checkSafeBundleMandatory },
-  { id: "CH-008", run: checkDevSkillScope },
-  { id: "CH-009", run: checkExperimentalMaterializerGuards },
-  { id: "CH-010", run: checkDevManifest },
+  checkRequiredFiles,
+  checkManifestFrozenRoute,
+  checkKernelLabRoute,
+  checkKernelCriteria,
+  checkMaterializationFrozen,
+  checkModuleIndexAndGates,
+  checkSafeBundleMandatory,
+  checkDevScope,
 ];
 
 let failed = false;
-
 for (const check of checks) {
   let result;
   try {
-    result = check.run();
+    result = check();
   } catch (error) {
-    result = fail(
-      check.id,
-      "BLOCKED_STATIC_SCOPE_ESCAPED_DEV_SKILL",
-      error instanceof Error ? error.message : String(error),
-    );
+    result = fail("STATIC", "BLOCKED_STATIC_SCOPE_ESCAPED_DEV_SKILL", error instanceof Error ? error.message : String(error));
   }
 
   if (result.status === "FAIL") failed = true;

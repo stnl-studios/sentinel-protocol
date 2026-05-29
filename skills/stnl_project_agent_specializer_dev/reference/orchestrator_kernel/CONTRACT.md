@@ -32,7 +32,7 @@ The kernel must always retain enough authority and context to:
 - understand the human request at the routing level before any owner is selected
 - decide whether the next safe action is to plan, route, validate, or stop
 - respect the requested scope, repo boundaries, target runtime, owned paths, and explicit exclusions
-- respect authority boundaries between human authorization, root/main session, orchestrator, owners, skills, and generated artifacts
+- respect authority boundaries between human authorization, root/main session, orchestrator, owners, skills, and any future derived artifacts
 - avoid inventing templates, base agents, paths, target files, module contents, or workflow contracts
 - ask for missing context when the request, authority, repo state, or routing decision cannot be determined honestly
 - prevent execution, materialization, deletion, routing, or fallback behavior without sufficient authorization
@@ -166,7 +166,7 @@ The following should become future module responsibilities when implemented:
 - specialized risk classifiers
 - optional routing optimizations
 - experimental materialization policy
-- generated artifact normalization
+- future artifact normalization
 - static checks and golden-test fixtures
 
 These may inform routing only after they are registered in the module index and allowed by activation gates.

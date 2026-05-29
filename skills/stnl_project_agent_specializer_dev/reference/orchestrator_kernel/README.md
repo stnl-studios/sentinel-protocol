@@ -1,8 +1,15 @@
 # Orchestrator Kernel Contracts
 
-Status: experimental documentation index for `stnl_project_agent_specializer_dev`.
+Status: experimental documentation index for the kernel-lab route in
+`stnl_project_agent_specializer_dev`.
 
-Nothing in this directory implements runtime loading, module execution, runtime-integrated check execution, runtime golden-test execution, final artifacts, or real materialization. The local harnesses here are read-only structural checks only.
+Nothing in this directory implements runtime loading, module execution,
+runtime-integrated check execution, runtime golden-test execution, final
+artifacts, generated artifacts, or real materialization. The local harnesses are
+read-only structural checks only.
+
+The previous standalone materialization route is frozen. Current work is
+base-agent vs kernel-agent validation, starting with `orchestrator`.
 
 Read in this order:
 
@@ -10,9 +17,10 @@ Read in this order:
 2. `MINIMUM_SAFE_BUNDLE.md` - mandatory protections that cannot become optional.
 3. `MODULE_INDEX.md` - catalog of known future modules and their limits.
 4. `ACTIVATION_GATES.md` - eligibility gates and blocked-module mapping.
-5. `EXPERIMENTAL_MATERIALIZATION.md` - isolated materialization boundary for `orchestrator` only.
-6. `STATIC_CHECKS.md` - static-check contract, without execution.
-7. `GOLDEN_TESTS.md` - exactly two critical golden-test contracts, with a local read-only golden-test harness.
+5. `EXPERIMENTAL_MATERIALIZATION.md` - freeze record for the previous
+   standalone materialization route.
+6. `STATIC_CHECKS.md` - read-only structural checks for the current docs.
+7. `GOLDEN_TESTS.md` - two critical structural golden-test contracts.
 
 Read-only local static harness: `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/check-static.mjs`.
 Read-only local golden harness: `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/check-golden.mjs`.
