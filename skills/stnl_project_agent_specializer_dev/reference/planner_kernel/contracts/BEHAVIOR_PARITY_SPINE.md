@@ -87,7 +87,7 @@ planning file, `VALIDATION PACK`, `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`,
 
 ## Status and blocking invariants
 
-The planner may emit only:
+Planner statuses are limited to:
 
 - `READY`;
 - `NEEDS_DEV_DECISION_BASE`.
@@ -195,7 +195,7 @@ validation.
 
 ### Execution-package-designer
 
-The planner may identify high-level sequencing and package-shaping constraints.
+Planner-level sequencing and package-shaping constraints may be identified.
 
 It does not define work packages, owned paths, commands, acceptance checks, or
 block conditions.
@@ -209,14 +209,14 @@ planner assumption.
 
 ## Examples of prohibited drift
 
-The planner kernel drifts when it:
+The planner kernel must reject these drift examples:
 
 - expands into broad repository discovery to make a vague cut feel safe;
 - emits a to-do list or backlog instead of an `EXECUTION BRIEF`;
-- writes `PLAN.md` or `execution_brief.md`;
-- defines `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DO_NOT_TOUCH`, commands,
+- must not write `PLAN.md` or `execution_brief.md`;
+- must not define `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DO_NOT_TOUCH`, commands,
   acceptance checks, or block conditions;
-- turns validation notes into a `VALIDATION PACK`;
+- must not turn validation notes into a `VALIDATION PACK`;
 - treats `RUN=plan` as approval to execute later;
 - treats `MODE=compact` as permission to omit risks, blockers, scope, or
   guardrails;

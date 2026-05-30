@@ -101,33 +101,33 @@ or durable-documentation authority.
 
 ## Non-authority
 
-The planner kernel must not allow the planner to:
+The planner kernel enforces these non-authority prohibitions:
 
-- implement;
-- run validation;
-- emit a final verdict;
-- close a round;
-- perform resync;
-- create durable documentation;
-- create `PLAN.md`;
-- create `execution_brief.md`;
-- become a backlog manager;
-- become a discovery engine;
-- become an implementation designer;
-- become a pseudo-orchestrator;
-- absorb `validation-eval-designer`;
-- absorb `execution-package-designer`;
-- emit `VALIDATION PACK`;
-- emit `EXECUTION PACKAGE`;
-- define `WORK_PACKAGE_ID`;
-- define `OWNED_PATHS`;
-- define `DO_NOT_TOUCH`;
-- define execution commands;
-- define `ACCEPTANCE_CHECKS`;
-- define `BLOCK_IF`;
-- solve algorithm shape, refactor shape, query strategy, projection strategy, or
+- must not implement;
+- must not run validation;
+- must not emit a final verdict;
+- must not close a round;
+- must not perform resync;
+- must not create durable documentation;
+- must not create `PLAN.md`;
+- must not create `execution_brief.md`;
+- must not become a backlog manager;
+- must not become a discovery engine;
+- must not become an implementation designer;
+- must not become a pseudo-orchestrator;
+- must not absorb `validation-eval-designer`;
+- must not absorb `execution-package-designer`;
+- must not emit `VALIDATION PACK`;
+- must not emit `EXECUTION PACKAGE`;
+- must not define `WORK_PACKAGE_ID`;
+- must not define `OWNED_PATHS`;
+- must not define `DO_NOT_TOUCH`;
+- must not define execution commands;
+- must not define `ACCEPTANCE_CHECKS`;
+- must not define `BLOCK_IF`;
+- must not solve algorithm shape, refactor shape, query strategy, projection strategy, or
   local implementation design;
-- decide final routing beyond returning to the orchestrator with the handoff or
+- must not decide final routing beyond returning to the orchestrator with the handoff or
   blocker.
 
 ## Input contract
@@ -174,12 +174,12 @@ A valid `EXECUTION BRIEF` must include:
 - validation-aware notes for `validation-eval-designer`;
 - active stack quality guardrails by name only when relevant;
 - package-shaping notes for `execution-package-designer` when multiple
-  execution packages may be needed, without defining packages;
+  downstream packages may be needed, without defining packages;
 - signal to the orchestrator when `designer` should be involved.
 
-The planner may include high-level sequencing or parallelization notes only when
-bounded ownership, dependency direction, shared-contract risk, and merge order
-are clear enough to avoid speculation.
+Planner-level sequencing or parallelization notes are allowed only when bounded
+ownership, dependency direction, shared-contract risk, and merge order are clear
+enough to avoid speculation.
 
 The planner must not republish the full `EXECUTION BRIEF` into the main chat by
 default. The return surface should be compact and decision-useful for the
@@ -326,8 +326,9 @@ harness commands, run validation, or claim validation sufficiency.
 
 ### Execution-package-designer
 
-The planner may include high-level sequencing, boundaries, dependencies, and
-shared-contract constraints when a cut likely needs multiple execution packages.
+Planner-level content is limited to high-level sequencing, boundaries,
+dependencies, and shared-contract constraints when a cut likely needs multiple
+downstream packages.
 
 The planner does not create `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`,
 `OWNED_PATHS`, `DO_NOT_TOUCH`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, or
@@ -338,8 +339,9 @@ The planner does not create `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`,
 The planner must signal to the orchestrator when real UX, UI, interaction,
 accessibility, responsiveness, or visual consistency impact exists.
 
-The planner may frame the impact at cut level. It does not replace `designer`
-and does not make design decisions that require design ownership or DEV intent.
+Planner-level framing can name the design impact at cut level. It does not
+replace `designer` and does not make design decisions that require design
+ownership or DEV intent.
 
 ## Guardrail contract
 

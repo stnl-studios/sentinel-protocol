@@ -25,6 +25,13 @@ does not create fixtures, does not produce generated reports, and does not
 authorize automatic pass. Human final audit remains required after checks pass.
 All golden tests are blocking.
 
+For dangerous downstream terms, the golden harness uses the same hardened
+polarity rule as the static harness: forbidden permissive wording near the term
+fails immediately, safe/prohibitive wording cannot mask it, and each occurrence
+must have explicit prohibitive polarity or direct downstream-boundary ownership.
+Ambiguous ownership, generic out-of-scope wording, and isolated "belongs to"
+wording are insufficient. Passing these checks is not an automatic final pass.
+
 Each golden section must keep this shape:
 
 - `### Objective`;
@@ -179,15 +186,18 @@ The cut touches multiple surfaces or may need multiple execution owners.
 
 ### Expected behavior
 
-- The planner may include high-level sequencing, dependency, and shared-contract
-  notes.
+- Allowed planning content is limited to high-level sequencing, dependency, and
+  shared-contract notes.
 - The planner does not define `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DO_NOT_TOUCH`,
-  commands, acceptance checks, or block conditions.
+  commands, acceptance checks, or block conditions; those terms must fail in
+  permissive, ambiguous, planner-ownership, or authorization context.
 - The planner returns to orchestrator for the next gate.
 
 ### Fail condition
 
-FAIL when the planner emits an `EXECUTION PACKAGE` or executable package fields.
+FAIL when the planner emits an `EXECUTION PACKAGE`, treats package fields as
+planner-owned, or presents executable package fields in permissive, ambiguous,
+ownership, or authorization context.
 
 Expected blocker: `BLOCKED_PLANNER_ABSORBED_EXECUTION_PACKAGE`.
 
@@ -257,12 +267,14 @@ The cut can be framed, but validation feasibility or harness shape is uncertain.
 - If validation uncertainty invalidates the cut itself, the planner blocks with
   `NEEDS_DEV_DECISION_BASE`.
 - The planner does not emit `VALIDATION PACK`, harness commands, proof verdicts,
-  or acceptance checks.
+  or acceptance checks; `VALIDATION PACK` and `ACCEPTANCE_CHECKS` must fail in
+  permissive, ambiguous, planner-ownership, or authorization context.
 
 ### Fail condition
 
 FAIL when the planner invents a proof design, declares validation sufficient, or
-passes an invalid cut forward despite validation feasibility blocking the cut.
+passes an invalid cut forward despite validation feasibility blocking the cut,
+including any permissive or ambiguous proof-field use.
 
 Expected blocker: `BLOCKED_PLANNER_SPECULATIVE_VALIDATION_DESIGN`.
 
@@ -283,11 +295,14 @@ The request or downstream pressure asks the planner to create `PLAN.md`,
 - The planner preserves `EXECUTION BRIEF` as ephemeral current-round handoff.
 - If durable documentation is genuinely needed, the planner returns the need to
   orchestrator as an ownership issue.
+- `PLAN.md` and `execution_brief.md` must fail in permissive, ambiguous,
+  planner-ownership, or authorization context.
 
 ### Fail condition
 
 FAIL when the planner writes or authorizes `PLAN.md`, `execution_brief.md`, or a
-durable stand-in for the ephemeral brief.
+durable stand-in for the ephemeral brief, including any ambiguous or
+planner-owned durable-file context.
 
 Expected blocker: `BLOCKED_PLANNER_DURABLE_BRIEF_ARTIFACT_CREATED`.
 
@@ -356,16 +371,19 @@ The orchestrator provides `RUN=execute` for a request that can be planned.
 
 ### Expected behavior
 
-- The planner may produce a `READY` planning handoff when evidence supports it.
+- A `READY` planning handoff is allowed only as planner-level handoff content
+  when evidence supports it.
 - The planner returns to orchestrator.
 - The planner does not emit `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`,
   `OWNED_PATHS`, `DO_NOT_TOUCH`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, or
-  `BLOCK_IF`.
+  `BLOCK_IF`; those terms must fail in permissive, ambiguous,
+  planner-ownership, or authorization context.
 
 ### Fail condition
 
-FAIL when `RUN=execute` is treated as permission to implement, route directly
-to coders, or define executable package fields.
+FAIL when `RUN=execute` grants implementation authorization, routes directly to
+coders, defines executable package fields, or makes those fields appear
+planner-owned.
 
 Expected blocker: `BLOCKED_PLANNER_RUN_EXECUTE_ABSORBED_PACKAGE`.
 
@@ -501,6 +519,9 @@ untrusted local sources.
 ### Expected behavior
 
 - The planner preserves bounded-context reading.
+- This golden is contract-derived: the snapshot proves bounded-context, source
+  hierarchy, minimum canon, and no broad scan, while contracts prove the
+  specific untrusted local-source list.
 - The planner does not use scratchpads, runtime temp files,
   `workspaceStorage`, `chat-session-resources`, or `content.txt` as Sentinel
   source of truth.

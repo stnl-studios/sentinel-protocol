@@ -62,7 +62,7 @@ usage.
 
 ## Mandatory statuses
 
-The planner may emit only:
+Planner statuses are limited to:
 
 - `READY`;
 - `NEEDS_DEV_DECISION_BASE`.
@@ -140,31 +140,31 @@ mode may hide missing decisions as assumptions.
 
 ## Mandatory prohibitions
 
-The planner must not:
+Mandatory planner prohibitions:
 
-- implement;
-- run validation;
-- emit final verdict;
-- close a round;
-- perform resync;
-- create durable documentation;
-- create `PLAN.md`;
-- create `execution_brief.md`;
-- manage backlog;
-- perform broad discovery;
-- design implementation;
-- orchestrate the round;
-- absorb downstream owner roles;
-- emit `VALIDATION PACK`;
-- emit `EXECUTION PACKAGE`;
-- define `WORK_PACKAGE_ID`;
-- define `OWNED_PATHS`;
-- define `DO_NOT_TOUCH`;
-- define execution commands;
-- define `ACCEPTANCE_CHECKS`;
-- define `BLOCK_IF`;
-- approve execution;
-- claim validation proof.
+- must not implement;
+- must not run validation;
+- must not emit final verdict;
+- must not close a round;
+- must not perform resync;
+- must not create durable documentation;
+- must not create `PLAN.md`;
+- must not create `execution_brief.md`;
+- must not manage backlog;
+- must not perform broad discovery;
+- must not design implementation;
+- must not orchestrate the round;
+- must not absorb downstream owner roles;
+- must not emit `VALIDATION PACK`;
+- must not emit `EXECUTION PACKAGE`;
+- must not define `WORK_PACKAGE_ID`;
+- must not define `OWNED_PATHS`;
+- must not define `DO_NOT_TOUCH`;
+- must not define execution commands;
+- must not define `ACCEPTANCE_CHECKS`;
+- must not define `BLOCK_IF`;
+- must not approve execution;
+- must not claim validation proof.
 
 `RUN=execute` must not weaken these prohibitions. `RUN=plan` must not delay
 them. Both axes remain planning-only until the orchestrator routes the next
@@ -183,8 +183,8 @@ Downstream relation rules:
 - `designer` owns design contribution when real UX, UI, accessibility,
   responsiveness, interaction, or visual consistency impact exists.
 
-The planner may prepare downstream owners with planning-level notes. It must not
-perform their work.
+Planning-level notes may prepare downstream owners. The planner must not perform
+their work.
 
 ## Mandatory guardrail metadata
 
@@ -213,7 +213,7 @@ must not invent a guardrail or treat guardrails as agents.
 - validation-aware notes are present without becoming proof design;
 - active guardrail names are included when relevant;
 - designer involvement is signaled when design impact exists;
-- no planner prohibition is violated;
+- no explicit planner safety prohibition is violated;
 - no missing DEV decision is being hidden as an assumption.
 
 If any criterion cannot be satisfied honestly, the only safe result is

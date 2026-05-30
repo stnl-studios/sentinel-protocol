@@ -92,7 +92,7 @@ const dangerousTerms = [
   "execution_brief.md",
 ];
 
-const safePolarityTerms = [
+const prohibitivePolarityTerms = [
   "must not",
   "does not",
   "do not",
@@ -101,29 +101,42 @@ const safePolarityTerms = [
   "prohibited",
   "fail when",
   "must fail",
+  "refuses",
   "does not emit",
-  "does not create",
-  "does not define",
-  "must not create",
-  "must not define",
   "must not emit",
+  "does not create",
+  "must not create",
+  "does not define",
+  "must not define",
   "not create",
   "not define",
-  "not planner-owned",
   "not a planner",
   "not a durable",
   "not become",
   "not compile",
   "not execute",
-  "later owns",
-  "downstream owns",
-  "belongs to",
+  "must not become",
+  "must not be written",
+  "must never touch",
+  "never touch",
   "without defining",
   "without becoming",
-  "outside planner authority",
-  "out of scope",
+  "absence of",
   "no axis may authorize",
-  "no planner prohibition",
+];
+
+const downstreamBoundaryTerms = [
+  "execution-package-designer later owns",
+  "validation-eval-designer later owns",
+  "downstream owns",
+  "not planner-owned",
+  "outside planner authority",
+  "belongs to execution-package-designer",
+  "belongs to validation-eval-designer",
+  "owned by execution-package-designer",
+  "owned by validation-eval-designer",
+  "execution-package-designer owns",
+  "validation-eval-designer owns",
 ];
 
 const forbiddenPolarityTerms = [
@@ -136,13 +149,29 @@ const forbiddenPolarityTerms = [
   "may define",
   "can define",
   "allowed to define",
+  "planner may",
+  "planner can",
+  "planner should create",
+  "planner is allowed",
   "planner owns",
   "planner defines",
   "planner produces",
+  "planner generates",
+  "planner is responsible for",
   "planner authorizes",
   "planner approves",
+  "planner routes",
+  "planner executes",
+  "permission to implement",
   "routes directly",
   "approves execution",
+];
+
+const ambiguousPolarityTerms = [
+  "belongs to",
+  "later owns",
+  "out of scope",
+  "no planner prohibition",
 ];
 
 const guardrailNames = [
@@ -399,6 +428,24 @@ function mustNotAppearNear(sectionText, target, forbiddenPolarityTerms, window =
   return failures;
 }
 
+function matchingPolarityTerms(text, terms) {
+  return terms.filter((term) => phraseInRaw(text, term));
+}
+
+function downstreamBoundaryMatches(text, downstreamBoundary) {
+  const direct = matchingPolarityTerms(text, downstreamBoundary);
+  const owners = ["execution-package-designer", "validation-eval-designer"];
+  const relations = ["later owns", "owns", "belongs to", "owned by"];
+  const ownerRelationMatches = [];
+  for (const owner of owners) {
+    if (!phraseInRaw(text, owner)) continue;
+    for (const relation of relations) {
+      if (phraseInRaw(text, relation)) ownerRelationMatches.push(`${owner} ${relation}`);
+    }
+  }
+  return [...new Set([...direct, ...ownerRelationMatches])];
+}
+
 function validateGoldenShape(sectionText, expectedBlocker) {
   const failures = [];
   failures.push(...mustContainHeading(sectionText, "Objective"));
@@ -410,17 +457,36 @@ function validateGoldenShape(sectionText, expectedBlocker) {
   return failures;
 }
 
-function validateProhibitionContext(sectionText, terms, safePolarity, forbiddenPolarity, window = 900) {
+function validateProhibitionContext(sectionText, terms, prohibitivePolarity, downstreamBoundary, forbiddenPolarity, windows = {}) {
+  const localWindows = {
+    forbidden: 180,
+    prohibitive: 220,
+    downstream: 280,
+    ambiguous: 220,
+    ...windows,
+  };
   const failures = [];
   for (const term of terms) {
     for (const index of findOccurrences(sectionText, term)) {
-      const near = windowAround(sectionText, index, term, window);
-      const hasSafe = safePolarity.some((safe) => phraseInRaw(near, safe));
-      const forbidden = forbiddenPolarity.filter((bad) => phraseInRaw(near, bad));
-      if (forbidden.length > 0 && !hasSafe) {
-        failures.push(`${term} near permissive polarity ${forbidden[0]}`);
+      const forbiddenNear = windowAround(sectionText, index, term, localWindows.forbidden);
+      const forbidden = matchingPolarityTerms(forbiddenNear, forbiddenPolarity);
+      if (forbidden.length > 0) {
+        failures.push(`${term} has forbidden permissive polarity (${forbidden[0]})`);
       }
-      if (!hasSafe) failures.push(`${term} lacks safe/downstream polarity`);
+
+      const prohibitiveNear = windowAround(sectionText, index, term, localWindows.prohibitive);
+      const downstreamNear = windowAround(sectionText, index, term, localWindows.downstream);
+      const prohibitive = matchingPolarityTerms(prohibitiveNear, prohibitivePolarity);
+      const downstream = downstreamBoundaryMatches(downstreamNear, downstreamBoundary);
+      if (prohibitive.length === 0 && downstream.length === 0) {
+        const ambiguousNear = windowAround(sectionText, index, term, localWindows.ambiguous);
+        const ambiguous = matchingPolarityTerms(ambiguousNear, ambiguousPolarityTerms);
+        if (ambiguous.length > 0) {
+          failures.push(`${term} has ambiguous insufficient polarity (${ambiguous[0]})`);
+        } else {
+          failures.push(`${term} lacks explicit prohibitive or downstream-boundary polarity`);
+        }
+      }
     }
   }
   return [...new Set(failures)];
@@ -737,7 +803,7 @@ function checkRoleAbsorptionProhibited() {
   const text = readMany(contractPaths);
   const failures = [];
   failures.push(...mustContain(text, dangerousTerms));
-  failures.push(...validateProhibitionContext(text, dangerousTerms, safePolarityTerms, forbiddenPolarityTerms));
+  failures.push(...validateProhibitionContext(text, dangerousTerms, prohibitivePolarityTerms, downstreamBoundaryTerms, forbiddenPolarityTerms));
   failures.push(
     ...mustContain(text, [
       { label: "implementation prohibition", phrases: ["must not implement", "does not implement", "do not implement"] },
@@ -762,8 +828,9 @@ function checkOperationalAxes() {
     { label: "MODE=standard safety floor", phrases: ["MODE=standard preserves", "MODE=standard keeps", "MODE=standard as current planning behavior"] },
     { label: "MODE=strict lower inference", phrases: ["MODE=strict reduces inference", "MODE=strict as lower-inference", "lower-inference planning"] },
     { label: "MODE=compact format only", phrases: ["MODE=compact as format compaction only", "MODE=compact is format compaction", "format compaction only, not safety compaction"] },
-    { label: "RUN=execute planning handoff only", phrases: ["`RUN=execute` means the planner may prepare", "RUN=execute means the planner may prepare", "RUN=execute as execution-ready planning", "RUN=execute is treated as permission"] },
+    { label: "RUN=execute planning handoff only", phrases: ["`RUN=execute` means the planner may prepare", "RUN=execute means the planner may prepare", "RUN=execute as execution-ready planning", "`RUN=execute`: prepare a valid planning handoff"] },
     { label: "RUN=execute no implementation", phrases: ["does not authorize implementation", "not execution approval", "not approval to implement"] },
+    { label: "RUN=execute no package fields", phrases: ["does not authorize implementation, bypass orchestrator routing, or emit executable package fields", "or emit executable package fields", "absence of `EXECUTION PACKAGE`"] },
     { label: "RUN=plan planning-only", phrases: ["RUN=plan remains planning-only", "RUN=plan as planning-only", "planning-only"] },
     { label: "RUN=plan no future approval", phrases: ["without implying implementation approval", "not execution approval", "does not approve execution"] },
     { label: "HANDOFF_READY not gate", phrases: ["HANDOFF_READY is not a planner status", "HANDOFF_READY is not an additional status or gate", "not become a parallel gate"] },
@@ -948,7 +1015,7 @@ function checkCompactReturnAntiNarration() {
 }
 
 function checkDangerousTermsOnlyInAllowedSections() {
-  const allowedHeadings = /^(Output contract|Non-authority|Validation-eval-designer|Execution-package-designer|Relation contract|Operational axes contract|Anti-role-drift contract|Explicitly out of scope|Output invariants|Status and blocking invariants|Operational axis and delta invariants|Downstream relation invariants|Examples of prohibited drift|Mandatory output|Mandatory prohibitions|Mandatory downstream relationship|Minimum criteria for READY|What it must never touch|Handoff|Prohibitions)$/i;
+  const allowedHeadings = /^(Output contract|Non-authority|Validation-eval-designer|Execution-package-designer|Relation contract|Operational axes contract|Output invariants|Operational axis and delta invariants|Downstream relation invariants|Examples of prohibited drift|Mandatory output|Mandatory prohibitions|Mandatory downstream relationship)$/i;
   const failures = [];
   for (const file of contractPaths) {
     const markdown = readText(file);
@@ -959,7 +1026,7 @@ function checkDangerousTermsOnlyInAllowedSections() {
       if (!allowedHeadings.test(found.text)) {
         failures.push(`${file}: ${found.text}`);
       }
-      failures.push(...validateProhibitionContext(current, dangerousTerms, safePolarityTerms, forbiddenPolarityTerms).map((issue) => `${file}: ${found.text}: ${issue}`));
+      failures.push(...validateProhibitionContext(current, dangerousTerms, prohibitivePolarityTerms, downstreamBoundaryTerms, forbiddenPolarityTerms).map((issue) => `${file}: ${found.text}: ${issue}`));
     }
   }
   return failures.length > 0

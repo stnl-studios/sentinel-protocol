@@ -29,6 +29,14 @@ golden-test shape validation, path absence, and unexpected-file detection. The
 helpers reduce false positives from loose token matches and false negatives from
 equivalent wording.
 
+Polarity validation is hardened around downstream-dangerous terms. A forbidden
+permissive phrase near a dangerous term is an immediate failure even when a
+prohibitive phrase also appears nearby. Dangerous terms pass only in explicit
+prohibitive context or in direct downstream-boundary context naming the owning
+downstream role. Ambiguous terms such as generic ownership, generic out-of-scope
+wording, or isolated "belongs to" wording do not grant a pass. All polarity
+checks remain blocking and never grant automatic pass.
+
 ## Implemented Checks
 
 ### PL-CH-001 - Required planner-kernel files exist
@@ -118,8 +126,8 @@ handoff, and return to orchestrator.
 
 ### PL-CH-012 - Role absorption prohibited by polarity
 
-Validates dangerous downstream terms only in prohibitive or downstream-boundary
-contexts:
+Validates dangerous downstream terms only in explicit prohibitive or direct
+downstream-boundary contexts:
 
 - `VALIDATION PACK`;
 - `EXECUTION PACKAGE`;
@@ -133,7 +141,9 @@ contexts:
 - `execution_brief.md`.
 
 Permissive wording such as planner ownership, direct routing, execution
-approval, or permission to emit/create/define those terms fails.
+approval, permission to implement, or permission to emit/create/define those
+terms fails immediately. Prohibitive wording does not mask nearby forbidden
+permissive wording.
 
 ### PL-CH-013 - Operational axes preserved
 
@@ -208,7 +218,9 @@ notes.
 ### PL-CH-022 - Dangerous terms only in allowed sections
 
 Validates dangerous downstream terms appear only in allowed contract sections
-and only with safe prohibitive or downstream-boundary polarity.
+and only with explicit prohibitive or direct downstream-boundary polarity.
+Allowed headings do not grant a pass by themselves, similar headings do not
+match, and permissive context fails even inside an allowed heading.
 
 ### PL-CH-023 - Golden tests have required shape
 

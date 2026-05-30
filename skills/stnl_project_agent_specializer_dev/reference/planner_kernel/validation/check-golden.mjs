@@ -36,7 +36,7 @@ const dangerousTerms = [
   "execution_brief.md",
 ];
 
-const safePolarityTerms = [
+const prohibitivePolarityTerms = [
   "must not",
   "does not",
   "do not",
@@ -45,24 +45,41 @@ const safePolarityTerms = [
   "prohibited",
   "fail when",
   "must fail",
+  "refuses",
   "does not emit",
-  "does not create",
-  "does not define",
-  "must not create",
-  "must not define",
   "must not emit",
+  "does not create",
+  "must not create",
+  "does not define",
+  "must not define",
   "not create",
   "not define",
-  "not planner-owned",
   "not a planner",
   "not become",
   "not compile",
-  "later owns",
-  "downstream owns",
-  "belongs to",
+  "not execute",
+  "must not become",
+  "must not be written",
+  "must never touch",
+  "never touch",
   "without defining",
-  "out of scope",
+  "without becoming",
+  "absence of",
   "no axis may authorize",
+];
+
+const downstreamBoundaryTerms = [
+  "execution-package-designer later owns",
+  "validation-eval-designer later owns",
+  "downstream owns",
+  "not planner-owned",
+  "outside planner authority",
+  "belongs to execution-package-designer",
+  "belongs to validation-eval-designer",
+  "owned by execution-package-designer",
+  "owned by validation-eval-designer",
+  "execution-package-designer owns",
+  "validation-eval-designer owns",
 ];
 
 const forbiddenPolarityTerms = [
@@ -75,13 +92,29 @@ const forbiddenPolarityTerms = [
   "may define",
   "can define",
   "allowed to define",
+  "planner may",
+  "planner can",
+  "planner should create",
+  "planner is allowed",
   "planner owns",
   "planner defines",
   "planner produces",
+  "planner generates",
+  "planner is responsible for",
   "planner authorizes",
   "planner approves",
+  "planner routes",
+  "planner executes",
+  "permission to implement",
   "routes directly",
   "approves execution",
+];
+
+const ambiguousPolarityTerms = [
+  "belongs to",
+  "later owns",
+  "out of scope",
+  "no planner prohibition",
 ];
 
 const goldenTests = [
@@ -229,7 +262,8 @@ const goldenTests = [
     id: "PL-GT-018",
     title: "Untrusted local sources are not Sentinel source of truth",
     blocker: "BLOCKED_PLANNER_UNTRUSTED_LOCAL_SOURCE_USED",
-    doc: ["scratchpads", "runtime temp files", "workspaceStorage", "chat-session-resources", "content.txt", "source of truth"],
+    contractDerived: true,
+    doc: ["contract-derived", "snapshot proves bounded-context", "scratchpads", "runtime temp files", "workspaceStorage", "chat-session-resources", "content.txt", "source of truth"],
     snapshot: ["bounded-context", "Read only the minimum canon", "Source of truth hierarchy", "Do not scan broadly unless"],
     contracts: ["scratchpads", "runtime temp files", "workspaceStorage", "chat-session-resources", "content.txt", "not Sentinel source of truth"],
   },
@@ -420,6 +454,24 @@ function mustNotAppearNear(sectionText, target, forbiddenPolarityTerms, window =
   return failures;
 }
 
+function matchingPolarityTerms(text, terms) {
+  return terms.filter((term) => phraseInRaw(text, term));
+}
+
+function downstreamBoundaryMatches(text, downstreamBoundary) {
+  const direct = matchingPolarityTerms(text, downstreamBoundary);
+  const owners = ["execution-package-designer", "validation-eval-designer"];
+  const relations = ["later owns", "owns", "belongs to", "owned by"];
+  const ownerRelationMatches = [];
+  for (const owner of owners) {
+    if (!phraseInRaw(text, owner)) continue;
+    for (const relation of relations) {
+      if (phraseInRaw(text, relation)) ownerRelationMatches.push(`${owner} ${relation}`);
+    }
+  }
+  return [...new Set([...direct, ...ownerRelationMatches])];
+}
+
 function validateGoldenShape(sectionText, expectedBlocker) {
   const failures = [];
   failures.push(...mustContainHeading(sectionText, "Objective"));
@@ -431,15 +483,36 @@ function validateGoldenShape(sectionText, expectedBlocker) {
   return failures;
 }
 
-function validateProhibitionContext(sectionText, terms, safePolarity, forbiddenPolarity, window = 900) {
+function validateProhibitionContext(sectionText, terms, prohibitivePolarity, downstreamBoundary, forbiddenPolarity, windows = {}) {
+  const localWindows = {
+    forbidden: 180,
+    prohibitive: 220,
+    downstream: 280,
+    ambiguous: 220,
+    ...windows,
+  };
   const failures = [];
   for (const term of terms) {
     for (const index of findOccurrences(sectionText, term)) {
-      const near = windowAround(sectionText, index, term, window);
-      const hasSafe = safePolarity.some((safe) => phraseInRaw(near, safe));
-      const forbidden = forbiddenPolarity.filter((bad) => phraseInRaw(near, bad));
-      if (forbidden.length > 0 && !hasSafe) failures.push(`${term} near permissive polarity ${forbidden[0]}`);
-      if (!hasSafe) failures.push(`${term} lacks safe/downstream polarity`);
+      const forbiddenNear = windowAround(sectionText, index, term, localWindows.forbidden);
+      const forbidden = matchingPolarityTerms(forbiddenNear, forbiddenPolarity);
+      if (forbidden.length > 0) {
+        failures.push(`${term} has forbidden permissive polarity (${forbidden[0]})`);
+      }
+
+      const prohibitiveNear = windowAround(sectionText, index, term, localWindows.prohibitive);
+      const downstreamNear = windowAround(sectionText, index, term, localWindows.downstream);
+      const prohibitive = matchingPolarityTerms(prohibitiveNear, prohibitivePolarity);
+      const downstream = downstreamBoundaryMatches(downstreamNear, downstreamBoundary);
+      if (prohibitive.length === 0 && downstream.length === 0) {
+        const ambiguousNear = windowAround(sectionText, index, term, localWindows.ambiguous);
+        const ambiguous = matchingPolarityTerms(ambiguousNear, ambiguousPolarityTerms);
+        if (ambiguous.length > 0) {
+          failures.push(`${term} has ambiguous insufficient polarity (${ambiguous[0]})`);
+        } else {
+          failures.push(`${term} lacks explicit prohibitive or downstream-boundary polarity`);
+        }
+      }
     }
   }
   return [...new Set(failures)];
@@ -540,15 +613,18 @@ function checkGolden(test, goldenDoc, snapshot, contracts) {
 
   if (test.dangerous) {
     const terms = test.dangerous.filter((term) => dangerousTerms.includes(term));
-    failures.push(...validateProhibitionContext(found, terms, safePolarityTerms, forbiddenPolarityTerms).map((issue) => `golden polarity ${issue}`));
-    failures.push(...validateProhibitionContext(snapshot, terms, safePolarityTerms, forbiddenPolarityTerms).map((issue) => `snapshot polarity ${issue}`));
-    failures.push(...validateProhibitionContext(contracts, terms, safePolarityTerms, forbiddenPolarityTerms).map((issue) => `contract polarity ${issue}`));
+    failures.push(...validateProhibitionContext(found, terms, prohibitivePolarityTerms, downstreamBoundaryTerms, forbiddenPolarityTerms).map((issue) => `golden polarity ${issue}`));
+    failures.push(...validateProhibitionContext(snapshot, terms, prohibitivePolarityTerms, downstreamBoundaryTerms, forbiddenPolarityTerms).map((issue) => `snapshot polarity ${issue}`));
+    failures.push(...validateProhibitionContext(contracts, terms, prohibitivePolarityTerms, downstreamBoundaryTerms, forbiddenPolarityTerms).map((issue) => `contract polarity ${issue}`));
   }
 
   if (failures.length > 0) {
     return fail(test.id, test.blocker, detailList(failures, "issue"));
   }
-  return pass(test.id, `${test.title} covered by golden doc, snapshot, and contracts`);
+  const coverage = test.contractDerived
+    ? `${test.title} covered as contract-derived: snapshot proves base bounded reading and contracts prove specific local-source exclusions`
+    : `${test.title} covered by golden doc, snapshot, and contracts`;
+  return pass(test.id, coverage);
 }
 
 const results = [runStaticPrecondition()];
