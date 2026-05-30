@@ -28,6 +28,7 @@ Required files:
 - `reference/kernel_lab/README.md`
 - `reference/orchestrator_kernel/CONTRACT.md`
 - `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`
+- `reference/orchestrator_kernel/BEHAVIOR_PARITY_SPINE.md`
 - `reference/orchestrator_kernel/MODULE_INDEX.md`
 - `reference/orchestrator_kernel/ACTIVATION_GATES.md`
 - `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`
@@ -87,6 +88,19 @@ The checks must remain read-only and scoped to
 productive skill files, productive templates, `.github/**`, `.codex/**`,
 `AGENTS.md`, `sentinel.mjs`, `scripts/sentinel-smoke.mjs`, `~/.agents/**`, or
 external filesystem paths.
+
+### CH-009 - Behavior Parity Spine Is Wired Into Golden Checks
+
+`BEHAVIOR_PARITY_SPINE.md` must exist, `README.md` must list it in the
+orchestrator-kernel reading order, and `check-golden.mjs` must reference it as
+a required input for semantic golden-test validation.
+
+### CH-010 - Golden-Test Language Is Current
+
+`MODULE_INDEX.md` and `ACTIVATION_GATES.md` must not keep stale wording that
+describes the golden contract as exactly two critical golden tests. They must
+describe the current structural and semantic golden-test set, including
+`GT-001`, `GT-002`, and `GT-SEM-001` through `GT-SEM-006`.
 
 ## Out Of Scope
 

@@ -346,7 +346,7 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
   - module index
   - activation gates
   - static-check contract
-  - local read-only static-check harness for CH-001 through CH-008
+  - local read-only static-check harness for CH-001 through CH-010
   - golden-test contract and local read-only golden-test harness
     before local structural golden checks
   - future runtime/fixture golden-test harness before materialization can be
@@ -374,8 +374,8 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
 
 - `module_id`: `tests.golden_critical`
 - `status`: `local_read_only_harness_available_no_materialization_authority`
-- `purpose`: Represent the exactly two critical golden tests for the
-  experimental orchestrator kernel path. The golden-test contract exists at
+- `purpose`: Represent the structural and semantic golden-test contracts for
+  the experimental orchestrator kernel path. The golden-test contract exists at
   `reference/orchestrator_kernel/GOLDEN_TESTS.md`, and the local read-only golden-test harness exists at
   `reference/orchestrator_kernel/check-golden.mjs`, but there are still no real
   fixtures, no runtime execution, and no materialization authority.
@@ -388,13 +388,16 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
   - kernel behavior change requires critical regression proof
 - `required_context`:
   - golden-test contract
-  - exactly two defined critical scenarios, not a full suite
-  - local read-only golden-test harness for `GT-001` and `GT-002`
+  - defined structural scenarios `GT-001` and `GT-002`
+  - defined semantic scenarios `GT-SEM-001` through `GT-SEM-006`
+  - local read-only golden-test harness for structural and semantic golden
+    checks
   - future expected outputs
   - authorized test location
   - future runnable test harness
 - `outputs`:
-  - local structural pass/fail result for `GT-001` and `GT-002`
+  - local structural/semantic pass/fail result for `GT-001`, `GT-002`, and
+    `GT-SEM-001` through `GT-SEM-006`
   - future runtime critical golden-test pass/fail result only after an authorized runtime harness defines and authorizes it
 - `dependencies`:
   - kernel contract
@@ -408,7 +411,7 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
   - explicit authorization and isolated materialization path before any
     materialization can be considered
 - `conflicts`:
-  - creating a full suite in place of two critical tests
+  - treating the structural and semantic golden set as a full runtime suite
   - test fixtures that encode unauthorized materialization
   - tests that bless main-flow changes without adoption
   - missing expected output or harness
@@ -443,9 +446,11 @@ This module index answers the catalog questions as follows:
   generated artifacts, generated reports, or target-repo materialization.
   `checks.static` has a static-check contract and a local read-only static-check harness, but no runtime loader integration and no authority to release
   production materialization.
-  `tests.golden_critical` has a golden-test contract for exactly two critical tests and a local read-only golden-test harness, but no
-  runtime/fixture executable harness. All other cataloged modules still require
-  future runtime activation support before activation.
+  `tests.golden_critical` has structural and semantic golden-test contracts for
+  `GT-001`, `GT-002`, and `GT-SEM-001` through `GT-SEM-006`, plus a local
+  read-only golden-test harness, but no runtime/fixture executable harness. All
+  other cataloged modules still require future runtime activation support
+  before activation.
 - What happens when a module, dependency, or context is absent? The module must
   block, reduce to narrower safe behavior allowed by the kernel and safe bundle,
   request minimum context when authorized, or safe stop with a concrete blocker.

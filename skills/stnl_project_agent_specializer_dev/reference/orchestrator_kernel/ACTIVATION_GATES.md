@@ -141,7 +141,7 @@ This mapping is an experimental contract, not a runtime implementation.
 | `routing.execution_package` | Gate 2 conditional | Requires valid upstream context, explicit scope, and stronger owner/workflow authority. |
 | `materialization.experimental` | Gate 3 stop/block | Runtime/main-flow materialization remains blocked. The previous local materializer route is frozen; generated artifacts, generated reports, and target-repo writes are not active deliverables. |
 | `checks.static` | Gate 3 stop/block | static-check contract and local read-only static-check harness exist, but runtime module activation and materialization remain blocked; checks do not grant authority or release materialization by themselves. |
-| `tests.golden_critical` | Gate 3 stop/block | golden-test contract exists for exactly two critical golden tests and the local read-only golden-test harness exists, but real execution remains blocked until fixtures, expected outputs, runtime harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
+| `tests.golden_critical` | Gate 3 stop/block | structural and semantic golden-test contracts exist for `GT-001`, `GT-002`, and `GT-SEM-001` through `GT-SEM-006`, and the local read-only golden-test harness exists, but real execution remains blocked until fixtures, expected outputs, runtime harness, and authorized execution rules exist; golden tests do not grant authority or release materialization by themselves. |
 
 `safe_to_auto_activate` in the module index means only that a module may be a
 future candidate. It does not mean automatic activation is available now.
@@ -339,14 +339,14 @@ This activation-gates contract answers the gate questions as follows:
   write, delete, execution, validation, closure, or materialization authority.
 - Why do materialization, checks, and golden tests remain blocked?
   `checks.static` has a static-check contract and a local read-only static-check harness
-  for CH-001 through CH-008, but runtime module activation, broader execution
+  for CH-001 through CH-010, but runtime module activation, broader execution
   rules, and materialization authority still require authorized adoption.
-  `tests.golden_critical` has a golden-test contract for exactly two critical
-  tests and a local read-only golden-test harness, but real execution
-  still requires fixtures, expected outputs, a runtime harness, explicit
-  execution rules, and authorized adoption. Runtime/main-flow materialization is
-  not active in this route; static checks or golden tests alone do not grant
-  authority.
+  `tests.golden_critical` has structural and semantic golden-test contracts for
+  `GT-001`, `GT-002`, and `GT-SEM-001` through `GT-SEM-006`, plus a local
+  read-only golden-test harness, but real execution still requires fixtures,
+  expected outputs, a runtime harness, explicit execution rules, and authorized
+  adoption. Runtime/main-flow materialization is not active in this route;
+  static checks or golden tests alone do not grant authority.
 
 ## Explicitly Out Of Scope
 

@@ -15,6 +15,7 @@ const requiredFiles = [
   "reference/kernel_lab/README.md",
   "reference/orchestrator_kernel/CONTRACT.md",
   "reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md",
+  "reference/orchestrator_kernel/BEHAVIOR_PARITY_SPINE.md",
   "reference/orchestrator_kernel/MODULE_INDEX.md",
   "reference/orchestrator_kernel/ACTIVATION_GATES.md",
   "reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md",
@@ -250,6 +251,68 @@ function checkDevScope() {
   return pass("CH-008", "checks scoped to dev skill");
 }
 
+function checkBehaviorParitySpineWired() {
+  const failures = [];
+  if (!existsFile("reference/orchestrator_kernel/BEHAVIOR_PARITY_SPINE.md")) {
+    failures.push("missing BEHAVIOR_PARITY_SPINE.md");
+  }
+
+  const readme = readText("reference/orchestrator_kernel/README.md");
+  const readOrder = [
+    "CONTRACT.md",
+    "MINIMUM_SAFE_BUNDLE.md",
+    "BEHAVIOR_PARITY_SPINE.md",
+    "MODULE_INDEX.md",
+    "ACTIVATION_GATES.md",
+    "EXPERIMENTAL_MATERIALIZATION.md",
+    "STATIC_CHECKS.md",
+    "GOLDEN_TESTS.md",
+  ];
+  let previousIndex = -1;
+  for (const entry of readOrder) {
+    const index = readme.indexOf(`\`${entry}\``);
+    if (index === -1) {
+      failures.push(`README read order missing ${entry}`);
+      continue;
+    }
+    if (index < previousIndex) {
+      failures.push(`README read order misplaced ${entry}`);
+    }
+    previousIndex = index;
+  }
+
+  const goldenHarness = readText("reference/orchestrator_kernel/check-golden.mjs");
+  if (!goldenHarness.includes('const behaviorSpinePath = "reference/orchestrator_kernel/BEHAVIOR_PARITY_SPINE.md"')) {
+    failures.push("check-golden.mjs missing BEHAVIOR_PARITY_SPINE.md path");
+  }
+  if (!/spine\s*=\s*readText\(behaviorSpinePath\)/.test(goldenHarness)) {
+    failures.push("check-golden.mjs does not read behavior spine as required input");
+  }
+
+  if (failures.length > 0) {
+    return fail("CH-009", "BLOCKED_STATIC_BEHAVIOR_PARITY_SPINE_UNWIRED", detailList(failures, "issue"));
+  }
+  return pass("CH-009", "behavior parity spine present and wired into golden harness");
+}
+
+function checkGoldenLanguageCurrent() {
+  const moduleIndex = readText("reference/orchestrator_kernel/MODULE_INDEX.md");
+  const gates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
+  const failures = [];
+  const staleGoldenWording = /exactly two critical (?:golden )?tests/i;
+  const currentGoldenWording = /(structural and semantic golden-test|GT-SEM-001[\s\S]*GT-SEM-006)/i;
+
+  if (staleGoldenWording.test(moduleIndex)) failures.push("MODULE_INDEX.md stale golden-test wording");
+  if (staleGoldenWording.test(gates)) failures.push("ACTIVATION_GATES.md stale golden-test wording");
+  if (!currentGoldenWording.test(moduleIndex)) failures.push("MODULE_INDEX.md missing structural/semantic golden-test wording");
+  if (!currentGoldenWording.test(gates)) failures.push("ACTIVATION_GATES.md missing structural/semantic golden-test wording");
+
+  if (failures.length > 0) {
+    return fail("CH-010", "BLOCKED_STATIC_GOLDEN_TEST_LANGUAGE_STALE", detailList(failures, "issue"));
+  }
+  return pass("CH-010", "golden-test language covers structural and semantic tests");
+}
+
 const checks = [
   checkRequiredFiles,
   checkManifestFrozenRoute,
@@ -259,6 +322,8 @@ const checks = [
   checkModuleIndexAndGates,
   checkSafeBundleMandatory,
   checkDevScope,
+  checkBehaviorParitySpineWired,
+  checkGoldenLanguageCurrent,
 ];
 
 let failed = false;
