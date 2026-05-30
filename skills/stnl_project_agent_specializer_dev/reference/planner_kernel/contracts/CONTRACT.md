@@ -7,7 +7,12 @@ This document defines the minimum contract for a future `planner kernel` inside
 implement planner logic, runtime loading, materialization, checks, tests,
 fixtures, generated artifacts, or production skill behavior.
 
-The canonical source for this contract is `templates/agents/planner.agent.md`.
+`templates/agents/planner.agent.md` is the productive/base origin for the
+planner copy. `reference/agents/planner.agent.md` is the manifest-declared
+local dev snapshot and the audit point for this kernel lab.
+`reference/planner_kernel/**` is the derived documentary contract set for
+review. The productive template must not be used as a fallback when the local
+dev snapshot is absent.
 The companion behavior-parity spine is
 `reference/planner_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`.
 The companion minimum safe bundle is
@@ -222,7 +227,7 @@ The planner kernel must stop or block when:
 - a structural, normative, architectural, product, boundary, schema, auth,
   permission, payload, business-rule, migration, persistence, integration, or
   data-lifecycle decision is required;
-- a shared contract must change first but ownership or canonical source of truth
+- a shared contract must change first but ownership or declared source of truth
   is unstable;
 - validation feasibility is so unclear that passing the cut forward would be
   dishonest;

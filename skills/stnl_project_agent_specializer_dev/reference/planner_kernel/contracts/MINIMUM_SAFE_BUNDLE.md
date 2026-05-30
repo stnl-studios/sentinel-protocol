@@ -105,8 +105,8 @@ The planner must stop when:
   payload, business-rule, persistence, migration, integration, data-lifecycle,
   or cross-boundary decision is required;
 - docs and code conflict in a way that affects intent or contract;
-- a shared contract must change first but ownership or canonical source is
-  unstable;
+- a shared contract must change first but ownership or declared source of truth
+  is unstable;
 - validation feasibility is too unclear to pass the cut honestly;
 - the planner would need broad discovery, implementation design, or role
   absorption to continue.
