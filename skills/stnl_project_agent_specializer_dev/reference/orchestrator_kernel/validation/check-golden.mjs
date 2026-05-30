@@ -6,12 +6,13 @@ import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const scriptPath = fileURLToPath(import.meta.url);
-const kernelRoot = path.dirname(scriptPath);
+const validationRoot = path.dirname(scriptPath);
+const kernelRoot = path.resolve(validationRoot, "..");
 const devSkillRoot = path.resolve(kernelRoot, "..", "..");
 const realDevSkillRoot = fs.realpathSync.native(devSkillRoot);
-const staticHarnessPath = path.join(kernelRoot, "check-static.mjs");
-const goldenTestsPath = "reference/orchestrator_kernel/GOLDEN_TESTS.md";
-const behaviorSpinePath = "reference/orchestrator_kernel/BEHAVIOR_PARITY_SPINE.md";
+const staticHarnessPath = path.join(validationRoot, "check-static.mjs");
+const goldenTestsPath = "reference/orchestrator_kernel/validation/GOLDEN_TESTS.md";
+const behaviorSpinePath = "reference/orchestrator_kernel/contracts/BEHAVIOR_PARITY_SPINE.md";
 
 const structuralTests = ["GT-001", "GT-002"];
 const semanticTests = ["GT-SEM-001", "GT-SEM-002", "GT-SEM-003", "GT-SEM-004", "GT-SEM-005", "GT-SEM-006"];

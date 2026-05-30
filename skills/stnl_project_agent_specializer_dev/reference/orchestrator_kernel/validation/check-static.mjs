@@ -5,7 +5,8 @@ import process from "node:process";
 import { fileURLToPath } from "node:url";
 
 const scriptPath = fileURLToPath(import.meta.url);
-const kernelRoot = path.dirname(scriptPath);
+const validationRoot = path.dirname(scriptPath);
+const kernelRoot = path.resolve(validationRoot, "..");
 const devSkillRoot = path.resolve(kernelRoot, "..", "..");
 const realDevSkillRoot = fs.realpathSync.native(devSkillRoot);
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
@@ -13,16 +14,16 @@ const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 const requiredFiles = [
   "reference/agents/orchestrator.agent.md",
   "reference/kernel_lab/README.md",
-  "reference/orchestrator_kernel/CONTRACT.md",
-  "reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md",
-  "reference/orchestrator_kernel/BEHAVIOR_PARITY_SPINE.md",
-  "reference/orchestrator_kernel/MODULE_INDEX.md",
-  "reference/orchestrator_kernel/ACTIVATION_GATES.md",
-  "reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md",
-  "reference/orchestrator_kernel/STATIC_CHECKS.md",
-  "reference/orchestrator_kernel/GOLDEN_TESTS.md",
-  "reference/orchestrator_kernel/check-static.mjs",
-  "reference/orchestrator_kernel/check-golden.mjs",
+  "reference/orchestrator_kernel/contracts/CONTRACT.md",
+  "reference/orchestrator_kernel/contracts/MINIMUM_SAFE_BUNDLE.md",
+  "reference/orchestrator_kernel/contracts/BEHAVIOR_PARITY_SPINE.md",
+  "reference/orchestrator_kernel/contracts/MODULE_INDEX.md",
+  "reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md",
+  "reference/orchestrator_kernel/contracts/EXPERIMENTAL_MATERIALIZATION.md",
+  "reference/orchestrator_kernel/validation/STATIC_CHECKS.md",
+  "reference/orchestrator_kernel/validation/GOLDEN_TESTS.md",
+  "reference/orchestrator_kernel/validation/check-static.mjs",
+  "reference/orchestrator_kernel/validation/check-golden.mjs",
 ];
 
 const removedRouteReferences = [
@@ -123,8 +124,8 @@ function checkManifestFrozenRoute() {
   const missing = [
     "reference/agents/orchestrator.agent.md",
     "reference/kernel_lab/README.md",
-    "reference/orchestrator_kernel/check-static.mjs",
-    "reference/orchestrator_kernel/check-golden.mjs",
+    "reference/orchestrator_kernel/validation/check-static.mjs",
+    "reference/orchestrator_kernel/validation/check-golden.mjs",
   ].filter((entry) => !manifest.includes(`\`${entry}\``));
   const stale = removedRouteReferences.filter((entry) => manifest.includes(`\`${entry}\``));
   const ambiguous = ["`reference/agents/**`", "`reference/docs/**`"].filter((entry) => manifest.includes(entry));
@@ -174,7 +175,7 @@ function checkKernelCriteria() {
 }
 
 function checkMaterializationFrozen() {
-  const materialization = readText("reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md");
+  const materialization = readText("reference/orchestrator_kernel/contracts/EXPERIMENTAL_MATERIALIZATION.md");
   const required = [
     "no standalone",
     "no generated",
@@ -191,8 +192,8 @@ function checkMaterializationFrozen() {
 }
 
 function checkModuleIndexAndGates() {
-  const moduleIndex = readText("reference/orchestrator_kernel/MODULE_INDEX.md");
-  const gates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
+  const moduleIndex = readText("reference/orchestrator_kernel/contracts/MODULE_INDEX.md");
+  const gates = readText("reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md");
   const failures = [];
 
   for (const moduleId of initialModules) {
@@ -213,9 +214,9 @@ function checkModuleIndexAndGates() {
 }
 
 function checkSafeBundleMandatory() {
-  const safeBundle = readText("reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md");
-  const moduleIndex = readText("reference/orchestrator_kernel/MODULE_INDEX.md");
-  const gates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
+  const safeBundle = readText("reference/orchestrator_kernel/contracts/MINIMUM_SAFE_BUNDLE.md");
+  const moduleIndex = readText("reference/orchestrator_kernel/contracts/MODULE_INDEX.md");
+  const gates = readText("reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md");
   const failures = [];
 
   if (!/minimum safe bundle is mandatory/i.test(safeBundle)) failures.push("safe bundle mandatory statement missing");
@@ -230,7 +231,7 @@ function checkSafeBundleMandatory() {
 }
 
 function checkDevScope() {
-  const staticChecks = readText("reference/orchestrator_kernel/STATIC_CHECKS.md");
+  const staticChecks = readText("reference/orchestrator_kernel/validation/STATIC_CHECKS.md");
   const required = [
     "read-only",
     "skills/stnl_project_agent_specializer_dev/**",
@@ -253,20 +254,20 @@ function checkDevScope() {
 
 function checkBehaviorParitySpineWired() {
   const failures = [];
-  if (!existsFile("reference/orchestrator_kernel/BEHAVIOR_PARITY_SPINE.md")) {
+  if (!existsFile("reference/orchestrator_kernel/contracts/BEHAVIOR_PARITY_SPINE.md")) {
     failures.push("missing BEHAVIOR_PARITY_SPINE.md");
   }
 
   const readme = readText("reference/orchestrator_kernel/README.md");
   const readOrder = [
-    "CONTRACT.md",
-    "MINIMUM_SAFE_BUNDLE.md",
-    "BEHAVIOR_PARITY_SPINE.md",
-    "MODULE_INDEX.md",
-    "ACTIVATION_GATES.md",
-    "EXPERIMENTAL_MATERIALIZATION.md",
-    "STATIC_CHECKS.md",
-    "GOLDEN_TESTS.md",
+    "contracts/CONTRACT.md",
+    "contracts/MINIMUM_SAFE_BUNDLE.md",
+    "contracts/BEHAVIOR_PARITY_SPINE.md",
+    "contracts/MODULE_INDEX.md",
+    "contracts/ACTIVATION_GATES.md",
+    "contracts/EXPERIMENTAL_MATERIALIZATION.md",
+    "validation/STATIC_CHECKS.md",
+    "validation/GOLDEN_TESTS.md",
   ];
   let previousIndex = -1;
   for (const entry of readOrder) {
@@ -281,8 +282,8 @@ function checkBehaviorParitySpineWired() {
     previousIndex = index;
   }
 
-  const goldenHarness = readText("reference/orchestrator_kernel/check-golden.mjs");
-  if (!goldenHarness.includes('const behaviorSpinePath = "reference/orchestrator_kernel/BEHAVIOR_PARITY_SPINE.md"')) {
+  const goldenHarness = readText("reference/orchestrator_kernel/validation/check-golden.mjs");
+  if (!goldenHarness.includes('const behaviorSpinePath = "reference/orchestrator_kernel/contracts/BEHAVIOR_PARITY_SPINE.md"')) {
     failures.push("check-golden.mjs missing BEHAVIOR_PARITY_SPINE.md path");
   }
   if (!/spine\s*=\s*readText\(behaviorSpinePath\)/.test(goldenHarness)) {
@@ -296,8 +297,8 @@ function checkBehaviorParitySpineWired() {
 }
 
 function checkGoldenLanguageCurrent() {
-  const moduleIndex = readText("reference/orchestrator_kernel/MODULE_INDEX.md");
-  const gates = readText("reference/orchestrator_kernel/ACTIVATION_GATES.md");
+  const moduleIndex = readText("reference/orchestrator_kernel/contracts/MODULE_INDEX.md");
+  const gates = readText("reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md");
   const failures = [];
   const staleGoldenWording = /exactly two critical (?:golden )?tests/i;
   const currentGoldenWording = /(structural and semantic golden-test|GT-SEM-001[\s\S]*GT-SEM-006)/i;

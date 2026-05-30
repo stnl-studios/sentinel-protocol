@@ -66,23 +66,23 @@ Toda comparação deve validar que o kernel:
 - Base `orchestrator` copiado para comparação:
   `reference/agents/orchestrator.agent.md`
 - Contrato do orchestrator kernel:
-  `reference/orchestrator_kernel/CONTRACT.md`
+  `reference/orchestrator_kernel/contracts/CONTRACT.md`
 - Minimum safe bundle:
-  `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`
+  `reference/orchestrator_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
 - Module index:
-  `reference/orchestrator_kernel/MODULE_INDEX.md`
+  `reference/orchestrator_kernel/contracts/MODULE_INDEX.md`
 - Activation gates:
-  `reference/orchestrator_kernel/ACTIVATION_GATES.md`
+  `reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md`
 - Congelamento da rota de materialização experimental:
-  `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`
+  `reference/orchestrator_kernel/contracts/EXPERIMENTAL_MATERIALIZATION.md`
 - Static checks estruturais:
-  `reference/orchestrator_kernel/STATIC_CHECKS.md`
+  `reference/orchestrator_kernel/validation/STATIC_CHECKS.md`
 - Golden tests estruturais:
-  `reference/orchestrator_kernel/GOLDEN_TESTS.md`
+  `reference/orchestrator_kernel/validation/GOLDEN_TESTS.md`
 - Harness read-only de static checks:
-  `reference/orchestrator_kernel/check-static.mjs`
+  `reference/orchestrator_kernel/validation/check-static.mjs`
 - Harness read-only de golden tests:
-  `reference/orchestrator_kernel/check-golden.mjs`
+  `reference/orchestrator_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 
@@ -116,7 +116,7 @@ produtivo.
 
 Comandos:
 
-- `node --check reference/orchestrator_kernel/check-static.mjs`
-- `node --check reference/orchestrator_kernel/check-golden.mjs`
-- `node reference/orchestrator_kernel/check-static.mjs`
-- `node reference/orchestrator_kernel/check-golden.mjs`
+- `node --check reference/orchestrator_kernel/validation/check-static.mjs`
+- `node --check reference/orchestrator_kernel/validation/check-golden.mjs`
+- `node reference/orchestrator_kernel/validation/check-static.mjs`
+- `node reference/orchestrator_kernel/validation/check-golden.mjs`

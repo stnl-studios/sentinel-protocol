@@ -3,10 +3,11 @@
 Status: read-only structural and semantic golden-test support for the kernel
 lab.
 
-The local `check-golden.mjs` harness validates structural documentation
-contracts in this file and minimum semantic contracts in
-`BEHAVIOR_PARITY_SPINE.md`. It does not execute agent runtime behavior, compare
-snapshots, produce generated artifacts, or authorize materialization.
+The local `reference/orchestrator_kernel/validation/check-golden.mjs` harness
+validates structural documentation contracts in this file and minimum semantic
+contracts in `reference/orchestrator_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`.
+It does not execute agent runtime behavior, compare snapshots, produce
+generated artifacts, or authorize materialization.
 
 ## Golden Test GT-001 - Simple Request Does Not Activate Heavy Modules
 

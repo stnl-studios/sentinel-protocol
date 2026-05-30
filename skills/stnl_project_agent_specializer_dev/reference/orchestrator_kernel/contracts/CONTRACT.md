@@ -4,12 +4,12 @@ Status: experimental kernel contract.
 
 This document defines the minimum contract for a future `orchestrator kernel` inside `stnl_project_agent_specializer_dev`. It is a design contract only. It does not implement kernel logic, module loading, activation gates, materialization, checks, or tests.
 
-The companion minimum safe bundle is defined in `reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md`.
-The companion module index catalog is defined in `reference/orchestrator_kernel/MODULE_INDEX.md`.
-The companion activation-gates contract is defined in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
-The companion experimental-materialization contract is defined in `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
-The companion static-checks contract is defined in `reference/orchestrator_kernel/STATIC_CHECKS.md`.
-The companion critical golden-tests contract is defined in `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
+The companion minimum safe bundle is defined in `reference/orchestrator_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`.
+The companion module index catalog is defined in `reference/orchestrator_kernel/contracts/MODULE_INDEX.md`.
+The companion activation-gates contract is defined in `reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md`.
+The companion experimental-materialization contract is defined in `reference/orchestrator_kernel/contracts/EXPERIMENTAL_MATERIALIZATION.md`.
+The companion static-checks contract is defined in `reference/orchestrator_kernel/validation/STATIC_CHECKS.md`.
+The companion critical golden-tests contract is defined in `reference/orchestrator_kernel/validation/GOLDEN_TESTS.md`.
 
 ## What the orchestrator kernel is
 

@@ -37,15 +37,15 @@ themselves.
 
 ## Relationship To Existing Documents
 
-`reference/orchestrator_kernel/CONTRACT.md` defines the kernel boundary and the
+`reference/orchestrator_kernel/contracts/CONTRACT.md` defines the kernel boundary and the
 non-delegable routing and safety responsibilities that must remain active before
 any optional module can matter.
 
-`reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md` defines the mandatory
+`reference/orchestrator_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` defines the mandatory
 protection bundle that stays active when no optional module is present and when
 optional modules are considered.
 
-`reference/orchestrator_kernel/MODULE_INDEX.md` catalogs known future modules,
+`reference/orchestrator_kernel/contracts/MODULE_INDEX.md` catalogs known future modules,
 their required context, dependencies, conflicts, outputs, and fallback behavior.
 
 This document sits after those documents. It defines how future eligibility is
@@ -118,7 +118,7 @@ Future gate evaluation must follow this safe order:
 3. Verify scope, including repo boundary, allowed paths, forbidden paths,
    target boundary, and requested work boundary.
 4. Verify that the module exists in
-   `reference/orchestrator_kernel/MODULE_INDEX.md`.
+   `reference/orchestrator_kernel/contracts/MODULE_INDEX.md`.
 5. Verify the module status in the module index.
 6. Verify required context for the module and decision type.
 7. Verify dependencies.

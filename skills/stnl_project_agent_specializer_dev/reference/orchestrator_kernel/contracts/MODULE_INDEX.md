@@ -12,7 +12,7 @@ limits apply before any future activation or use.
 
 The module index does not activate modules by itself. Activation gates are not
 defined here. The activation-gates contract is specified in
-`reference/orchestrator_kernel/ACTIVATION_GATES.md`.
+`reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md`.
 
 A module absent from this index must be treated as unavailable. Absence means
 the kernel cannot assume the module exists, cannot reconstruct it from memory,
@@ -24,11 +24,11 @@ non-optional safety rule.
 
 ## Relationship To Existing Documents
 
-`reference/orchestrator_kernel/CONTRACT.md` defines the experimental kernel
+`reference/orchestrator_kernel/contracts/CONTRACT.md` defines the experimental kernel
 boundary: what stays in the kernel, what must not be delegated, and how future
 layers relate.
 
-`reference/orchestrator_kernel/MINIMUM_SAFE_BUNDLE.md` defines the mandatory
+`reference/orchestrator_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` defines the mandatory
 protection bundle that remains active even when no optional module is present.
 
 This module index sits below those documents. It only names optional or future
@@ -273,7 +273,7 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
 - `status`: `frozen_no_active_materializer`
 - `purpose`: Record that standalone experimental materialization for the
   orchestrator kernel is frozen. The boundary note exists at
-  `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`, but no local
+  `reference/orchestrator_kernel/contracts/EXPERIMENTAL_MATERIALIZATION.md`, but no local
   materializer, generated artifact, generated report, runtime/main-flow
   materialization, or target-repo materialization is active.
 - `activation_signals`:
@@ -323,7 +323,7 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
 - `status`: `local_read_only_static_check_harness_available_no_materialization_authority`
 - `purpose`: Represent cheap static checks for the experimental orchestrator
   kernel and its module contracts. The static-check contract exists at
-  `reference/orchestrator_kernel/STATIC_CHECKS.md`, and the local read-only static-check harness exists at `reference/orchestrator_kernel/check-static.mjs`, but
+  `reference/orchestrator_kernel/validation/STATIC_CHECKS.md`, and the local read-only static-check harness exists at `reference/orchestrator_kernel/validation/check-static.mjs`, but
   there is still no runtime loader integration, runtime golden-test execution,
   runtime-integrated materialization path, or authority to release production materialization.
 - `activation_signals`:
@@ -376,8 +376,8 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
 - `status`: `local_read_only_harness_available_no_materialization_authority`
 - `purpose`: Represent the structural and semantic golden-test contracts for
   the experimental orchestrator kernel path. The golden-test contract exists at
-  `reference/orchestrator_kernel/GOLDEN_TESTS.md`, and the local read-only golden-test harness exists at
-  `reference/orchestrator_kernel/check-golden.mjs`, but there are still no real
+  `reference/orchestrator_kernel/validation/GOLDEN_TESTS.md`, and the local read-only golden-test harness exists at
+  `reference/orchestrator_kernel/validation/check-golden.mjs`, but there are still no real
   fixtures, no runtime execution, and no materialization authority.
 - `activation_signals`:
   - none executable as runtime behavior

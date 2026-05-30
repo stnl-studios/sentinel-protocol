@@ -4,13 +4,13 @@ Status: experimental minimum safe-bundle contract.
 
 This document defines the minimum safe bundle that must always accompany the future experimental `orchestrator kernel` in `stnl_project_agent_specializer_dev`.
 
-It complements `reference/orchestrator_kernel/CONTRACT.md` without duplicating the full kernel contract. The kernel contract defines the kernel boundary. This document defines the non-optional protection bundle that keeps that boundary safe when no optional orchestration module is active.
+It complements `reference/orchestrator_kernel/contracts/CONTRACT.md` without duplicating the full kernel contract. The kernel contract defines the kernel boundary. This document defines the non-optional protection bundle that keeps that boundary safe when no optional orchestration module is active.
 
-The module index catalog is defined in `reference/orchestrator_kernel/MODULE_INDEX.md`.
-The activation-gates contract is defined in `reference/orchestrator_kernel/ACTIVATION_GATES.md`.
-The experimental-materialization contract is defined in `reference/orchestrator_kernel/EXPERIMENTAL_MATERIALIZATION.md`.
-The static-checks contract is defined in `reference/orchestrator_kernel/STATIC_CHECKS.md`.
-The critical golden-tests contract is defined in `reference/orchestrator_kernel/GOLDEN_TESTS.md`.
+The module index catalog is defined in `reference/orchestrator_kernel/contracts/MODULE_INDEX.md`.
+The activation-gates contract is defined in `reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md`.
+The experimental-materialization contract is defined in `reference/orchestrator_kernel/contracts/EXPERIMENTAL_MATERIALIZATION.md`.
+The static-checks contract is defined in `reference/orchestrator_kernel/validation/STATIC_CHECKS.md`.
+The critical golden-tests contract is defined in `reference/orchestrator_kernel/validation/GOLDEN_TESTS.md`.
 
 ## Purpose
 
@@ -147,7 +147,7 @@ These may be future modules, checks, tests, or contracts. They are not part of t
 
 ## Relationship To The Kernel Contract
 
-`reference/orchestrator_kernel/CONTRACT.md` defines the experimental orchestrator kernel boundary: what the kernel is, what it must retain, what it must not absorb, and how future layers relate.
+`reference/orchestrator_kernel/contracts/CONTRACT.md` defines the experimental orchestrator kernel boundary: what the kernel is, what it must retain, what it must not absorb, and how future layers relate.
 
 This document defines the mandatory compact protection set that the kernel relies on to remain safe inside that boundary.
 
