@@ -1,25 +1,28 @@
 # Planner Kernel Static Checks
 
-Status: desired read-only structural support for the planner kernel lab.
+Status: read-only executable structural support for the planner kernel lab.
 
-These checks are documentation contracts only. They do not implement a runtime
-loader, materializer, target-project writer, generated artifact producer,
-installer change, smoke change, or authorization gate.
+The local harness is
+`reference/planner_kernel/validation/check-static.mjs`. It uses only Node
+built-ins, is read-only, keeps path containment inside the repository, ignores
+`__MACOSX` and `.DS_Store`, and exits `1` when any check fails.
 
-Future checks should inspect only the local planner snapshot and the
-planner-kernel documentation area declared in the manifest:
+The harness inspects only:
 
-- `skills/stnl_project_agent_specializer_dev/reference/agents/planner.agent.md`;
-- `skills/stnl_project_agent_specializer_dev/reference/planner_kernel/**`.
+- local planner snapshot:
+  `skills/stnl_project_agent_specializer_dev/reference/agents/planner.agent.md`;
+- productive template for literal-copy comparison only:
+  `templates/agents/planner.agent.md`;
+- planner-kernel documentation:
+  `skills/stnl_project_agent_specializer_dev/reference/planner_kernel/**`;
+- manifest and global dev-skill docs declared for this kernel-lab route.
 
-The productive/base origin is `templates/agents/planner.agent.md`. Future checks
-may compare the snapshot to that origin when literal-copy validation is
-authorized, but they must not use the productive template as an undeclared
-fallback when the snapshot is missing.
+It does not execute agent runtime, does not implement a materializer, does not
+write target-project artifacts, does not create fixtures, does not produce
+generated reports, and does not authorize automatic pass. The planner status
+continues to require human final audit after the checks pass.
 
-They should ignore `__MACOSX` and `.DS_Store`.
-
-## Required checks
+## Implemented checks
 
 ### PL-CH-001 - Required planner-kernel files exist
 
@@ -30,108 +33,95 @@ Required files:
 - `reference/planner_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`;
 - `reference/planner_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`;
 - `reference/planner_kernel/validation/STATIC_CHECKS.md`;
-- `reference/planner_kernel/validation/GOLDEN_TESTS.md`.
+- `reference/planner_kernel/validation/GOLDEN_TESTS.md`;
+- `reference/planner_kernel/validation/check-static.mjs`;
+- `reference/planner_kernel/validation/check-golden.mjs`.
 
-The check must not require `MODULE_INDEX.md`, `ACTIVATION_GATES.md`,
-`EXPERIMENTAL_MATERIALIZATION.md`, harness `.mjs` files, fixtures, generated
-reports, or any `planning_kernel`.
+### PL-CH-002 - Snapshot local exists and is listed
 
-### PL-CH-002 - Base origin and local snapshot are explicit and present
+`reference/agents/planner.agent.md` must exist and be listed in
+`reference/MANIFEST.md`.
 
-The planner kernel must declare:
+### PL-CH-003 - Snapshot is literal copy of productive template
 
-- productive/base origin: `templates/agents/planner.agent.md`;
-- integrated dev snapshot: `reference/agents/planner.agent.md`;
-- documentary kernel: `reference/planner_kernel/**`.
+`templates/agents/planner.agent.md` and
+`reference/agents/planner.agent.md` must be byte-for-byte identical.
 
-The local snapshot must exist and be listed in `reference/MANIFEST.md`.
+The productive template is used only for this literal-copy check. It is not a
+fallback if the local snapshot is absent.
 
-The check must not use fallback paths, copied external files, productive skill
-references, broad globs, or reconstructed planner content when the local
-snapshot is missing.
+### PL-CH-004 - Manifest lists planner kernel bundle
 
-### PL-CH-003 - Identity and role class are preserved
+`reference/MANIFEST.md` must list the planner snapshot, the six planner-kernel
+documentation files, and the two harnesses.
 
-The contracts must preserve:
+### PL-CH-005 - Global docs recognize planner without excellent pass
 
-- identity `planner`;
-- role class `planning`;
-- reading scope `bounded-context`;
-- workflow position after orchestrator framing and before
-  `validation-eval-designer`;
+`README.md`, `SKILL.md`, and `reference/kernel_lab/README.md` must recognize
+`planner_kernel` as under review or not excellent pass. They must not declare a
+planner excellent pass.
+
+### PL-CH-006 - Orchestrator frozen status preserved
+
+Global docs must keep `orchestrator_kernel` frozen as `CLEAN_EXCELLENT_PASS`
+and must not imply a planner round can alter that result.
+
+### PL-CH-007 - Source chain is unambiguous
+
+Planner docs must identify:
+
+- `templates/agents/planner.agent.md` as productive/base origin;
+- `reference/agents/planner.agent.md` as local dev snapshot and audit point;
+- `reference/planner_kernel/**` as documentary contract set;
+- no fallback to the productive template when the snapshot is missing.
+
+### PL-CH-008 - No planning_kernel exists
+
+No real path or file named `planning_kernel` may exist. Textual mentions are
+allowed only as prohibitions.
+
+### PL-CH-009 - No planner excellent status declared prematurely
+
+Planner-kernel docs must not contain any planner-kernel-specific status token
+that combines the planner-kernel prefix with excellent/pass wording.
+
+### PL-CH-010 - No unauthorized runtime/materialization surfaces
+
+`planner_kernel` must not contain runtime, materializer, fixture, generated, or
+report surfaces. The only `.mjs` harnesses allowed under the planner kernel are
+`validation/check-static.mjs` and `validation/check-golden.mjs`.
+
+### PL-CH-011 - Core invariants preserved
+
+Contracts must preserve:
+
+- `planner`;
+- `planning`;
+- `bounded-context`;
+- `EXECUTION BRIEF`;
+- `READY`;
+- `NEEDS_DEV_DECISION_BASE`;
+- ephemeral/current-round handoff;
 - return to orchestrator.
 
-### PL-CH-004 - Output remains EXECUTION BRIEF
+### PL-CH-012 - Role absorption prohibited
 
-The contracts must preserve `EXECUTION BRIEF` as the planner-owned output.
+Contracts must prohibit absorption of:
 
-The check should fail if the planner kernel authorizes `VALIDATION PACK`,
-`EXECUTION PACKAGE`, final verdict, route packet, backlog artifact, durable plan,
-or another positive output.
-
-### PL-CH-005 - Planner statuses stay limited
-
-The contracts must allow only:
-
-- `READY`;
-- `NEEDS_DEV_DECISION_BASE`.
-
-Invalid input, absent handoff, insufficient base, source conflict, broad
-discovery need, UX ambiguity, and validation uncertainty must remain stop or
-block reasons rather than additional statuses.
-
-### PL-CH-006 - Brief remains ephemeral
-
-The contracts must state that `EXECUTION BRIEF` is an ephemeral current-round
-handoff, not a durable file, SPEC, backlog, plan, or source of truth.
-
-### PL-CH-007 - Durable planning artifacts are prohibited
-
-The contracts must prohibit creation of:
-
+- implementation;
+- validation or running validation;
+- final verdict;
+- round closure;
+- resync;
+- durable documentation;
 - `PLAN.md`;
 - `execution_brief.md`;
-- durable documentation by the planner;
-- persistent stand-ins for the ephemeral handoff.
-
-### PL-CH-008 - Reading contract remains bounded
-
-The contracts must preserve:
-
-- bounded-context reading;
-- base budget of at most 3 local artifacts;
-- at most 1 live artifact inside that base budget;
-- maximum expansion of 2 additional targeted artifacts;
-- expansion only for source of truth, shared contract, boundary, or blocker;
-- stop when broad discovery is required.
-
-### PL-CH-009 - Broad discovery is rejected
-
-The contracts must prohibit use of broad discovery, repo-wide scan, "read more"
-loops, or implementation inspection by default to avoid a DEV decision.
-
-### PL-CH-010 - Anti-implementation is explicit
-
-The contracts must prohibit implementation, implementation design detailed
-enough to substitute for an executor, local refactor/query/algorithm design,
-execution approval, and execution commands.
-
-### PL-CH-011 - Validation-pack ownership is preserved
-
-The contracts must prohibit the planner from emitting `VALIDATION PACK`,
-designing proof, running validation, or claiming validation sufficiency.
-
-### PL-CH-012 - Execution-package ownership is preserved
-
-The contracts must prohibit the planner from emitting `EXECUTION PACKAGE`.
-
-The planner may include high-level sequencing or package-shaping notes only
-when they remain planning-level and return to orchestrator.
-
-### PL-CH-013 - Work-package fields are prohibited
-
-The contracts must prohibit the planner from defining:
-
+- backlog management;
+- discovery engine;
+- implementation designer;
+- pseudo-orchestrator;
+- `VALIDATION PACK`;
+- `EXECUTION PACKAGE`;
 - `WORK_PACKAGE_ID`;
 - `OWNED_PATHS`;
 - `DO_NOT_TOUCH`;
@@ -139,65 +129,64 @@ The contracts must prohibit the planner from defining:
 - `ACCEPTANCE_CHECKS`;
 - `BLOCK_IF`.
 
+### PL-CH-013 - Operational axes preserved
+
+Contracts and golden docs must preserve:
+
+- `MODE=standard`;
+- `MODE=strict`;
+- `MODE=compact`;
+- `RUN=execute`;
+- `RUN=plan`;
+- `HANDOFF_READY`;
+- compact return.
+
 ### PL-CH-014 - Guardrails remain metadata
 
-The contracts must allow only these guardrail names as metadata:
+Contracts may carry these guardrail names only as metadata:
 
 - `stnl_frontend_quality`;
 - `stnl_backend_quality`;
 - `stnl_backend_sql_quality`;
 - `stnl_mobile_ios_swift_quality`.
 
-The contracts must prohibit copying guardrail content, editing guardrail
-content, inventing guardrails, or treating guardrails as agents.
+Contracts must prohibit copying guardrail content, editing guardrail content,
+inventing guardrails, or treating guardrails as agents.
 
-### PL-CH-015 - Orchestrator relation is preserved
+### PL-CH-015 - Validation docs align with executable harnesses
 
-The contracts must require planner input to be already framed by orchestrator
-and planner output to return to orchestrator.
+`STATIC_CHECKS.md` and `GOLDEN_TESTS.md` must recognize the read-only
+executable harnesses `check-static.mjs` and `check-golden.mjs`. They must not
+claim agent runtime execution, materializer behavior, fixtures, or generated
+reports.
 
-The planner must not decide final routing or bypass orchestrator ownership.
+### PL-CH-016 - Global docs list harnesses without automatic pass
 
-### PL-CH-016 - Designer signal is preserved
+`README.md`, `SKILL.md`, `reference/MANIFEST.md`, and
+`reference/kernel_lab/README.md` must list or recognize
+`reference/planner_kernel/validation/check-static.mjs` and
+`reference/planner_kernel/validation/check-golden.mjs` without promoting an
+automatic pass.
 
-The contracts must require a signal to orchestrator when the cut has real UX,
-UI, accessibility, responsiveness, interaction, or visual consistency impact.
+### PL-CH-017 - Reading contract preserved
 
-The contracts must also prohibit the planner from replacing `designer`.
+Contracts must preserve:
 
-### PL-CH-017 - No planning-kernel artifact exists
-
-The planner kernel route must not create or require any `planning_kernel` path,
-contract, harness, fixture, or generated report.
-
-The only route under validation is one base agent to one kernel:
-
-`templates/agents/planner.agent.md -> reference/agents/planner.agent.md -> reference/planner_kernel/`
-
-### PL-CH-018 - Operational axes preserve planner safety
-
-The contracts must preserve:
-
-- `MODE=standard`;
-- `MODE=strict`;
-- `RUN=execute`;
-- `RUN=plan`;
-- `HANDOFF_READY` as non-status/non-gate wording;
-- compact return as format compaction only.
-
-The check should fail if any axis relaxes anti-inference, `bounded-context`,
-ephemeral `EXECUTION BRIEF`, `READY`, `NEEDS_DEV_DECISION_BASE`, absence of
-`VALIDATION PACK`, absence of `EXECUTION PACKAGE`, or absence of work-package
-fields.
+- `bounded-context`;
+- budget of at most 3 local artifacts;
+- at most 1 live artifact inside that budget;
+- expansion by at most 2 additional targeted artifacts;
+- no broad discovery;
+- no "read more" loop to avoid DEV decision.
 
 ## Out of scope
 
-- runnable static-check implementation;
-- generated reports;
-- fixtures;
-- materialization checks;
+- agent runtime execution;
+- materializer creation;
 - target-project writes;
+- fixtures;
+- generated reports;
 - production skill changes;
-- global manifest rewrites;
+- productive template changes;
 - orchestrator-kernel edits;
 - kernelization of other agents.

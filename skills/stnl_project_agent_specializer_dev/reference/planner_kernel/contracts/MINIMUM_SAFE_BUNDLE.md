@@ -56,6 +56,9 @@ The brief must not become durable documentation. It must not be written as
 Compact return surfaces may be shorter, but they must still preserve the
 decision-useful status, scope, blockers, risks, source-of-truth notes,
 validation-aware notes, guardrail names when relevant, and missing decisions.
+They must not republish the full `EXECUTION BRIEF` into the main chat by
+default and must not narrate reading, searching, inspection, progress, or tool
+usage.
 
 ## Mandatory statuses
 

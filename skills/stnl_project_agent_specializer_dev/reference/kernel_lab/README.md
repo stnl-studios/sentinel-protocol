@@ -8,7 +8,7 @@ materialization flow.
 | Kernel | Status | Notes |
 | --- | --- | --- |
 | `orchestrator_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen. Do not alter its snapshot, contracts, validation docs, or harnesses in planner rounds. |
-| `planner_kernel` | `INTEGRATION_FIX_APPLIED` / `UNDER_REVIEW` | Documentally integrated with a local planner snapshot. Not excellent pass. |
+| `planner_kernel` | `EXECUTABLE_VALIDATION_ADDED` / `UNDER_REVIEW` | Documentally integrated with a local planner snapshot and read-only harnesses. Not excellent pass; final audit is still required. |
 
 ## Objective
 
@@ -19,6 +19,11 @@ agents.
 The first case study, `orchestrator_kernel`, is frozen. The active documented
 integration under review is `planner_kernel`, compared with the local snapshot
 `reference/agents/planner.agent.md`.
+
+The planner harnesses are
+`reference/planner_kernel/validation/check-static.mjs` and
+`reference/planner_kernel/validation/check-golden.mjs`. They are executable
+read-only validation support only; they do not grant automatic pass.
 
 The work keeps the productive skill, productive templates, target repositories,
 installer, smoke checks, `.github/**`, `.codex/**`, `AGENTS.md`, and external
@@ -81,5 +86,6 @@ kernel is prohibited; the planner work is only `planner_kernel`.
 - do not create a new materializer here;
 - do not touch productive skill files, productive templates, or generated target
   artifacts.
-- do not create generic shared kernels, runtime adoption paths, executable
-  planner validation, planner fixtures, or planner generated reports here.
+- do not create generic shared kernels, runtime adoption paths, planner
+  fixtures, planner generated reports, or planner harnesses beyond the two
+  declared read-only validation scripts here.

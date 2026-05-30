@@ -22,9 +22,11 @@ respectivo snapshot dev de base agent em `reference/agents/**`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` é um kernel lab documental integrado para revisão e permanece
-`NOT_EXCELLENT_PASS`. Esse reconhecimento não muda o comportamento produtivo,
-não cria runtime, não autoriza materialização real e não cria fallback para
-`templates/**`.
+`NOT_EXCELLENT_PASS`. Ele possui harnesses executáveis read-only próprios em
+`reference/planner_kernel/validation/check-static.mjs` e
+`reference/planner_kernel/validation/check-golden.mjs`, mas isso não muda o
+comportamento produtivo, não cria runtime, não autoriza materialização real,
+não cria fallback para `templates/**` e não concede pass automático.
 
 ## Rota Atual
 
@@ -32,6 +34,8 @@ não cria runtime, não autoriza materialização real e não cria fallback para
    `reference/agents/orchestrator.agent.md`, preservando seu congelamento.
 2. Revisar o `planner_kernel` contra `reference/agents/planner.agent.md`, o
    snapshot dev local derivado de `templates/agents/planner.agent.md`.
+   Os harnesses do planner podem bloquear drift documental, mas a rodada segue
+   dependendo de revisão humana final.
 3. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
 4. Kernelizar os demais agents um por vez, por família de responsabilidade.
 5. Validar o pacote de agents como conjunto coerente.
@@ -99,9 +103,13 @@ Toda comparação deve validar que o kernel:
   `reference/planner_kernel/contracts/CONTRACT.md`,
   `reference/planner_kernel/contracts/BEHAVIOR_PARITY_SPINE.md` e
   `reference/planner_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
-- Validação documental desejada do planner, sem harness executável:
+- Validação documental e harnesses read-only do planner, sem runtime de agente:
   `reference/planner_kernel/validation/STATIC_CHECKS.md` e
   `reference/planner_kernel/validation/GOLDEN_TESTS.md`
+- Harness read-only de static checks do planner:
+  `reference/planner_kernel/validation/check-static.mjs`
+- Harness read-only de golden checks do planner:
+  `reference/planner_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 
@@ -123,7 +131,8 @@ Toda comparação deve validar que o kernel:
 - reconstruir a skill;
 - criar novo materializer;
 - produzir generated artifacts;
-- criar harness executável, fixture ou generated report para o planner;
+- criar fixture, generated report, runtime ou materializer para o planner;
+- criar qualquer harness do planner além dos dois scripts read-only declarados;
 - materializar repo alvo;
 - tocar na skill produtiva `skills/stnl_project_agent_specializer/**`;
 - tocar em templates produtivos `templates/**`;
@@ -140,5 +149,9 @@ Comandos:
 
 - `node --check reference/orchestrator_kernel/validation/check-static.mjs`
 - `node --check reference/orchestrator_kernel/validation/check-golden.mjs`
+- `node --check reference/planner_kernel/validation/check-static.mjs`
+- `node --check reference/planner_kernel/validation/check-golden.mjs`
 - `node reference/orchestrator_kernel/validation/check-static.mjs`
 - `node reference/orchestrator_kernel/validation/check-golden.mjs`
+- `node reference/planner_kernel/validation/check-static.mjs`
+- `node reference/planner_kernel/validation/check-golden.mjs`

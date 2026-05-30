@@ -4,8 +4,9 @@ Status: experimental planner-kernel contract.
 
 This document defines the minimum contract for a future `planner kernel` inside
 `stnl_project_agent_specializer_dev`. It is a design contract only. It does not
-implement planner logic, runtime loading, materialization, checks, tests,
-fixtures, generated artifacts, or production skill behavior.
+implement planner logic, runtime loading, materialization, fixtures, generated
+artifacts, or production skill behavior. The companion validation harnesses are
+read-only documentation checks and do not execute agent runtime.
 
 `templates/agents/planner.agent.md` is the productive/base origin for the
 planner copy. `reference/agents/planner.agent.md` is the manifest-declared
@@ -182,7 +183,8 @@ are clear enough to avoid speculation.
 
 The planner must not republish the full `EXECUTION BRIEF` into the main chat by
 default. The return surface should be compact and decision-useful for the
-orchestrator.
+orchestrator. It must not narrate reading, searching, inspection, progress, or
+tool usage.
 
 ## Status contract
 
@@ -396,7 +398,6 @@ This contract does not implement:
 
 - planner runtime logic;
 - materialization;
-- local harnesses;
 - fixtures;
 - generated reports;
 - global manifest updates;

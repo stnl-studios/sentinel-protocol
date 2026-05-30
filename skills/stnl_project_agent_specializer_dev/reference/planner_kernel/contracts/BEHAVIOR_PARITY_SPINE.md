@@ -128,7 +128,8 @@ intact:
 - `HANDOFF_READY`: do not create a second readiness gate; preserve
   `STATUS: READY` with an ephemeral `EXECUTION BRIEF` as the ready handoff.
 - compact return: keep the main-chat or orchestrator-facing summary brief and
-  decision-useful without republishing the full brief by default.
+  decision-useful without republishing the full brief by default, and do not
+  narrate reading, searching, inspection, progress, or tool usage.
 
 These deltas must not relax:
 

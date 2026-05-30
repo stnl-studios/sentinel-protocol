@@ -7,6 +7,8 @@ Skill: `stnl_project_agent_specializer_dev`
 - `orchestrator_kernel` is frozen as `CLEAN_EXCELLENT_PASS`.
 - `planner_kernel` is documentally integrated for the kernel lab and remains
   `NOT_EXCELLENT_PASS`.
+- `planner_kernel` now has read-only executable validation harnesses, but this
+  does not grant automatic pass; human final audit is still required.
 - `reference/agents/planner.agent.md` is the local dev snapshot derived
   literally from `templates/agents/planner.agent.md`.
 - No `planning_kernel` exists in this bundle.
@@ -31,6 +33,8 @@ Required files:
 - `reference/planner_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
 - `reference/planner_kernel/validation/STATIC_CHECKS.md`
 - `reference/planner_kernel/validation/GOLDEN_TESTS.md`
+- `reference/planner_kernel/validation/check-static.mjs`
+- `reference/planner_kernel/validation/check-golden.mjs`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 
@@ -38,8 +42,8 @@ Not active in this dev bundle:
 - no standalone orchestrator-kernel materializer is part of the active flow
 - no generated orchestrator-kernel artifact is a required or expected output
 - no target repository materialization is authorized from this experimental area
-- no planner runtime, planner materializer, planner harness, fixture, generated
-  report, or executable planner validation is part of this bundle
+- no planner runtime, planner materializer, planner fixture, generated report,
+  automatic planner pass, or target-writer flow is part of this bundle
 
 Not included as canonical dev references:
 - no full reference/agents/** bundle is present; only copied base snapshots

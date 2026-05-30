@@ -3,10 +3,11 @@
 Status: experimental documentation index for the kernel-lab route in
 `stnl_project_agent_specializer_dev`.
 
-This directory is a documentation-only, read-only kernel lab for the base
-`planner` agent. It does not implement runtime loading, module execution,
-materialization, target artifact generation, local harnesses, fixtures,
-generated reports, or production skill behavior.
+This directory is a documentation-focused, read-only kernel lab for the base
+`planner` agent with two local executable validation harnesses. It does not
+implement runtime loading, module execution, materialization, target artifact
+generation, fixtures, generated reports, automatic pass, or production skill
+behavior.
 
 Source alignment:
 
@@ -34,10 +35,13 @@ Read in this order:
    keeps the planner acting as planner.
 3. `contracts/BEHAVIOR_PARITY_SPINE.md` - behavior that must remain
    semantically aligned with the base `planner`.
-4. `validation/STATIC_CHECKS.md` - desired read-only structural checks for this
-   documentation bundle.
-5. `validation/GOLDEN_TESTS.md` - desired semantic golden-test scenarios for
-   future validation work.
+4. `validation/STATIC_CHECKS.md` - read-only executable structural check
+   contract for this documentation bundle.
+5. `validation/GOLDEN_TESTS.md` - semantic golden-test scenarios covered by the
+   read-only executable harness.
+6. `validation/check-static.mjs` - read-only static harness.
+7. `validation/check-golden.mjs` - read-only golden harness that runs the
+   static harness as a precondition.
 
 ## Scope limits
 
@@ -50,8 +54,9 @@ This directory does not authorize:
 - changes to the productive skill or productive templates;
 - changes to global README, SKILL, MANIFEST, installer, smoke, or runtime files;
 - creation of `MODULE_INDEX.md`, `ACTIVATION_GATES.md`,
-  `EXPERIMENTAL_MATERIALIZATION.md`, harness `.mjs` files, fixtures, or
-  generated reports for `planner_kernel`;
+  `EXPERIMENTAL_MATERIALIZATION.md`, fixtures, generated reports, or harness
+  `.mjs` files beyond `validation/check-static.mjs` and
+  `validation/check-golden.mjs` for `planner_kernel`;
 - creation of any `planning_kernel`;
 - creation of durable planning artifacts such as `PLAN.md` or
   `execution_brief.md`.

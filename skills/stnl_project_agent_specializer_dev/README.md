@@ -9,12 +9,13 @@ materialização da skill. O kernel lab contém pelo menos `orchestrator_kernel`
 `planner_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
-`planner_kernel` está integrado documentalmente para revisão e permanece
-`NOT_EXCELLENT_PASS`.
+`planner_kernel` está integrado documentalmente para revisão, possui harnesses
+executáveis read-only próprios e permanece `NOT_EXCELLENT_PASS`.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
-target materialization, generated artifact ou validação executável do planner
-autorizados nesta área.
+target materialization, generated artifact ou pass automático do planner
+autorizados nesta área. Os harnesses do planner apenas bloqueiam drift
+documental e deixam a decisão final para revisão humana.
 
 ## Rota Atual
 
@@ -23,6 +24,10 @@ autorizados nesta área.
 - revisar o `planner_kernel` contra o snapshot dev local
   `reference/agents/planner.agent.md`, derivado literalmente de
   `templates/agents/planner.agent.md`;
+- executar, quando necessário, os harnesses read-only
+  `reference/planner_kernel/validation/check-static.mjs` e
+  `reference/planner_kernel/validation/check-golden.mjs` sem declarar pass
+  automático;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
 - kernelizar os demais agents um por vez, por família de responsabilidade;
@@ -38,8 +43,11 @@ autorizados nesta área.
 - manter `reference/kernel_lab/README.md` como entrada curta para o recomeço;
 - manter contratos/checks do orchestrator kernel apenas como apoio estrutural e
   conceitual;
-- manter `check-static.mjs` e `check-golden.mjs` read-only, sem autorizar
-  materialização;
+- manter os harnesses `reference/orchestrator_kernel/validation/check-static.mjs`,
+  `reference/orchestrator_kernel/validation/check-golden.mjs`,
+  `reference/planner_kernel/validation/check-static.mjs` e
+  `reference/planner_kernel/validation/check-golden.mjs` read-only, sem
+  autorizar materialização ou pass automático;
 - tratar `reference/agents/**` como o único local autorizado para snapshots dev
   de base agents usados pelo kernel lab;
 - nunca usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou

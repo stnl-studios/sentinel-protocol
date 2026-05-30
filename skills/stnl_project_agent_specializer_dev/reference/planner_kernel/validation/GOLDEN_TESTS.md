@@ -1,12 +1,15 @@
 # Planner Kernel Golden Tests
 
-Status: desired semantic golden-test support for the planner kernel lab.
+Status: read-only executable semantic golden-test support for the planner
+kernel lab.
 
-These golden tests are documentation contracts only. They do not execute agent
-runtime behavior, compare snapshots, produce generated artifacts, create
-fixtures, or authorize materialization.
+The local harness is
+`reference/planner_kernel/validation/check-golden.mjs`. It runs
+`reference/planner_kernel/validation/check-static.mjs` as a precondition, uses
+only Node built-ins, is read-only, keeps path containment inside the repository,
+ignores `__MACOSX` and `.DS_Store`, and exits `1` when any golden check fails.
 
-Future golden checks should validate semantic behavior against the declared
+These golden tests validate textual and semantic evidence against the declared
 local snapshot and planner-kernel contracts:
 
 - `reference/agents/planner.agent.md`;
@@ -16,6 +19,10 @@ local snapshot and planner-kernel contracts:
 
 `templates/agents/planner.agent.md` remains the productive/base origin for the
 snapshot. It is not a fallback source for a missing dev snapshot.
+
+The harness does not execute agent runtime, does not implement a materializer,
+does not create fixtures, does not produce generated reports, and does not
+authorize automatic pass. Human final audit remains required after checks pass.
 
 ## Golden Test PL-GT-001 - Simple bounded request produces READY
 
@@ -378,10 +385,40 @@ FAIL when the planner emits `HANDOFF_READY` as a third status, bypasses
 
 Expected blocker: `BLOCKED_PLANNER_HANDOFF_READY_PARALLEL_GATE`.
 
+## Golden Test PL-GT-015 - Compact return does not republish brief or narrate operation
+
+### Objective
+
+Protect the `Compact Agent Return Contract` from turning a planner handoff into
+verbose chat output or operational narration.
+
+### Input shape
+
+The planner has a valid ephemeral `EXECUTION BRIEF`, and the orchestrator or
+main-chat return surface should stay compact by default.
+
+### Expected behavior
+
+- The rich planning artifact remains in the `EXECUTION BRIEF` handoff.
+- The main-chat or orchestrator-facing return does not republish the full
+  `EXECUTION BRIEF` by default.
+- The return does not narrate reading, searching, inspection, progress, or tool
+  usage.
+- The surfaced return is short and decision-useful.
+- Compact return does not remove required scope, blockers, risks, guardrails,
+  validation-aware notes, source-of-truth notes, or relevant safety signals.
+
+### Fail condition
+
+FAIL when compact return republishes the full brief, narrates operations, or
+uses brevity to drop required scope, blockers, risks, guardrails, validation
+notes, source-of-truth notes, or safety-relevant planning content.
+
+Expected blocker: `BLOCKED_PLANNER_COMPACT_RETURN_REPUBLISHED_BRIEF`.
+
 ## Out of scope
 
-- runnable golden harnesses;
-- snapshots;
+- agent runtime execution;
 - fixtures;
 - generated reports;
 - target-project materialization;
