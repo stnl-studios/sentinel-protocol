@@ -1,9 +1,11 @@
 # Orchestrator Kernel Critical Golden Tests
 
-Status: read-only structural golden-test support for the kernel lab.
+Status: read-only structural and semantic golden-test support for the kernel
+lab.
 
-The local `check-golden.mjs` harness validates these contracts at a structural
-documentation level only. It does not execute agent runtime behavior, compare
+The local `check-golden.mjs` harness validates structural documentation
+contracts in this file and minimum semantic contracts in
+`BEHAVIOR_PARITY_SPINE.md`. It does not execute agent runtime behavior, compare
 snapshots, produce generated artifacts, or authorize materialization.
 
 ## Golden Test GT-001 - Simple Request Does Not Activate Heavy Modules
@@ -94,6 +96,167 @@ tests as materialization authority, materializes all agents, or implements
 Project Senior Profile.
 
 Expected blocker: `BLOCKED_GOLDEN_KERNELIZATION_ESCAPED_TO_MATERIALIZATION`.
+
+## Golden Test GT-SEM-001 - RUN=plan Stops Before Execution
+
+### Objective
+
+Protect planning-only routes from accidentally executing implementation,
+validation, or terminal slice closure.
+
+### Expected Behavior
+
+- `RUN=plan` stops at `execution-package-designer.agent.md`.
+- The route must not call coder agents.
+- The route must not call `validation-runner.agent.md`.
+- The route must not allow `finalizer.agent.md` to conclude the slice.
+
+### PASS Condition
+
+PASS when the spine preserves planning-only stop behavior before execution and
+blocks coder, runner, and finalizer slice closure routes.
+
+### FAIL Condition
+
+FAIL when `RUN=plan` can proceed to coder, runner, or terminal finalizer
+closure.
+
+Expected blocker: `BLOCKED_SEM_RUN_PLAN_ESCAPED_TO_EXECUTION`.
+
+## Golden Test GT-SEM-002 - MODE=compact Preserves Safety
+
+### Objective
+
+Protect compact mode from becoming a safety downgrade.
+
+### Expected Behavior
+
+- `MODE=compact` is format-only compaction.
+- It must preserve gates, blockers, proof requirements, handoff validity, and
+  safety obligations.
+- It must not allow compacted safety, skipped gates, ignored blockers, or
+  weakened proof.
+
+### PASS Condition
+
+PASS when compact mode preserves all safety obligations while only changing
+format density.
+
+### FAIL Condition
+
+FAIL when compact mode removes or weakens gates, blockers, proof requirements,
+handoff validity, or safety obligations.
+
+Expected blocker: `BLOCKED_SEM_COMPACT_WEAKENED_SAFETY`.
+
+## Golden Test GT-SEM-003 - FLOW=autonomous Blocks Normative Decision
+
+### Objective
+
+Protect autonomous flow from silently making product or contract decisions.
+
+### Expected Behavior
+
+- `FLOW=autonomous` may continue only through safe cycles.
+- It must not decide product, contract, schema, auth, permission, payload,
+  business-rule, or other normative decisions.
+- It must block or escalate when a normative decision is required.
+
+### PASS Condition
+
+PASS when autonomous flow preserves the normative decision boundary and blocks
+or escalates instead of deciding.
+
+### FAIL Condition
+
+FAIL when autonomous flow can decide product, contract, schema, auth,
+permission, payload, or business-rule changes.
+
+Expected blocker: `BLOCKED_SEM_AUTONOMOUS_NORMATIVE_DECISION`.
+
+## Golden Test GT-SEM-004 - Executor Handoff Invalid Does Not Advance
+
+### Objective
+
+Protect downstream gates from treating evidence-free executor completion as
+ready.
+
+### Expected Behavior
+
+- Executor `READY` requires applied implementation evidence.
+- Evidence-free `READY`, progress reports, command logs, analysis,
+  pseudo-plans, and narrative summaries are invalid executor handoffs.
+- Invalid executor handoff must result in `EXECUTOR_HANDOFF_INVALID`,
+  `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR`, or
+  `REQUEST_REGEN_FROM_OWNER`.
+- Invalid executor handoff must not advance to runner, reviewer, or finalizer
+  as if it were `READY`.
+
+### PASS Condition
+
+PASS when evidence-free executor completion is rejected and routed to replay,
+regeneration, or blocking instead of downstream readiness.
+
+### FAIL Condition
+
+FAIL when an executor saying "feito" or equivalent without applied evidence can
+be treated as `READY`.
+
+Expected blocker: `BLOCKED_SEM_EXECUTOR_HANDOFF_ADVANCED_INVALID`.
+
+## Golden Test GT-SEM-005 - Correction Budget Routes Correctly
+
+### Objective
+
+Protect correction loops from becoming unbounded or repeating the same root
+cause automatically.
+
+### Expected Behavior
+
+- Automatic correction has at most 2 rounds per slice or round.
+- Automatic correction has at most 1 attempt for the same fingerprint or root
+  cause.
+- New issues may route only while budget remains.
+- Repeated issues or budget exhaustion route to `finalizer.agent.md` with
+  residual pack and evidence.
+
+### PASS Condition
+
+PASS when the spine preserves correction round limits, same-root-cause limits,
+and terminal residual routing.
+
+### FAIL Condition
+
+FAIL when automatic correction can exceed the budget or repeat the same
+fingerprint/root cause without finalizer routing.
+
+Expected blocker: `BLOCKED_SEM_CORRECTION_BUDGET_ESCAPED`.
+
+## Golden Test GT-SEM-006 - Finalizer/Resync Boundary Is Enforced
+
+### Objective
+
+Protect terminal closure and resync ownership boundaries.
+
+### Expected Behavior
+
+- Every terminal outcome routes through `finalizer.agent.md`.
+- `resync.agent.md` is called only when `finalizer.agent.md` explicitly
+  requires it.
+- `stnl_project_context MODE=RESYNC` must not be confused with
+  `resync.agent.md`.
+
+### PASS Condition
+
+PASS when all terminal outcomes go through finalizer and resync remains
+finalizer-authorized only.
+
+### FAIL Condition
+
+FAIL when terminal outcomes close locally, resync is triggered without
+finalizer, or project-context `MODE=RESYNC` is treated as `resync.agent.md`.
+
+Expected blocker: `BLOCKED_SEM_FINALIZER_RESYNC_BOUNDARY_WEAKENED`.
 
 ## Out Of Scope
 
