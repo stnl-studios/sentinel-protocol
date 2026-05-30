@@ -11,6 +11,15 @@ duplicating the full contract. The contract answers "what is the planner
 kernel?". This bundle answers "what must never be optional for the planner to
 remain planner?".
 
+Source alignment:
+
+- productive/base origin: `templates/agents/planner.agent.md`;
+- integrated dev snapshot: `reference/agents/planner.agent.md`;
+- documentary kernel: `reference/planner_kernel/**`.
+
+The local snapshot is the audit point for this dev bundle. The productive
+template is the copy origin, not a fallback.
+
 ## Purpose
 
 The minimum safe bundle protects the planner from dangerous compression.
@@ -44,6 +53,10 @@ The brief must be:
 The brief must not become durable documentation. It must not be written as
 `PLAN.md`, `execution_brief.md`, or any persistent stand-in.
 
+Compact return surfaces may be shorter, but they must still preserve the
+decision-useful status, scope, blockers, risks, source-of-truth notes,
+validation-aware notes, guardrail names when relevant, and missing decisions.
+
 ## Mandatory statuses
 
 The planner may emit only:
@@ -55,6 +68,9 @@ The planner may emit only:
 
 `NEEDS_DEV_DECISION_BASE` is the only planner-level blocking escalation status
 when the brief cannot be produced honestly.
+
+`HANDOFF_READY` is not an additional status or gate. A ready handoff remains
+`STATUS: READY` with the ephemeral `EXECUTION BRIEF`.
 
 Invalid input, absent handoff, insufficient base, source conflict, UX ambiguity,
 validation uncertainty, and broad discovery need are stop or block reasons, not
@@ -107,6 +123,10 @@ the planner must request `NEEDS_DEV_DECISION_BASE`.
 
 The blocker must ask the smallest concrete question that unblocks the brief.
 
+`MODE=strict` strengthens this requirement by blocking earlier on material
+ambiguity. `MODE=standard` preserves the same anti-inference floor. Neither
+mode may hide missing decisions as assumptions.
+
 ## Mandatory prohibitions
 
 The planner must not:
@@ -134,6 +154,10 @@ The planner must not:
 - define `BLOCK_IF`;
 - approve execution;
 - claim validation proof.
+
+`RUN=execute` must not weaken these prohibitions. `RUN=plan` must not delay
+them. Both axes remain planning-only until the orchestrator routes the next
+owner.
 
 ## Mandatory downstream relationship
 

@@ -17,6 +17,15 @@ The companion static-checks contract is
 The companion golden-tests contract is
 `reference/planner_kernel/validation/GOLDEN_TESTS.md`.
 
+Source alignment:
+
+- productive/base origin: `templates/agents/planner.agent.md`;
+- integrated dev snapshot: `reference/agents/planner.agent.md`;
+- documentary kernel: `reference/planner_kernel/**`.
+
+The local snapshot is the audit point for the dev bundle. The productive
+template remains the copy origin and is not a fallback path for this kernel lab.
+
 ## What the planner kernel is
 
 The planner kernel is the fixed, small, documentation-only contract for a future
@@ -31,8 +40,9 @@ It is not shared by `validation-eval-designer`,
 `execution-package-designer`, `designer`, or any implementation owner.
 
 The kernel does not replace the base `planner.agent.md`. The base planner
-remains the canonical source of truth for the role, handoff, status language,
-reading class, completion contract, and protocol-fixed protections.
+remains the source of truth for the role, handoff, status language, reading
+class, completion contract, and protocol-fixed protections. Within this dev
+bundle, parity review is anchored to the declared local snapshot.
 
 ## Identity
 
@@ -183,6 +193,10 @@ return to the orchestrator.
 base decision, boundary decision, source-of-truth fact, or blocking constraint
 is missing.
 
+`HANDOFF_READY` is not a planner status and must not become a parallel gate.
+The normal ready handoff remains `STATUS: READY` plus the ephemeral
+`EXECUTION BRIEF` returned to the orchestrator.
+
 The following are not planner statuses:
 
 - invalid input;
@@ -312,6 +326,31 @@ Guardrails are passed downstream when relevant to the cut surface. The planner
 must not copy guardrail content, rewrite guardrail rules, treat guardrails as
 agents, invent new guardrails, or use guardrails as proof of implementation
 quality.
+
+## Operational axes contract
+
+The planner kernel must preserve the base operational axes without relaxing
+safety:
+
+- `MODE=standard` preserves current planning behavior and does not remove
+  required scope, source, blocker, risk, validation, or guardrail content.
+- `MODE=strict` reduces inference, blocks earlier on material ambiguity, states
+  evidence needs more rigorously, and may recommend reviewer involvement when
+  structural risk exists.
+- `RUN=execute` means the planner may prepare an execution-ready planning
+  handoff when evidence supports it. It does not authorize implementation,
+  bypass orchestrator routing, or emit executable package fields.
+- `RUN=plan` remains planning-only. It may state `ready_to_execute` as planning
+  information only when supported, without implying implementation approval.
+- compact return surfaces are format compaction only. They must not compact
+  away anti-inference, `bounded-context`, the ephemeral `EXECUTION BRIEF`,
+  `READY`, `NEEDS_DEV_DECISION_BASE`, missing decisions, validation-aware notes,
+  or active guardrail names.
+
+No axis may authorize `VALIDATION PACK`, `EXECUTION PACKAGE`,
+`WORK_PACKAGE_ID`, `OWNED_PATHS`, `DO_NOT_TOUCH`, `RUN_COMMANDS`,
+`ACCEPTANCE_CHECKS`, `BLOCK_IF`, durable planner files, broad discovery, or
+implementation design.
 
 ## Anti-role-drift contract
 

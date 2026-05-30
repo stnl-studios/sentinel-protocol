@@ -5,17 +5,27 @@ Esta skill dev é uma área experimental isolada. Ela não substitui
 materializar agents em um repo alvo.
 
 O foco imediato mudou para validação de kernelização de agents fora do fluxo de
-materialização da skill. O primeiro estudo é o `orchestrator`; depois, o padrão
-validado deve orientar os demais agents por família de responsabilidade, seguido
-por Project Senior Profile e, só então, pela reconstrução da skill.
+materialização da skill. O kernel lab contém pelo menos `orchestrator_kernel` e
+`planner_kernel`.
+
+O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
+`planner_kernel` está integrado documentalmente para revisão e permanece
+`NOT_EXCELLENT_PASS`.
+
+A skill dev continua experimental. Não há runtime real, materializer ativo,
+target materialization, generated artifact ou validação executável do planner
+autorizados nesta área.
 
 ## Rota Atual
 
-- validar o `orchestrator` kernel contra o base agent copiado em
-  `reference/agents/orchestrator.agent.md`;
+- preservar o `orchestrator_kernel` congelado sem alterar seus contratos,
+  checks ou snapshots;
+- revisar o `planner_kernel` contra o snapshot dev local
+  `reference/agents/planner.agent.md`, derivado literalmente de
+  `templates/agents/planner.agent.md`;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
-- kernelizar os demais agents por família de responsabilidade;
+- kernelizar os demais agents um por vez, por família de responsabilidade;
 - validar o pacote de agents;
 - avançar para Project Senior Profile apenas depois dos agents estabilizados;
 - reconstruir a skill/materialização completa apenas no final.
@@ -30,6 +40,8 @@ por Project Senior Profile e, só então, pela reconstrução da skill.
   conceitual;
 - manter `check-static.mjs` e `check-golden.mjs` read-only, sem autorizar
   materialização;
+- tratar `reference/agents/**` como o único local autorizado para snapshots dev
+  de base agents usados pelo kernel lab;
 - nunca usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou
   filesystem externo;
 - não tocar na skill produtiva, templates produtivos, installer, smoke,

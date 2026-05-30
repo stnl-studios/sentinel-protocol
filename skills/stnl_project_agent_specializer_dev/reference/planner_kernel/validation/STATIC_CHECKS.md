@@ -6,11 +6,16 @@ These checks are documentation contracts only. They do not implement a runtime
 loader, materializer, target-project writer, generated artifact producer,
 installer change, smoke change, or authorization gate.
 
-Future checks should inspect only the planner-kernel documentation area and the
-declared canonical source needed for parity:
+Future checks should inspect only the local planner snapshot and the
+planner-kernel documentation area declared in the manifest:
 
-- `templates/agents/planner.agent.md`;
+- `skills/stnl_project_agent_specializer_dev/reference/agents/planner.agent.md`;
 - `skills/stnl_project_agent_specializer_dev/reference/planner_kernel/**`.
+
+The productive/base origin is `templates/agents/planner.agent.md`. Future checks
+may compare the snapshot to that origin when literal-copy validation is
+authorized, but they must not use the productive template as an undeclared
+fallback when the snapshot is missing.
 
 They should ignore `__MACOSX` and `.DS_Store`.
 
@@ -31,14 +36,19 @@ The check must not require `MODULE_INDEX.md`, `ACTIVATION_GATES.md`,
 `EXPERIMENTAL_MATERIALIZATION.md`, harness `.mjs` files, fixtures, generated
 reports, or any `planning_kernel`.
 
-### PL-CH-002 - Canonical source is explicit and present
+### PL-CH-002 - Base origin and local snapshot are explicit and present
 
-The planner kernel must declare `templates/agents/planner.agent.md` as the
-canonical source and the file must exist.
+The planner kernel must declare:
+
+- productive/base origin: `templates/agents/planner.agent.md`;
+- integrated dev snapshot: `reference/agents/planner.agent.md`;
+- documentary kernel: `reference/planner_kernel/**`.
+
+The local snapshot must exist and be listed in `reference/MANIFEST.md`.
 
 The check must not use fallback paths, copied external files, productive skill
-references, broad globs, or reconstructed planner content when the canonical
-source is missing.
+references, broad globs, or reconstructed planner content when the local
+snapshot is missing.
 
 ### PL-CH-003 - Identity and role class are preserved
 
@@ -162,7 +172,23 @@ contract, harness, fixture, or generated report.
 
 The only route under validation is one base agent to one kernel:
 
-`templates/agents/planner.agent.md -> reference/planner_kernel/`
+`templates/agents/planner.agent.md -> reference/agents/planner.agent.md -> reference/planner_kernel/`
+
+### PL-CH-018 - Operational axes preserve planner safety
+
+The contracts must preserve:
+
+- `MODE=standard`;
+- `MODE=strict`;
+- `RUN=execute`;
+- `RUN=plan`;
+- `HANDOFF_READY` as non-status/non-gate wording;
+- compact return as format compaction only.
+
+The check should fail if any axis relaxes anti-inference, `bounded-context`,
+ephemeral `EXECUTION BRIEF`, `READY`, `NEEDS_DEV_DECISION_BASE`, absence of
+`VALIDATION PACK`, absence of `EXECUTION PACKAGE`, or absence of work-package
+fields.
 
 ## Out of scope
 

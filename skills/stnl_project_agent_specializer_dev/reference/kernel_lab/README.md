@@ -3,28 +3,41 @@
 Status: experimental planning and validation area. It is not an active
 materialization flow.
 
+## Current matrix
+
+| Kernel | Status | Notes |
+| --- | --- | --- |
+| `orchestrator_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen. Do not alter its snapshot, contracts, validation docs, or harnesses in planner rounds. |
+| `planner_kernel` | `INTEGRATION_FIX_APPLIED` / `UNDER_REVIEW` | Documentally integrated with a local planner snapshot. Not excellent pass. |
+
 ## Objective
 
 The kernel lab validates whether Sentinel agents can be reduced into smaller
 kernel agents without losing critical behavior from their respective base
 agents.
 
-The first case study is `orchestrator`. The work compares the orchestrator
-kernel contracts with `reference/agents/orchestrator.agent.md` and keeps the
-productive skill, productive templates, target repositories, installer, smoke
-checks, `.github/**`, `.codex/**`, `AGENTS.md`, and external filesystems out of
-scope.
+The first case study, `orchestrator_kernel`, is frozen. The active documented
+integration under review is `planner_kernel`, compared with the local snapshot
+`reference/agents/planner.agent.md`.
+
+The work keeps the productive skill, productive templates, target repositories,
+installer, smoke checks, `.github/**`, `.codex/**`, `AGENTS.md`, and external
+filesystems out of scope. Productive templates may be cited as copy origins for
+declared snapshots, but they are not fallback references during kernel-lab
+review.
 
 ## Current Route
 
 The immediate focus is not rebuilding the dev skill materializer. The route is:
 
-1. validate the orchestrator kernel against the copied base orchestrator;
-2. extract reusable principles from the orchestrator comparison;
-3. kernelize agents by responsibility family;
-4. validate the agent package as a coherent set;
-5. advance to Project Senior Profile only after agents are stable;
-6. rebuild the skill and any complete materialization flow only after agents and
+1. validate the orchestrator kernel status as frozen and preserve that result;
+2. review the planner kernel against the copied planner snapshot;
+3. extract reusable principles without forcing every agent into one mold;
+4. kernelize agents by responsibility family, one agent-specific kernel at a
+   time;
+5. validate the agent package as a coherent set;
+6. advance to Project Senior Profile only after agents are stable;
+7. rebuild the skill and any complete materialization flow only after agents and
    Profile are stable.
 
 ## Validation Criteria
@@ -57,6 +70,9 @@ Suggested ordering by family:
 The discipline is shared across families, but the kernel shape may vary by
 responsibility. Do not force every agent into the same internal mold.
 
+Each agent gets its own kernel when authorized. A generic shared planning
+kernel is prohibited; the planner work is only `planner_kernel`.
+
 ## Current Non-Goals
 
 - do not kernelize all agents in one pass;
@@ -65,3 +81,5 @@ responsibility. Do not force every agent into the same internal mold.
 - do not create a new materializer here;
 - do not touch productive skill files, productive templates, or generated target
   artifacts.
+- do not create generic shared kernels, runtime adoption paths, executable
+  planner validation, planner fixtures, or planner generated reports here.

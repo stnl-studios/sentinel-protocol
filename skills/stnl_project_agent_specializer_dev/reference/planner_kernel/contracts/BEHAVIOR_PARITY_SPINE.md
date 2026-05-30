@@ -10,6 +10,15 @@ does not replace the base planner, does not authorize generated artifacts, and
 does not change the productive skill, productive templates, or main Sentinel
 flow.
 
+Source alignment:
+
+- productive/base origin: `templates/agents/planner.agent.md`;
+- integrated dev snapshot: `reference/agents/planner.agent.md`;
+- documentary kernel: `reference/planner_kernel/**`.
+
+Parity review uses the local snapshot declared in the manifest. The productive
+template is the origin of that snapshot, not a fallback dependency.
+
 The goal is behavioral parity at the limited-planning level, not a full copy of
 the base agent.
 
@@ -42,6 +51,9 @@ The planner kernel must preserve these behavior invariants:
 - identify active stack quality guardrails by name when surfaces justify them;
 - signal `designer` when UX, UI, accessibility, interaction, responsiveness, or
   visual consistency materially affects the cut;
+- preserve `MODE=standard` as current planning behavior;
+- preserve `MODE=strict` as lower-inference, earlier-blocking planning;
+- preserve `RUN=execute` as execution-ready planning, not execution approval;
 - preserve `RUN=plan` as planning-only and not execution approval;
 - preserve `MODE=compact` as format compaction only, not safety compaction.
 
@@ -98,6 +110,37 @@ When blocked, the planner must name:
 - the minimum question or source needed to unblock.
 
 It must not emit a draft brief or speculative fallback cut while blocked.
+
+## Operational axis and delta invariants
+
+The following base-agent axes and handoff deltas must remain semantically
+intact:
+
+- `MODE=standard`: keep the normal planner behavior and all required brief
+  elements.
+- `MODE=strict`: reduce inference, block earlier on material ambiguity, make
+  evidence gaps explicit, and keep structural risk visible.
+- `RUN=execute`: prepare a valid planning handoff for execution routing only
+  when bounded evidence supports it; do not approve implementation.
+- `RUN=plan`: produce planning-only content, required questions, validation
+  notes, proposed package inputs, recommended `MODE`/`FLOW`, and
+  `ready_to_execute` only as planning information.
+- `HANDOFF_READY`: do not create a second readiness gate; preserve
+  `STATUS: READY` with an ephemeral `EXECUTION BRIEF` as the ready handoff.
+- compact return: keep the main-chat or orchestrator-facing summary brief and
+  decision-useful without republishing the full brief by default.
+
+These deltas must not relax:
+
+- anti-inference;
+- `bounded-context` reading;
+- ephemeral `EXECUTION BRIEF`;
+- `READY`;
+- `NEEDS_DEV_DECISION_BASE`;
+- absence of `VALIDATION PACK`;
+- absence of `EXECUTION PACKAGE`;
+- absence of `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DO_NOT_TOUCH`,
+  `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, and `BLOCK_IF`.
 
 ## Reading invariants
 

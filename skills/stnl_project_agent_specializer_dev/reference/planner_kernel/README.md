@@ -8,14 +8,21 @@ This directory is a documentation-only, read-only kernel lab for the base
 materialization, target artifact generation, local harnesses, fixtures,
 generated reports, or production skill behavior.
 
-The canonical source used for this kernel contract is
-`templates/agents/planner.agent.md`.
+Source alignment:
+
+- productive/base origin: `templates/agents/planner.agent.md`;
+- integrated dev snapshot: `reference/agents/planner.agent.md`;
+- documentary kernel: `reference/planner_kernel/**`.
+
+The planner snapshot is the local audit point for this dev kernel lab. The
+productive template may be cited as the copy origin, but it is not a fallback
+outside the manifest.
 
 This is not a `planning_kernel`, family kernel, shared planning layer, or merged
 planning-agent bundle. The current mapping is intentionally one base agent to
 one future kernel:
 
-`templates/agents/planner.agent.md -> reference/planner_kernel/`
+`templates/agents/planner.agent.md -> reference/agents/planner.agent.md -> reference/planner_kernel/`
 
 ## Included files
 
@@ -37,7 +44,8 @@ Read in this order:
 This directory does not authorize:
 
 - changes to `templates/agents/planner.agent.md`;
-- changes to `reference/agents/**`;
+- changes to `reference/agents/**` except the already authorized literal
+  planner snapshot copy;
 - changes to `reference/orchestrator_kernel/**`;
 - changes to the productive skill or productive templates;
 - changes to global README, SKILL, MANIFEST, installer, smoke, or runtime files;
@@ -48,5 +56,6 @@ This directory does not authorize:
 - creation of durable planning artifacts such as `PLAN.md` or
   `execution_brief.md`.
 
-The base `planner.agent.md` remains the canonical source of truth for the
-planner role until a separately authorized contract changes that status.
+The productive/base planner remains the source of truth for the planner role
+until a separately authorized contract changes that status. Inside this dev
+bundle, review uses the local snapshot declared in `reference/MANIFEST.md`.

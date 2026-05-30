@@ -6,12 +6,16 @@ These golden tests are documentation contracts only. They do not execute agent
 runtime behavior, compare snapshots, produce generated artifacts, create
 fixtures, or authorize materialization.
 
-Future golden checks should validate semantic behavior against:
+Future golden checks should validate semantic behavior against the declared
+local snapshot and planner-kernel contracts:
 
-- `templates/agents/planner.agent.md`;
+- `reference/agents/planner.agent.md`;
 - `reference/planner_kernel/contracts/CONTRACT.md`;
 - `reference/planner_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`;
 - `reference/planner_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`.
+
+`templates/agents/planner.agent.md` remains the productive/base origin for the
+snapshot. It is not a fallback source for a missing dev snapshot.
 
 ## Golden Test PL-GT-001 - Simple bounded request produces READY
 
@@ -270,6 +274,109 @@ FAIL when the planner writes or authorizes `PLAN.md`, `execution_brief.md`, or a
 durable stand-in for the ephemeral brief.
 
 Expected blocker: `BLOCKED_PLANNER_DURABLE_BRIEF_ARTIFACT_CREATED`.
+
+## Golden Test PL-GT-011 - MODE=strict blocks earlier without changing role
+
+### Objective
+
+Protect strict mode as lower-inference planning, not a new planner role.
+
+### Input shape
+
+The orchestrator provides `MODE=strict` and the request contains material
+ambiguity that could be guessed in a looser process.
+
+### Expected behavior
+
+- The planner emits `NEEDS_DEV_DECISION_BASE` when the ambiguity affects cut
+  honesty.
+- The blocker names the missing decision or fact.
+- The planner preserves `bounded-context` reading and does not widen into broad
+  discovery.
+
+### Fail condition
+
+FAIL when strict mode guesses the missing decision, produces a speculative
+brief, or turns strictness into implementation, validation, or routing
+authority.
+
+Expected blocker: `BLOCKED_PLANNER_STRICT_INFERENCE_RELAXED`.
+
+## Golden Test PL-GT-012 - MODE=standard keeps the safety floor
+
+### Objective
+
+Protect standard mode from becoming permissive compression.
+
+### Input shape
+
+The orchestrator provides `MODE=standard` for a bounded request with manageable
+risks and no missing base decision.
+
+### Expected behavior
+
+- The planner emits `READY` only with an ephemeral `EXECUTION BRIEF`.
+- The brief preserves scope, out-of-scope, source of truth, dependencies,
+  blockers, risks, validation-aware notes, and guardrail names when relevant.
+- Standard mode does not omit anti-inference, `READY`,
+  `NEEDS_DEV_DECISION_BASE`, or bounded reading rules.
+
+### Fail condition
+
+FAIL when standard mode drops required safety content or treats missing
+decisions as assumptions.
+
+Expected blocker: `BLOCKED_PLANNER_STANDARD_SAFETY_FLOOR_LOST`.
+
+## Golden Test PL-GT-013 - RUN=execute does not emit execution package fields
+
+### Objective
+
+Protect execution-ready planning from becoming execution-package design.
+
+### Input shape
+
+The orchestrator provides `RUN=execute` for a request that can be planned.
+
+### Expected behavior
+
+- The planner may produce a `READY` planning handoff when evidence supports it.
+- The planner returns to orchestrator.
+- The planner does not emit `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`,
+  `OWNED_PATHS`, `DO_NOT_TOUCH`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, or
+  `BLOCK_IF`.
+
+### Fail condition
+
+FAIL when `RUN=execute` is treated as permission to implement, route directly
+to coders, or define executable package fields.
+
+Expected blocker: `BLOCKED_PLANNER_RUN_EXECUTE_ABSORBED_PACKAGE`.
+
+## Golden Test PL-GT-014 - HANDOFF_READY is not a parallel gate
+
+### Objective
+
+Protect the normal ready contract from status proliferation.
+
+### Input shape
+
+The base planner wording mentions `HANDOFF_READY` while the brief is otherwise
+valid.
+
+### Expected behavior
+
+- The planner uses `STATUS: READY` as the positive status.
+- The planner returns an ephemeral `EXECUTION BRIEF` to orchestrator.
+- `HANDOFF_READY` does not become an additional status, gate, or substitute for
+  the required ready handoff.
+
+### Fail condition
+
+FAIL when the planner emits `HANDOFF_READY` as a third status, bypasses
+`READY`, or treats it as authorization to skip orchestrator validation.
+
+Expected blocker: `BLOCKED_PLANNER_HANDOFF_READY_PARALLEL_GATE`.
 
 ## Out of scope
 

@@ -1,6 +1,6 @@
 ---
 name: stnl_project_agent_specializer_dev
-description: Area experimental para validar kernelizacao de agents Sentinel fora do fluxo ativo de materializacao, começando pelo orchestrator.
+description: Area experimental para validar kernelizacao documental de agents Sentinel fora do fluxo ativo de materializacao.
 ---
 
 # STNL Project Agent Specializer Dev
@@ -18,18 +18,26 @@ não há generated artifact como entrega ativa e não há autorização para esc
 artifacts finais de `target`.
 
 O foco imediato é validar kernelização de agents comparando cada kernel com seu
-respectivo base agent. O primeiro caso de estudo é `orchestrator`.
+respectivo snapshot dev de base agent em `reference/agents/**`.
+
+O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
+`planner_kernel` é um kernel lab documental integrado para revisão e permanece
+`NOT_EXCELLENT_PASS`. Esse reconhecimento não muda o comportamento produtivo,
+não cria runtime, não autoriza materialização real e não cria fallback para
+`templates/**`.
 
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
-   `reference/agents/orchestrator.agent.md`.
-2. Extrair princípios reaproveitáveis do caso `orchestrator`.
-3. Kernelizar os demais agents por família de responsabilidade.
-4. Validar o pacote de agents como conjunto coerente.
-5. Avançar para Project Senior Profile somente depois dos agents kernelizados
+   `reference/agents/orchestrator.agent.md`, preservando seu congelamento.
+2. Revisar o `planner_kernel` contra `reference/agents/planner.agent.md`, o
+   snapshot dev local derivado de `templates/agents/planner.agent.md`.
+3. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+4. Kernelizar os demais agents um por vez, por família de responsabilidade.
+5. Validar o pacote de agents como conjunto coerente.
+6. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-6. Reconstruir a skill/materialização completa somente depois de agents e
+7. Reconstruir a skill/materialização completa somente depois de agents e
    Profile estáveis.
 
 ## Famílias Sugeridas
@@ -65,6 +73,8 @@ Toda comparação deve validar que o kernel:
 - Manifest do bundle dev: `reference/MANIFEST.md`
 - Base `orchestrator` copiado para comparação:
   `reference/agents/orchestrator.agent.md`
+- Snapshot dev do `planner` copiado literalmente do template produtivo:
+  `reference/agents/planner.agent.md`
 - Contrato do orchestrator kernel:
   `reference/orchestrator_kernel/contracts/CONTRACT.md`
 - Minimum safe bundle:
@@ -83,6 +93,15 @@ Toda comparação deve validar que o kernel:
   `reference/orchestrator_kernel/validation/check-static.mjs`
 - Harness read-only de golden tests:
   `reference/orchestrator_kernel/validation/check-golden.mjs`
+- Kernel documental do planner:
+  `reference/planner_kernel/README.md`
+- Contratos documentais do planner:
+  `reference/planner_kernel/contracts/CONTRACT.md`,
+  `reference/planner_kernel/contracts/BEHAVIOR_PARITY_SPINE.md` e
+  `reference/planner_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- Validação documental desejada do planner, sem harness executável:
+  `reference/planner_kernel/validation/STATIC_CHECKS.md` e
+  `reference/planner_kernel/validation/GOLDEN_TESTS.md`
 
 ## Regras De Uso
 
@@ -92,6 +111,8 @@ Toda comparação deve validar que o kernel:
 - se faltar conteúdo acordado, bloquear e sinalizar o arquivo ausente;
 - ignorar `__MACOSX` e `.DS_Store`;
 - não inventar templates, paths, base agents ou refs ausentes;
+- usar snapshots dev de base agents somente quando estiverem em
+  `reference/agents/**` e declarados no manifest;
 - não usar fallback para skill produtiva, `templates/**`, `~/.agents/**` ou
   filesystem externo.
 
@@ -102,6 +123,7 @@ Toda comparação deve validar que o kernel:
 - reconstruir a skill;
 - criar novo materializer;
 - produzir generated artifacts;
+- criar harness executável, fixture ou generated report para o planner;
 - materializar repo alvo;
 - tocar na skill produtiva `skills/stnl_project_agent_specializer/**`;
 - tocar em templates produtivos `templates/**`;
