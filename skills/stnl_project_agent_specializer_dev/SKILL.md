@@ -34,8 +34,8 @@ não cria fallback para `templates/**` e não concede pass automático.
    `reference/agents/orchestrator.agent.md`, preservando seu congelamento.
 2. Revisar o `planner_kernel` contra `reference/agents/planner.agent.md`, o
    snapshot dev local derivado de `templates/agents/planner.agent.md`.
-   Os harnesses do planner podem bloquear drift documental, mas a rodada segue
-   dependendo de revisão humana final.
+   Os harnesses do planner são apoio bloqueante e podem bloquear drift
+   documental, mas a rodada segue dependendo de revisão humana final.
 3. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
 4. Kernelizar os demais agents um por vez, por família de responsabilidade.
 5. Validar o pacote de agents como conjunto coerente.

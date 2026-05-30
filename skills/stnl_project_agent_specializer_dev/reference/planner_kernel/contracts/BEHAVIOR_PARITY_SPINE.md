@@ -10,7 +10,7 @@ does not replace the base planner, does not authorize generated artifacts, and
 does not change the productive skill, productive templates, or main Sentinel
 flow.
 
-Source alignment:
+## Source alignment
 
 - productive/base origin: `templates/agents/planner.agent.md`;
 - integrated dev snapshot: `reference/agents/planner.agent.md`;
@@ -153,9 +153,17 @@ The planner must preserve bounded-context reading:
   needed;
 - one local live artifact only when needed to stabilize source of truth,
   boundary, or shared dependency;
+- source-of-truth hierarchy: resolved DEV and orchestrator framing first,
+  canonical owner docs and project context second, specific live
+  implementation, contract, or config evidence third, and external dependency
+  docs fourth;
+- do not choose docs or code by preference, and do not replace resolved DEV or
+  orchestrator framing with a preferred doc or live artifact;
 - no broad discovery by default;
 - no "read more" loop to avoid DEV decision;
-- no scratch, runtime temp, workspace storage, or chat-resource source of truth.
+- no scratchpads, runtime temp files, `workspaceStorage`,
+  `chat-session-resources`, or `content.txt` as Sentinel source of truth;
+- those untrusted local sources are not Sentinel source of truth.
 
 The reading budget remains:
 

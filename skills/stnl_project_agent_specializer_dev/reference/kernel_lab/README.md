@@ -23,7 +23,7 @@ integration under review is `planner_kernel`, compared with the local snapshot
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
 `reference/planner_kernel/validation/check-golden.mjs`. They are executable
-read-only validation support only; they do not grant automatic pass.
+read-only blocking validation support only; they do not grant automatic pass.
 
 The work keeps the productive skill, productive templates, target repositories,
 installer, smoke checks, `.github/**`, `.codex/**`, `AGENTS.md`, and external

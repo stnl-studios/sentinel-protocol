@@ -23,7 +23,7 @@ The companion static-checks contract is
 The companion golden-tests contract is
 `reference/planner_kernel/validation/GOLDEN_TESTS.md`.
 
-Source alignment:
+## Source alignment
 
 - productive/base origin: `templates/agents/planner.agent.md`;
 - integrated dev snapshot: `reference/agents/planner.agent.md`;
@@ -258,6 +258,19 @@ The planner kernel must preserve a small, local, auditable reading contract:
    in-scope versus out-of-scope, or a shared dependency;
 4. external dependency docs only when they materially constrain the cut.
 
+Source-of-truth hierarchy:
+
+1. resolved DEV and orchestrator framing first;
+2. canonical owner docs and project context second;
+3. specific live implementation, contract, or config evidence third;
+4. external dependency docs fourth.
+
+The planner must not choose docs or code by preference. It must not replace DEV
+or orchestrator framing with a preferred doc, preferred live artifact, or
+external reference. If canonical docs and live code conflict in a way that
+affects intent or contract, the conflict is a blocker instead of a preference
+choice.
+
 Base reading budget:
 
 - at most 3 local artifacts before drafting the brief;
@@ -274,13 +287,21 @@ The planner must not use "read more" as a way to avoid a DEV decision. If the
 cut requires broad discovery, the planner must stop with
 `NEEDS_DEV_DECISION_BASE`.
 
-When a `File Purpose Header` exists, use its fields to choose the correct
-canonical planning source. Header data may route reading, but it must not invent
-scope, product decisions, acceptance, blockers, or execution authorization.
+When a `File Purpose Header` exists, use its canonical fields `read_when`,
+`do_not_use_for`, `canonical_source_for`, `canonical_source_not_for`, and
+`token_policy` to choose the correct canonical planning source. Header data may
+route reading, but it must not invent scope, product decisions, acceptance,
+blockers, readiness, or execution authorization. If `spec_slices` or
+`spec_slices.md` exists, use it as a consumption map for slice-level planning
+inputs. Treat any `Planning Interface` as planning information only, never as an
+executable plan or execution authorization; the planner must not infer
+execution, acceptance, blockers, or missing decisions from header metadata
+itself.
 
 The planner must never search scratchpads, runtime temp files,
 `workspaceStorage`, `chat-session-resources`, or `content.txt` as Sentinel
-source of truth.
+source of truth. These untrusted local sources are not Sentinel source of
+truth.
 
 ## Relation contract
 

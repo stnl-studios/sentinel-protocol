@@ -11,7 +11,7 @@ duplicating the full contract. The contract answers "what is the planner
 kernel?". This bundle answers "what must never be optional for the planner to
 remain planner?".
 
-Source alignment:
+## Source alignment
 
 - productive/base origin: `templates/agents/planner.agent.md`;
 - integrated dev snapshot: `reference/agents/planner.agent.md`;
@@ -86,14 +86,22 @@ Reading scope remains `bounded-context`.
 Minimum reading rules:
 
 - read the orchestrator-framed request first;
+- preserve the source-of-truth hierarchy: resolved DEV and orchestrator
+  framing first, canonical owner docs and project context second, specific live
+  implementation, contract, or config evidence third, and external dependency
+  docs fourth;
+- do not choose docs or code by preference, and do not replace DEV or
+  orchestrator framing with a preferred doc or live artifact;
 - read only the nearest canonical context needed to stabilize the cut;
 - use at most 3 local artifacts by default;
 - include at most 1 live artifact in the default budget;
 - expand by at most 2 targeted artifacts only for unresolved source of truth,
   boundary, shared contract, or blocker;
 - stop when the cut requires broad discovery;
-- never use scratchpads, runtime temp files, workspace storage, chat resources,
-  or hidden local notes as Sentinel source of truth.
+- never use scratchpads, runtime temp files, `workspaceStorage`,
+  `chat-session-resources`, `content.txt`, or hidden local notes as Sentinel
+  source of truth because those untrusted local sources are not Sentinel source
+  of truth.
 
 The planner must not use additional reading to avoid a DEV decision.
 

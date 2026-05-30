@@ -7,8 +7,9 @@ Skill: `stnl_project_agent_specializer_dev`
 - `orchestrator_kernel` is frozen as `CLEAN_EXCELLENT_PASS`.
 - `planner_kernel` is documentally integrated for the kernel lab and remains
   `NOT_EXCELLENT_PASS`.
-- `planner_kernel` now has read-only executable validation harnesses, but this
-  does not grant automatic pass; human final audit is still required.
+- `planner_kernel` now has read-only executable validation harnesses as
+  blocking support, but this does not grant automatic pass; human final audit
+  is still required.
 - `reference/agents/planner.agent.md` is the local dev snapshot derived
   literally from `templates/agents/planner.agent.md`.
 - No `planning_kernel` exists in this bundle.

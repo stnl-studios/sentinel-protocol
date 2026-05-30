@@ -9,7 +9,7 @@ implement runtime loading, module execution, materialization, target artifact
 generation, fixtures, generated reports, automatic pass, or production skill
 behavior.
 
-Source alignment:
+## Source alignment
 
 - productive/base origin: `templates/agents/planner.agent.md`;
 - integrated dev snapshot: `reference/agents/planner.agent.md`;
