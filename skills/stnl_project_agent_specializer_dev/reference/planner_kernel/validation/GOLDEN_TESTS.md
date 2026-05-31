@@ -22,7 +22,9 @@ snapshot. It is not a fallback source for a missing dev snapshot.
 
 The harness does not execute agent runtime, does not implement a materializer,
 does not create fixtures, does not produce generated reports, and does not
-authorize automatic pass. Human final audit remains required after checks pass.
+authorize automatic promotion. The planner's `CLEAN_EXCELLENT_PASS` is the
+separately recorded human-audit result for the documentary, contractual, and
+semantic kernel lab only. Future kernels still require their own human audit.
 All golden tests are blocking.
 
 For dangerous downstream terms, the golden harness uses the same hardened
@@ -30,7 +32,8 @@ polarity rule as the static harness: forbidden permissive wording near the term
 fails immediately, safe/prohibitive wording cannot mask it, and each occurrence
 must have explicit prohibitive polarity or direct downstream-boundary ownership.
 Ambiguous ownership, generic out-of-scope wording, and isolated "belongs to"
-wording are insufficient. Passing these checks is not an automatic final pass.
+wording are insufficient. Passing these checks is not an automatic promotion
+rule for future kernels.
 
 Each golden section must keep this shape:
 

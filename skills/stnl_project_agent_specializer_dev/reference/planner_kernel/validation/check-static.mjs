@@ -55,6 +55,7 @@ const globalDocPaths = [
 ];
 
 const manifestPath = "skills/stnl_project_agent_specializer_dev/reference/MANIFEST.md";
+const currentPlannerStatusPaths = [...globalDocPaths, manifestPath];
 const snapshotPath = "skills/stnl_project_agent_specializer_dev/reference/agents/planner.agent.md";
 const templatePath = "templates/agents/planner.agent.md";
 const goldenTestsPath = "skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/GOLDEN_TESTS.md";
@@ -553,15 +554,11 @@ function readMany(paths) {
   return paths.map((file) => `\n--- ${file} ---\n${readText(file)}`).join("\n");
 }
 
-function plannerLinesDeclaringExcellent(text) {
-  const plannerPrefix = "PLANNER" + "_KERNEL";
-  const excellentWord = "EXCELLENT";
-  const forbiddenTokenPattern = new RegExp(`${plannerPrefix}_[A-Z_]*(?:CLEAN|${excellentWord})[A-Z_]*`, "i");
+function plannerLinesDeclaringStaleStatus(text) {
+  const staleStatusPattern = /not[_ -]?excellent[_ -]?pass|under[_ -]?review|sob revisão|executable[_ -]?validation[_ -]?added|final[_ -]?polarity[_ -]?audit[_ -]?required|not[_ -]?clean[_ -]?excellent[_ -]?pass[_ -]?yet|final audit is still required/i;
   return String(text)
     .split(/\r?\n/)
-    .filter((line) => /planner_kernel/i.test(line) || forbiddenTokenPattern.test(line))
-    .filter((line) => forbiddenTokenPattern.test(line) || /clean_excellent_pass/i.test(line))
-    .filter((line) => !/not[_ -]?excellent[_ -]?pass|not excellent pass|under_review|under review|sob revisão|final audit/i.test(line));
+    .filter((line) => staleStatusPattern.test(line));
 }
 
 function checkRequiredFiles() {
@@ -631,26 +628,28 @@ function checkManifestListsPlannerBundle() {
 
 function checkGlobalDocsPlannerStatus() {
   const failures = [];
-  for (const file of globalDocPaths) {
+  for (const file of currentPlannerStatusPaths) {
     const text = readText(file);
     if (!hasPhrase(text, "planner_kernel")) failures.push(`${file} missing planner_kernel`);
-    failures.push(
-      ...mustContainAny(text, [
-        "NOT_EXCELLENT_PASS",
-        "not excellent pass",
-        "UNDER_REVIEW",
-        "sob revisão",
-        "human final audit",
-        "revisão humana",
-        "FINAL_AUDIT_REQUIRED",
-      ]).map((issue) => `${file} missing ${issue}`)
-    );
-    const plannerExcellent = plannerLinesDeclaringExcellent(text);
-    if (plannerExcellent.length > 0) failures.push(`${file} declares planner excellent/pass`);
+    if (!hasOccurrenceNear(text, "planner_kernel", ["CLEAN_EXCELLENT_PASS"], 360)) {
+      failures.push(`${file} planner_kernel missing CLEAN_EXCELLENT_PASS status`);
+    }
+    if (!hasPhrase(text, "kernel lab")) failures.push(`${file} missing kernel-lab scope`);
+    failures.push(...plannerLinesDeclaringStaleStatus(text).map((line) => `${file} declares stale planner status: ${line.trim()}`));
   }
+  const combined = readMany(currentPlannerStatusPaths);
+  failures.push(
+    ...mustContain(combined, [
+      "runtime",
+      { label: "materialization", phrases: ["materialization", "materialização"] },
+      { label: "target repository", phrases: ["target repository", "target-repository", "repo alvo", "target"] },
+      { label: "productive skill", phrases: ["productive skill", "productive-skill", "skill produtiva"] },
+      "materializer",
+    ]).map((issue) => `global planner status docs missing lab-only boundary: ${issue}`)
+  );
   return failures.length > 0
     ? fail("PL-CH-005", "BLOCKED_PLANNER_GLOBAL_DOC_STATUS_INVALID", detailList(failures, "issue"))
-    : pass("PL-CH-005", "global docs keep planner under review/not excellent pass");
+    : pass("PL-CH-005", "global docs record planner CLEAN_EXCELLENT_PASS as a dev kernel-lab result only");
 }
 
 function checkOrchestratorFrozenStatus() {
@@ -659,7 +658,7 @@ function checkOrchestratorFrozenStatus() {
     "not clean",
     "not excellent",
     "under review",
-    "UNDER_REVIEW",
+    "under" + "_review",
     "failed",
     "falhou",
     "reopened",
@@ -744,17 +743,13 @@ function checkNoPlanningKernelPath() {
     : pass("PL-CH-008", "no planning_kernel path exists and textual mentions are prohibitive");
 }
 
-function checkNoPlannerExcellentStatus() {
-  const text = readMany(plannerDocPaths);
-  const plannerPrefix = "PLANNER" + "_KERNEL";
-  const excellentWord = "EXCELLENT";
-  const forbiddenPattern = new RegExp(`${plannerPrefix}_[A-Z_]*(?:CLEAN|${excellentWord})[A-Z_]*`, "gi");
-  const forbidden = text.match(forbiddenPattern) || [];
-  const lineFailures = plannerLinesDeclaringExcellent(text);
-  const failures = [...forbidden, ...lineFailures];
+function checkNoStalePlannerStatusDeclarations() {
+  const declarationPaths = [...currentPlannerStatusPaths, ...plannerDocPaths.filter((file) => !validationDocPaths.includes(file))];
+  const text = readMany(declarationPaths);
+  const failures = plannerLinesDeclaringStaleStatus(text);
   return failures.length > 0
-    ? fail("PL-CH-009", "BLOCKED_PLANNER_EXCELLENT_STATUS_DECLARED", detailList(failures, "forbidden"))
-    : pass("PL-CH-009", "planner-kernel docs do not declare planner excellent/pass");
+    ? fail("PL-CH-009", "BLOCKED_PLANNER_STALE_STATUS_DECLARED", detailList(failures, "stale"))
+    : pass("PL-CH-009", "planner-kernel and global docs contain no stale planner pre-pass status");
 }
 
 function checkNoUnauthorizedSurfaces() {
@@ -869,7 +864,7 @@ function checkValidationDocsAlignWithHarnesses() {
     { label: "no materializer", phrases: ["does not implement a materializer", "do not implement a materializer"] },
     { label: "no fixtures", phrases: ["does not create fixtures", "do not create fixtures"] },
     { label: "no generated reports", phrases: ["does not produce generated reports", "do not produce generated reports"] },
-    { label: "no automatic pass", phrases: ["does not authorize automatic pass", "does not grant automatic pass", "sem pass automático"] },
+    { label: "no automatic promotion", phrases: ["does not authorize automatic promotion", "does not grant automatic promotion", "never grant automatic promotion", "sem promoção automática"] },
     { label: "all blocking", phrases: ["All checks are blocking", "All golden tests are blocking", "todos bloqueantes"] },
   ]);
   for (let index = 1; index <= 23; index += 1) {
@@ -887,7 +882,7 @@ function checkValidationDocsAlignWithHarnesses() {
     : pass("PL-CH-015", "validation docs describe read-only blocking harnesses and full check/golden coverage");
 }
 
-function checkGlobalDocsListHarnessesWithoutAutomaticPass() {
+function checkGlobalDocsListHarnessesWithoutAutomaticPromotion() {
   const files = [...globalDocPaths, manifestPath];
   const failures = [];
   for (const file of files) {
@@ -902,14 +897,14 @@ function checkGlobalDocsListHarnessesWithoutAutomaticPass() {
   }
   const combined = readMany(files);
   failures.push(
-    ...mustContainAny(combined, ["does not grant automatic pass", "sem pass automático", "not automatic pass", "não concede pass automático", "human final audit"]).map(
-      () => "missing no-automatic-pass/human-review wording"
+    ...mustContainAny(combined, ["does not grant automatic promotion", "sem promoção automática", "promoção automática", "automatic promotion", "human audit", "auditoria humana"]).map(
+      () => "missing no-automatic-promotion/human-audit wording"
     )
   );
-  if (plannerLinesDeclaringExcellent(combined).length > 0) failures.push("planner excellent/pass status declared in global docs");
+  failures.push(...plannerLinesDeclaringStaleStatus(combined).map((line) => `stale planner status declared in global docs: ${line.trim()}`));
   return failures.length > 0
     ? fail("PL-CH-016", "BLOCKED_PLANNER_GLOBAL_HARNESS_DOCS_INVALID", detailList(failures, "issue"))
-    : pass("PL-CH-016", "global docs list harnesses as blocking support without automatic pass or orchestrator status drift");
+    : pass("PL-CH-016", "global docs list harnesses as blocking support without automatic promotion or orchestrator status drift");
 }
 
 function checkReadingContract() {
@@ -1059,14 +1054,14 @@ const checks = [
   checkOrchestratorFrozenStatus,
   checkSourceChainUnambiguous,
   checkNoPlanningKernelPath,
-  checkNoPlannerExcellentStatus,
+  checkNoStalePlannerStatusDeclarations,
   checkNoUnauthorizedSurfaces,
   checkCoreInvariants,
   checkRoleAbsorptionProhibited,
   checkOperationalAxes,
   checkGuardrailsMetadataOnly,
   checkValidationDocsAlignWithHarnesses,
-  checkGlobalDocsListHarnessesWithoutAutomaticPass,
+  checkGlobalDocsListHarnessesWithoutAutomaticPromotion,
   checkReadingContract,
   checkHeaderAwareReadingPreserved,
   checkSourceOfTruthHierarchyPreserved,

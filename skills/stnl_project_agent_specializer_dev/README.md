@@ -9,28 +9,31 @@ materialização da skill. O kernel lab contém pelo menos `orchestrator_kernel`
 `planner_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
-`planner_kernel` está integrado documentalmente para revisão, possui harnesses
-executáveis read-only próprios e permanece `NOT_EXCELLENT_PASS`.
+`planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
+lab documental, contratual e semântico mínimo. Ambos são resultados exclusivos
+do kernel lab dev.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
-target materialization, generated artifact ou pass automático do planner
-autorizados nesta área. Os harnesses do planner apenas bloqueiam drift
-documental e deixam a decisão final para revisão humana.
+target materialization, generated artifact, autorização para skill produtiva ou
+promoção automática de kernels autorizados nesta área. Os harnesses do planner
+apenas bloqueiam drift documental; o pass registrado decorre da auditoria humana
+autoritativa e não autoriza runtime, materialização ou repo alvo.
 
 ## Rota Atual
 
 - preservar o `orchestrator_kernel` congelado sem alterar seus contratos,
   checks ou snapshots;
-- revisar o `planner_kernel` contra o snapshot dev local
+- preservar o `planner_kernel` congelado contra o snapshot dev local
   `reference/agents/planner.agent.md`, derivado literalmente de
   `templates/agents/planner.agent.md`;
 - executar, quando necessário, os harnesses read-only
   `reference/planner_kernel/validation/check-static.mjs` e
-  `reference/planner_kernel/validation/check-golden.mjs` sem declarar pass
-  automático;
+  `reference/planner_kernel/validation/check-golden.mjs` sem promover
+  automaticamente qualquer kernel;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
-- kernelizar os demais agents um por vez, por família de responsabilidade;
+- não iniciar kernel de outro agent nesta rodada;
+- manter qualquer kernel futuro sujeito a autorização e auditoria próprias;
 - validar o pacote de agents;
 - avançar para Project Senior Profile apenas depois dos agents estabilizados;
 - reconstruir a skill/materialização completa apenas no final.
@@ -47,7 +50,7 @@ documental e deixam a decisão final para revisão humana.
   `reference/orchestrator_kernel/validation/check-golden.mjs`,
   `reference/planner_kernel/validation/check-static.mjs` e
   `reference/planner_kernel/validation/check-golden.mjs` read-only, sem
-  autorizar materialização ou pass automático;
+  autorizar materialização ou promoção automática;
 - tratar `reference/agents/**` como o único local autorizado para snapshots dev
   de base agents usados pelo kernel lab;
 - nunca usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou

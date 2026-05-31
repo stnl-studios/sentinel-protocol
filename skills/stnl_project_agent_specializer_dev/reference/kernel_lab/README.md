@@ -8,7 +8,7 @@ materialization flow.
 | Kernel | Status | Notes |
 | --- | --- | --- |
 | `orchestrator_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen. Do not alter its snapshot, contracts, validation docs, or harnesses in planner rounds. |
-| `planner_kernel` | `EXECUTABLE_VALIDATION_ADDED` / `UNDER_REVIEW` | Documentally integrated with a local planner snapshot and read-only harnesses. Not excellent pass; final audit is still required. |
+| `planner_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, and semantic kernel lab. |
 
 ## Objective
 
@@ -16,14 +16,19 @@ The kernel lab validates whether Sentinel agents can be reduced into smaller
 kernel agents without losing critical behavior from their respective base
 agents.
 
-The first case study, `orchestrator_kernel`, is frozen. The active documented
-integration under review is `planner_kernel`, compared with the local snapshot
-`reference/agents/planner.agent.md`.
+The first two case studies, `orchestrator_kernel` and `planner_kernel`, are
+frozen as dev kernel-lab passes. The planner comparison remains anchored to the
+local snapshot `reference/agents/planner.agent.md`.
 
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
 `reference/planner_kernel/validation/check-golden.mjs`. They are executable
-read-only blocking validation support only; they do not grant automatic pass.
+read-only blocking validation support only; they do not grant automatic
+promotion for this or any future kernel.
+
+These two statuses are documentary, contractual, and semantic kernel-lab
+results only. They do not authorize runtime, materialization, target-repository
+writes, productive-skill changes, or a materializer.
 
 The work keeps the productive skill, productive templates, target repositories,
 installer, smoke checks, `.github/**`, `.codex/**`, `AGENTS.md`, and external
@@ -35,14 +40,16 @@ review.
 
 The immediate focus is not rebuilding the dev skill materializer. The route is:
 
-1. validate the orchestrator kernel status as frozen and preserve that result;
-2. review the planner kernel against the copied planner snapshot;
-3. extract reusable principles without forcing every agent into one mold;
-4. kernelize agents by responsibility family, one agent-specific kernel at a
-   time;
-5. validate the agent package as a coherent set;
-6. advance to Project Senior Profile only after agents are stable;
-7. rebuild the skill and any complete materialization flow only after agents and
+1. preserve the frozen orchestrator kernel status;
+2. preserve the frozen planner kernel status against the copied planner
+   snapshot;
+3. do not start another agent kernel in this round;
+4. keep every future kernel subject to its own authorization and human audit;
+5. extract reusable principles without forcing every agent into one mold;
+6. validate the agent package as a coherent set only after future authorized
+   rounds;
+7. advance to Project Senior Profile only after agents are stable;
+8. rebuild the skill and any complete materialization flow only after agents and
    Profile are stable.
 
 ## Validation Criteria

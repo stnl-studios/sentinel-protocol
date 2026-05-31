@@ -21,27 +21,31 @@ O foco imediato é validar kernelização de agents comparando cada kernel com s
 respectivo snapshot dev de base agent em `reference/agents/**`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
-`planner_kernel` é um kernel lab documental integrado para revisão e permanece
-`NOT_EXCELLENT_PASS`. Ele possui harnesses executáveis read-only próprios em
+`planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
+lab documental, contratual e semântico mínimo. Ele possui harnesses executáveis
+read-only próprios em
 `reference/planner_kernel/validation/check-static.mjs` e
 `reference/planner_kernel/validation/check-golden.mjs`, mas isso não muda o
 comportamento produtivo, não cria runtime, não autoriza materialização real,
-não cria fallback para `templates/**` e não concede pass automático.
+não cria fallback para `templates/**` e não concede promoção automática para
+qualquer kernel futuro. Ambos os passes são resultados exclusivos do kernel lab
+dev e não autorizam repo alvo, skill produtiva ou materializer.
 
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
    `reference/agents/orchestrator.agent.md`, preservando seu congelamento.
-2. Revisar o `planner_kernel` contra `reference/agents/planner.agent.md`, o
+2. Preservar o `planner_kernel` contra `reference/agents/planner.agent.md`, o
    snapshot dev local derivado de `templates/agents/planner.agent.md`.
    Os harnesses do planner são apoio bloqueante e podem bloquear drift
-   documental, mas a rodada segue dependendo de revisão humana final.
-3. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-4. Kernelizar os demais agents um por vez, por família de responsabilidade.
-5. Validar o pacote de agents como conjunto coerente.
-6. Avançar para Project Senior Profile somente depois dos agents kernelizados
+   documental, mas não promovem automaticamente nenhum kernel.
+3. Não iniciar kernel de outro agent nesta rodada.
+4. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+5. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+6. Validar o pacote de agents como conjunto coerente.
+7. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-7. Reconstruir a skill/materialização completa somente depois de agents e
+8. Reconstruir a skill/materialização completa somente depois de agents e
    Profile estáveis.
 
 ## Famílias Sugeridas
@@ -143,7 +147,7 @@ Toda comparação deve validar que o kernel:
 
 Os checks locais são apoio estrutural/conceitual. Eles não autorizam
 materialização, escrita em target, runtime adoption ou alteração do fluxo
-produtivo.
+produtivo. O pass registrado para cada kernel lab não altera esses limites.
 
 Comandos:
 

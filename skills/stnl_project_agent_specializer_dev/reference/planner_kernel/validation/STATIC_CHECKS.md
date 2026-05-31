@@ -11,7 +11,9 @@ check, and exits `1` when any check fails.
 All checks are blocking. Passing this harness does not execute agent runtime,
 does not implement a materializer, does not create fixtures, does not produce
 generated reports, does not write target-project artifacts, and does not
-authorize automatic pass. Human final audit remains required.
+authorize automatic promotion. The planner's `CLEAN_EXCELLENT_PASS` is the
+separately recorded human-audit result for the documentary, contractual, and
+semantic kernel lab only. Future kernels still require their own human audit.
 
 The harness inspects only:
 
@@ -35,7 +37,7 @@ prohibitive phrase also appears nearby. Dangerous terms pass only in explicit
 prohibitive context or in direct downstream-boundary context naming the owning
 downstream role. Ambiguous terms such as generic ownership, generic out-of-scope
 wording, or isolated "belongs to" wording do not grant a pass. All polarity
-checks remain blocking and never grant automatic pass.
+checks remain blocking and never grant automatic promotion.
 
 ## Implemented Checks
 
@@ -61,11 +63,12 @@ Validates the manifest list for the planner snapshot, planner-kernel README,
 three contracts, two validation docs, and two harnesses. Wildcards, fallback
 entries, and undeclared planner-kernel files fail.
 
-### PL-CH-005 - Global docs recognize planner without excellent pass
+### PL-CH-005 - Global docs record planner kernel-lab pass
 
-Validates global dev docs that mention `planner_kernel` as `NOT_EXCELLENT_PASS`,
-under review, or requiring human final audit. Planner excellent/pass wording
-fails.
+Validates global dev docs and the manifest declare `planner_kernel` as
+`CLEAN_EXCELLENT_PASS`, reject stale pre-pass status declarations, and keep the
+result limited to the dev kernel lab rather than runtime, materialization,
+target-repository, productive-skill, or materializer authorization.
 
 ### PL-CH-006 - Orchestrator frozen status preserved
 
@@ -87,10 +90,11 @@ Validates source-alignment sections:
 Validates real path absence for `planning_kernel`. Textual mentions are allowed
 only with prohibitive polarity.
 
-### PL-CH-009 - No planner excellent status declared prematurely
+### PL-CH-009 - No stale planner pre-pass status remains
 
-Validates planner-kernel docs do not declare a planner-kernel-specific
-excellent/pass status. `NOT_EXCELLENT_PASS` remains allowed.
+Validates planner-kernel and global dev docs contain no stale planner pre-pass
+status declaration. Future kernels still require separately authorized audits;
+the current planner pass is not a reusable automatic-promotion rule.
 
 ### PL-CH-010 - Planner-kernel allowlist is exact
 
@@ -173,13 +177,14 @@ as proof of quality fails.
 
 Validates validation docs describe read-only executable harnesses, Node
 built-ins, path containment, no runtime, no materializer, no fixtures, no
-generated reports, no automatic pass, all static checks `PL-CH-001` through
-`PL-CH-023`, and all golden tests `PL-GT-001` through `PL-GT-020`.
+generated reports, no automatic promotion, all static checks `PL-CH-001`
+through `PL-CH-023`, and all golden tests `PL-GT-001` through `PL-GT-020`.
 
-### PL-CH-016 - Global docs list harnesses without automatic pass
+### PL-CH-016 - Global docs list harnesses without automatic promotion
 
 Validates global docs and manifest list both planner harnesses as blocking
-support and do not promote automatic pass or alter orchestrator status.
+support and do not promote this or any future kernel automatically or alter
+orchestrator status.
 
 ### PL-CH-017 - Reading contract preserved
 
