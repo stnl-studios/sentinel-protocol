@@ -14,10 +14,11 @@ const realRepoRoot = fs.realpathSync.native(repoRoot);
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 const skippedWalkNames = new Set([".git", "node_modules", ...ignoredNames]);
 
-const draftStatus =
-  "EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT";
+const hardenedStatus =
+  "EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT";
 const prematureStatuses = [
   "EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS",
+  "EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT",
   "EXECUTION_PACKAGE_DESIGNER_KERNEL: NOT_STARTED_READ_ONLY_CANONICAL_ANALYSIS",
   "EXECUTION_PACKAGE_DESIGNER_KERNEL: UNDER_CONSTRUCTION",
   "EXECUTION_PACKAGE_DESIGNER_KERNEL: NOT_CLEAN_EXCELLENT_PASS_YET",
@@ -73,17 +74,6 @@ const documentaryPaths = [
   `${kernelPrefix}/contracts/MINIMUM_SAFE_BUNDLE.md`,
   `${kernelPrefix}/validation/STATIC_CHECKS.md`,
   `${kernelPrefix}/validation/GOLDEN_TESTS.md`,
-];
-
-const dangerousTerms = [
-  "VALIDATION PASSED",
-  "TESTS PASSED",
-  "IMPLEMENTATION VERIFIED",
-  "PLAN.md",
-  "execution_package.md",
-  "HANDOFF_READY",
-  "directly routes to coder",
-  "broad discovery",
 ];
 
 const safePolarityTerms = [
@@ -244,6 +234,14 @@ function sectionFor(text, id) {
   return text.slice(start, next === -1 ? text.length : next);
 }
 
+function markdownSection(text, heading) {
+  const marker = `## ${heading}`;
+  const start = text.indexOf(marker);
+  if (start === -1) return "";
+  const next = text.indexOf("\n## ", start + marker.length);
+  return text.slice(start, next === -1 ? text.length : next);
+}
+
 function result(id, failures, success) {
   if (failures.length === 0) {
     console.log(`${id} PASS ${success}`);
@@ -289,8 +287,8 @@ let ok = true;
   const failures = [];
   for (const relativePath of globalDocPaths) {
     const text = readText(relativePath);
-    if (!text.includes(draftStatus)) {
-      failures.push(`${relativePath} missing draft-ready-for-audit status`);
+    if (!text.includes(hardenedStatus)) {
+      failures.push(`${relativePath} missing hardened-for-final-audit status`);
     }
     for (const status of prematureStatuses) {
       if (text.includes(status)) {
@@ -310,7 +308,7 @@ let ok = true;
     }
   }
   ok =
-    result("EPD-CH-004", failures, "global docs record draft status and frozen predecessors") &&
+    result("EPD-CH-004", failures, "global docs record hardened status and frozen predecessors") &&
     ok;
 }
 
@@ -329,16 +327,25 @@ let ok = true;
     ok;
 }
 
-const documentaryText = documentaryPaths.map(readText).join("\n");
-
 {
-  const requiredTerms = [
+  const contract = readText(`${kernelPrefix}/contracts/CONTRACT.md`);
+  const identity = markdownSection(contract, "Identity");
+  const input = markdownSection(contract, "Input Contract");
+  const output = markdownSection(contract, "Output Contract");
+  const status = markdownSection(contract, "Status Contract");
+  const reading = markdownSection(contract, "Reading Contract");
+  const sectionRequirements = [
+    ["Identity", identity, [
     "execution-package-designer",
     "agent version: `2026.5.1`",
     "execution-package-design",
     "targeted-local",
+    ]],
+    ["Input Contract", input, [
     "EXECUTION BRIEF",
     "VALIDATION PACK",
+    ]],
+    ["Output Contract", output, [
     "EXECUTION PACKAGE",
     "PRE_EXECUTION_READINESS",
     "PACKAGE_SCOPE",
@@ -349,19 +356,32 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
     "ACCEPTANCE_CHECKS",
     "REQUIRED_QUALITY_GUARDRAILS",
     "BLOCK_IF",
+    "ephemeral",
+    ]],
+    ["Status Contract", status, [
     "READY",
     "BLOCKED",
     "HANDOFF_MISSING",
     "HANDOFF_INVALID",
     "REQUEST_REPLAY_FROM_ORCHESTRATOR",
     "REQUEST_REGEN_FROM_OWNER",
-    "ephemeral",
+    ]],
+    ["Reading Contract", reading, ["targeted-local", "broad discovery"]],
   ];
-  const failures = requiredTerms
-    .filter((term) => !documentaryText.toLowerCase().includes(term.toLowerCase()))
-    .map((term) => `kernel documentation missing ${term}`);
+  const failures = [];
+  for (const [name, section, terms] of sectionRequirements) {
+    if (!section) {
+      failures.push(`principal contract missing section ${name}`);
+      continue;
+    }
+    for (const term of terms) {
+      if (!section.toLowerCase().includes(term.toLowerCase())) {
+        failures.push(`${name} missing ${term}`);
+      }
+    }
+  }
   ok =
-    result("EPD-CH-006", failures, "identity, handoffs, status, and package fields preserved") &&
+    result("EPD-CH-006", failures, "principal contract sections preserve required semantics") &&
     ok;
 }
 
@@ -421,8 +441,8 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
   const failures = [];
   for (const relativePath of documentaryPaths) {
     const text = readText(relativePath);
-    if (!text.includes(draftStatus)) {
-      failures.push(`${relativePath} missing draft-ready-for-audit status`);
+    if (!text.includes(hardenedStatus)) {
+      failures.push(`${relativePath} missing hardened-for-final-audit status`);
     }
     for (const status of prematureStatuses) {
       if (text.includes(status)) {
@@ -442,30 +462,52 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
     }
   }
   ok =
-    result("EPD-CH-009", failures, "draft bundle has no premature promotion status") &&
+    result("EPD-CH-009", failures, "hardened bundle has no stale or premature promotion status") &&
     ok;
 }
 
 {
+  const contract = readText(`${kernelPrefix}/contracts/CONTRACT.md`);
+  const status = markdownSection(contract, "Status Contract");
+  const boundaries = markdownSection(contract, "Responsibility Boundaries");
+  const reading = markdownSection(contract, "Reading Contract");
+  const negativeSpace = markdownSection(
+    readText(`${kernelPrefix}/contracts/MINIMUM_SAFE_BUNDLE.md`),
+    "Mandatory Negative Space",
+  );
   const failures = [];
-  for (const term of dangerousTerms) {
-    if (!documentaryText.toLowerCase().includes(term.toLowerCase())) {
-      failures.push(`deny-list evidence missing ${term}`);
-      continue;
-    }
-    if (!hasSafePolarity(documentaryText, term)) {
-      failures.push(`unsafe permissive context found for ${term}`);
+  const requirements = [
+    ["Status Contract", status, "STATUS: BLOCKED"],
+    ["Status Contract", status, "HANDOFF_STATUS: HANDOFF_MISSING | HANDOFF_INVALID | REQUEST_REPLAY_FROM_ORCHESTRATOR | REQUEST_REGEN_FROM_OWNER"],
+    ["Status Contract", status, "REQUEST:"],
+    ["Status Contract", status, "NEXT_OWNER:"],
+    ["Status Contract", status, "REASON:"],
+    ["Status Contract", status, "`STATUS: BLOCKED` does not replace"],
+    ["Status Contract", status, "`HANDOFF_READY != READY`"],
+    ["Responsibility Boundaries", boundaries, "VALIDATION PASSED"],
+    ["Responsibility Boundaries", boundaries, "TESTS PASSED"],
+    ["Responsibility Boundaries", boundaries, "IMPLEMENTATION VERIFIED"],
+    ["Responsibility Boundaries", boundaries, "PLAN.md"],
+    ["Responsibility Boundaries", boundaries, "execution_package.md"],
+    ["Reading Contract", reading, "never use broad discovery"],
+    ["Mandatory Negative Space", negativeSpace, "permits broad discovery"],
+    ["Mandatory Negative Space", negativeSpace, "permits `HANDOFF_READY` as a substitute for `STATUS: READY`"],
+    ["Mandatory Negative Space", negativeSpace, "permits `execution_package.md`, `PLAN.md`, durable documentation"],
+  ];
+  for (const [name, section, term] of requirements) {
+    if (!section.toLowerCase().includes(term.toLowerCase())) {
+      failures.push(`${name} missing ${term}`);
     }
   }
   ok =
-    result("EPD-CH-010", failures, "dangerous literals remain deny-listed with safe polarity") &&
+    result("EPD-CH-010", failures, "principal deny-list and recovery envelope remain explicit") &&
     ok;
 }
 
 {
   const goldenDoc = readText(`${kernelPrefix}/validation/GOLDEN_TESTS.md`);
   const failures = [];
-  for (let index = 1; index <= 12; index += 1) {
+  for (let index = 1; index <= 18; index += 1) {
     const id = `EPD-GT-${String(index).padStart(3, "0")}`;
     const section = sectionFor(goldenDoc, id);
     if (!section) {
@@ -483,25 +525,36 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
     }
   }
   ok =
-    result("EPD-CH-011", failures, "golden documentation declares twelve blocking scenarios") &&
+    result("EPD-CH-011", failures, "golden documentation declares eighteen local scenarios") &&
     ok;
 }
 
 {
   const goldenHarness = readText(`${kernelPrefix}/validation/check-golden.mjs`);
   const requiredTerms = [
-    "EPD-NF-001",
-    "EPD-NF-002",
-    "EPD-NF-003",
+    "requiredPackageFields",
+    "recoveryFields",
     "BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID",
-    "BLOCKED_EPD_ORCHESTRATOR_DRIFT",
     "BLOCKED_EPD_PACKAGE_PERSISTED",
+    "BLOCKED_EPD_PLANNER_DRIFT",
+    "BLOCKED_EPD_CODER_DRIFT",
+    "BLOCKED_EPD_ORCHESTRATOR_DRIFT",
+    "BLOCKED_EPD_VALIDATION_RUNNER_DRIFT",
+    "BLOCKED_EPD_HANDOFF_MISSING",
+    "BLOCKED_EPD_HANDOFF_INVALID",
+    "BLOCKED_EPD_HANDOFF_STALE_WRONG_ROUND_OR_OWNER",
+    "BLOCKED_EPD_ACCEPTANCE_CHECKS_NOT_MAPPED",
+    "BLOCKED_EPD_BROAD_DISCOVERY",
+    "BLOCKED_EPD_HANDOFF_READY_TREATED_AS_READY",
+    "BLOCKED_EPD_REQUEST_REPLAY_FROM_ORCHESTRATOR",
+    "BLOCKED_EPD_REQUEST_REGEN_FROM_OWNER",
+    "BLOCKED_EPD_RECOVERY_ENVELOPE_INVALID",
   ];
   const failures = requiredTerms
     .filter((term) => !goldenHarness.includes(term))
     .map((term) => `golden harness missing ${term}`);
   ok =
-    result("EPD-CH-012", failures, "golden harness declares negative fixture classes") &&
+    result("EPD-CH-012", failures, "golden harness declares isolated negative fixture classes") &&
     ok;
 }
 

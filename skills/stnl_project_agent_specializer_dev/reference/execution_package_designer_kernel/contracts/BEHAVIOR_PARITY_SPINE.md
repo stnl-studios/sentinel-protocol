@@ -1,6 +1,6 @@
 # Execution Package Designer Behavior Parity Spine
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
 
 This spine records the behavior that must remain semantically aligned with the
 base `execution-package-designer` snapshot. It is not runtime code and does not
@@ -54,8 +54,8 @@ The kernel must not:
 - create `execution_package.md`, `PLAN.md`, or any persisted stand-in for the
   handoff;
 - turn the package into a long implementation plan or pseudo-code dump;
-- must not use broad discovery when targeted-local reading cannot stabilize package
-  boundaries.
+- use broad discovery when targeted-local reading cannot stabilize package
+  boundaries;
 
 ## Field-Level Parity
 
@@ -84,7 +84,7 @@ candidate and explicit safety fields:
 
 Reject as role drift any package design that:
 
-- must not state `VALIDATION PASSED`, `TESTS PASSED`, or `IMPLEMENTATION VERIFIED`;
+- states `VALIDATION PASSED`, `TESTS PASSED`, or `IMPLEMENTATION VERIFIED`;
 - emits runner verdicts or closes the round;
 - chooses final sequencing, parallelization, retry, or stop/go decisions;
 - routes directly to coder instead of returning to orchestrator;

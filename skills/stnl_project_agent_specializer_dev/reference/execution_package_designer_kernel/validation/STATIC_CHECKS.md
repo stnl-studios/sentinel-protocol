@@ -1,6 +1,6 @@
 # Execution Package Designer Kernel Static Checks
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
 
 The local harness is
 `reference/execution_package_designer_kernel/validation/check-static.mjs`. It
@@ -31,10 +31,10 @@ The template is not a fallback during review.
 Validates `reference/MANIFEST.md` lists the execution-package-designer snapshot
 and the complete kernel file set.
 
-### EPD-CH-004 - Global docs record draft status without promotion
+### EPD-CH-004 - Global docs record hardened status without promotion
 
 Validates README, SKILL, MANIFEST, and kernel lab docs record
-`EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT` while preserving the three frozen predecessor passes and rejecting
+`EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT` while preserving the three frozen predecessor passes and rejecting
 premature final-pass wording.
 
 ### EPD-CH-005 - Kernel allowlist contains exactly nine files
@@ -42,11 +42,11 @@ premature final-pass wording.
 Validates the kernel directory contains exactly the declared README, four
 contract docs, two validation docs, and two harnesses.
 
-### EPD-CH-006 - Identity, handoffs, status, and package fields preserved
+### EPD-CH-006 - Contract sections preserve identity, handoffs, status, and package fields
 
-Validates kernel docs preserve the base identity, role class, version, reading
-class, `EXECUTION BRIEF`, `VALIDATION PACK`, `EXECUTION PACKAGE`, statuses,
-package readiness, and key work-package fields.
+Validates the principal contract sections preserve the base identity, role
+class, version, reading class, inputs, output, statuses, package readiness, and
+key work-package fields.
 
 ### EPD-CH-007 - Package readiness gates are explicit
 
@@ -60,28 +60,30 @@ Validates the kernel blocks drift into planner, validation-eval-designer,
 orchestrator, coder, validation-runner, reviewer, finalizer, resync,
 materializer, and durable documentation ownership.
 
-### EPD-CH-009 - Draft bundle contains no stale or premature status
+### EPD-CH-009 - Hardened bundle contains no stale or premature status
 
-Validates the kernel docs carry the draft-ready-for-audit status and do not
-claim `CLEAN_EXCELLENT_PASS`, runtime pass, materialization pass, target pass,
-or production authorization.
+Validates the kernel docs carry `HARDENED_FOR_FINAL_AUDIT`, do not regress to
+the earlier draft status, and do not claim `CLEAN_EXCELLENT_PASS`, runtime pass,
+materialization pass, target pass, or production authorization.
 
-### EPD-CH-010 - Dangerous literals remain deny-listed with safe polarity
+### EPD-CH-010 - Principal contract deny-list and recovery envelope are explicit
 
-Validates dangerous literals such as `VALIDATION PASSED`, `TESTS PASSED`,
-`IMPLEMENTATION VERIFIED`, `PLAN.md`, `execution_package.md`,
-`HANDOFF_READY`, direct coder routing, and broad discovery appear only in
-prohibitive, blocking, or downstream-boundary context.
+Validates principal contract sections deny runner verdicts, `PLAN.md`,
+`execution_package.md`, direct coder routing, and broad discovery; define the
+full recovery envelope; state that `STATUS: BLOCKED` does not replace detailed
+signals; and enforce `HANDOFF_READY != READY`.
 
-### EPD-CH-011 - Golden documentation declares twelve blocking scenarios
+### EPD-CH-011 - Golden documentation declares eighteen local scenarios
 
-Validates all golden tests `EPD-GT-001` through `EPD-GT-012` exist and keep the
-required shape.
+Validates all golden tests `EPD-GT-001` through `EPD-GT-018` exist, keep the
+required shape, and include their own local blocker evidence.
 
-### EPD-CH-012 - Golden harness declares negative fixture classes
+### EPD-CH-012 - Golden harness declares isolated negative fixture classes
 
-Validates the golden harness includes negative fixture classes for weak ready
-packages, coordinator/coder drift, and persistence/runtime drift.
+Validates the golden harness includes isolated package-field omissions,
+recovery-envelope omissions, requested drift classes, handoff integrity
+classes, proof mapping, broad discovery, `HANDOFF_READY`, and replay/regeneration
+recovery.
 
 ## Out Of Scope
 

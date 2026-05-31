@@ -28,10 +28,10 @@ Skill: `stnl_project_agent_specializer_dev`
   support only. They do not grant automatic promotion, runtime,
   materialization, target-repository writes, productive-skill authorization,
   or materializer authorization.
-- `execution_package_designer_kernel` is initiated as
-  `EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`. This means
-  snapshot, documentary contracts, and read-only textual harnesses are ready for
-  critical human audit only; it is not a pass and grants no runtime,
+- `execution_package_designer_kernel` is hardened as
+  `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`. This means
+  snapshot, documentary contracts, and read-only textual harnesses are hardened
+  for final human audit only; it is not a pass and grants no runtime,
   materialization, target-repository write, productive-skill, or materializer
   authorization.
 - `reference/agents/execution-package-designer.agent.md` is the local dev

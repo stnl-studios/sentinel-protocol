@@ -1,9 +1,9 @@
 # Execution Package Designer Kernel Contract
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
 
 This is the documentation-only kernel contract for
-`execution-package-designer`. The status means the draft is ready for critical
+`execution-package-designer`. The status means the draft was hardened for final
 human audit, not that the kernel has passed. It does not implement runtime,
 materialization, target-repository writes, generated artifacts,
 productive-skill behavior, or automatic promotion.
@@ -131,15 +131,24 @@ when the validation pack lacks executable proof obligations, when ownership or
 `DO_NOT_TOUCH` cannot be stabilized with targeted-local reading, or when a DEV
 choice is required.
 
-For absent or invalid upstream handoff, the compact return must be equivalent
-to:
+For any upstream handoff blockage or recovery request, the compact return must
+use this envelope:
 
 ```text
 STATUS: BLOCKED
-REASON: required handoff missing or invalid
+HANDOFF_STATUS: HANDOFF_MISSING | HANDOFF_INVALID | REQUEST_REPLAY_FROM_ORCHESTRATOR | REQUEST_REGEN_FROM_OWNER
+REQUEST: <minimum replay, regeneration, or DEV action required>
 NEXT_OWNER: orchestrator
-REQUEST: replay previous handoff or regenerate from owner
+REASON: <exact missing, invalid, stale, wrong-round, or wrong-owner basis>
 ```
+
+`STATUS: BLOCKED` does not replace `HANDOFF_STATUS`, `REQUEST`, `NEXT_OWNER`,
+or `REASON`. The detailed signal is mandatory so the orchestrator can choose
+replay, regeneration, gate rollback, or a real blockage without guessing.
+
+`HANDOFF_READY != READY`. A handoff marker never substitutes for
+`STATUS: READY`, never authorizes coder entry, and never creates a parallel
+readiness gate.
 
 ## Package Readiness Relation
 

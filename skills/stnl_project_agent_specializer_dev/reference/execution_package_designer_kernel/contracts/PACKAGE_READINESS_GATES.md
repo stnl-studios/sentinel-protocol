@@ -1,6 +1,6 @@
 # Execution Package Designer Package Readiness Gates
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
 
 This document defines the mandatory gate set for deciding whether an
 `EXECUTION PACKAGE` is safe for coder entry. It is read-only kernel-lab
@@ -48,17 +48,24 @@ Emit `BLOCKED` when any of these are true:
 
 ## Handoff Error Gate
 
-For absent or invalid upstream handoff, return a compact blocker equivalent to:
+For upstream handoff blockage or recovery, return this compact envelope:
 
 ```text
 STATUS: BLOCKED
-REASON: required handoff missing or invalid
+HANDOFF_STATUS: HANDOFF_MISSING | HANDOFF_INVALID | REQUEST_REPLAY_FROM_ORCHESTRATOR | REQUEST_REGEN_FROM_OWNER
+REQUEST: <minimum replay, regeneration, or DEV action required>
 NEXT_OWNER: orchestrator
-REQUEST: replay previous handoff or regenerate from owner
+REASON: <exact missing, invalid, stale, wrong-round, or wrong-owner basis>
 ```
 
 The blocker must name the blocked handoff, missing basis, unsafe coder-entry
 reason, and the minimum upstream refresh or DEV decision needed to unblock.
+`STATUS: BLOCKED` does not replace any detailed envelope field.
+
+## HANDOFF_READY Is Not READY Gate
+
+`HANDOFF_READY != READY`. Reject coder entry unless the package emits
+`STATUS: READY`; a handoff marker is not a readiness status or parallel gate.
 
 ## Parallelization Eligibility Gate
 

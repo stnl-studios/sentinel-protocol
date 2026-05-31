@@ -1,9 +1,9 @@
 # Execution Package Designer Kernel Contracts
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
 
-This status means the documentary draft and read-only textual harnesses exist
-for audit. It is not a `CLEAN_EXCELLENT_PASS`, not a runtime pass, not a
+This status means the documentary draft and read-only textual harnesses were
+hardened for final human audit. It is not a `CLEAN_EXCELLENT_PASS`, not a runtime pass, not a
 materialization pass, and not authorization for target-repository writes,
 productive-skill changes, or a materializer.
 

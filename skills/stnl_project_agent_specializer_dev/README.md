@@ -6,7 +6,7 @@ materializar agents em um repo alvo.
 
 O foco imediato mudou para validação de kernelização de agents fora do fluxo de
 materialização da skill. O kernel lab contém `orchestrator_kernel`,
-`planner_kernel`, `validation_eval_designer_kernel` e o draft autorizado
+`planner_kernel`, `validation_eval_designer_kernel` e o draft endurecido
 `execution_package_designer_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
@@ -20,10 +20,10 @@ crítica separadamente autorizada. Esse pass vale somente para o kernel lab dev
 documental, contratual, semântico mínimo e com harness textual executável
 endurecido.
 
-O `execution_package_designer_kernel` foi iniciado como
-`EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`. Esse status
-indica somente snapshot local, contratos documentais e harness textual prontos
-para auditoria crítica; não é `CLEAN_EXCELLENT_PASS` e não autoriza runtime,
+O `execution_package_designer_kernel` foi endurecido como
+`EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`. Esse status
+indica somente snapshot local, contratos documentais e harness textual
+endurecidos para auditoria humana final; não é `CLEAN_EXCELLENT_PASS` e não autoriza runtime,
 materialização, repo alvo, skill produtiva ou materializer.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
@@ -50,7 +50,8 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   `reference/validation_eval_designer_kernel/validation/check-static.mjs` e
   `reference/validation_eval_designer_kernel/validation/check-golden.mjs` como
   apoio bloqueante, sem promoção automática;
-- preservar o `execution_package_designer_kernel` em estado de draft contra o
+- preservar o `execution_package_designer_kernel` endurecido para auditoria
+  humana final contra o
   snapshot dev local `reference/agents/execution-package-designer.agent.md`,
   derivado literalmente de `templates/agents/execution-package-designer.agent.md`;
 - executar os harnesses read-only

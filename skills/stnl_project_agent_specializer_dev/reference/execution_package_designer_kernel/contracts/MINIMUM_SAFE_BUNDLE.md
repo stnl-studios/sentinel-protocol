@@ -1,6 +1,6 @@
 # Execution Package Designer Minimum Safe Bundle
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
 
 This is the smallest non-optional documentary bundle that keeps
 `execution-package-designer` acting as execution-package designer. It is not a
@@ -55,13 +55,13 @@ A safe kernel must preserve:
 
 This bundle is unsafe if it:
 
-- must not become a shared planning kernel;
+- permits a shared planning kernel;
 - removes the local snapshot requirement;
 - uses `templates/**`, the productive skill, external filesystem, or target repo
   as fallback during review;
-- must not permit broad discovery as a substitute for weak handoffs;
+- permits broad discovery as a substitute for weak handoffs;
 - permits coders to infer ownership or proof obligations;
-- must not treat `HANDOFF_READY` as a substitute for `STATUS: READY`;
+- permits `HANDOFF_READY` as a substitute for `STATUS: READY`;
 - claims `CLEAN_EXCELLENT_PASS` before a separately authorized human audit;
-- must not create `execution_package.md`, `PLAN.md`, generated reports, fixtures,
-  runtime loading, or materializer paths.
+- permits `execution_package.md`, `PLAN.md`, durable documentation, generated
+  reports, fixtures, runtime loading, or materializer paths.

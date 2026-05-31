@@ -19,10 +19,10 @@ artifacts finais de `target`.
 
 O foco imediato é validar kernelização de agents comparando cada kernel com seu
 respectivo snapshot dev de base agent em `reference/agents/**`. O
-`execution_package_designer_kernel` está iniciado como
-`EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`, limitado a
-snapshot local, contratos documentais e harness textual prontos para auditoria
-crítica, sem pass final.
+`execution_package_designer_kernel` está endurecido como
+`EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`, limitado a
+snapshot local, contratos documentais e harness textual endurecidos para
+auditoria humana final, sem pass final.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -55,7 +55,7 @@ autorização para skill produtiva ou autorização para materializer.
    `reference/agents/validation-eval-designer.agent.md`, snapshot dev local
    derivado literalmente de
    `templates/agents/validation-eval-designer.agent.md`.
-4. Auditar o draft `execution_package_designer_kernel` contra
+4. Auditar o draft endurecido `execution_package_designer_kernel` contra
    `reference/agents/execution-package-designer.agent.md`, snapshot dev local
    derivado literalmente de
    `templates/agents/execution-package-designer.agent.md`.
@@ -72,8 +72,10 @@ autorização para skill produtiva ou autorização para materializer.
 ## Famílias Sugeridas
 
 - coordenação: `orchestrator`
-- planejamento: `planner`, `execution-package-designer`,
-  `validation-eval-designer`
+- recorte e execution brief: `planner`
+- desenho de prova e validation pack: `validation-eval-designer`
+- empacotamento executável efêmero e execution package:
+  `execution-package-designer`
 - execução: `designer`, `coder-frontend`, `coder-backend`
 - validação: `validation-runner`, `reviewer`
 - fechamento/sincronização: `finalizer`, `resync`
@@ -210,9 +212,13 @@ Comandos:
 - `node --check reference/planner_kernel/validation/check-golden.mjs`
 - `node --check reference/validation_eval_designer_kernel/validation/check-static.mjs`
 - `node --check reference/validation_eval_designer_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
 - `node reference/orchestrator_kernel/validation/check-static.mjs`
 - `node reference/orchestrator_kernel/validation/check-golden.mjs`
 - `node reference/planner_kernel/validation/check-static.mjs`
 - `node reference/planner_kernel/validation/check-golden.mjs`
 - `node reference/validation_eval_designer_kernel/validation/check-static.mjs`
 - `node reference/validation_eval_designer_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
