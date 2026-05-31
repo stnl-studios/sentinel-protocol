@@ -4,8 +4,9 @@ Status: `VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
 
 This directory is a documentation-focused, read-only kernel lab for the base
 `validation-eval-designer` agent. It does not implement runtime loading,
-materialization, target artifact generation, fixtures, generated reports,
-automatic promotion, or productive-skill behavior.
+materialization, target artifact generation, external fixtures, generated
+reports, automatic promotion, or productive-skill behavior. Its golden harness
+contains embedded negative text fixtures for read-only semantic checks.
 
 ## Source Alignment
 

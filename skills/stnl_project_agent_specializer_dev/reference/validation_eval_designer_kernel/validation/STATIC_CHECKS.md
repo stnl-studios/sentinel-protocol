@@ -34,6 +34,10 @@ automatic promotion or final status.
 - `VED-CH-011`: prohibited role-drift literals appear only in explicit
   rejection contexts.
 - `VED-CH-012`: golden documentation declares the ten required blocking cases.
+- `VED-CH-013`: operational modes, header-aware reading, conditional risk
+  tracks, stack quality guardrails, and compact handoff nuance remain explicit.
+- `VED-CH-014`: golden harness and documentation retain three classified
+  negative fixtures and their required blockers.
 
 ## Out Of Scope
 

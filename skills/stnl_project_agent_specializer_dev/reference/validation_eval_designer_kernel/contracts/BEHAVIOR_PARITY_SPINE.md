@@ -36,6 +36,34 @@ The kernel remains:
 - Expose insufficient or misleading evidence instead of laundering it into
   readiness.
 
+## Preserved Operational Modes
+
+- `MODE=standard`: normal proof-design behavior.
+- `MODE=compact`: shorter pack, with manual evidence and incomplete harness
+  accepted only when the cut is genuinely low risk.
+- `MODE=strict`: stronger evidence, relevant negative and edge cases, and
+  earlier blocks on weak proof.
+
+Modes change proof-design strictness and pack density only. They do not create
+runtime behavior or weaken honest proof requirements.
+
+## Preserved Reading Nuance
+
+Read the near-top `File Purpose Header` when present. Use `read_when`,
+`do_not_use_for`, `canonical_source_for`, `canonical_source_not_for`, and
+`token_policy` to locate canonical content. A header is not acceptance, DoD,
+readiness, or proof. `Planning Interface` never authorizes execution,
+validation, or closure.
+
+## Preserved Conditional Proof
+
+Activate `security`, `performance`, `migration/schema`, and
+`observability/release safety` tracks only when the cut triggers them. Likewise,
+activate `stnl_frontend_quality`, `stnl_backend_quality`,
+`stnl_backend_sql_quality`, and `stnl_mobile_ios_swift_quality` only when the
+cut triggers them. Convert only cut-scoped implications into proof obligations;
+never paste a generic checklist or full guardrail matrix by reflex.
+
 ## Anti-Theater Invariants
 
 The kernel rejects anti-theater failures:
@@ -82,3 +110,16 @@ prohibited.
 
 If any item cannot be satisfied honestly, use the appropriate handoff error or
 `NEEDS_DEV_DECISION_HARNESS`.
+
+## Compact Handoff Nuance
+
+For missing or invalid upstream handoff, preserve this compact equivalent:
+
+```text
+STATUS: BLOCKED
+REASON: required handoff missing or invalid
+NEXT_OWNER: orchestrator
+REQUEST: replay previous handoff or regenerate from owner
+```
+
+`HANDOFF_READY` is not a substitute for `READY`.

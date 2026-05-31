@@ -90,6 +90,47 @@ const goldenTests = [
   },
 ];
 
+const negativeFixtures = [
+  {
+    id: "VED-NF-001",
+    title: "READY theater with generic command success",
+    expectedBlockers: ["BLOCKED_VED_GENERIC_CHECK_THEATER_ACCEPTED"],
+    input: `STATUS: READY
+VALIDATION PACK:
+- Change: critical business-rule behavior.
+- Evidence: npm test passed, lint passed, build passed, generic smoke passed.
+- No touched-surface test.
+- No observable business-rule assertion.`,
+  },
+  {
+    id: "VED-NF-002",
+    title: "READY with vague manual evidence",
+    expectedBlockers: ["BLOCKED_VED_VAGUE_MANUAL_PROOF_ACCEPTED"],
+    input: `STATUS: READY
+VALIDATION PACK:
+- Manual check: looks good.
+- Visual snapshot reviewed.
+- No scenario, no state, no action, no observable result.`,
+  },
+  {
+    id: "VED-NF-003",
+    title: "Runner, execution-package, and persistence drift",
+    expectedBlockers: [
+      "BLOCKED_VED_RUNNER_DRIFT",
+      "BLOCKED_VED_EXECUTION_PACKAGE_DRIFT",
+      "BLOCKED_VED_PACK_PERSISTED",
+    ],
+    input: `STATUS: READY
+VALIDATION PASSED
+TESTS PASSED
+IMPLEMENTATION VERIFIED
+CLOSED
+patch plan
+prompt final do coder
+validation_pack.md`,
+  },
+];
+
 function isInside(childPath, parentPath) {
   const relative = path.relative(parentPath, childPath);
   return (
@@ -131,6 +172,48 @@ function hasAll(text, phrases) {
   return phrases.every((phrase) =>
     normalizedText.includes(phrase.toLowerCase().replace(/\s+/g, " ")),
   );
+}
+
+function classifyNegativeFixture(input) {
+  const blockers = [];
+
+  if (
+    /STATUS:\s*READY/i.test(input) &&
+    /critical business-rule behavior/i.test(input) &&
+    /npm test passed/i.test(input) &&
+    /lint passed/i.test(input) &&
+    /build passed/i.test(input) &&
+    /generic smoke passed/i.test(input) &&
+    /No touched-surface test/i.test(input) &&
+    /No observable business-rule assertion/i.test(input)
+  ) {
+    blockers.push("BLOCKED_VED_GENERIC_CHECK_THEATER_ACCEPTED");
+  }
+
+  if (
+    /STATUS:\s*READY/i.test(input) &&
+    /Manual check:\s*looks good/i.test(input) &&
+    /Visual snapshot reviewed/i.test(input) &&
+    /No scenario, no state, no action, no observable result/i.test(input)
+  ) {
+    blockers.push("BLOCKED_VED_VAGUE_MANUAL_PROOF_ACCEPTED");
+  }
+
+  if (
+    /(VALIDATION PASSED|TESTS PASSED|IMPLEMENTATION VERIFIED|CLOSED)/i.test(input)
+  ) {
+    blockers.push("BLOCKED_VED_RUNNER_DRIFT");
+  }
+
+  if (/(patch plan|prompt final do coder)/i.test(input)) {
+    blockers.push("BLOCKED_VED_EXECUTION_PACKAGE_DRIFT");
+  }
+
+  if (/validation_pack\.md/i.test(input)) {
+    blockers.push("BLOCKED_VED_PACK_PERSISTED");
+  }
+
+  return blockers;
 }
 
 const staticResult = spawnSync(process.execPath, [staticHarnessPath], {
@@ -184,6 +267,21 @@ if (!hasAll(snapshot, sharedSnapshotEvidence)) {
 if (!hasAll(contracts, sharedContractEvidence)) {
   console.error("VED-GT-BASE FAIL contracts are missing shared kernel evidence");
   ok = false;
+}
+
+for (const fixture of negativeFixtures) {
+  const blockers = classifyNegativeFixture(fixture.input);
+  const missingBlockers = fixture.expectedBlockers.filter(
+    (blocker) => !blockers.includes(blocker),
+  );
+  if (missingBlockers.length === 0) {
+    console.log(`${fixture.id} PASS ${fixture.title}`);
+  } else {
+    ok = false;
+    for (const blocker of missingBlockers) {
+      console.error(`${fixture.id} FAIL negative fixture accepted without ${blocker}`);
+    }
+  }
 }
 
 for (const test of goldenTests) {

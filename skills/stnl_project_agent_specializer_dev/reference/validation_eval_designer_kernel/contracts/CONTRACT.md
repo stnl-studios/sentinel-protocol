@@ -42,6 +42,20 @@ The kernel designs pre-execution proof. It does not reopen planning, implement,
 compile an execution package, run validation, issue a runner verdict, or close
 the round.
 
+## Operational Modes
+
+Preserve these proof-design modes as documentary behavior, never as runtime:
+
+- `MODE=standard`: normal proof-design behavior;
+- `MODE=compact`: shorter pack; manual evidence is acceptable when risk
+  permits; absence of a complete harness does not automatically block a
+  low-risk cut;
+- `MODE=strict`: stronger evidence, relevant negative and edge cases, and
+  earlier blocks on weak proof.
+
+All modes preserve honest proof sufficiency. No mode can launder a material
+proof gap into readiness.
+
 ## Input Contract
 
 The required upstream handoff is the current-round `EXECUTION BRIEF` received
@@ -91,6 +105,11 @@ Allowed statuses:
 - `HANDOFF_INVALID`;
 - `REQUEST_REPLAY_FROM_ORCHESTRATOR`;
 - `REQUEST_REGEN_FROM_OWNER`.
+
+`STATUS: BLOCKED` is the compact envelope equivalent only for absent or
+invalid upstream handoff. It must carry the required reason, next owner, and
+replay-or-regenerate request; it does not replace the detailed handoff signals
+or become a generic parallel status.
 
 `READY` is deliberately difficult. It is allowed only when the ephemeral
 `VALIDATION PACK` contains sufficient, proportional, observable proof design
@@ -153,11 +172,51 @@ validation slices, observable criteria, and narrow DEV decision requests.
 If bounded reading cannot stabilize honest proof design, block instead of
 guessing.
 
+### Header-Aware Reading
+
+When present, read the near-top `File Purpose Header` first. Use `read_when`,
+`do_not_use_for`, `canonical_source_for`, `canonical_source_not_for`, and
+`token_policy` to locate acceptance, readiness, blockers, questions, and
+decisions. The header is not acceptance, DoD, readiness, or proof by itself.
+`Planning Interface` never authorizes execution, validation, or closure.
+
+## Conditional Proof Tracks
+
+Activate only cut-relevant proof obligations from these conditional risk
+tracks:
+
+- `security`;
+- `performance`;
+- `migration/schema`;
+- `observability/release safety`.
+
+Activate only cut-relevant implications from these stack quality guardrails:
+
+- `stnl_frontend_quality`;
+- `stnl_backend_quality`;
+- `stnl_backend_sql_quality`;
+- `stnl_mobile_ios_swift_quality`.
+
+These tracks and guardrails must become cut-scoped proof obligations, never a
+generic checklist or a reflexive copy of a complete guardrail matrix.
+
 ## Handoff Contract
 
 When ready, return `STATUS: READY` plus the ephemeral `VALIDATION PACK` to
 orchestrator. Keep the surfaced summary delta-only. Do not republish the full
 pack into main chat by default.
+
+For an absent or invalid upstream handoff, preserve this compact equivalent:
+
+```text
+STATUS: BLOCKED
+REASON: required handoff missing or invalid
+NEXT_OWNER: orchestrator
+REQUEST: replay previous handoff or regenerate from owner
+```
+
+`HANDOFF_READY` is not a substitute for `READY` and must not become a parallel
+gate.
 
 When the harness gate blocks, return
 `STATUS: NEEDS_DEV_DECISION_HARNESS`, blocked artifact `VALIDATION PACK`,

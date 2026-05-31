@@ -409,4 +409,68 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
     ok;
 }
 
+{
+  const parityText = [
+    readText(`${kernelPrefix}/contracts/CONTRACT.md`),
+    readText(`${kernelPrefix}/contracts/BEHAVIOR_PARITY_SPINE.md`),
+  ].join("\n");
+  const requiredTerms = [
+    "MODE=standard",
+    "MODE=compact",
+    "MODE=strict",
+    "File Purpose Header",
+    "read_when",
+    "do_not_use_for",
+    "canonical_source_for",
+    "canonical_source_not_for",
+    "token_policy",
+    "Planning Interface",
+    "security",
+    "performance",
+    "migration/schema",
+    "observability/release safety",
+    "stnl_frontend_quality",
+    "stnl_backend_quality",
+    "stnl_backend_sql_quality",
+    "stnl_mobile_ios_swift_quality",
+    "STATUS: BLOCKED",
+    "REASON: required handoff missing or invalid",
+    "NEXT_OWNER: orchestrator",
+    "REQUEST: replay previous handoff or regenerate from owner",
+    "HANDOFF_READY",
+    "not a substitute for `READY`",
+  ];
+  const failures = requiredTerms
+    .filter((term) => !parityText.toLowerCase().includes(term.toLowerCase()))
+    .map((term) => `behavior parity hardening missing ${term}`);
+  ok =
+    result("VED-CH-013", failures, "operational modes, header-aware reading, conditional proof, and handoff nuance preserved") &&
+    ok;
+}
+
+{
+  const fixtureText = [
+    readText(`${kernelPrefix}/validation/GOLDEN_TESTS.md`),
+    readText(`${kernelPrefix}/validation/check-golden.mjs`),
+  ].join("\n");
+  const requiredTerms = [
+    "negativeFixtures",
+    "classifyNegativeFixture",
+    "VED-NF-001",
+    "VED-NF-002",
+    "VED-NF-003",
+    "BLOCKED_VED_GENERIC_CHECK_THEATER_ACCEPTED",
+    "BLOCKED_VED_VAGUE_MANUAL_PROOF_ACCEPTED",
+    "BLOCKED_VED_RUNNER_DRIFT",
+    "BLOCKED_VED_EXECUTION_PACKAGE_DRIFT",
+    "BLOCKED_VED_PACK_PERSISTED",
+  ];
+  const failures = requiredTerms
+    .filter((term) => !fixtureText.toLowerCase().includes(term.toLowerCase()))
+    .map((term) => `negative fixture hardening missing ${term}`);
+  ok =
+    result("VED-CH-014", failures, "golden harness declares three classified negative fixtures") &&
+    ok;
+}
+
 if (!ok) process.exit(1);

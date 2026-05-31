@@ -6,8 +6,20 @@ Status: read-only semantic support for
 The local harness is
 `reference/validation_eval_designer_kernel/validation/check-golden.mjs`. It
 runs the static harness as a precondition and validates the ten mandatory
-semantic scenarios below. Passing does not grant automatic promotion or final
-status.
+semantic scenarios below. It also classifies three embedded negative text
+fixtures and fails if their bad inputs are accepted without the required
+blockers. Passing does not grant automatic promotion or final status.
+
+## Embedded Negative Fixtures
+
+- `VED-NF-001`: theatrical `READY` supported by build, lint, generic smoke,
+  and unrelated test success must produce
+  `BLOCKED_VED_GENERIC_CHECK_THEATER_ACCEPTED`.
+- `VED-NF-002`: vague manual `READY` with no scenario, state, action, or
+  observable result must produce `BLOCKED_VED_VAGUE_MANUAL_PROOF_ACCEPTED`.
+- `VED-NF-003`: runner verdicts, execution-package output, and
+  `validation_pack.md` persistence drift must produce `BLOCKED_VED_RUNNER_DRIFT`,
+  `BLOCKED_VED_EXECUTION_PACKAGE_DRIFT`, and `BLOCKED_VED_PACK_PERSISTED`.
 
 ## Golden Test VED-GT-001 - Sufficient observable proof allows READY
 
