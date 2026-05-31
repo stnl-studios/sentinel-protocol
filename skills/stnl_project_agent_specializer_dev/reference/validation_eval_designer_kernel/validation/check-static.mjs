@@ -14,6 +14,11 @@ const realRepoRoot = fs.realpathSync.native(repoRoot);
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 const skippedWalkNames = new Set([".git", "node_modules", ...ignoredNames]);
 const finalPassStatus = ["CLEAN", "EXCELLENT", "PASS"].join("_");
+const globalConstructionStatus =
+  "VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION";
+const hardenedAuditStatus =
+  "VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT";
+const nonPromotionStatus = ["NOT", finalPassStatus, "YET"].join("_");
 
 const kernelPrefix =
   "skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel";
@@ -72,6 +77,8 @@ const driftTerms = [
   "CLOSED",
   "patch plan",
   "prompt final do coder",
+  "validation_pack.md",
+  "HANDOFF_READY",
 ];
 
 const safePolarityTerms = [
@@ -84,6 +91,9 @@ const safePolarityTerms = [
   "fail if",
   "cannot",
   "does not",
+  "not a substitute",
+  "persistence drift",
+  "asked to create",
 ];
 
 function isInside(childPath, parentPath) {
@@ -151,12 +161,19 @@ function walk(relativePath) {
     for (const dirent of fs.readdirSync(absolutePath, { withFileTypes: true })) {
       if (skippedWalkNames.has(dirent.name)) continue;
       const child = path.join(absolutePath, dirent.name);
-      const realChild = realPathInsideRepo(child);
+      realPathInsideRepo(child);
       const repoRelative = path
-        .relative(rootReal, realChild)
+        .relative(rootReal, child)
         .replaceAll(path.sep, "/");
-      if (dirent.isDirectory()) visit(realChild);
-      if (dirent.isFile()) entries.push(repoRelative);
+      if (dirent.isSymbolicLink()) {
+        entries.push(`SYMLINK:${repoRelative}`);
+      } else if (dirent.isDirectory()) {
+        visit(child);
+      } else if (dirent.isFile()) {
+        entries.push(repoRelative);
+      } else {
+        entries.push(`NON_REGULAR:${repoRelative}`);
+      }
     }
   }
 
@@ -181,12 +198,17 @@ function occurrences(text, term) {
   return indexes;
 }
 
-function hasSafePolarity(text, term, radius = 360) {
+function hasSafePolarity(text, term) {
   return occurrences(text, term).every((index) => {
-    const start = Math.max(0, index - radius);
-    const end = Math.min(text.length, index + term.length + radius);
-    const window = text.slice(start, end).toLowerCase();
-    return safePolarityTerms.some((marker) => window.includes(marker));
+    const paragraphStart = text.lastIndexOf("\n\n", index);
+    const paragraphEnd = text.indexOf("\n\n", index + term.length);
+    const paragraph = text
+      .slice(
+        paragraphStart === -1 ? 0 : paragraphStart + 2,
+        paragraphEnd === -1 ? text.length : paragraphEnd,
+      )
+      .toLowerCase();
+    return safePolarityTerms.some((marker) => paragraph.includes(marker));
   });
 }
 
@@ -236,7 +258,7 @@ let ok = true;
   const failures = [];
   for (const relativePath of globalDocPaths) {
     const text = readText(relativePath);
-    if (!text.includes("VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION")) {
+    if (!text.includes(globalConstructionStatus)) {
       failures.push(`${relativePath} missing construction status`);
     }
     if (!text.includes("orchestrator_kernel") || !text.includes(finalPassStatus)) {
@@ -267,7 +289,7 @@ let ok = true;
     if (!actual.includes(file)) failures.push(`missing allowlisted kernel file ${file}`);
   }
   ok =
-    result("VED-CH-005", failures, "kernel allowlist contains exactly nine docs and harnesses") &&
+    result("VED-CH-005", failures, "kernel allowlist contains exactly nine regular docs and harnesses") &&
     ok;
 }
 
@@ -276,6 +298,7 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
 {
   const requiredTerms = [
     "validation-eval-designer",
+    "agent version: `2026.5.1`",
     "EXECUTION BRIEF",
     "VALIDATION PACK",
     "READY",
@@ -331,6 +354,8 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
     "manual check has no observable criterion",
     "visual snapshot has no defined scenario or state",
     "generic smoke is presented as proof of behavioral change",
+    "adjacent test does not prove the modified claim",
+    "decorative checklist says \"test everything\"",
   ];
   const failures = requiredTerms
     .filter((term) => !documentaryText.toLowerCase().includes(term.toLowerCase()))
@@ -353,21 +378,33 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
     "must not execute checks",
     "must not emit a `patch plan`",
     "must not emit a `prompt final do coder`",
+    "must not become finalizer, resync, materializer, or durable",
+    "must not close the round, perform resync, materialize artifacts, or write",
   ];
   const failures = requiredTerms
     .filter((term) => !boundaryText.toLowerCase().includes(term.toLowerCase()))
     .map((term) => `responsibility boundary missing ${term}`);
   ok =
-    result("VED-CH-009", failures, "planner, runner, and package-designer drift remain prohibited") &&
+    result("VED-CH-009", failures, "responsibility-boundary drift remains prohibited") &&
     ok;
 }
 
 {
-  const failures = documentaryText.includes(finalPassStatus)
-    ? ["kernel bundle contains premature final-pass status"]
-    : [];
+  const failures = [];
+  for (const relativePath of documentaryPaths) {
+    const text = readText(relativePath);
+    if (!text.includes(hardenedAuditStatus)) {
+      failures.push(`${relativePath} missing hardened final-audit status`);
+    }
+    if (!text.includes(nonPromotionStatus)) {
+      failures.push(`${relativePath} missing explicit non-promotion status`);
+    }
+  }
+  if (documentaryText.replaceAll(nonPromotionStatus, "").includes(finalPassStatus)) {
+    failures.push("kernel bundle contains positive or unclassified final-pass status");
+  }
   ok =
-    result("VED-CH-010", failures, "kernel bundle contains no premature final-pass status") &&
+    result("VED-CH-010", failures, "kernel bundle is hardened for final audit but not promoted") &&
     ok;
 }
 
@@ -391,7 +428,7 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
     failures.push(`kernel docs contain prohibited ${genericPlanningKernel}`);
   }
   ok =
-    result("VED-CH-011", failures, "role-drift literals remain deny-listed with safe polarity") &&
+    result("VED-CH-011", failures, "dangerous literals remain deny-listed with safe polarity") &&
     ok;
 }
 
@@ -469,7 +506,7 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
     .filter((term) => !fixtureText.toLowerCase().includes(term.toLowerCase()))
     .map((term) => `negative fixture hardening missing ${term}`);
   ok =
-    result("VED-CH-014", failures, "golden harness declares three classified negative fixtures") &&
+    result("VED-CH-014", failures, "golden harness declares three negative fixture classes") &&
     ok;
 }
 

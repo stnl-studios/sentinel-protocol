@@ -1,6 +1,8 @@
 # Validation Eval Designer Harness Decision Gates
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+
+Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
 
 This file is a mandatory standalone contract. It protects the boundary between
 honest proof readiness and a DEV-owned harness decision.
@@ -38,7 +40,9 @@ Emit `NEEDS_DEV_DECISION_HARNESS` when:
 - only partial evidence exists and accepting residual risk belongs to DEV;
 - speed, cost, environment setup, fixture investment, or test investment
   changes the accepted risk;
-- narrowing the cut is the honest route to a provable slice.
+- narrowing the cut is the honest route to a provable slice;
+- the later validation-runner would inherit ambiguous criteria because proof
+  sufficiency cannot be stabilized honestly.
 
 The handoff must name blocked artifact `VALIDATION PACK`, unsatisfied proof
 obligation, insufficiency, partial evidence if any, residual risk, and the
@@ -54,7 +58,8 @@ Reject `READY` when evidence is theatrical:
 - generic smoke is used as proof of behavioral change;
 - a manual check lacks an observable criterion;
 - a visual snapshot lacks a defined scenario and state;
-- an existing test is adjacent but does not prove the modified claim.
+- an existing test is adjacent but does not prove the modified claim;
+- a decorative checklist says "test everything".
 
 ## Light Validation Gate
 

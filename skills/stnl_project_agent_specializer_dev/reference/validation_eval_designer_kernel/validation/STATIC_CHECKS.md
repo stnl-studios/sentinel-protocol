@@ -1,7 +1,9 @@
 # Validation Eval Designer Kernel Static Checks
 
 Status: read-only executable structural support for
-`VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+`VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+
+Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
 
 The local harness is
 `reference/validation_eval_designer_kernel/validation/check-static.mjs`. It
@@ -21,23 +23,28 @@ automatic promotion or final status.
 - `VED-CH-003`: manifest lists the snapshot and exact kernel bundle.
 - `VED-CH-004`: global docs declare only construction/review status for this
   kernel while frozen orchestrator and planner statuses remain intact.
-- `VED-CH-005`: kernel directory contains only the nine authorized files.
-- `VED-CH-006`: identity, `EXECUTION BRIEF`, ephemeral `VALIDATION PACK`,
+- `VED-CH-005`: kernel directory contains only the nine authorized regular
+  files; symlinks and other non-regular entries are rejected.
+- `VED-CH-006`: identity, agent version `2026.5.1`, `EXECUTION BRIEF`,
+  ephemeral `VALIDATION PACK`,
   `READY`, `NEEDS_DEV_DECISION_HARNESS`, `HANDOFF_MISSING`,
   `HANDOFF_INVALID`, replay/regen, `proof-design`, and `targeted-local` remain.
 - `VED-CH-007`: `HARNESS_DECISION_GATES.md` remains separate and protects
   strong proof, weak harness blocking, light validation, and human decisions.
 - `VED-CH-008`: anti-theater examples remain explicit.
-- `VED-CH-009`: planner, validation-runner, and execution-package-designer
-  drift remain explicitly prohibited.
-- `VED-CH-010`: final-pass status is absent from this kernel bundle.
-- `VED-CH-011`: prohibited role-drift literals appear only in explicit
-  rejection contexts.
+- `VED-CH-009`: planner, validation-runner, execution-package-designer,
+  finalizer, resync, materializer, and durable-documentation drift remain
+  explicitly prohibited.
+- `VED-CH-010`: final-audit hardening and explicit non-promotion markers remain,
+  while positive final-pass status is absent from this kernel bundle.
+- `VED-CH-011`: dangerous role-drift, persisted-pack, and parallel-handoff
+  literals appear only in explicit rejection contexts.
 - `VED-CH-012`: golden documentation declares the ten required blocking cases.
 - `VED-CH-013`: operational modes, header-aware reading, conditional risk
   tracks, stack quality guardrails, and compact handoff nuance remain explicit.
 - `VED-CH-014`: golden harness and documentation retain three classified
-  negative fixtures and their required blockers.
+  negative fixture classes, their embedded variants, and their required
+  blockers.
 
 ## Out Of Scope
 

@@ -1,13 +1,15 @@
 # Validation Eval Designer Minimum Safe Bundle
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+
+Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
 
 The kernel is safe only while all items below remain together.
 
 ## Mandatory Bundle
 
-1. Identity remains `validation-eval-designer`, role class `proof-design`, and
-   reading scope class `targeted-local`.
+1. Identity remains `validation-eval-designer`, agent version `2026.5.1`, role
+   class `proof-design`, and reading scope class `targeted-local`.
 2. Main input remains the ephemeral current-round `EXECUTION BRIEF`.
 3. Main output remains the ephemeral current-round `VALIDATION PACK`.
 4. `READY` remains difficult and requires sufficient, proportional, observable

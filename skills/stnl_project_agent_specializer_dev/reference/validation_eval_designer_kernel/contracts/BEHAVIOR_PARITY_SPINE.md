@@ -1,6 +1,8 @@
 # Validation Eval Designer Behavior Parity Spine
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+
+Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
 
 This document preserves the irreducible behavior of the local dev snapshot
 `reference/agents/validation-eval-designer.agent.md`. It is documentary kernel
@@ -11,6 +13,7 @@ evidence only.
 The kernel remains:
 
 - `validation-eval-designer`;
+- agent version `2026.5.1`;
 - role class `proof-design`;
 - reading scope class `targeted-local`;
 - consumer of the ephemeral `EXECUTION BRIEF`;
@@ -73,7 +76,9 @@ The kernel rejects anti-theater failures:
 - build passes but does not cover the expected regression;
 - a manual check has no observable criterion;
 - a visual snapshot has no defined scenario or state;
-- a generic smoke is presented as proof of behavioral change.
+- a generic smoke is presented as proof of behavioral change;
+- an adjacent test does not prove the modified claim;
+- a decorative checklist says "test everything".
 
 The gate is risk weighted. Missing tests do not always block, and existing
 tests do not automatically prove readiness.
@@ -86,8 +91,8 @@ The kernel remains proof-design only:
 - it does not execute checks or replace validation-runner;
 - it does not define implementation instructions or replace
   execution-package-designer;
-- it does not implement, close the round, perform resync, or write durable
-  documentation.
+- it does not implement, replace finalizer, close the round, perform resync,
+  materialize artifacts, or write durable documentation.
 
 Literal runner verdicts `VALIDATION PASSED`, `TESTS PASSED`,
 `IMPLEMENTATION VERIFIED`, and `CLOSED` are prohibited outputs. Literal

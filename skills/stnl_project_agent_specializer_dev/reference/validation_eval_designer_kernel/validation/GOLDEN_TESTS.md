@@ -1,22 +1,26 @@
 # Validation Eval Designer Kernel Golden Tests
 
 Status: read-only semantic support for
-`VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+`VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+
+Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
 
 The local harness is
 `reference/validation_eval_designer_kernel/validation/check-golden.mjs`. It
 runs the static harness as a precondition and validates the ten mandatory
-semantic scenarios below. It also classifies three embedded negative text
-fixtures and fails if their bad inputs are accepted without the required
-blockers. Passing does not grant automatic promotion or final status.
+semantic scenarios below. It also classifies three negative fixture classes
+with embedded text variants and fails if their bad inputs are accepted without
+the required blockers. Passing does not grant automatic promotion or final
+status.
 
 ## Embedded Negative Fixtures
 
-- `VED-NF-001`: theatrical `READY` supported by build, lint, generic smoke,
-  and unrelated test success must produce
+- `VED-NF-001`: theatrical `READY` supported by generic command success,
+  missing touched-surface proof, or adjacent tests that miss the changed claim
+  must produce
   `BLOCKED_VED_GENERIC_CHECK_THEATER_ACCEPTED`.
-- `VED-NF-002`: vague manual `READY` with no scenario, state, action, or
-  observable result must produce `BLOCKED_VED_VAGUE_MANUAL_PROOF_ACCEPTED`.
+- `VED-NF-002`: vague manual `READY` variants with no scenario, state, action,
+  or observable result must produce `BLOCKED_VED_VAGUE_MANUAL_PROOF_ACCEPTED`.
 - `VED-NF-003`: runner verdicts, execution-package output, and
   `validation_pack.md` persistence drift must produce `BLOCKED_VED_RUNNER_DRIFT`,
   `BLOCKED_VED_EXECUTION_PACKAGE_DRIFT`, and `BLOCKED_VED_PACK_PERSISTED`.

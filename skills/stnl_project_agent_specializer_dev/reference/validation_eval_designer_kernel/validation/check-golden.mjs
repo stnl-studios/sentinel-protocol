@@ -95,22 +95,37 @@ const negativeFixtures = [
     id: "VED-NF-001",
     title: "READY theater with generic command success",
     expectedBlockers: ["BLOCKED_VED_GENERIC_CHECK_THEATER_ACCEPTED"],
-    input: `STATUS: READY
+    inputs: [
+      `STATUS: READY
 VALIDATION PACK:
 - Change: critical business-rule behavior.
 - Evidence: npm test passed, lint passed, build passed, generic smoke passed.
 - No touched-surface test.
 - No observable business-rule assertion.`,
+      `STATUS: READY
+VALIDATION PACK:
+- Change: critical business-rule behavior.
+- Evidence: npm test passed and generic smoke passed.
+- Tests are adjacent but do not touch the changed claim.
+- No observable behavioral assertion.`,
+    ],
   },
   {
     id: "VED-NF-002",
     title: "READY with vague manual evidence",
     expectedBlockers: ["BLOCKED_VED_VAGUE_MANUAL_PROOF_ACCEPTED"],
-    input: `STATUS: READY
+    inputs: [
+      `STATUS: READY
 VALIDATION PACK:
 - Manual check: looks good.
 - Visual snapshot reviewed.
 - No scenario, no state, no action, no observable result.`,
+      `STATUS: READY
+VALIDATION PACK:
+- Manual check: seems fine.
+- Visual snapshot reviewed.
+- Missing scenario, state, action, and observable result.`,
+    ],
   },
   {
     id: "VED-NF-003",
@@ -120,7 +135,8 @@ VALIDATION PACK:
       "BLOCKED_VED_EXECUTION_PACKAGE_DRIFT",
       "BLOCKED_VED_PACK_PERSISTED",
     ],
-    input: `STATUS: READY
+    inputs: [
+      `STATUS: READY
 VALIDATION PASSED
 TESTS PASSED
 IMPLEMENTATION VERIFIED
@@ -128,6 +144,7 @@ CLOSED
 patch plan
 prompt final do coder
 validation_pack.md`,
+    ],
   },
 ];
 
@@ -176,25 +193,33 @@ function hasAll(text, phrases) {
 
 function classifyNegativeFixture(input) {
   const blockers = [];
+  const ready = /STATUS:\s*READY/i.test(input);
+  const genericSuccessCount = [
+    /npm test passed/i,
+    /lint passed/i,
+    /build passed/i,
+    /generic smoke passed/i,
+  ].filter((pattern) => pattern.test(input)).length;
 
   if (
-    /STATUS:\s*READY/i.test(input) &&
+    ready &&
     /critical business-rule behavior/i.test(input) &&
-    /npm test passed/i.test(input) &&
-    /lint passed/i.test(input) &&
-    /build passed/i.test(input) &&
-    /generic smoke passed/i.test(input) &&
-    /No touched-surface test/i.test(input) &&
-    /No observable business-rule assertion/i.test(input)
+    genericSuccessCount >= 2 &&
+    /(No touched-surface test|adjacent but do not touch the changed claim)/i.test(
+      input,
+    ) &&
+    /No observable (business-rule|behavioral) assertion/i.test(input)
   ) {
     blockers.push("BLOCKED_VED_GENERIC_CHECK_THEATER_ACCEPTED");
   }
 
   if (
-    /STATUS:\s*READY/i.test(input) &&
-    /Manual check:\s*looks good/i.test(input) &&
+    ready &&
+    /Manual check:\s*(looks good|seems fine)/i.test(input) &&
     /Visual snapshot reviewed/i.test(input) &&
-    /No scenario, no state, no action, no observable result/i.test(input)
+    /(No scenario, no state, no action, no observable result|Missing scenario, state, action, and observable result)/i.test(
+      input,
+    )
   ) {
     blockers.push("BLOCKED_VED_VAGUE_MANUAL_PROOF_ACCEPTED");
   }
@@ -247,6 +272,7 @@ const sharedSnapshotEvidence = [
   "proof-design",
   "targeted-local",
   "ephemeral",
+  "agent_version: 2026.5.1",
 ];
 
 const sharedContractEvidence = [
@@ -257,6 +283,7 @@ const sharedContractEvidence = [
   "must not become planner",
   "must not become validation-runner",
   "must not become execution-package-designer",
+  "agent version: `2026.5.1`",
 ];
 
 if (!hasAll(snapshot, sharedSnapshotEvidence)) {
@@ -270,17 +297,21 @@ if (!hasAll(contracts, sharedContractEvidence)) {
 }
 
 for (const fixture of negativeFixtures) {
-  const blockers = classifyNegativeFixture(fixture.input);
-  const missingBlockers = fixture.expectedBlockers.filter(
-    (blocker) => !blockers.includes(blocker),
-  );
-  if (missingBlockers.length === 0) {
+  const failures = [];
+  for (const [index, input] of fixture.inputs.entries()) {
+    const blockers = classifyNegativeFixture(input);
+    const missingBlockers = fixture.expectedBlockers.filter(
+      (blocker) => !blockers.includes(blocker),
+    );
+    for (const blocker of missingBlockers) {
+      failures.push(`variant ${index + 1} accepted without ${blocker}`);
+    }
+  }
+  if (failures.length === 0) {
     console.log(`${fixture.id} PASS ${fixture.title}`);
   } else {
     ok = false;
-    for (const blocker of missingBlockers) {
-      console.error(`${fixture.id} FAIL negative fixture accepted without ${blocker}`);
-    }
+    for (const failure of failures) console.error(`${fixture.id} FAIL ${failure}`);
   }
 }
 

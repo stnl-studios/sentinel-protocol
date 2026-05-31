@@ -1,6 +1,8 @@
 # Validation Eval Designer Kernel Contract
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+
+Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
 
 This is the documentation-only kernel contract for
 `validation-eval-designer`. It does not implement runtime, materialization,
@@ -24,6 +26,7 @@ snapshot. The productive template is not a fallback dependency.
 The kernel must preserve:
 
 - canonical identity: `validation-eval-designer`;
+- agent version: `2026.5.1`;
 - role class: `proof-design`;
 - reading scope class: `targeted-local`;
 - main input: ephemeral current-round `EXECUTION BRIEF`;
@@ -132,7 +135,8 @@ The kernel must reject validation theater. Passing `npm test`, lint, build, a
 generic smoke, an undefined manual check, or an unscoped visual snapshot is not
 proof merely because the command or observation succeeds. Evidence must touch
 the changed behavior, contract, state, or UX claim with an observable
-criterion.
+criterion. An adjacent test that misses the modified claim and a decorative
+checklist such as "test everything" are also theater, not proof.
 
 ## Responsibility Boundaries
 
@@ -153,6 +157,12 @@ The kernel must not become execution-package-designer:
 - it must not emit a `prompt final do coder`;
 - it must not emit implementation order, executor-owned file list, or a
   complete `EXECUTION PACKAGE`.
+
+The kernel must not become finalizer, resync, materializer, or durable
+documentation owner:
+
+- it must not close the round, perform resync, materialize artifacts, or write
+  durable documentation.
 
 The kernel may define proof obligations, acceptance checks, harness blockers,
 validation slices, observable criteria, and narrow DEV decision requests.

@@ -1,6 +1,8 @@
 # Validation Eval Designer Kernel Contracts
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+
+Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
 
 This directory is a documentation-focused, read-only kernel lab for the base
 `validation-eval-designer` agent. It does not implement runtime loading,
