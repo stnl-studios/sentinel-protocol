@@ -40,10 +40,11 @@ review.
 
 The immediate focus is not rebuilding the dev skill materializer. The route is:
 
-1. preserve the frozen orchestrator kernel status;
-2. preserve the frozen planner kernel status against the copied planner
-   snapshot;
-3. do not start another agent kernel in this round;
+1. validate the orchestrator kernel as the first frozen coordination case study;
+2. validate the planner kernel as the first frozen planning case study against
+   the copied planner snapshot;
+3. kernelize agents by responsibility family, one authorized agent kernel at a
+   time;
 4. keep every future kernel subject to its own authorization and human audit;
 5. extract reusable principles without forcing every agent into one mold;
 6. validate the agent package as a coherent set only after future authorized
