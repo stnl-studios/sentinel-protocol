@@ -17,6 +17,13 @@ Skill: `stnl_project_agent_specializer_dev`
 - `reference/agents/planner.agent.md` is the local dev snapshot derived
   literally from `templates/agents/planner.agent.md`.
 - No `planning_kernel` exists in this bundle.
+- `validation_eval_designer_kernel` is under construction as
+  `VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+- `reference/agents/validation-eval-designer.agent.md` is the local dev snapshot
+  derived literally from
+  `templates/agents/validation-eval-designer.agent.md`.
+- The `validation_eval_designer_kernel` harnesses are read-only blocking
+  support only. They do not grant automatic promotion or a final status.
 
 Required files:
 - `reference/agents/orchestrator.agent.md`
@@ -40,6 +47,16 @@ Required files:
 - `reference/planner_kernel/validation/GOLDEN_TESTS.md`
 - `reference/planner_kernel/validation/check-static.mjs`
 - `reference/planner_kernel/validation/check-golden.mjs`
+- `reference/agents/validation-eval-designer.agent.md`
+- `reference/validation_eval_designer_kernel/README.md`
+- `reference/validation_eval_designer_kernel/contracts/CONTRACT.md`
+- `reference/validation_eval_designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`
+- `reference/validation_eval_designer_kernel/contracts/HARNESS_DECISION_GATES.md`
+- `reference/validation_eval_designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- `reference/validation_eval_designer_kernel/validation/STATIC_CHECKS.md`
+- `reference/validation_eval_designer_kernel/validation/GOLDEN_TESTS.md`
+- `reference/validation_eval_designer_kernel/validation/check-static.mjs`
+- `reference/validation_eval_designer_kernel/validation/check-golden.mjs`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 
@@ -49,6 +66,8 @@ Not active in this dev bundle:
 - no target repository materialization is authorized from this experimental area
 - no planner runtime, planner materializer, planner fixture, generated report,
   automatic planner promotion, or target-writer flow is part of this bundle
+- no `validation-eval-designer` runtime, materializer, fixture, generated
+  report, automatic promotion, or target-writer flow is part of this bundle
 
 Not included as canonical dev references:
 - no full reference/agents/** bundle is present; only copied base snapshots

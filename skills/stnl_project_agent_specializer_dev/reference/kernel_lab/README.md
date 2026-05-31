@@ -9,6 +9,7 @@ materialization flow.
 | --- | --- | --- |
 | `orchestrator_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen. Do not alter its snapshot, contracts, validation docs, or harnesses in planner rounds. |
 | `planner_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, and semantic kernel lab. |
+| `validation_eval_designer_kernel` | `UNDER_CONSTRUCTION` | Authorized for documentary construction and review only. No final pass before a separate critical human audit. |
 
 ## Objective
 
@@ -19,6 +20,11 @@ agents.
 The first two case studies, `orchestrator_kernel` and `planner_kernel`, are
 frozen as dev kernel-lab passes. The planner comparison remains anchored to the
 local snapshot `reference/agents/planner.agent.md`.
+
+The active third case study is `validation_eval_designer_kernel`, anchored to
+the local snapshot `reference/agents/validation-eval-designer.agent.md`. Its
+current status is
+`VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
 
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
@@ -43,14 +49,16 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
 1. validate the orchestrator kernel as the first frozen coordination case study;
 2. validate the planner kernel as the first frozen planning case study against
    the copied planner snapshot;
-3. kernelize agents by responsibility family, one authorized agent kernel at a
+3. construct and review the `validation_eval_designer_kernel` as the first
+   proof-design case study against its copied local snapshot;
+4. kernelize agents by responsibility family, one authorized agent kernel at a
    time;
-4. keep every future kernel subject to its own authorization and human audit;
-5. extract reusable principles without forcing every agent into one mold;
-6. validate the agent package as a coherent set only after future authorized
+5. keep every future kernel subject to its own authorization and human audit;
+6. extract reusable principles without forcing every agent into one mold;
+7. validate the agent package as a coherent set only after future authorized
    rounds;
-7. advance to Project Senior Profile only after agents are stable;
-8. rebuild the skill and any complete materialization flow only after agents and
+8. advance to Project Senior Profile only after agents are stable;
+9. rebuild the skill and any complete materialization flow only after agents and
    Profile are stable.
 
 ## Validation Criteria

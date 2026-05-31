@@ -31,6 +31,12 @@ não cria fallback para `templates/**` e não concede promoção automática par
 qualquer kernel futuro. Ambos os passes são resultados exclusivos do kernel lab
 dev e não autorizam repo alvo, skill produtiva ou materializer.
 
+O `validation_eval_designer_kernel` está autorizado somente para construção e
+review documental sob o status
+`VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`. Seus harnesses são apoio
+bloqueante read-only e não concedem auditoria humana, promoção automática,
+runtime, materialização ou status final.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -39,13 +45,17 @@ dev e não autorizam repo alvo, skill produtiva ou materializer.
    snapshot dev local derivado de `templates/agents/planner.agent.md`.
    Os harnesses do planner são apoio bloqueante e podem bloquear drift
    documental, mas não promovem automaticamente nenhum kernel.
-3. Não iniciar kernel de outro agent nesta rodada.
-4. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-5. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-6. Validar o pacote de agents como conjunto coerente.
-7. Avançar para Project Senior Profile somente depois dos agents kernelizados
+3. Construir e revisar o `validation_eval_designer_kernel` contra
+   `reference/agents/validation-eval-designer.agent.md`, snapshot dev local
+   derivado literalmente de
+   `templates/agents/validation-eval-designer.agent.md`.
+4. Não iniciar kernel adicional de outro agent nesta rodada.
+5. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+6. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+7. Validar o pacote de agents como conjunto coerente.
+8. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-8. Reconstruir a skill/materialização completa somente depois de agents e
+9. Reconstruir a skill/materialização completa somente depois de agents e
    Profile estáveis.
 
 ## Famílias Sugeridas
@@ -114,6 +124,21 @@ Toda comparação deve validar que o kernel:
   `reference/planner_kernel/validation/check-static.mjs`
 - Harness read-only de golden checks do planner:
   `reference/planner_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `validation-eval-designer`:
+  `reference/agents/validation-eval-designer.agent.md`
+- Kernel documental do `validation-eval-designer`:
+  `reference/validation_eval_designer_kernel/README.md`
+- Contratos documentais do `validation-eval-designer`:
+  `reference/validation_eval_designer_kernel/contracts/CONTRACT.md`,
+  `reference/validation_eval_designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/validation_eval_designer_kernel/contracts/HARNESS_DECISION_GATES.md`
+  e
+  `reference/validation_eval_designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- Validação documental e harnesses read-only do `validation-eval-designer`:
+  `reference/validation_eval_designer_kernel/validation/STATIC_CHECKS.md`,
+  `reference/validation_eval_designer_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/validation_eval_designer_kernel/validation/check-static.mjs` e
+  `reference/validation_eval_designer_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 
@@ -155,7 +180,11 @@ Comandos:
 - `node --check reference/orchestrator_kernel/validation/check-golden.mjs`
 - `node --check reference/planner_kernel/validation/check-static.mjs`
 - `node --check reference/planner_kernel/validation/check-golden.mjs`
+- `node --check reference/validation_eval_designer_kernel/validation/check-static.mjs`
+- `node --check reference/validation_eval_designer_kernel/validation/check-golden.mjs`
 - `node reference/orchestrator_kernel/validation/check-static.mjs`
 - `node reference/orchestrator_kernel/validation/check-golden.mjs`
 - `node reference/planner_kernel/validation/check-static.mjs`
 - `node reference/planner_kernel/validation/check-golden.mjs`
+- `node reference/validation_eval_designer_kernel/validation/check-static.mjs`
+- `node reference/validation_eval_designer_kernel/validation/check-golden.mjs`
