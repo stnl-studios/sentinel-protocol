@@ -31,11 +31,13 @@ não cria fallback para `templates/**` e não concede promoção automática par
 qualquer kernel futuro. Ambos os passes são resultados exclusivos do kernel lab
 dev e não autorizam repo alvo, skill produtiva ou materializer.
 
-O `validation_eval_designer_kernel` está autorizado somente para construção e
-review documental sob o status
-`VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`. Seus harnesses são apoio
-bloqueante read-only e não concedem auditoria humana, promoção automática,
-runtime, materialização ou status final.
+O `validation_eval_designer_kernel` está promovido como
+`VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` após auditoria humana
+crítica separadamente autorizada. Esse pass vale somente para o kernel lab dev
+documental, contratual, semântico mínimo e com harness textual executável
+endurecido. Seus harnesses são apoio bloqueante read-only e não concedem
+promoção automática, runtime, materialização, escrita em repo alvo,
+autorização para skill produtiva ou autorização para materializer.
 
 ## Rota Atual
 
@@ -45,7 +47,7 @@ runtime, materialização ou status final.
    snapshot dev local derivado de `templates/agents/planner.agent.md`.
    Os harnesses do planner são apoio bloqueante e podem bloquear drift
    documental, mas não promovem automaticamente nenhum kernel.
-3. Construir e revisar o `validation_eval_designer_kernel` contra
+3. Preservar o `validation_eval_designer_kernel` contra
    `reference/agents/validation-eval-designer.agent.md`, snapshot dev local
    derivado literalmente de
    `templates/agents/validation-eval-designer.agent.md`.

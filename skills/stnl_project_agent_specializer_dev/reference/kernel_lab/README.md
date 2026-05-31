@@ -9,7 +9,7 @@ materialization flow.
 | --- | --- | --- |
 | `orchestrator_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen. Do not alter its snapshot, contracts, validation docs, or harnesses in planner rounds. |
 | `planner_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, and semantic kernel lab. |
-| `validation_eval_designer_kernel` | `UNDER_CONSTRUCTION` | Authorized for documentary construction and review only. No final pass before a separate critical human audit. |
+| `validation_eval_designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness. |
 
 ## Objective
 
@@ -21,10 +21,10 @@ The first two case studies, `orchestrator_kernel` and `planner_kernel`, are
 frozen as dev kernel-lab passes. The planner comparison remains anchored to the
 local snapshot `reference/agents/planner.agent.md`.
 
-The active third case study is `validation_eval_designer_kernel`, anchored to
+The third case study is `validation_eval_designer_kernel`, anchored to
 the local snapshot `reference/agents/validation-eval-designer.agent.md`. Its
 current status is
-`VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+`VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
@@ -32,9 +32,11 @@ The planner harnesses are
 read-only blocking validation support only; they do not grant automatic
 promotion for this or any future kernel.
 
-These two statuses are documentary, contractual, and semantic kernel-lab
-results only. They do not authorize runtime, materialization, target-repository
-writes, productive-skill changes, or a materializer.
+These three statuses are kernel-lab dev results only. The
+`validation_eval_designer_kernel` pass is documentary, contractual, minimum
+semantic, and backed by a hardened executable textual harness. They do not
+authorize runtime, materialization, target-repository writes, productive-skill
+changes, or a materializer.
 
 The work keeps the productive skill, productive templates, target repositories,
 installer, smoke checks, `.github/**`, `.codex/**`, `AGENTS.md`, and external
@@ -49,7 +51,7 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
 1. validate the orchestrator kernel as the first frozen coordination case study;
 2. validate the planner kernel as the first frozen planning case study against
    the copied planner snapshot;
-3. construct and review the `validation_eval_designer_kernel` as the first
+3. preserve the frozen `validation_eval_designer_kernel` as the first
    proof-design case study against its copied local snapshot;
 4. kernelize agents by responsibility family, one authorized agent kernel at a
    time;

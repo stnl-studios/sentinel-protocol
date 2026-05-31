@@ -14,11 +14,12 @@ const realRepoRoot = fs.realpathSync.native(repoRoot);
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 const skippedWalkNames = new Set([".git", "node_modules", ...ignoredNames]);
 const finalPassStatus = ["CLEAN", "EXCELLENT", "PASS"].join("_");
-const globalConstructionStatus =
-  "VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION";
-const hardenedAuditStatus =
-  "VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT";
-const nonPromotionStatus = ["NOT", finalPassStatus, "YET"].join("_");
+const promotedStatus = `VALIDATION_EVAL_DESIGNER_KERNEL: ${finalPassStatus}`;
+const staleStatuses = [
+  "VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION",
+  "VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT",
+  ["NOT", finalPassStatus, "YET"].join("_"),
+];
 
 const kernelPrefix =
   "skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel";
@@ -258,8 +259,8 @@ let ok = true;
   const failures = [];
   for (const relativePath of globalDocPaths) {
     const text = readText(relativePath);
-    if (!text.includes(globalConstructionStatus)) {
-      failures.push(`${relativePath} missing construction status`);
+    if (!text.includes(promotedStatus)) {
+      failures.push(`${relativePath} missing promoted dev kernel-lab status`);
     }
     if (!text.includes("orchestrator_kernel") || !text.includes(finalPassStatus)) {
       failures.push(`${relativePath} missing frozen orchestrator status`);
@@ -267,14 +268,14 @@ let ok = true;
     if (!text.includes("planner_kernel") || !text.includes(finalPassStatus)) {
       failures.push(`${relativePath} missing frozen planner status`);
     }
-    if (
-      text.includes(`VALIDATION_EVAL_DESIGNER_KERNEL: ${finalPassStatus}`)
-    ) {
-      failures.push(`${relativePath} prematurely grants final validation-eval-designer status`);
+    for (const staleStatus of staleStatuses) {
+      if (text.includes(staleStatus)) {
+        failures.push(`${relativePath} contains stale status ${staleStatus}`);
+      }
     }
   }
   ok =
-    result("VED-CH-004", failures, "global docs keep construction status and frozen predecessors") &&
+    result("VED-CH-004", failures, "global docs keep promoted dev kernel-lab status and frozen predecessors") &&
     ok;
 }
 
@@ -393,18 +394,17 @@ const documentaryText = documentaryPaths.map(readText).join("\n");
   const failures = [];
   for (const relativePath of documentaryPaths) {
     const text = readText(relativePath);
-    if (!text.includes(hardenedAuditStatus)) {
-      failures.push(`${relativePath} missing hardened final-audit status`);
+    if (!text.includes(promotedStatus)) {
+      failures.push(`${relativePath} missing promoted dev kernel-lab status`);
     }
-    if (!text.includes(nonPromotionStatus)) {
-      failures.push(`${relativePath} missing explicit non-promotion status`);
+    for (const staleStatus of staleStatuses) {
+      if (text.includes(staleStatus)) {
+        failures.push(`${relativePath} contains stale status ${staleStatus}`);
+      }
     }
-  }
-  if (documentaryText.replaceAll(nonPromotionStatus, "").includes(finalPassStatus)) {
-    failures.push("kernel bundle contains positive or unclassified final-pass status");
   }
   ok =
-    result("VED-CH-010", failures, "kernel bundle is hardened for final audit but not promoted") &&
+    result("VED-CH-010", failures, "kernel bundle keeps promoted dev kernel-lab status without stale markers") &&
     ok;
 }
 

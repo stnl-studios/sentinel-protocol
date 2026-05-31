@@ -1,17 +1,19 @@
 # Validation Eval Designer Kernel Golden Tests
 
 Status: read-only semantic support for
-`VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+`VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
+This pass is limited to the documentary, contractual, minimum-semantic dev
+kernel lab with a hardened executable textual harness.
 
 The local harness is
 `reference/validation_eval_designer_kernel/validation/check-golden.mjs`. It
 runs the static harness as a precondition and validates the ten mandatory
 semantic scenarios below. It also classifies three negative fixture classes
 with embedded text variants and fails if their bad inputs are accepted without
-the required blockers. Passing does not grant automatic promotion or final
-status.
+the required blockers. Passing does not grant automatic promotion, runtime
+pass, materialization pass, target-repository pass, productive-skill
+authorization, or materializer authorization.
 
 ## Embedded Negative Fixtures
 

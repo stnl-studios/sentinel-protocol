@@ -1,8 +1,9 @@
 # Validation Eval Designer Kernel Contract
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
+This pass is limited to the documentary, contractual, minimum-semantic dev
+kernel lab with a hardened executable textual harness.
 
 This is the documentation-only kernel contract for
 `validation-eval-designer`. It does not implement runtime, materialization,

@@ -8,7 +8,7 @@ Skill: `stnl_project_agent_specializer_dev`
 - `planner_kernel` is frozen as `CLEAN_EXCELLENT_PASS` for the documentary,
   contractual, and semantic kernel lab after the separately authorized human
   audit.
-- Both passes are dev kernel-lab results only. They do not authorize runtime,
+- All three passes are dev kernel-lab results only. They do not authorize runtime,
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
 - `planner_kernel` has read-only executable validation harnesses as blocking
@@ -17,13 +17,17 @@ Skill: `stnl_project_agent_specializer_dev`
 - `reference/agents/planner.agent.md` is the local dev snapshot derived
   literally from `templates/agents/planner.agent.md`.
 - No `planning_kernel` exists in this bundle.
-- `validation_eval_designer_kernel` is under construction as
-  `VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`.
+- `validation_eval_designer_kernel` is promoted as
+  `VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` for the documentary,
+  contractual, minimum-semantic dev kernel lab with a hardened executable
+  textual harness after the separately authorized human audit.
 - `reference/agents/validation-eval-designer.agent.md` is the local dev snapshot
   derived literally from
   `templates/agents/validation-eval-designer.agent.md`.
 - The `validation_eval_designer_kernel` harnesses are read-only blocking
-  support only. They do not grant automatic promotion or a final status.
+  support only. They do not grant automatic promotion, runtime,
+  materialization, target-repository writes, productive-skill authorization,
+  or materializer authorization.
 
 Required files:
 - `reference/agents/orchestrator.agent.md`

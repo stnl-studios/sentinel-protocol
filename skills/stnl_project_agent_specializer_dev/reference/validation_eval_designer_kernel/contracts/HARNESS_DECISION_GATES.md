@@ -1,8 +1,9 @@
 # Validation Eval Designer Harness Decision Gates
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
+This pass is limited to the documentary, contractual, minimum-semantic dev
+kernel lab with a hardened executable textual harness.
 
 This file is a mandatory standalone contract. It protects the boundary between
 honest proof readiness and a DEV-owned harness decision.

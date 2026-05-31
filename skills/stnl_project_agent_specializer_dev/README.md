@@ -6,16 +6,18 @@ materializar agents em um repo alvo.
 
 O foco imediato mudou para validação de kernelização de agents fora do fluxo de
 materialização da skill. O kernel lab contém `orchestrator_kernel`,
-`planner_kernel` e o `validation_eval_designer_kernel` em construção.
+`planner_kernel` e `validation_eval_designer_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
 lab documental, contratual e semântico mínimo. Ambos são resultados exclusivos
 do kernel lab dev.
 
-O `validation_eval_designer_kernel` está em construção sob o status
-`VALIDATION_EVAL_DESIGNER_KERNEL: UNDER_CONSTRUCTION`. Ele ainda não possui
-auditoria humana crítica nem status final.
+O `validation_eval_designer_kernel` está promovido como
+`VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` após auditoria humana
+crítica separadamente autorizada. Esse pass vale somente para o kernel lab dev
+documental, contratual, semântico mínimo e com harness textual executável
+endurecido.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
 target materialization, generated artifact, autorização para skill produtiva ou
@@ -34,7 +36,7 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   `reference/planner_kernel/validation/check-static.mjs` e
   `reference/planner_kernel/validation/check-golden.mjs` sem promover
   automaticamente qualquer kernel;
-- construir e revisar o `validation_eval_designer_kernel` contra o snapshot dev
+- preservar o `validation_eval_designer_kernel` contra o snapshot dev
   local `reference/agents/validation-eval-designer.agent.md`, derivado
   literalmente de `templates/agents/validation-eval-designer.agent.md`;
 - executar os harnesses read-only

@@ -1,8 +1,9 @@
 # Validation Eval Designer Minimum Safe Bundle
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
+This pass is limited to the documentary, contractual, minimum-semantic dev
+kernel lab with a hardened executable textual harness.
 
 The kernel is safe only while all items below remain together.
 
@@ -30,5 +31,5 @@ The kernel is safe only while all items below remain together.
 
 If any mandatory item is missing, weakened, merged away, or made optional, the
 kernel is not review-ready. Harness success is blocking support only and never
-automatic promotion, runtime adoption, materialization authorization, or final
-status.
+automatic promotion, runtime adoption, materialization authorization, or
+target-repository authorization.

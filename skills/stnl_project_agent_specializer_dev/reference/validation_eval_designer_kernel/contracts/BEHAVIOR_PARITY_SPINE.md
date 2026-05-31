@@ -1,8 +1,9 @@
 # Validation Eval Designer Behavior Parity Spine
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
+This pass is limited to the documentary, contractual, minimum-semantic dev
+kernel lab with a hardened executable textual harness.
 
 This document preserves the irreducible behavior of the local dev snapshot
 `reference/agents/validation-eval-designer.agent.md`. It is documentary kernel

@@ -1,8 +1,9 @@
 # Validation Eval Designer Kernel Contracts
 
-Status: `VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+Status: `VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
+This pass is limited to the documentary, contractual, minimum-semantic dev
+kernel lab with a hardened executable textual harness.
 
 This directory is a documentation-focused, read-only kernel lab for the base
 `validation-eval-designer` agent. It does not implement runtime loading,
@@ -48,4 +49,4 @@ This kernel is specific to `validation-eval-designer`, role class
 
 This directory does not authorize runtime, materialization, repo-target writes,
 productive-skill changes, productive-template changes, a materializer, a
-generic kernel, a shared planning layer, or final pass status.
+generic kernel, or a shared planning layer.

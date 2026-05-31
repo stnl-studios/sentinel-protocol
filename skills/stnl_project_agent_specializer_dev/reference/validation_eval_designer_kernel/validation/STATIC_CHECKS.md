@@ -1,9 +1,10 @@
 # Validation Eval Designer Kernel Static Checks
 
 Status: read-only executable structural support for
-`VALIDATION_EVAL_DESIGNER_KERNEL_HARDENED_FOR_FINAL_AUDIT`.
+`VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-Promotion status: `NOT_CLEAN_EXCELLENT_PASS_YET`.
+This pass is limited to the documentary, contractual, minimum-semantic dev
+kernel lab with a hardened executable textual harness.
 
 The local harness is
 `reference/validation_eval_designer_kernel/validation/check-static.mjs`. It
@@ -13,7 +14,8 @@ when a check fails.
 
 Passing the harness does not execute agent runtime, implement a materializer,
 write target-repository artifacts, change the productive skill, or grant
-automatic promotion or final status.
+automatic promotion, runtime pass, materialization pass, target-repository
+pass, productive-skill authorization, or materializer authorization.
 
 ## Implemented Checks
 
@@ -21,7 +23,7 @@ automatic promotion or final status.
 - `VED-CH-002`: local snapshot is byte-for-byte equal to its productive copy
   origin.
 - `VED-CH-003`: manifest lists the snapshot and exact kernel bundle.
-- `VED-CH-004`: global docs declare only construction/review status for this
+- `VED-CH-004`: global docs declare the promoted dev kernel-lab status for this
   kernel while frozen orchestrator and planner statuses remain intact.
 - `VED-CH-005`: kernel directory contains only the nine authorized regular
   files; symlinks and other non-regular entries are rejected.
@@ -35,8 +37,8 @@ automatic promotion or final status.
 - `VED-CH-009`: planner, validation-runner, execution-package-designer,
   finalizer, resync, materializer, and durable-documentation drift remain
   explicitly prohibited.
-- `VED-CH-010`: final-audit hardening and explicit non-promotion markers remain,
-  while positive final-pass status is absent from this kernel bundle.
+- `VED-CH-010`: promoted dev kernel-lab status remains explicit while stale
+  construction and pre-promotion markers are absent from this kernel bundle.
 - `VED-CH-011`: dangerous role-drift, persisted-pack, and parallel-handoff
   literals appear only in explicit rejection contexts.
 - `VED-CH-012`: golden documentation declares the ten required blocking cases.
@@ -49,4 +51,4 @@ automatic promotion or final status.
 ## Out Of Scope
 
 These checks do not execute a real agent, materialize artifacts, inspect a
-target repo, or replace the required later critical human audit.
+target repo, authorize the productive skill, or authorize a materializer.
