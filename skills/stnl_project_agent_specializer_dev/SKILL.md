@@ -18,7 +18,11 @@ não há generated artifact como entrega ativa e não há autorização para esc
 artifacts finais de `target`.
 
 O foco imediato é validar kernelização de agents comparando cada kernel com seu
-respectivo snapshot dev de base agent em `reference/agents/**`.
+respectivo snapshot dev de base agent em `reference/agents/**`. O
+`execution_package_designer_kernel` está iniciado como
+`EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`, limitado a
+snapshot local, contratos documentais e harness textual prontos para auditoria
+crítica, sem pass final.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -51,14 +55,19 @@ autorização para skill produtiva ou autorização para materializer.
    `reference/agents/validation-eval-designer.agent.md`, snapshot dev local
    derivado literalmente de
    `templates/agents/validation-eval-designer.agent.md`.
-4. Não iniciar kernel adicional de outro agent nesta rodada.
-5. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-6. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-7. Validar o pacote de agents como conjunto coerente.
-8. Avançar para Project Senior Profile somente depois dos agents kernelizados
+4. Auditar o draft `execution_package_designer_kernel` contra
+   `reference/agents/execution-package-designer.agent.md`, snapshot dev local
+   derivado literalmente de
+   `templates/agents/execution-package-designer.agent.md`.
+5. Executar os harnesses do `execution_package_designer_kernel` somente como
+   apoio bloqueante read-only, sem promoção automática.
+6. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+7. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+8. Validar o pacote de agents como conjunto coerente.
+9. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-9. Reconstruir a skill/materialização completa somente depois de agents e
-   Profile estáveis.
+10. Reconstruir a skill/materialização completa somente depois de agents e
+    Profile estáveis.
 
 ## Famílias Sugeridas
 
@@ -126,6 +135,23 @@ Toda comparação deve validar que o kernel:
   `reference/planner_kernel/validation/check-static.mjs`
 - Harness read-only de golden checks do planner:
   `reference/planner_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `execution-package-designer`:
+  `reference/agents/execution-package-designer.agent.md`
+- Kernel documental do `execution-package-designer`:
+  `reference/execution_package_designer_kernel/README.md`
+- Contratos documentais do `execution-package-designer`:
+  `reference/execution_package_designer_kernel/contracts/CONTRACT.md`,
+  `reference/execution_package_designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/execution_package_designer_kernel/contracts/PACKAGE_READINESS_GATES.md` e
+  `reference/execution_package_designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- Validação documental e harnesses read-only do `execution-package-designer`,
+  sem runtime de agente:
+  `reference/execution_package_designer_kernel/validation/STATIC_CHECKS.md` e
+  `reference/execution_package_designer_kernel/validation/GOLDEN_TESTS.md`
+- Harness read-only de static checks do `execution-package-designer`:
+  `reference/execution_package_designer_kernel/validation/check-static.mjs`
+- Harness read-only de golden checks do `execution-package-designer`:
+  `reference/execution_package_designer_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `validation-eval-designer`:
   `reference/agents/validation-eval-designer.agent.md`
 - Kernel documental do `validation-eval-designer`:

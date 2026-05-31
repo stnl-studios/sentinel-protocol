@@ -10,6 +10,7 @@ materialization flow.
 | `orchestrator_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen. Do not alter its snapshot, contracts, validation docs, or harnesses in planner rounds. |
 | `planner_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, and semantic kernel lab. |
 | `validation_eval_designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness. |
+| `execution_package_designer_kernel` | `DRAFT_READY_FOR_HUMAN_AUDIT` | Draft only. Snapshot, contracts, and read-only textual harnesses are ready for critical human audit; no pass is claimed. |
 
 ## Objective
 
@@ -26,17 +27,24 @@ the local snapshot `reference/agents/validation-eval-designer.agent.md`. Its
 current status is
 `VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
+The fourth authorized case study is the draft
+`execution_package_designer_kernel`, anchored to the local snapshot
+`reference/agents/execution-package-designer.agent.md`. Its current status is
+`EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`, which means
+contracts and read-only harnesses are ready for critical human audit only.
+
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
 `reference/planner_kernel/validation/check-golden.mjs`. They are executable
 read-only blocking validation support only; they do not grant automatic
 promotion for this or any future kernel.
 
-These three statuses are kernel-lab dev results only. The
+The three frozen pass statuses are kernel-lab dev results only. The
 `validation_eval_designer_kernel` pass is documentary, contractual, minimum
-semantic, and backed by a hardened executable textual harness. They do not
-authorize runtime, materialization, target-repository writes, productive-skill
-changes, or a materializer.
+semantic, and backed by a hardened executable textual harness. The
+`execution_package_designer_kernel` draft status is not a pass. None of these
+states authorize runtime, materialization, target-repository writes,
+productive-skill changes, or a materializer.
 
 The work keeps the productive skill, productive templates, target repositories,
 installer, smoke checks, `.github/**`, `.codex/**`, `AGENTS.md`, and external
@@ -53,15 +61,17 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
    the copied planner snapshot;
 3. preserve the frozen `validation_eval_designer_kernel` as the first
    proof-design case study against its copied local snapshot;
-4. kernelize agents by responsibility family, one authorized agent kernel at a
+4. audit the draft `execution_package_designer_kernel` as the first
+   execution-package-design case study against its copied local snapshot;
+5. kernelize agents by responsibility family, one authorized agent kernel at a
    time;
-5. keep every future kernel subject to its own authorization and human audit;
-6. extract reusable principles without forcing every agent into one mold;
-7. validate the agent package as a coherent set only after future authorized
+6. keep every future kernel subject to its own authorization and human audit;
+7. extract reusable principles without forcing every agent into one mold;
+8. validate the agent package as a coherent set only after future authorized
    rounds;
-8. advance to Project Senior Profile only after agents are stable;
-9. rebuild the skill and any complete materialization flow only after agents and
-   Profile are stable.
+9. advance to Project Senior Profile only after agents are stable;
+10. rebuild the skill and any complete materialization flow only after agents and
+    Profile are stable.
 
 ## Validation Criteria
 

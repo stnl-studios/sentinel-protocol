@@ -28,6 +28,15 @@ Skill: `stnl_project_agent_specializer_dev`
   support only. They do not grant automatic promotion, runtime,
   materialization, target-repository writes, productive-skill authorization,
   or materializer authorization.
+- `execution_package_designer_kernel` is initiated as
+  `EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT`. This means
+  snapshot, documentary contracts, and read-only textual harnesses are ready for
+  critical human audit only; it is not a pass and grants no runtime,
+  materialization, target-repository write, productive-skill, or materializer
+  authorization.
+- `reference/agents/execution-package-designer.agent.md` is the local dev
+  snapshot derived literally from
+  `templates/agents/execution-package-designer.agent.md`.
 
 Required files:
 - `reference/agents/orchestrator.agent.md`
@@ -61,6 +70,16 @@ Required files:
 - `reference/validation_eval_designer_kernel/validation/GOLDEN_TESTS.md`
 - `reference/validation_eval_designer_kernel/validation/check-static.mjs`
 - `reference/validation_eval_designer_kernel/validation/check-golden.mjs`
+- `reference/agents/execution-package-designer.agent.md`
+- `reference/execution_package_designer_kernel/README.md`
+- `reference/execution_package_designer_kernel/contracts/CONTRACT.md`
+- `reference/execution_package_designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`
+- `reference/execution_package_designer_kernel/contracts/PACKAGE_READINESS_GATES.md`
+- `reference/execution_package_designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- `reference/execution_package_designer_kernel/validation/STATIC_CHECKS.md`
+- `reference/execution_package_designer_kernel/validation/GOLDEN_TESTS.md`
+- `reference/execution_package_designer_kernel/validation/check-static.mjs`
+- `reference/execution_package_designer_kernel/validation/check-golden.mjs`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 
@@ -71,6 +90,8 @@ Not active in this dev bundle:
 - no planner runtime, planner materializer, planner fixture, generated report,
   automatic planner promotion, or target-writer flow is part of this bundle
 - no `validation-eval-designer` runtime, materializer, fixture, generated
+  report, automatic promotion, or target-writer flow is part of this bundle
+- no `execution-package-designer` runtime, materializer, fixture, generated
   report, automatic promotion, or target-writer flow is part of this bundle
 
 Not included as canonical dev references:
