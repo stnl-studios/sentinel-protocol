@@ -19,6 +19,13 @@ incomplete scenario. Each section must keep this shape:
 - `### Fail condition`;
 - `Expected blocker: BLOCKED_...`.
 
+Embedded omission fixtures derive the required `PRE_EXECUTION_READINESS` and
+`PACKAGE_SCOPE` subfields from
+`reference/agents/execution-package-designer.agent.md`. Any compact return with
+`HANDOFF_STATUS` must include the complete `STATUS`, `HANDOFF_STATUS`,
+`REQUEST`, `NEXT_OWNER`, and `REASON` envelope. Recovery validation does not
+depend on an artificial `RECOVERY ENVELOPE` marker.
+
 ## Golden Test EPD-GT-001 - Complete package emits READY
 
 ### Objective
@@ -409,8 +416,13 @@ Expected blocker: `BLOCKED_EPD_REQUEST_REGEN_FROM_OWNER`.
 
 The harness keeps isolated negative fixtures for:
 
-- every mandatory package field omitted one at a time;
-- every recovery-envelope field omitted one at a time;
+- every mandatory top-level package field omitted one at a time;
+- every snapshot-derived `PRE_EXECUTION_READINESS` subfield omitted one at a
+  time;
+- every snapshot-derived `PACKAGE_SCOPE` subfield omitted one at a time;
+- every recovery-envelope field omitted one at a time for `HANDOFF_MISSING`,
+  `HANDOFF_INVALID`, `REQUEST_REPLAY_FROM_ORCHESTRATOR`, and
+  `REQUEST_REGEN_FROM_OWNER`;
 - package persistence;
 - planner drift;
 - coder drift;

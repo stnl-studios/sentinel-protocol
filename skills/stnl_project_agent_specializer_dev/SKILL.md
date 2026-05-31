@@ -204,21 +204,21 @@ Os checks locais são apoio estrutural/conceitual. Eles não autorizam
 materialização, escrita em target, runtime adoption ou alteração do fluxo
 produtivo. O pass registrado para cada kernel lab não altera esses limites.
 
-Comandos:
+Comandos executados da raiz do repo:
 
-- `node --check reference/orchestrator_kernel/validation/check-static.mjs`
-- `node --check reference/orchestrator_kernel/validation/check-golden.mjs`
-- `node --check reference/planner_kernel/validation/check-static.mjs`
-- `node --check reference/planner_kernel/validation/check-golden.mjs`
-- `node --check reference/validation_eval_designer_kernel/validation/check-static.mjs`
-- `node --check reference/validation_eval_designer_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-golden.mjs`
 - `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-static.mjs`
 - `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
-- `node reference/orchestrator_kernel/validation/check-static.mjs`
-- `node reference/orchestrator_kernel/validation/check-golden.mjs`
-- `node reference/planner_kernel/validation/check-static.mjs`
-- `node reference/planner_kernel/validation/check-golden.mjs`
-- `node reference/validation_eval_designer_kernel/validation/check-static.mjs`
-- `node reference/validation_eval_designer_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-golden.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-static.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`

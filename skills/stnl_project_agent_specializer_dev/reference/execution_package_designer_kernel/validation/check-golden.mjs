@@ -18,6 +18,8 @@ const kernelPrefix =
   "skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel";
 const staticHarnessPath = path.join(validationRoot, "check-static.mjs");
 const goldenDocPath = `${kernelPrefix}/validation/GOLDEN_TESTS.md`;
+const snapshotPath =
+  "skills/stnl_project_agent_specializer_dev/reference/agents/execution-package-designer.agent.md";
 
 const goldenTests = [
   ["EPD-GT-001", "BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID", ["STATUS: READY", "PRE_EXECUTION_READINESS", "PACKAGE_SCOPE", "WORK_PACKAGE_ID", "OWNED_PATHS", "ACCEPTANCE_CHECKS"]],
@@ -62,6 +64,12 @@ const requiredPackageFields = [
   "BLOCK_IF",
 ];
 const recoveryFields = ["STATUS", "HANDOFF_STATUS", "REQUEST", "NEXT_OWNER", "REASON"];
+const recoveryHandoffStatuses = [
+  "HANDOFF_MISSING",
+  "HANDOFF_INVALID",
+  "REQUEST_REPLAY_FROM_ORCHESTRATOR",
+  "REQUEST_REGEN_FROM_OWNER",
+];
 
 function isInside(childPath, parentPath) {
   const relative = path.relative(parentPath, childPath);
@@ -98,10 +106,67 @@ function fieldPresent(input, field) {
   return new RegExp(`(?:^|\\n)(?:- )?${field}:`, "i").test(input);
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function fieldsFromSnapshotSection(snapshot, heading, nextHeading) {
+  const match = snapshot.match(
+    new RegExp(
+      `^${escapeRegExp(heading)}:\\s*$([\\s\\S]*?)^${escapeRegExp(nextHeading)}:\\s*$`,
+      "m",
+    ),
+  );
+  if (!match) throw new Error(`snapshot missing ${heading} section before ${nextHeading}`);
+  const fields = [...match[1].matchAll(/^- ([A-Z][A-Z0-9_]*):/gm)].map((entry) => entry[1]);
+  if (fields.length === 0) throw new Error(`snapshot ${heading} section has no required subfields`);
+  return fields;
+}
+
+function fixtureSection(input, heading, nextHeading) {
+  const match = input.match(
+    new RegExp(
+      `^${escapeRegExp(heading)}:\\s*$([\\s\\S]*?)^${escapeRegExp(nextHeading)}:\\s*$`,
+      "m",
+    ),
+  );
+  return match?.[1] ?? "";
+}
+
+function sectionFieldPresent(input, heading, nextHeading, field) {
+  const section = fixtureSection(input, heading, nextHeading);
+  return new RegExp(`^- ${escapeRegExp(field)}:`, "mi").test(section);
+}
+
+const snapshot = readText(snapshotPath);
+const preExecutionReadinessFields = fieldsFromSnapshotSection(
+  snapshot,
+  "PRE_EXECUTION_READINESS",
+  "PACKAGE_SCOPE",
+);
+const packageScopeFields = fieldsFromSnapshotSection(snapshot, "PACKAGE_SCOPE", "WORK_PACKAGE");
+
 function classifyNegativeFixture(input) {
   const blockers = [];
   const readyPackage = /STATUS:\s*READY/i.test(input) && /EXECUTION PACKAGE/i.test(input);
-  if (readyPackage && requiredPackageFields.some((field) => !fieldPresent(input, field))) {
+  const hasRecoveryEnvelopeSignal =
+    /HANDOFF_STATUS:/i.test(input) ||
+    (/STATUS:\s*BLOCKED/i.test(input) &&
+      /NEXT_OWNER:\s*orchestrator/i.test(input) &&
+      (fieldPresent(input, "REQUEST") || fieldPresent(input, "REASON")));
+  const missingRequiredPackageField = requiredPackageFields.some((field) => !fieldPresent(input, field));
+  const missingPreExecutionReadinessSubfield = preExecutionReadinessFields.some(
+    (field) => !sectionFieldPresent(input, "PRE_EXECUTION_READINESS", "PACKAGE_SCOPE", field),
+  );
+  const missingPackageScopeSubfield = packageScopeFields.some(
+    (field) => !sectionFieldPresent(input, "PACKAGE_SCOPE", "WORK_PACKAGE", field),
+  );
+  if (
+    readyPackage &&
+    (missingRequiredPackageField ||
+      missingPreExecutionReadinessSubfield ||
+      missingPackageScopeSubfield)
+  ) {
     blockers.push("BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID");
   }
   if (/(execution_package\.md|PLAN\.md|durable documentation|persisted package|generated report)/i.test(input)) blockers.push("BLOCKED_EPD_PACKAGE_PERSISTED");
@@ -117,7 +182,7 @@ function classifyNegativeFixture(input) {
   if (/HANDOFF_READY(?:\s+treated as\s+|\s*:\s*)READY/i.test(input)) blockers.push("BLOCKED_EPD_HANDOFF_READY_TREATED_AS_READY");
   if (/HANDOFF_STATUS:\s*REQUEST_REPLAY_FROM_ORCHESTRATOR/i.test(input)) blockers.push("BLOCKED_EPD_REQUEST_REPLAY_FROM_ORCHESTRATOR");
   if (/HANDOFF_STATUS:\s*REQUEST_REGEN_FROM_OWNER/i.test(input)) blockers.push("BLOCKED_EPD_REQUEST_REGEN_FROM_OWNER");
-  if (/RECOVERY ENVELOPE/i.test(input) && recoveryFields.some((field) => !fieldPresent(input, field))) {
+  if (hasRecoveryEnvelopeSignal && recoveryFields.some((field) => !fieldPresent(input, field))) {
     blockers.push("BLOCKED_EPD_RECOVERY_ENVELOPE_INVALID");
   }
   return blockers;
@@ -126,8 +191,10 @@ function classifyNegativeFixture(input) {
 function completePackage() {
   return `STATUS: READY
 EXECUTION PACKAGE
-PRE_EXECUTION_READINESS: bounded
-PACKAGE_SCOPE: bounded
+PRE_EXECUTION_READINESS:
+${preExecutionReadinessFields.map((field) => `- ${field}: present`).join("\n")}
+PACKAGE_SCOPE:
+${packageScopeFields.map((field) => `- ${field}: present`).join("\n")}
 WORK_PACKAGE:
 ${requiredPackageFields.slice(2).map((field) => `- ${field}: present`).join("\n")}`;
 }
@@ -136,12 +203,25 @@ function withoutField(input, field) {
   return input.split("\n").filter((line) => !new RegExp(`^(?:- )?${field}:`, "i").test(line)).join("\n");
 }
 
-const completeRecoveryEnvelope = `RECOVERY ENVELOPE
-STATUS: BLOCKED
-HANDOFF_STATUS: REQUEST_REPLAY_FROM_ORCHESTRATOR
+function withoutSectionField(input, heading, field) {
+  let currentHeading = "";
+  return input
+    .split("\n")
+    .filter((line) => {
+      const headingMatch = line.match(/^([A-Z][A-Z0-9_]*):$/);
+      if (headingMatch) currentHeading = headingMatch[1];
+      return currentHeading !== heading || !new RegExp(`^- ${escapeRegExp(field)}:`, "i").test(line);
+    })
+    .join("\n");
+}
+
+function completeRecoveryEnvelope(handoffStatus) {
+  return `STATUS: BLOCKED
+HANDOFF_STATUS: ${handoffStatus}
 REQUEST: replay current-round handoff
 NEXT_OWNER: orchestrator
 REASON: consumer lost current-round handoff`;
+}
 
 const negativeFixtures = [
   ...requiredPackageFields.map((field) => ({
@@ -149,26 +229,38 @@ const negativeFixtures = [
     expected: "BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID",
     input: withoutField(completePackage(), field),
   })),
-  ...recoveryFields.map((field) => ({
-    id: `EPD-NF-RECOVERY-MISSING-${field}`,
-    expected: "BLOCKED_EPD_RECOVERY_ENVELOPE_INVALID",
-    input: withoutField(completeRecoveryEnvelope, field),
+  ...preExecutionReadinessFields.map((field) => ({
+    id: `EPD-NF-PRE_EXECUTION_READINESS-MISSING-${field}`,
+    expected: "BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID",
+    input: withoutSectionField(completePackage(), "PRE_EXECUTION_READINESS", field),
   })),
+  ...packageScopeFields.map((field) => ({
+    id: `EPD-NF-PACKAGE_SCOPE-MISSING-${field}`,
+    expected: "BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID",
+    input: withoutSectionField(completePackage(), "PACKAGE_SCOPE", field),
+  })),
+  ...recoveryHandoffStatuses.flatMap((handoffStatus) =>
+    recoveryFields.map((field) => ({
+      id: `EPD-NF-${handoffStatus}-MISSING-${field}`,
+      expected: "BLOCKED_EPD_RECOVERY_ENVELOPE_INVALID",
+      input: withoutField(completeRecoveryEnvelope(handoffStatus), field),
+    })),
+  ),
   { id: "EPD-NF-PACKAGE-PERSISTED", expected: "BLOCKED_EPD_PACKAGE_PERSISTED", input: "Create execution_package.md, PLAN.md, durable documentation, and a generated report." },
   { id: "EPD-NF-PLANNER-DRIFT", expected: "BLOCKED_EPD_PLANNER_DRIFT", input: "Rewrite the cut and choose architecture." },
   { id: "EPD-NF-CODER-DRIFT", expected: "BLOCKED_EPD_CODER_DRIFT", input: "Pseudo-code dump with function solve() and implementation strategy." },
   { id: "EPD-NF-ORCHESTRATOR-DRIFT", expected: "BLOCKED_EPD_ORCHESTRATOR_DRIFT", input: "Route coder-backend first; parallel execution is approved." },
   { id: "EPD-NF-VALIDATION-RUNNER-DRIFT", expected: "BLOCKED_EPD_VALIDATION_RUNNER_DRIFT", input: "VALIDATION PASSED. TESTS PASSED. IMPLEMENTATION VERIFIED." },
-  { id: "EPD-NF-HANDOFF-MISSING", expected: "BLOCKED_EPD_HANDOFF_MISSING", input: "STATUS: BLOCKED\nHANDOFF_STATUS: HANDOFF_MISSING" },
-  { id: "EPD-NF-HANDOFF-INVALID", expected: "BLOCKED_EPD_HANDOFF_INVALID", input: "STATUS: BLOCKED\nHANDOFF_STATUS: HANDOFF_INVALID" },
+  { id: "EPD-NF-HANDOFF-MISSING", expected: "BLOCKED_EPD_HANDOFF_MISSING", input: completeRecoveryEnvelope("HANDOFF_MISSING") },
+  { id: "EPD-NF-HANDOFF-INVALID", expected: "BLOCKED_EPD_HANDOFF_INVALID", input: completeRecoveryEnvelope("HANDOFF_INVALID") },
   { id: "EPD-NF-HANDOFF-STALE", expected: "BLOCKED_EPD_HANDOFF_STALE_WRONG_ROUND_OR_OWNER", input: "stale handoff" },
   { id: "EPD-NF-HANDOFF-WRONG-ROUND", expected: "BLOCKED_EPD_HANDOFF_STALE_WRONG_ROUND_OR_OWNER", input: "wrong-round handoff" },
   { id: "EPD-NF-HANDOFF-WRONG-OWNER", expected: "BLOCKED_EPD_HANDOFF_STALE_WRONG_ROUND_OR_OWNER", input: "wrong-owner handoff" },
   { id: "EPD-NF-MISSING-PROOF-MAPPING", expected: "BLOCKED_EPD_ACCEPTANCE_CHECKS_NOT_MAPPED", input: "missing proof mapping" },
   { id: "EPD-NF-BROAD-DISCOVERY", expected: "BLOCKED_EPD_BROAD_DISCOVERY", input: "Use broad discovery and scan entire repository." },
   { id: "EPD-NF-HANDOFF-READY-AS-READY", expected: "BLOCKED_EPD_HANDOFF_READY_TREATED_AS_READY", input: "HANDOFF_READY treated as READY" },
-  { id: "EPD-NF-REPLAY-RECOVERY", expected: "BLOCKED_EPD_REQUEST_REPLAY_FROM_ORCHESTRATOR", input: completeRecoveryEnvelope },
-  { id: "EPD-NF-REGEN-RECOVERY", expected: "BLOCKED_EPD_REQUEST_REGEN_FROM_OWNER", input: completeRecoveryEnvelope.replace("REQUEST_REPLAY_FROM_ORCHESTRATOR", "REQUEST_REGEN_FROM_OWNER") },
+  { id: "EPD-NF-REPLAY-RECOVERY", expected: "BLOCKED_EPD_REQUEST_REPLAY_FROM_ORCHESTRATOR", input: completeRecoveryEnvelope("REQUEST_REPLAY_FROM_ORCHESTRATOR") },
+  { id: "EPD-NF-REGEN-RECOVERY", expected: "BLOCKED_EPD_REQUEST_REGEN_FROM_OWNER", input: completeRecoveryEnvelope("REQUEST_REGEN_FROM_OWNER") },
 ];
 
 function result(id, failures, success) {

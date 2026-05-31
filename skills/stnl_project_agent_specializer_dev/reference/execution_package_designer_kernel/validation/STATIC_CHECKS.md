@@ -50,15 +50,17 @@ key work-package fields.
 
 ### EPD-CH-007 - Package readiness gates are explicit
 
-Validates `PACKAGE_READINESS_GATES.md` defines `READY`, `BLOCKED`, handoff
-error, parallelization eligibility, anti-theater package, and human decision
-gates.
+Validates each canonical section in `PACKAGE_READINESS_GATES.md` keeps its own
+local evidence for `READY`, `BLOCKED`, handoff error, `HANDOFF_READY`,
+parallelization eligibility, anti-theater package, and human decision gates.
+Text displaced into another section does not satisfy the check.
 
 ### EPD-CH-008 - Responsibility-boundary drift remains prohibited
 
-Validates the kernel blocks drift into planner, validation-eval-designer,
-orchestrator, coder, validation-runner, reviewer, finalizer, resync,
-materializer, and durable documentation ownership.
+Validates the canonical responsibility-boundary sections block drift into
+planner, validation-eval-designer, orchestrator, coder, validation-runner,
+reviewer, finalizer, resync, materializer, and durable documentation ownership.
+Text displaced outside those sections does not satisfy the check.
 
 ### EPD-CH-009 - Hardened bundle contains no stale or premature status
 
@@ -76,14 +78,18 @@ signals; and enforce `HANDOFF_READY != READY`.
 ### EPD-CH-011 - Golden documentation declares eighteen local scenarios
 
 Validates all golden tests `EPD-GT-001` through `EPD-GT-018` exist, keep the
-required shape, and include their own local blocker evidence.
+required shape, exact blocker, and scenario-specific semantic evidence inside
+their own canonical sections.
 
 ### EPD-CH-012 - Golden harness declares isolated negative fixture classes
 
-Validates the golden harness includes isolated package-field omissions,
-recovery-envelope omissions, requested drift classes, handoff integrity
-classes, proof mapping, broad discovery, `HANDOFF_READY`, and replay/regeneration
-recovery.
+Validates the canonical negative-fixture declaration block includes isolated
+top-level package-field omissions, snapshot-derived `PRE_EXECUTION_READINESS`
+and `PACKAGE_SCOPE` subfield omissions, and complete recovery-envelope
+omissions for every declared `HANDOFF_STATUS`. It also validates the requested
+drift classes, handoff integrity classes, proof mapping, broad discovery,
+`HANDOFF_READY`, replay/regeneration recovery, and the absence of classifier
+dependency on an artificial `RECOVERY ENVELOPE` literal.
 
 ## Out Of Scope
 

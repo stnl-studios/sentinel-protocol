@@ -76,6 +76,27 @@ const documentaryPaths = [
   `${kernelPrefix}/validation/GOLDEN_TESTS.md`,
 ];
 
+const goldenScenarioRequirements = [
+  ["EPD-GT-001", "BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID", ["STATUS: READY", "PRE_EXECUTION_READINESS", "PACKAGE_SCOPE", "WORK_PACKAGE_ID", "OWNED_PATHS", "ACCEPTANCE_CHECKS"]],
+  ["EPD-GT-002", "BLOCKED_EPD_HANDOFF_MISSING", ["EXECUTION BRIEF", "VALIDATION PACK", "HANDOFF_STATUS: HANDOFF_MISSING", "NEXT_OWNER: orchestrator", "REQUEST:", "REASON:"]],
+  ["EPD-GT-003", "BLOCKED_EPD_HANDOFF_INVALID", ["invalid or contradictory", "HANDOFF_STATUS: HANDOFF_INVALID", "NEXT_OWNER: orchestrator", "REQUEST:", "REASON:"]],
+  ["EPD-GT-004", "BLOCKED_EPD_HANDOFF_STALE_WRONG_ROUND_OR_OWNER", ["stale", "wrong-round", "wrong-owner", "NEXT_OWNER: orchestrator"]],
+  ["EPD-GT-005", "BLOCKED_EPD_ACCEPTANCE_CHECKS_NOT_MAPPED", ["VALIDATION PACK", "ACCEPTANCE_CHECKS", "missing proof mapping", "run tests"]],
+  ["EPD-GT-006", "BLOCKED_EPD_BROAD_DISCOVERY", ["targeted-local", "broad discovery", "repository-wide scanning", "OWNED_PATHS"]],
+  ["EPD-GT-007", "BLOCKED_EPD_PLANNER_DRIFT", ["multiple valid cuts", "architecture directions", "rewrite the cut", "choose a new cut"]],
+  ["EPD-GT-008", "BLOCKED_EPD_PROOF_DESIGN_DRIFT", ["VALIDATION PACK", "redesign proof", "replace the `VALIDATION PACK`", "regeneration"]],
+  ["EPD-GT-009", "BLOCKED_EPD_ORCHESTRATOR_DRIFT", ["parallelization eligibility signal", "orchestrator", "Does not call, select, sequence, retry, or manage coders"]],
+  ["EPD-GT-010", "BLOCKED_EPD_CODER_DRIFT", ["pseudo-code", "writes code", "implementation strategy", "CHANGE_RULES"]],
+  ["EPD-GT-011", "BLOCKED_EPD_VALIDATION_RUNNER_DRIFT", ["VALIDATION PASSED", "TESTS PASSED", "IMPLEMENTATION VERIFIED", "runner verdicts"]],
+  ["EPD-GT-012", "BLOCKED_EPD_COMPACT_REMOVED_SAFETY", ["MODE=compact", "WORK_PACKAGE_ID", "OWNED_PATHS", "DO_NOT_TOUCH", "ACCEPTANCE_CHECKS", "BLOCK_IF"]],
+  ["EPD-GT-013", "BLOCKED_EPD_RUN_PLAN_AUTHORIZED_CODER_ENTRY", ["RUN=plan", "preparatory package", "Does not authorize coder entry"]],
+  ["EPD-GT-014", "BLOCKED_EPD_PACKAGE_PERSISTED", ["execution_package.md", "PLAN.md", "durable documentation", "Keeps `EXECUTION PACKAGE` ephemeral"]],
+  ["EPD-GT-015", "BLOCKED_EPD_HEADER_MISUSED_AS_PACKAGE_EVIDENCE", ["File Purpose Header", "canonical sources", "OWNED_PATHS", "acceptance checks"]],
+  ["EPD-GT-016", "BLOCKED_EPD_HANDOFF_READY_TREATED_AS_READY", ["HANDOFF_READY != READY", "STATUS: READY", "treated as `READY`"]],
+  ["EPD-GT-017", "BLOCKED_EPD_REQUEST_REPLAY_FROM_ORCHESTRATOR", ["HANDOFF_STATUS: REQUEST_REPLAY_FROM_ORCHESTRATOR", "REQUEST:", "NEXT_OWNER: orchestrator", "REASON:"]],
+  ["EPD-GT-018", "BLOCKED_EPD_REQUEST_REGEN_FROM_OWNER", ["HANDOFF_STATUS: REQUEST_REGEN_FROM_OWNER", "REQUEST:", "NEXT_OWNER: orchestrator", "REASON:"]],
+];
+
 const safePolarityTerms = [
   "must not",
   "prohibited",
@@ -242,6 +263,13 @@ function markdownSection(text, heading) {
   return text.slice(start, next === -1 ? text.length : next);
 }
 
+function sourceBlock(text, startMarker, endMarker) {
+  const start = text.indexOf(startMarker);
+  if (start === -1) return "";
+  const next = text.indexOf(endMarker, start + startMarker.length);
+  return text.slice(start, next === -1 ? text.length : next);
+}
+
 function result(id, failures, success) {
   if (failures.length === 0) {
     console.log(`${id} PASS ${success}`);
@@ -375,7 +403,7 @@ let ok = true;
       continue;
     }
     for (const term of terms) {
-      if (!section.toLowerCase().includes(term.toLowerCase())) {
+      if (!hasAll(section, [term])) {
         failures.push(`${name} missing ${term}`);
       }
     }
@@ -387,53 +415,111 @@ let ok = true;
 
 {
   const gateText = readText(`${kernelPrefix}/contracts/PACKAGE_READINESS_GATES.md`);
-  const requiredTerms = [
-    "READY Gate",
-    "BLOCKED Gate",
-    "Handoff Error Gate",
-    "Parallelization Eligibility Gate",
-    "Anti-Theater Package Gate",
-    "Human Decision Gate",
-    "OWNED_PATHS: relevant files",
-    "DO_NOT_TOUCH: unrelated files",
-    "RUN_COMMANDS: run tests",
-    "ACCEPTANCE_CHECKS: verify works",
-    "BLOCK_IF: anything risky",
-    "orchestrator decides whether to parallelize",
+  const sectionRequirements = [
+    ["READY Gate", [
+      "EXECUTION BRIEF",
+      "VALIDATION PACK",
+      "PRE_EXECUTION_READINESS",
+      "WORK_PACKAGE_ID",
+      "OWNED_PATHS",
+      "DO_NOT_TOUCH",
+      "RUN_COMMANDS",
+      "ACCEPTANCE_CHECKS",
+      "BLOCK_IF",
+    ]],
+    ["BLOCKED Gate", [
+      "ACCEPTANCE_CHECKS",
+      "targeted-local reading",
+      "broad discovery equivalent to implementation",
+    ]],
+    ["Handoff Error Gate", [
+      "STATUS: BLOCKED",
+      "HANDOFF_STATUS:",
+      "REQUEST:",
+      "NEXT_OWNER: orchestrator",
+      "REASON:",
+      "`STATUS: BLOCKED` does not replace",
+    ]],
+    ["HANDOFF_READY Is Not READY Gate", ["HANDOFF_READY != READY", "STATUS: READY"]],
+    ["Parallelization Eligibility Gate", ["orchestrator decides whether to parallelize"]],
+    ["Anti-Theater Package Gate", [
+      "OWNED_PATHS: relevant files",
+      "DO_NOT_TOUCH: unrelated files",
+      "RUN_COMMANDS: run tests",
+      "ACCEPTANCE_CHECKS: verify works",
+      "BLOCK_IF: anything risky",
+    ]],
+    ["Human Decision Gate", ["DEV decision", "block rather than transfer that choice to coder"]],
   ];
-  const failures = requiredTerms
-    .filter((term) => !gateText.toLowerCase().includes(term.toLowerCase()))
-    .map((term) => `package readiness gates missing ${term}`);
+  const failures = [];
+  for (const [name, terms] of sectionRequirements) {
+    const section = markdownSection(gateText, name);
+    if (!section) {
+      failures.push(`package readiness gates missing section ${name}`);
+      continue;
+    }
+    for (const term of terms) {
+      if (!hasAll(section, [term])) {
+        failures.push(`${name} missing ${term}`);
+      }
+    }
+  }
   ok =
-    result("EPD-CH-007", failures, "package readiness gates remain explicit") &&
+    result("EPD-CH-007", failures, "package readiness gates remain explicit in canonical sections") &&
     ok;
 }
 
 {
-  const boundaryText = [
-    readText(`${kernelPrefix}/contracts/CONTRACT.md`),
-    readText(`${kernelPrefix}/contracts/BEHAVIOR_PARITY_SPINE.md`),
-  ].join("\n");
-  const requiredTerms = [
-    "must not become planner",
-    "must not become validation-eval-designer",
-    "must not become orchestrator",
-    "must not become a coder",
-    "must not become validation-runner",
-    "reviewer",
-    "finalizer",
-    "resync",
-    "materializer",
-    "durable documentation",
-    "must not implement",
-    "must not run checks",
-    "must not coordinate",
+  const contract = readText(`${kernelPrefix}/contracts/CONTRACT.md`);
+  const paritySpine = readText(`${kernelPrefix}/contracts/BEHAVIOR_PARITY_SPINE.md`);
+  const sectionRequirements = [
+    ["CONTRACT Responsibility Boundaries", markdownSection(contract, "Responsibility Boundaries"), [
+      "must not become planner",
+      "must not become validation-eval-designer",
+      "must not become orchestrator",
+      "must not become a coder",
+      "must not become validation-runner",
+      "reviewer",
+      "finalizer",
+      "resync",
+      "materializer",
+      "durable documentation",
+      "must not implement",
+      "must not run checks",
+      "must not coordinate",
+    ]],
+    ["BEHAVIOR_PARITY_SPINE Required Negative Behaviors", markdownSection(paritySpine, "Required Negative Behaviors"), [
+      "become planner or rewrite the cut",
+      "become validation-eval-designer or redesign proof",
+      "become orchestrator or coordinate coders",
+      "become coder or implement",
+      "become validation-runner or execute checks",
+      "execution_package.md",
+      "PLAN.md",
+      "broad discovery",
+    ]],
+    ["BEHAVIOR_PARITY_SPINE Dangerous Drift Rejections", markdownSection(paritySpine, "Dangerous Drift Rejections"), [
+      "VALIDATION PASSED",
+      "TESTS PASSED",
+      "IMPLEMENTATION VERIFIED",
+      "routes directly to coder",
+      "returning to orchestrator",
+    ]],
   ];
-  const failures = requiredTerms
-    .filter((term) => !boundaryText.toLowerCase().includes(term.toLowerCase()))
-    .map((term) => `responsibility boundary missing ${term}`);
+  const failures = [];
+  for (const [name, section, terms] of sectionRequirements) {
+    if (!section) {
+      failures.push(`responsibility boundary missing section ${name}`);
+      continue;
+    }
+    for (const term of terms) {
+      if (!hasAll(section, [term])) {
+        failures.push(`${name} missing ${term}`);
+      }
+    }
+  }
   ok =
-    result("EPD-CH-008", failures, "responsibility-boundary drift remains prohibited") &&
+    result("EPD-CH-008", failures, "responsibility-boundary drift remains prohibited in canonical sections") &&
     ok;
 }
 
@@ -507,8 +593,7 @@ let ok = true;
 {
   const goldenDoc = readText(`${kernelPrefix}/validation/GOLDEN_TESTS.md`);
   const failures = [];
-  for (let index = 1; index <= 18; index += 1) {
-    const id = `EPD-GT-${String(index).padStart(3, "0")}`;
+  for (const [id, blocker, phrases] of goldenScenarioRequirements) {
     const section = sectionFor(goldenDoc, id);
     if (!section) {
       failures.push(`missing golden test ${id}`);
@@ -519,22 +604,47 @@ let ok = true;
       "### Input shape",
       "### Expected behavior",
       "### Fail condition",
-      "Expected blocker: `BLOCKED_",
+      `Expected blocker: \`${blocker}\`.`,
     ]) {
       if (!section.includes(marker)) failures.push(`${id} missing ${marker}`);
     }
+    if (!hasAll(section, phrases)) failures.push(`${id} missing local semantic evidence`);
   }
   ok =
-    result("EPD-CH-011", failures, "golden documentation declares eighteen local scenarios") &&
+    result("EPD-CH-011", failures, "golden documentation keeps eighteen section-local scenarios") &&
     ok;
 }
 
 {
   const goldenHarness = readText(`${kernelPrefix}/validation/check-golden.mjs`);
-  const requiredTerms = [
-    "requiredPackageFields",
-    "recoveryFields",
+  const snapshotDerivation = sourceBlock(
+    goldenHarness,
+    "const snapshot = readText(snapshotPath);",
+    "\n\nfunction classifyNegativeFixture(input)",
+  );
+  const classifier = sourceBlock(
+    goldenHarness,
+    "function classifyNegativeFixture(input) {",
+    "\n}\n\nfunction completePackage()",
+  );
+  const recoveryStatuses = sourceBlock(
+    goldenHarness,
+    "const recoveryHandoffStatuses = [",
+    "\n];",
+  );
+  const fixtureDeclarations = sourceBlock(
+    goldenHarness,
+    "const negativeFixtures = [",
+    "\n];\n\nfunction result",
+  );
+  const fixtureTerms = [
+    "requiredPackageFields.map",
+    "preExecutionReadinessFields.map",
+    "packageScopeFields.map",
+    "recoveryHandoffStatuses.flatMap",
+    "recoveryFields.map",
     "BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID",
+    "BLOCKED_EPD_RECOVERY_ENVELOPE_INVALID",
     "BLOCKED_EPD_PACKAGE_PERSISTED",
     "BLOCKED_EPD_PLANNER_DRIFT",
     "BLOCKED_EPD_CODER_DRIFT",
@@ -548,13 +658,43 @@ let ok = true;
     "BLOCKED_EPD_HANDOFF_READY_TREATED_AS_READY",
     "BLOCKED_EPD_REQUEST_REPLAY_FROM_ORCHESTRATOR",
     "BLOCKED_EPD_REQUEST_REGEN_FROM_OWNER",
-    "BLOCKED_EPD_RECOVERY_ENVELOPE_INVALID",
   ];
-  const failures = requiredTerms
-    .filter((term) => !goldenHarness.includes(term))
-    .map((term) => `golden harness missing ${term}`);
+  const failures = [];
+  for (const term of [
+    "PRE_EXECUTION_READINESS",
+    "PACKAGE_SCOPE",
+    "WORK_PACKAGE",
+    "fieldsFromSnapshotSection",
+  ]) {
+    if (!snapshotDerivation.includes(term)) {
+      failures.push(`snapshot-derived subfield declaration missing ${term}`);
+    }
+  }
+  for (const term of [
+    "HANDOFF_MISSING",
+    "HANDOFF_INVALID",
+    "REQUEST_REPLAY_FROM_ORCHESTRATOR",
+    "REQUEST_REGEN_FROM_OWNER",
+  ]) {
+    if (!recoveryStatuses.includes(term)) {
+      failures.push(`recovery handoff-status declaration missing ${term}`);
+    }
+  }
+  for (const term of ["hasRecoveryEnvelopeSignal", "HANDOFF_STATUS:", "recoveryFields.some"]) {
+    if (!classifier.includes(term)) {
+      failures.push(`negative-fixture classifier missing ${term}`);
+    }
+  }
+  if (classifier.includes("RECOVERY ENVELOPE")) {
+    failures.push("negative-fixture classifier depends on artificial RECOVERY ENVELOPE literal");
+  }
+  for (const term of fixtureTerms) {
+    if (!fixtureDeclarations.includes(term)) {
+      failures.push(`negative-fixture declaration block missing ${term}`);
+    }
+  }
   ok =
-    result("EPD-CH-012", failures, "golden harness declares isolated negative fixture classes") &&
+    result("EPD-CH-012", failures, "golden harness declares section-scoped isolated negative fixture classes") &&
     ok;
 }
 
