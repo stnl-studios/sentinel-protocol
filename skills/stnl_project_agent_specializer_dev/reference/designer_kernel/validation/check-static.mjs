@@ -377,6 +377,7 @@ for (const requirement of sectionRequirements) {
     "BLOCKED_DSG_EXECUTION_PACKAGE_OWNERSHIP",
     "BLOCKED_DSG_IMPLEMENTATION_OR_RUNNER_DRIFT",
     "BLOCKED_DSG_DURABLE_DOCS_OR_CLOSURE",
+    "BLOCKED_DSG_BROAD_REDESIGN_NOT_ESCALATED",
   ];
   const failures = requiredTerms
     .filter((term) => !fixtureText.includes(term))

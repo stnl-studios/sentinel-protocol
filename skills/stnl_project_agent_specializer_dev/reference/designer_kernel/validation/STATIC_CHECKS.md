@@ -22,8 +22,12 @@ dangerous terms, and draft status boundaries.
   execution package, implementation, validation running, finalization, resync,
   durable docs, and materialization drift;
 - `DSG-CH-009`: reading contract remains targeted-local;
-- `DSG-CH-010`: golden documentation declares positive and negative scenarios;
-- `DSG-CH-011`: golden harness includes fixture classification for negative
-  drift.
+- `DSG-CH-010`: dangerous terms appear only with safe polarity, as deny-list
+  evidence or negative space, never as granted designer authority;
+- `DSG-CH-011`: golden documentation declares ten scenario-local tests;
+- `DSG-CH-012`: golden harness includes negative fixture classes for no-entry,
+  planner drift, validation ownership drift, execution package drift,
+  implementation or runner drift, durable docs or closure drift, and broad
+  redesign drift.
 
 Passing these checks does not promote the kernel.

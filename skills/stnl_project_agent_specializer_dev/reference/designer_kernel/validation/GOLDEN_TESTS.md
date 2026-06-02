@@ -6,6 +6,24 @@ These golden tests describe positive and negative designer-kernel behavior for
 the controlled initial draft. They are textual contract scenarios, not runtime
 materialization.
 
+The harness validates each scenario by local subsection evidence. A phrase in
+one golden test or subsection must not satisfy another test or subsection.
+Negative fixtures are class-specific and must match exactly the expected
+blocker classes, so generic wording cannot hide role drift.
+
+## Negative Fixture Classes
+
+- no-entry work claiming `READY` despite no real UX impact;
+- planner drift through cut ownership, scope rewrite, or replacing
+  `EXECUTION BRIEF`;
+- `VALIDATION PACK` ownership drift and validation sufficiency claims;
+- `EXECUTION PACKAGE` ownership drift, package readiness, coder prompt,
+  executor-owned file list, or implementation order;
+- implementation or validation-runner drift through edits, file writes, test
+  execution, tests passed, validation passed, or implementation verified;
+- durable docs, closure, resync/finalization, and materialization drift;
+- broad redesign or product decision accepted without DEV-owned decision.
+
 ## Golden Test DSG-GT-001 - Required design contribution reaches READY
 
 ### Objective
@@ -22,8 +40,9 @@ with interaction behavior, visible states, accessibility, and responsive impact.
 
 The designer uses a narrow delivery mode, names the UX problem, checks current
 patterns, recommends a practical direction, covers relevant states and edge
-cases, includes accessibility and responsive expectations, and provides cues for
-`coder-frontend` or `validation-eval-designer` without guessing.
+cases, includes accessibility and responsive expectations, and provides local
+handoff cues for `coder-frontend` or `validation-eval-designer` without
+guessing.
 
 ### Fail condition
 
@@ -47,7 +66,9 @@ is useful but not required for honest execution or validation.
 
 The designer may return useful UX direction or a narrow `BLOCKED`, but
 orchestrator decides continuation. Advisory bypass is allowed only when
-execution and validation can proceed honestly without design guessing.
+execution and validation can proceed honestly without design guessing. The
+designer must not turn advisory classification into a required blocker or
+mandatory phase.
 
 ### Fail condition
 
