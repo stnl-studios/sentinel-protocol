@@ -1,10 +1,11 @@
 # Execution Package Designer Package Readiness Gates
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 This document defines the mandatory gate set for deciding whether an
 `EXECUTION PACKAGE` is safe for coder entry. It is read-only kernel-lab
-documentation, not runtime behavior.
+documentation, not runtime behavior, not materialization behavior, not target
+repo behavior, not productive-skill behavior, and not materializer behavior.
 
 ## READY Gate
 

@@ -19,10 +19,15 @@ artifacts finais de `target`.
 
 O foco imediato é validar kernelização de agents comparando cada kernel com seu
 respectivo snapshot dev de base agent em `reference/agents/**`. O
-`execution_package_designer_kernel` está endurecido como
-`EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`, limitado a
-snapshot local, contratos documentais e harness textual endurecidos para
-auditoria humana final, sem pass final.
+`execution_package_designer_kernel` está congelado como
+`EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` após auditoria humana
+final com `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION`, limitado ao kernel
+lab dev documental, contratual, semântico mínimo e com harness textual
+executável endurecido.
+
+Há quatro kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+`planner_kernel`, `validation_eval_designer_kernel` e
+`execution_package_designer_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -43,6 +48,12 @@ endurecido. Seus harnesses são apoio bloqueante read-only e não concedem
 promoção automática, runtime, materialização, escrita em repo alvo,
 autorização para skill produtiva ou autorização para materializer.
 
+O `execution_package_designer_kernel` também é pass exclusivo do kernel lab dev
+documental, contratual, semântico mínimo e com harness textual executável
+endurecido. Ele não autoriza runtime pass, materialization pass, target repo
+pass, skill produtiva autorizada, materializer autorizado, repo alvo ou agente
+executado em produção.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -55,7 +66,7 @@ autorização para skill produtiva ou autorização para materializer.
    `reference/agents/validation-eval-designer.agent.md`, snapshot dev local
    derivado literalmente de
    `templates/agents/validation-eval-designer.agent.md`.
-4. Auditar o draft endurecido `execution_package_designer_kernel` contra
+4. Preservar o `execution_package_designer_kernel` congelado contra
    `reference/agents/execution-package-designer.agent.md`, snapshot dev local
    derivado literalmente de
    `templates/agents/execution-package-designer.agent.md`.

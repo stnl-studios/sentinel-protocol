@@ -1,6 +1,6 @@
 # Execution Package Designer Kernel Golden Tests
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 The local harness is
 `reference/execution_package_designer_kernel/validation/check-golden.mjs`. It

@@ -8,7 +8,7 @@ Skill: `stnl_project_agent_specializer_dev`
 - `planner_kernel` is frozen as `CLEAN_EXCELLENT_PASS` for the documentary,
   contractual, and semantic kernel lab after the separately authorized human
   audit.
-- All three passes are dev kernel-lab results only. They do not authorize runtime,
+- All four passes are dev kernel-lab results only. They do not authorize runtime,
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
 - `planner_kernel` has read-only executable validation harnesses as blocking
@@ -28,12 +28,13 @@ Skill: `stnl_project_agent_specializer_dev`
   support only. They do not grant automatic promotion, runtime,
   materialization, target-repository writes, productive-skill authorization,
   or materializer authorization.
-- `execution_package_designer_kernel` is hardened as
-  `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`. This means
-  snapshot, documentary contracts, and read-only textual harnesses are hardened
-  for final human audit only; it is not a pass and grants no runtime,
-  materialization, target-repository write, productive-skill, or materializer
-  authorization.
+- `execution_package_designer_kernel` is frozen as
+  `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` after final human
+  audit with `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION`. This pass is
+  limited to the documentary, contractual, minimum-semantic dev kernel lab with
+  a hardened executable textual harness; it grants no runtime,
+  materialization, target-repository write, productive-skill, materializer, or
+  production-agent authorization.
 - `reference/agents/execution-package-designer.agent.md` is the local dev
   snapshot derived literally from
   `templates/agents/execution-package-designer.agent.md`.

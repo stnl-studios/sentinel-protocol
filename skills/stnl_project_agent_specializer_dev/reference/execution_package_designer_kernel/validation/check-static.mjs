@@ -14,10 +14,10 @@ const realRepoRoot = fs.realpathSync.native(repoRoot);
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 const skippedWalkNames = new Set([".git", "node_modules", ...ignoredNames]);
 
-const hardenedStatus =
-  "EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT";
-const prematureStatuses = [
-  "EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS",
+const cleanPassStatus =
+  "EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS";
+const staleStatuses = [
+  "EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT",
   "EXECUTION_PACKAGE_DESIGNER_KERNEL: DRAFT_READY_FOR_HUMAN_AUDIT",
   "EXECUTION_PACKAGE_DESIGNER_KERNEL: NOT_STARTED_READ_ONLY_CANONICAL_ANALYSIS",
   "EXECUTION_PACKAGE_DESIGNER_KERNEL: UNDER_CONSTRUCTION",
@@ -76,6 +76,8 @@ const documentaryPaths = [
   `${kernelPrefix}/validation/GOLDEN_TESTS.md`,
 ];
 
+const claimCheckPaths = [...new Set([...globalDocPaths, ...documentaryPaths])];
+
 const goldenScenarioRequirements = [
   ["EPD-GT-001", "BLOCKED_EPD_READY_PACKAGE_MISSING_OR_INVALID", ["STATUS: READY", "PRE_EXECUTION_READINESS", "PACKAGE_SCOPE", "WORK_PACKAGE_ID", "OWNED_PATHS", "ACCEPTANCE_CHECKS"]],
   ["EPD-GT-002", "BLOCKED_EPD_HANDOFF_MISSING", ["EXECUTION BRIEF", "VALIDATION PACK", "HANDOFF_STATUS: HANDOFF_MISSING", "NEXT_OWNER: orchestrator", "REQUEST:", "REASON:"]],
@@ -123,6 +125,10 @@ const safePolarityTerms = [
   "not durable",
   "not persisted",
   "not a",
+  "grants no",
+  "não autoriza",
+  "não é",
+  "não há",
   "prohibitive",
   "blocking",
   "wrongly",
@@ -315,18 +321,19 @@ let ok = true;
   const failures = [];
   for (const relativePath of globalDocPaths) {
     const text = readText(relativePath);
-    if (!text.includes(hardenedStatus)) {
-      failures.push(`${relativePath} missing hardened-for-final-audit status`);
+    if (!text.includes(cleanPassStatus)) {
+      failures.push(`${relativePath} missing clean-excellent-pass status`);
     }
-    for (const status of prematureStatuses) {
+    for (const status of staleStatuses) {
       if (text.includes(status)) {
-        failures.push(`${relativePath} contains premature or stale status ${status}`);
+        failures.push(`${relativePath} contains stale status ${status}`);
       }
     }
     const frozenEvidence = [
       "orchestrator_kernel",
       "planner_kernel",
       "validation_eval_designer_kernel",
+      "execution_package_designer_kernel",
       finalPassStatus,
     ];
     for (const evidence of frozenEvidence) {
@@ -336,7 +343,7 @@ let ok = true;
     }
   }
   ok =
-    result("EPD-CH-004", failures, "global docs record hardened status and frozen predecessors") &&
+    result("EPD-CH-004", failures, "global docs record clean status and four frozen kernels") &&
     ok;
 }
 
@@ -527,19 +534,27 @@ let ok = true;
   const failures = [];
   for (const relativePath of documentaryPaths) {
     const text = readText(relativePath);
-    if (!text.includes(hardenedStatus)) {
-      failures.push(`${relativePath} missing hardened-for-final-audit status`);
+    if (!text.includes(cleanPassStatus)) {
+      failures.push(`${relativePath} missing clean-excellent-pass status`);
     }
-    for (const status of prematureStatuses) {
+    for (const status of staleStatuses) {
       if (text.includes(status)) {
-        failures.push(`${relativePath} contains premature or stale status ${status}`);
+        failures.push(`${relativePath} contains stale status ${status}`);
       }
     }
+  }
+  for (const relativePath of claimCheckPaths) {
+    const text = readText(relativePath);
     const prohibitedClaims = [
       "runtime pass",
       "materialization pass",
       "target pass",
-      "production authorization",
+      "target repo pass",
+      "productive-skill authorization",
+      "materializer authorization",
+      "production-agent execution",
+      "skill produtiva autorizada",
+      "materializer autorizado",
     ];
     for (const claim of prohibitedClaims) {
       if (text.toLowerCase().includes(claim) && !hasSafePolarity(text, claim)) {
@@ -548,7 +563,7 @@ let ok = true;
     }
   }
   ok =
-    result("EPD-CH-009", failures, "hardened bundle has no stale or premature promotion status") &&
+    result("EPD-CH-009", failures, "clean bundle has no stale status or operational pass") &&
     ok;
 }
 

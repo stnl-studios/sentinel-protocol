@@ -1,10 +1,11 @@
 # Execution Package Designer Behavior Parity Spine
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 This spine records the behavior that must remain semantically aligned with the
 base `execution-package-designer` snapshot. It is not runtime code and does not
-authorize automatic promotion.
+authorize runtime, materialization, target-repository writes, productive-skill
+changes, a materializer, production-agent execution, or automatic promotion.
 
 ## Irreducible Behavior
 

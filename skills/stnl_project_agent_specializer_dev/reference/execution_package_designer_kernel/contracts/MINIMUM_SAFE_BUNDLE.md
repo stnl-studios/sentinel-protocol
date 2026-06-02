@@ -1,6 +1,6 @@
 # Execution Package Designer Minimum Safe Bundle
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 This is the smallest non-optional documentary bundle that keeps
 `execution-package-designer` acting as execution-package designer. It is not a
@@ -62,6 +62,7 @@ This bundle is unsafe if it:
 - permits broad discovery as a substitute for weak handoffs;
 - permits coders to infer ownership or proof obligations;
 - permits `HANDOFF_READY` as a substitute for `STATUS: READY`;
-- claims `CLEAN_EXCELLENT_PASS` before a separately authorized human audit;
+- treats `CLEAN_EXCELLENT_PASS` as runtime, materialization, target repo,
+  productive-skill, materializer, or production-agent authorization;
 - permits `execution_package.md`, `PLAN.md`, durable documentation, generated
   reports, fixtures, runtime loading, or materializer paths.

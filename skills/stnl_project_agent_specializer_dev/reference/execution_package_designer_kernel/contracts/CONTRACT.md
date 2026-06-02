@@ -1,12 +1,14 @@
 # Execution Package Designer Kernel Contract
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 This is the documentation-only kernel contract for
-`execution-package-designer`. The status means the draft was hardened for final
-human audit, not that the kernel has passed. It does not implement runtime,
-materialization, target-repository writes, generated artifacts,
-productive-skill behavior, or automatic promotion.
+`execution-package-designer`. The status follows final human audit with
+`CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION` and is limited to the kernel lab
+dev documentary, contractual, minimum-semantic bundle with a hardened
+executable textual harness. It does not implement runtime, materialization,
+target-repository writes, generated artifacts, productive-skill behavior,
+materializer behavior, production-agent execution, or automatic promotion.
 
 ## Source Alignment
 

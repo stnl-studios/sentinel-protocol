@@ -1,6 +1,6 @@
 # Execution Package Designer Kernel Static Checks
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 The local harness is
 `reference/execution_package_designer_kernel/validation/check-static.mjs`. It
@@ -31,11 +31,11 @@ The template is not a fallback during review.
 Validates `reference/MANIFEST.md` lists the execution-package-designer snapshot
 and the complete kernel file set.
 
-### EPD-CH-004 - Global docs record hardened status without promotion
+### EPD-CH-004 - Global docs record clean status without operational promotion
 
 Validates README, SKILL, MANIFEST, and kernel lab docs record
-`EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT` while preserving the three frozen predecessor passes and rejecting
-premature final-pass wording.
+`EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` while preserving the
+four frozen kernel passes and rejecting stale status wording.
 
 ### EPD-CH-005 - Kernel allowlist contains exactly nine files
 
@@ -62,11 +62,12 @@ planner, validation-eval-designer, orchestrator, coder, validation-runner,
 reviewer, finalizer, resync, materializer, and durable documentation ownership.
 Text displaced outside those sections does not satisfy the check.
 
-### EPD-CH-009 - Hardened bundle contains no stale or premature status
+### EPD-CH-009 - Clean bundle contains no stale status or operational pass
 
-Validates the kernel docs carry `HARDENED_FOR_FINAL_AUDIT`, do not regress to
-the earlier draft status, and do not claim `CLEAN_EXCELLENT_PASS`, runtime pass,
-materialization pass, target pass, or production authorization.
+Validates the kernel docs carry `CLEAN_EXCELLENT_PASS`, do not regress to stale
+draft or audit statuses, and do not claim runtime pass, materialization pass,
+target repo pass, productive-skill authorization, materializer authorization,
+or production-agent execution.
 
 ### EPD-CH-010 - Principal contract deny-list and recovery envelope are explicit
 

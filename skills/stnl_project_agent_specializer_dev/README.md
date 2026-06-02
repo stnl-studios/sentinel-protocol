@@ -6,13 +6,17 @@ materializar agents em um repo alvo.
 
 O foco imediato mudou para validação de kernelização de agents fora do fluxo de
 materialização da skill. O kernel lab contém `orchestrator_kernel`,
-`planner_kernel`, `validation_eval_designer_kernel` e o draft endurecido
+`planner_kernel`, `validation_eval_designer_kernel` e o kernel congelado
 `execution_package_designer_kernel`.
+
+Há quatro kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+`planner_kernel`, `validation_eval_designer_kernel` e
+`execution_package_designer_kernel`. Esses passes são resultados exclusivos do
+kernel lab dev.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
-lab documental, contratual e semântico mínimo. Ambos são resultados exclusivos
-do kernel lab dev.
+lab documental, contratual e semântico mínimo.
 
 O `validation_eval_designer_kernel` está promovido como
 `VALIDATION_EVAL_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` após auditoria humana
@@ -20,11 +24,13 @@ crítica separadamente autorizada. Esse pass vale somente para o kernel lab dev
 documental, contratual, semântico mínimo e com harness textual executável
 endurecido.
 
-O `execution_package_designer_kernel` foi endurecido como
-`EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`. Esse status
-indica somente snapshot local, contratos documentais e harness textual
-endurecidos para auditoria humana final; não é `CLEAN_EXCELLENT_PASS` e não autoriza runtime,
-materialização, repo alvo, skill produtiva ou materializer.
+O `execution_package_designer_kernel` foi promovido para
+`EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` após auditoria humana
+final com `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION`. Esse pass vale
+somente para o kernel lab dev documental, contratual, semântico mínimo e com
+harness textual executável endurecido; não é runtime pass, materialization
+pass, target repo pass, autorização para skill produtiva ou autorização para
+materializer.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
 target materialization, generated artifact, autorização para skill produtiva ou
@@ -50,8 +56,7 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   `reference/validation_eval_designer_kernel/validation/check-static.mjs` e
   `reference/validation_eval_designer_kernel/validation/check-golden.mjs` como
   apoio bloqueante, sem promoção automática;
-- preservar o `execution_package_designer_kernel` endurecido para auditoria
-  humana final contra o
+- preservar o `execution_package_designer_kernel` congelado contra o
   snapshot dev local `reference/agents/execution-package-designer.agent.md`,
   derivado literalmente de `templates/agents/execution-package-designer.agent.md`;
 - executar os harnesses read-only

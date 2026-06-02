@@ -1,11 +1,14 @@
 # Execution Package Designer Kernel Contracts
 
-Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: HARDENED_FOR_FINAL_AUDIT`.
+Status: `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-This status means the documentary draft and read-only textual harnesses were
-hardened for final human audit. It is not a `CLEAN_EXCELLENT_PASS`, not a runtime pass, not a
-materialization pass, and not authorization for target-repository writes,
-productive-skill changes, or a materializer.
+This status follows final human audit with
+`CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION`. It is limited to the kernel lab
+dev documentary, contractual, minimum-semantic bundle with a hardened
+executable textual harness. It is not a runtime pass, not a materialization
+pass, not a target repo pass, and not authorization for target-repository
+writes, productive-skill changes, a productive skill, a materializer, or a
+production agent.
 
 This directory is a documentation-focused, read-only kernel lab for the base
 `execution-package-designer` agent. It preserves the agent that compiles an
