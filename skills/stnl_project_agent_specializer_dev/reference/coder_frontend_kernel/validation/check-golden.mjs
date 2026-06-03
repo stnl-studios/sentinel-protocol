@@ -37,6 +37,25 @@ const requiredCaseHeadings = [
   "### Expected blocker",
 ];
 
+const requiredTermsByCase = new Map([
+  ["CFE-GT-000", [["READY"], ["changed paths"], ["checks"], ["residual risk"], ["stnl_frontend_quality"]]],
+  ["CFE-GT-001", [["EXECUTION PACKAGE"], ["BLOCKED"], ["NEXT_OWNER: orchestrator"]]],
+  ["CFE-GT-002", [["WORK_PACKAGE_ID"], ["BLOCKED"]]],
+  ["CFE-GT-003", [["EXECUTION BRIEF"], ["BLOCKED"]]],
+  ["CFE-GT-004", [["VALIDATION PACK"], ["BLOCKED"]]],
+  ["CFE-GT-005", [["edit capability"], ["BLOCKED"]]],
+  ["CFE-GT-006", [["read-only"], ["BLOCKED"]]],
+  ["CFE-GT-007", [["planner"], ["BLOCKED"]]],
+  ["CFE-GT-008", [["designer.agent.md"], ["design owner"], ["BLOCKED"]]],
+  ["CFE-GT-009", [["validation-runner"], ["verdict"], ["BLOCKED"]]],
+  ["CFE-GT-010", [["Feature CONTEXT"], ["DONE"], ["ADR"], ["PLAN.md"], ["BLOCKED"]]],
+  ["CFE-GT-011", [["designer.agent.md"], ["UX"], ["BLOCKED"]]],
+  ["CFE-GT-012", [["READY"], ["implementation evidence"], ["BLOCKED"]]],
+  ["CFE-GT-013", [["checks"], ["final validation verdict"]]],
+  ["CFE-GT-014", [["stnl_frontend_quality"], ["BLOCKED"]]],
+  ["CFE-GT-015", [["authorized package"], ["scope"], ["BLOCKED"]]],
+]);
+
 const passes = [];
 const failures = [];
 
@@ -114,45 +133,141 @@ function runStaticPrecondition() {
 }
 
 function extractCase(text, id) {
-  const startPattern = new RegExp(`^## ${id} - .*`, "m");
-  const startMatch = startPattern.exec(text);
-  if (!startMatch) return null;
-  const start = startMatch.index;
-  const nextMatch = /^## CFE-GT-\d{3} - .*/m.exec(text.slice(startMatch.index + 1));
-  const end = nextMatch ? startMatch.index + 1 + nextMatch.index : text.length;
-  return text.slice(start, end);
+  return parseGoldenCases(text).sections.find((section) => section.id === id) ?? null;
+}
+
+function parseGoldenCases(text) {
+  const caseHeadingPattern = /^## (CFE-GT-\d{3}) - .*$/gm;
+  const headings = [];
+  let match;
+
+  while ((match = caseHeadingPattern.exec(text)) !== null) {
+    headings.push({
+      id: match[1],
+      index: match.index,
+      heading: match[0],
+    });
+  }
+
+  const sections = headings.map((heading, index) => {
+    const end = headings[index + 1]?.index ?? text.length;
+    return {
+      ...heading,
+      text: text.slice(heading.index, end),
+    };
+  });
+
+  return { headings, sections };
 }
 
 function checkGoldenCaseFormat() {
   const text = readText(goldenDoc);
-  const missingCases = [];
+  const { headings, sections } = parseGoldenCases(text);
+  const foundIds = headings.map((heading) => heading.id);
+  const seenIds = new Set();
+  const duplicateIds = [];
+  const missingCases = requiredCaseIds.filter((id) => !foundIds.includes(id));
+  const unexpectedCases = foundIds.filter((id) => !requiredCaseIds.includes(id));
+  const orderMatches =
+    foundIds.length === requiredCaseIds.length &&
+    requiredCaseIds.every((id, index) => foundIds[index] === id);
   const malformed = [];
 
-  for (const id of requiredCaseIds) {
-    const section = extractCase(text, id);
-    if (!section) {
-      missingCases.push(id);
-      continue;
-    }
-    const missingHeadings = requiredCaseHeadings.filter(
-      (heading) => !section.includes(heading),
+  for (const id of foundIds) {
+    if (seenIds.has(id)) duplicateIds.push(id);
+    seenIds.add(id);
+  }
+
+  for (const section of sections.filter((item) => requiredCaseIds.includes(item.id))) {
+    const headingPositions = requiredCaseHeadings.map((heading) => ({
+      heading,
+      positions: [...section.text.matchAll(new RegExp(`^${heading}$`, "gm"))].map(
+        (match) => match.index,
+      ),
+    }));
+    const missingHeadings = headingPositions
+      .filter((item) => item.positions.length === 0)
+      .map((item) => item.heading);
+    const duplicateHeadings = headingPositions
+      .filter((item) => item.positions.length > 1)
+      .map((item) => item.heading);
+    const presentPositions = headingPositions
+      .filter((item) => item.positions.length > 0)
+      .map((item) => item.positions[0]);
+    const headingsInOrder = presentPositions.every(
+      (position, index) => index === 0 || position > presentPositions[index - 1],
     );
-    if (missingHeadings.length > 0) {
-      malformed.push(`${id} missing ${missingHeadings.join(", ")}`);
+
+    if (
+      missingHeadings.length > 0 ||
+      duplicateHeadings.length > 0 ||
+      !headingsInOrder
+    ) {
+      malformed.push(
+        [
+          `${section.id}`,
+          missingHeadings.length ? `missing ${missingHeadings.join(", ")}` : "",
+          duplicateHeadings.length
+            ? `duplicate ${duplicateHeadings.join(", ")}`
+            : "",
+          !headingsInOrder ? "headings out of order" : "",
+        ]
+          .filter(Boolean)
+          .join(" "),
+      );
     }
   }
 
+  const ok =
+    duplicateIds.length === 0 &&
+    missingCases.length === 0 &&
+    unexpectedCases.length === 0 &&
+    orderMatches &&
+    malformed.length === 0;
+
   record(
     "CFE-GT-001",
-    missingCases.length === 0 && malformed.length === 0,
-    missingCases.length === 0 && malformed.length === 0
-      ? "all 16 golden cases exist with required format"
+    ok,
+    ok
+      ? "all 16 golden cases are unique, complete, ordered, and use ordered required headings"
       : [
+          duplicateIds.length ? `duplicate case IDs: ${duplicateIds.join(", ")}` : "",
           missingCases.length ? `missing cases: ${missingCases.join(", ")}` : "",
+          unexpectedCases.length
+            ? `unexpected cases: ${unexpectedCases.join(", ")}`
+            : "",
+          !orderMatches
+            ? `case order is not exact: expected ${requiredCaseIds.join(", ")}`
+            : "",
           malformed.length ? `malformed cases: ${malformed.join("; ")}` : "",
         ]
           .filter(Boolean)
           .join("; "),
+  );
+}
+
+function checkGoldenCaseMinimumTerms() {
+  const text = readText(goldenDoc);
+  const missing = [];
+
+  for (const id of requiredCaseIds) {
+    const section = extractCase(text, id);
+    if (!section) {
+      continue;
+    }
+    for (const group of requiredTermsByCase.get(id) ?? []) {
+      if (!hasAny(section.text, group)) {
+        missing.push(`${id} missing [${group.join(" | ")}]`);
+      }
+    }
+  }
+
+  record(
+    "CFE-GT-004",
+    missing.length === 0,
+    missing.length === 0
+      ? "each golden case contains its required minimum terms"
+      : missing.join("; "),
   );
 }
 
@@ -293,6 +408,7 @@ function main() {
       checkGoldenCaseFormat();
       checkSemanticAnchors();
       checkGoldenDocCaseAnchors();
+      checkGoldenCaseMinimumTerms();
     }
   } catch (error) {
     failures.push(`CFE-GT-000: unexpected error: ${error.message}`);

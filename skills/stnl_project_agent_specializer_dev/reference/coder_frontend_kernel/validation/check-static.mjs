@@ -33,6 +33,9 @@ const kernelFiles = [
   "validation/check-golden.mjs",
 ];
 
+const allowedKernelFileSet = new Set(kernelFiles);
+const allowedKernelDirSet = new Set(["contracts", "validation"]);
+
 const requiredPaths = [
   templatePath,
   snapshotPath,
@@ -147,7 +150,7 @@ function readBuffer(relativePath) {
   return fs.readFileSync(realPathInsideRepo(resolved.path));
 }
 
-function walk(relativePath) {
+function walkKernelEntries(relativePath) {
   const resolved = toRepoPath(relativePath);
   const rootReal = realPathInsideRepo(resolved.path);
   const entries = [];
@@ -156,24 +159,33 @@ function walk(relativePath) {
     for (const dirent of fs.readdirSync(absolutePath, { withFileTypes: true })) {
       if (skippedWalkNames.has(dirent.name)) continue;
       const child = path.join(absolutePath, dirent.name);
-      realPathInsideRepo(child);
       const repoRelative = path
         .relative(rootReal, child)
         .replaceAll(path.sep, "/");
-      if (dirent.isDirectory()) {
+
+      if (dirent.isSymbolicLink()) {
+        entries.push({ path: repoRelative, type: "symlink" });
+      } else if (dirent.isDirectory()) {
+        realPathInsideRepo(child);
+        entries.push({ path: repoRelative, type: "directory" });
         visit(child);
       } else if (dirent.isFile()) {
-        entries.push(repoRelative);
-      } else if (dirent.isSymbolicLink()) {
-        entries.push(`SYMLINK:${repoRelative}`);
+        realPathInsideRepo(child);
+        entries.push({ path: repoRelative, type: "file" });
       } else {
-        entries.push(`NON_REGULAR:${repoRelative}`);
+        entries.push({ path: repoRelative, type: "non-regular" });
       }
     }
   }
 
   visit(rootReal);
-  return entries.sort();
+  return entries.sort((left, right) => left.path.localeCompare(right.path));
+}
+
+function walk(relativePath) {
+  return walkKernelEntries(relativePath)
+    .filter((entry) => entry.type === "file")
+    .map((entry) => entry.path);
 }
 
 function record(id, ok, message) {
@@ -199,6 +211,33 @@ function checkRequiredFiles() {
   );
 }
 
+function checkKernelAllowlist() {
+  const entries = walkKernelEntries(kernelPrefix);
+  const badEntries = [];
+
+  for (const entry of entries) {
+    if (entry.type === "directory") {
+      if (!allowedKernelDirSet.has(entry.path)) {
+        badEntries.push(`directory outside allowlist: ${entry.path}`);
+      }
+    } else if (entry.type === "file") {
+      if (!allowedKernelFileSet.has(entry.path)) {
+        badEntries.push(`extra regular file: ${entry.path}`);
+      }
+    } else {
+      badEntries.push(`${entry.type} entry: ${entry.path}`);
+    }
+  }
+
+  record(
+    "CFE-ST-012",
+    badEntries.length === 0,
+    badEntries.length === 0
+      ? "kernel tree matches the exact file allowlist and contains no symlink or non-regular entries"
+      : `kernel tree contains entries outside the exact allowlist: ${badEntries.join(", ")}`,
+  );
+}
+
 function checkSnapshotParity() {
   const same = readBuffer(snapshotPath).equals(readBuffer(templatePath));
   record(
@@ -213,7 +252,7 @@ function checkSnapshotParity() {
 function checkNoCleanPassMarker() {
   const badFiles = [];
   for (const entry of walk(kernelPrefix)) {
-    if (!entry.endsWith(".md") && !entry.endsWith(".mjs")) continue;
+    if (!allowedKernelFileSet.has(entry)) continue;
     const relativePath = `${kernelPrefix}/${entry}`;
     if (readText(relativePath).includes(cleanPassMarker)) {
       badFiles.push(relativePath);
@@ -229,9 +268,11 @@ function checkNoCleanPassMarker() {
 }
 
 function checkNoDisallowedPaths() {
-  const badEntries = walk(kernelPrefix).filter((entry) =>
-    disallowedPathPatterns.some((pattern) => pattern.test(entry)),
-  );
+  const badEntries = walkKernelEntries(kernelPrefix)
+    .map((entry) => entry.path)
+    .filter((entry) =>
+      disallowedPathPatterns.some((pattern) => pattern.test(entry)),
+    );
   record(
     "CFE-ST-004",
     badEntries.length === 0,
@@ -403,6 +444,7 @@ function checkStaticDocRequirements() {
 function main() {
   try {
     checkRequiredFiles();
+    checkKernelAllowlist();
     checkSnapshotParity();
     checkNoCleanPassMarker();
     checkNoDisallowedPaths();

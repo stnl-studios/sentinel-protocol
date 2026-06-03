@@ -12,18 +12,23 @@ do not write GitHub, and do not alter canonical templates.
 ## Required Files
 
 The harness requires exactly the current documentary draft bundle plus the four
-validation files:
+validation files. Inside
+`skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/`,
+the exact allowed file list is:
 
-- `reference/agents/coder-frontend.agent.md`;
-- `reference/coder_frontend_kernel/README.md`;
-- `reference/coder_frontend_kernel/contracts/CONTRACT.md`;
-- `reference/coder_frontend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`;
-- `reference/coder_frontend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`;
-- `reference/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`;
-- `reference/coder_frontend_kernel/validation/STATIC_CHECKS.md`;
-- `reference/coder_frontend_kernel/validation/GOLDEN_TESTS.md`;
-- `reference/coder_frontend_kernel/validation/check-static.mjs`;
-- `reference/coder_frontend_kernel/validation/check-golden.mjs`.
+- `README.md`;
+- `contracts/CONTRACT.md`;
+- `contracts/BEHAVIOR_PARITY_SPINE.md`;
+- `contracts/MINIMUM_SAFE_BUNDLE.md`;
+- `contracts/FRONTEND_EXECUTION_GATES.md`;
+- `validation/STATIC_CHECKS.md`;
+- `validation/GOLDEN_TESTS.md`;
+- `validation/check-static.mjs`;
+- `validation/check-golden.mjs`.
+
+The harness fails on any regular file outside this allowlist, any symlink, any
+non-regular file, or any directory outside the allowed `contracts/` and
+`validation/` structure. `__MACOSX` and `.DS_Store` are ignored.
 
 The local dev snapshot must remain byte-for-byte equal to
 `templates/agents/coder-frontend.agent.md`.
@@ -66,8 +71,10 @@ The checks preserve these anchors in the correct documentary sources:
 - Required files must exist and remain inside the repository after `realpath`
   resolution.
 - `__MACOSX` and `.DS_Store` are ignored.
+- The kernel directory must match the exact allowlist above.
 - The dev snapshot must equal the canonical template byte-for-byte.
-- The draft kernel must not contain the clean-pass marker.
+- Every regular file permitted by the kernel allowlist must not contain the
+  clean-pass marker.
 - The kernel directory must not contain fixture paths, generated report paths,
   runtime-loader paths, materializer paths, or materialization paths.
 - Required anchors must be present in the expected contract, parity, gates, and

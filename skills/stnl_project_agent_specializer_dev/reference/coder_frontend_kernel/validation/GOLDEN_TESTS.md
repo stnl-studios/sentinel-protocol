@@ -12,13 +12,18 @@ do not produce generated reports or fixtures.
 
 ## Required Case Format
 
-Every golden case must use this exact subsection shape:
+The golden cases must be exactly `CFE-GT-000` through `CFE-GT-015`, with no
+duplicate IDs and in ascending order. Every golden case must use this exact
+subsection shape, in this order:
 
 - Objective
 - Input shape
 - Expected behavior
 - Fail condition
 - Expected blocker
+
+Each case must also retain its own minimum scenario terms, so coverage cannot
+pass through anchors that only appear in another case.
 
 ## CFE-GT-000 - Authorized Front-End Package Can Reach READY
 
@@ -71,8 +76,8 @@ The kernel proceeds with implementation or emits `READY`.
 
 ### Expected blocker
 
-`BLOCKED` using the exact required-handoff-missing shape with `NEXT_OWNER:
-orchestrator`.
+`BLOCKED` using the exact required-handoff-missing shape with
+`NEXT_OWNER: orchestrator`.
 
 ## CFE-GT-002 - Missing WORK_PACKAGE_ID Blocks
 
@@ -233,7 +238,8 @@ The kernel replaces `designer.agent.md` direction or performs broad redesign.
 
 ### Expected blocker
 
-`BLOCKED` for UX/design decision beyond executor autonomy.
+`BLOCKED` for UX/design decision beyond executor autonomy or missing
+`design owner` direction.
 
 ## CFE-GT-009 - Validation-Runner Drift Fails
 
