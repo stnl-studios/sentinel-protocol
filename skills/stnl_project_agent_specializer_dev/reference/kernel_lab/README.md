@@ -12,6 +12,7 @@ materialization flow.
 | `validation_eval_designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness. |
 | `execution_package_designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after final human audit with `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION` for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness. |
 | `designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human audit authorization. |
+| `coder_frontend_kernel` | initial draft | Documentary/dev-only draft anchored to `reference/agents/coder-frontend.agent.md`; no harness, no promotion, no runtime loading, no materialization, no production use. |
 
 ## Objective
 
@@ -37,6 +38,13 @@ audit with `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION`.
 The fifth authorized case study is the frozen `designer_kernel`, anchored to
 the local snapshot `reference/agents/designer.agent.md`. Its current status is
 `CLEAN_EXCELLENT_PASS` after controlled documentary promotion.
+
+The current draft case study is `coder_frontend_kernel`, anchored to the local
+snapshot `reference/agents/coder-frontend.agent.md`. Its current status is
+initial documentary draft only. It is not promoted and has no harness, runtime
+loading, materialization path, target-repository write authorization,
+productive-skill authorization, GitHub write authorization, production use, or
+canonical-template write authorization.
 
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
@@ -71,14 +79,16 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
    execution-package-design case study against its copied local snapshot;
 5. preserve the frozen `designer_kernel` as the first design-contribution case
    study against its copied local snapshot;
-6. kernelize agents by responsibility family, one authorized agent kernel at a
+6. draft `coder_frontend_kernel` as the first front-end executor case study
+   against its copied local snapshot, without harness or promotion;
+7. kernelize agents by responsibility family, one authorized agent kernel at a
    time;
-7. keep every future kernel subject to its own authorization and human audit;
-8. extract reusable principles without forcing every agent into one mold;
-9. validate the agent package as a coherent set only after future authorized
+8. keep every future kernel subject to its own authorization and human audit;
+9. extract reusable principles without forcing every agent into one mold;
+10. validate the agent package as a coherent set only after future authorized
    rounds;
-10. advance to Project Senior Profile only after agents are stable;
-11. rebuild the skill and any complete materialization flow only after agents and
+11. advance to Project Senior Profile only after agents are stable;
+12. rebuild the skill and any complete materialization flow only after agents and
     Profile are stable.
 
 ## Validation Criteria

@@ -66,6 +66,18 @@ autoriza runtime pass, materialization pass, target repo pass, skill produtiva
 autorizada, materializer autorizado, escrita em GitHub, escrita em repo alvo ou
 agente executado em produção.
 
+O `coder_frontend_kernel` é draft documental inicial exclusivo do kernel lab dev.
+Ele preserva `executor`, `targeted-local`, execução de pacote frontend
+autorizado, `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`, `EXECUTION BRIEF`,
+`VALIDATION PACK`, guardrails requeridos quando presentes, contexto técnico
+mínimo frontend, consumo opcional de direção do `designer`, outputs com
+implementação, delta conciso, paths/evidência, checks, risco residual e blocker
+exato quando `BLOCKED`, além dos status `READY` e `BLOCKED`. Ele não possui
+harness, não é promoção, não é runtime pass, não é materialization pass, não é
+target repo pass, não autoriza produção, não autoriza skill produtiva, não
+autoriza materializer, não autoriza escrita em GitHub, não autoriza escrita em
+repo alvo e não autoriza alteração em templates canônicos.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -89,12 +101,17 @@ agente executado em produção.
    de `templates/agents/designer.agent.md`.
 7. Executar os harnesses do `designer_kernel` somente como apoio bloqueante
    read-only, sem promoção automática.
-8. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-9. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-10. Validar o pacote de agents como conjunto coerente.
-11. Avançar para Project Senior Profile somente depois dos agents kernelizados
+8. Preservar o draft inicial `coder_frontend_kernel` contra
+   `reference/agents/coder-frontend.agent.md`, snapshot dev local derivado
+   literalmente de `templates/agents/coder-frontend.agent.md`, sem harness,
+   promoção, runtime, materialização, produção, escrita em GitHub, escrita em
+   repo alvo ou alteração em templates canônicos.
+9. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+10. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+11. Validar o pacote de agents como conjunto coerente.
+12. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-12. Reconstruir a skill/materialização completa somente depois de agents e
+13. Reconstruir a skill/materialização completa somente depois de agents e
     Profile estáveis.
 
 ## Famílias Sugeridas
@@ -211,6 +228,15 @@ Toda comparação deve validar que o kernel:
   `reference/designer_kernel/validation/GOLDEN_TESTS.md`,
   `reference/designer_kernel/validation/check-static.mjs` e
   `reference/designer_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `coder-frontend`:
+  `reference/agents/coder-frontend.agent.md`
+- Kernel documental draft do `coder-frontend`:
+  `reference/coder_frontend_kernel/README.md`
+- Contratos documentais draft do `coder-frontend`:
+  `reference/coder_frontend_kernel/contracts/CONTRACT.md`,
+  `reference/coder_frontend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/coder_frontend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`
 
 ## Regras De Uso
 
