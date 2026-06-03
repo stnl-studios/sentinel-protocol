@@ -7,12 +7,14 @@ materializar agents em um repo alvo.
 O foco imediato mudou para validação de kernelização de agents fora do fluxo de
 materialização da skill. O kernel lab contém `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
-`execution_package_designer_kernel` e o kernel congelado `designer_kernel`.
+`execution_package_designer_kernel`, o kernel congelado `designer_kernel` e o
+kernel promovido `coder_frontend_kernel`.
 
-Há cinco kernels congelados como `CLEAN_EXCELLENT_PASS`:
+Há seis kernels congelados como `CLEAN_EXCELLENT_PASS`:
 `orchestrator_kernel`, `planner_kernel`, `validation_eval_designer_kernel`,
-`execution_package_designer_kernel` e `designer_kernel`. Esses passes são
-resultados exclusivos do kernel lab dev.
+`execution_package_designer_kernel`, `designer_kernel` e
+`coder_frontend_kernel`. Esses passes são resultados exclusivos do kernel lab
+dev.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -40,14 +42,14 @@ pass, target repo pass, agente executado em produção, autorização para skill
 produtiva, autorização para materializer, escrita em GitHub ou escrita em repo
 alvo.
 
-O `coder_frontend_kernel` existe como draft documental inicial, ancorado ao
-snapshot dev local `reference/agents/coder-frontend.agent.md`, derivado
-literalmente de `templates/agents/coder-frontend.agent.md`. Esse draft não é
-promovido, possui apenas harness documental/textual read-only bloqueante, não é
-runtime pass, não é materialization pass, não é target repo pass, não autoriza
-produção, não autoriza skill produtiva, não autoriza materializer, não autoriza
-escrita em GitHub, não autoriza escrita em repo alvo e não autoriza alteração
-em templates canônicos.
+O `coder_frontend_kernel` foi promovido para `CLEAN_EXCELLENT_PASS` após
+promoção documental controlada com snapshot byte-a-byte preservado e harness
+documental/textual endurecido. Esse pass vale somente para o kernel lab dev
+documental, contratual, semântico mínimo e com harness textual executável
+endurecido; não é runtime pass, não é materialization pass, não é target repo
+pass, não autoriza produção, não autoriza skill produtiva, não autoriza
+materializer, não autoriza escrita em GitHub, não autoriza escrita em repo alvo
+e não autoriza alteração em templates canônicos.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
 target materialization, generated artifact, autorização para skill produtiva ou
@@ -87,11 +89,11 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   `reference/designer_kernel/validation/check-static.mjs` e
   `reference/designer_kernel/validation/check-golden.mjs` como apoio
   bloqueante, sem promoção automática;
-- preservar o draft inicial `coder_frontend_kernel` contra o snapshot dev local
+- preservar o `coder_frontend_kernel` promovido contra o snapshot dev local
   `reference/agents/coder-frontend.agent.md`, derivado literalmente de
   `templates/agents/coder-frontend.agent.md`, com harness documental/textual
-  read-only bloqueante e sem promoção, runtime, materialização, produção,
-  escrita em GitHub, escrita em repo alvo ou alteração em templates canônicos;
+  endurecido e sem runtime, materialização, produção, escrita em GitHub,
+  escrita em repo alvo ou alteração em templates canônicos;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
 - manter qualquer kernel futuro sujeito a autorização e auditoria próprias;
@@ -116,8 +118,9 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   autorizar materialização ou promoção automática;
 - tratar `reference/agents/**` como o único local autorizado para snapshots dev
   de base agents usados pelo kernel lab;
-- tratar `reference/coder_frontend_kernel/**` como draft documental dev-only com
-  harness textual bloqueante até uma rodada futura explicitamente autorizada;
+- tratar `reference/coder_frontend_kernel/**` como clean pass documental
+  dev-only com harness textual bloqueante, sem autorizar runtime,
+  materialização, produção, GitHub, repo alvo ou skill produtiva;
 - nunca usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou
   filesystem externo;
 - não tocar na skill produtiva, templates produtivos, installer, smoke,

@@ -8,7 +8,7 @@ Skill: `stnl_project_agent_specializer_dev`
 - `planner_kernel` is frozen as `CLEAN_EXCELLENT_PASS` for the documentary,
   contractual, and semantic kernel lab after the separately authorized human
   audit.
-- All five passes are dev kernel-lab results only. They do not authorize runtime,
+- All six passes are dev kernel-lab results only. They do not authorize runtime,
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
 - `planner_kernel` has read-only executable validation harnesses as blocking
@@ -46,12 +46,13 @@ Skill: `stnl_project_agent_specializer_dev`
   GitHub write, target repo write, or production-agent authorization.
 - `reference/agents/designer.agent.md` is the local dev snapshot derived
   literally from `templates/agents/designer.agent.md`.
-- `coder_frontend_kernel` is an initial documentary draft only. It is not
-  promoted, not a clean pass, and has only read-only documentary/textual
-  blocking validation harness support. It has no runtime loading,
+- `coder_frontend_kernel` is frozen as `CLEAN_EXCELLENT_PASS` after controlled
+  documentary promotion. This pass is limited to the documentary, contractual,
+  minimum-semantic dev kernel lab with a hardened executable textual harness
+  and final human audit authorization. It grants no runtime loading,
   materialization path, target-repository write authorization, productive-skill
-  authorization, GitHub write authorization, production use, or
-  canonical-template write authorization.
+  authorization, GitHub write authorization, production use, generated reports,
+  fixtures, target artifacts, or canonical-template write authorization.
 - `reference/agents/coder-frontend.agent.md` is the local dev snapshot derived
   literally from `templates/agents/coder-frontend.agent.md`.
 
@@ -133,7 +134,7 @@ Not active in this dev bundle:
 - no `designer` runtime, materializer, fixture, generated report, automatic
   promotion, GitHub writer, or target-writer flow is part of this bundle
 - no `coder-frontend` runtime, materializer, fixture, generated report,
-  automatic promotion, runtime loader, GitHub writer, production use, or
+  automatic future promotion, runtime loader, GitHub writer, production use, or
   target-writer flow is part of this bundle
 
 Not included as canonical dev references:

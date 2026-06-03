@@ -24,11 +24,14 @@ respectivo snapshot dev de base agent em `reference/agents/**`. O
 final com `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION`, limitado ao kernel
 lab dev documental, contratual, semântico mínimo e com harness textual
 executável endurecido. O `designer_kernel` também está congelado como
-`CLEAN_EXCELLENT_PASS` após promoção documental controlada.
+`CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
+`coder_frontend_kernel` também está promovido como `CLEAN_EXCELLENT_PASS` após
+promoção documental controlada.
 
-Há cinco kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+Há seis kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
-`execution_package_designer_kernel` e `designer_kernel`.
+`execution_package_designer_kernel`, `designer_kernel` e
+`coder_frontend_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -66,18 +69,18 @@ autoriza runtime pass, materialization pass, target repo pass, skill produtiva
 autorizada, materializer autorizado, escrita em GitHub, escrita em repo alvo ou
 agente executado em produção.
 
-O `coder_frontend_kernel` é draft documental inicial exclusivo do kernel lab dev.
+O `coder_frontend_kernel` é clean pass documental exclusivo do kernel lab dev.
 Ele preserva `executor`, `targeted-local`, execução de pacote frontend
 autorizado, `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`, `EXECUTION BRIEF`,
 `VALIDATION PACK`, guardrails requeridos quando presentes, contexto técnico
 mínimo frontend, consumo opcional de direção do `designer`, outputs com
 implementação, delta conciso, paths/evidência, checks, risco residual e blocker
-exato quando `BLOCKED`, além dos status `READY` e `BLOCKED`. Ele não possui
-harness exceto os quatro arquivos documentais/textuais read-only bloqueantes
-de validação, não é promoção, não é runtime pass, não é materialization pass,
-não é target repo pass, não autoriza produção, não autoriza skill produtiva,
-não autoriza materializer, não autoriza escrita em GitHub, não autoriza escrita
-em repo alvo e não autoriza alteração em templates canônicos.
+exato quando `BLOCKED`, além dos status `READY` e `BLOCKED`. Ele possui harness
+documental/textual endurecido de validação, não é runtime pass, não é
+materialization pass, não é target repo pass, não autoriza produção, não
+autoriza skill produtiva, não autoriza materializer, não autoriza escrita em
+GitHub, não autoriza escrita em repo alvo e não autoriza alteração em templates
+canônicos.
 
 ## Rota Atual
 
@@ -102,12 +105,11 @@ em repo alvo e não autoriza alteração em templates canônicos.
    de `templates/agents/designer.agent.md`.
 7. Executar os harnesses do `designer_kernel` somente como apoio bloqueante
    read-only, sem promoção automática.
-8. Preservar o draft inicial `coder_frontend_kernel` contra
+8. Preservar o `coder_frontend_kernel` promovido contra
    `reference/agents/coder-frontend.agent.md`, snapshot dev local derivado
    literalmente de `templates/agents/coder-frontend.agent.md`, com harness
-   documental/textual read-only bloqueante e sem promoção, runtime,
-   materialização, produção, escrita em GitHub, escrita em repo alvo ou
-   alteração em templates canônicos.
+   documental/textual endurecido e sem runtime, materialização, produção,
+   escrita em GitHub, escrita em repo alvo ou alteração em templates canônicos.
 9. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
 10. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
 11. Validar o pacote de agents como conjunto coerente.
@@ -232,14 +234,15 @@ Toda comparação deve validar que o kernel:
   `reference/designer_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `coder-frontend`:
   `reference/agents/coder-frontend.agent.md`
-- Kernel documental draft do `coder-frontend`:
+- Kernel documental clean pass do `coder-frontend`:
   `reference/coder_frontend_kernel/README.md`
-- Contratos documentais draft do `coder-frontend`:
+- Contratos documentais clean pass do `coder-frontend`:
   `reference/coder_frontend_kernel/contracts/CONTRACT.md`,
   `reference/coder_frontend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
   `reference/coder_frontend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
   `reference/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`
-- Validação documental/textual read-only do `coder-frontend`, sem promoção:
+- Validação documental/textual read-only do `coder-frontend`, sem promoção
+  automática futura:
   `reference/coder_frontend_kernel/validation/STATIC_CHECKS.md`,
   `reference/coder_frontend_kernel/validation/GOLDEN_TESTS.md`,
   `reference/coder_frontend_kernel/validation/check-static.mjs` e

@@ -1,13 +1,15 @@
 # Coder Front-End Kernel
 
-Status: initial draft, not promoted, not a clean pass.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-This is the initial documentary draft for the `coder-frontend` kernel. It is
-limited to the kernel lab dev documentary and contractual scope.
+This is the controlled clean documentary pass for the `coder-frontend` kernel.
+It is limited to the kernel lab dev documentary, contractual, minimum semantic,
+and hardened executable textual harness scope, with final human audit
+authorized.
 
 It does not authorize runtime loading, materialization, production use,
 productive-skill changes, canonical template changes, GitHub writes, target
-repository writes, target artifacts, a materializer, or a validation harness.
+repository writes, target artifacts, or a materializer.
 
 The kernel preserves the irreducible `coder-frontend` mission: execute the
 authorized front-end, web, or client-side work package with user-visible
@@ -16,10 +18,12 @@ remaining a strict specialist executor.
 
 ## Scope
 
-This draft bundle is limited to:
+This bundle is limited to:
 
 - the local dev snapshot at `reference/agents/coder-frontend.agent.md`;
-- documentary contracts under `reference/coder_frontend_kernel/contracts/`.
+- documentary contracts under `reference/coder_frontend_kernel/contracts/`;
+- textual validation documentation and harnesses under
+  `reference/coder_frontend_kernel/validation/`.
 
 It does not alter frozen kernels, productive templates, productive skill
 behavior, target repositories, GitHub state, durable project documentation,
@@ -51,9 +55,28 @@ materialization output, runtime behavior, or target repository state.
 - `contracts/MINIMUM_SAFE_BUNDLE.md`;
 - `contracts/FRONTEND_EXECUTION_GATES.md`.
 
-## Draft Boundary
+## Pass Boundary
 
-This draft may support future review only. It is not a promotion, not a runtime
-pass, not a materialization pass, not a target repository pass, not productive
-authorization, not a materializer authorization, not a GitHub write
-authorization, and not a target repository write authorization.
+`CLEAN_EXCELLENT_PASS` means only:
+
+- kernel lab dev pass;
+- documentary validation pass;
+- contractual validation pass;
+- minimum semantic validation pass;
+- hardened executable textual harness pass;
+- final human audit authorized.
+
+`CLEAN_EXCELLENT_PASS` does not authorize:
+
+- runtime pass;
+- materialization pass;
+- target repository pass;
+- agent execution in production;
+- productive skill authorization;
+- materializer authorization;
+- GitHub writes;
+- target repository writes;
+- canonical template changes;
+- generated reports;
+- fixtures;
+- runtime or materializer adoption.

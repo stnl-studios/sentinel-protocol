@@ -1,12 +1,11 @@
 # Coder Front-End Behavior Parity Spine
 
-Status: initial draft, not promoted, not a clean pass.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 This spine records the behavior that must remain aligned with
 `reference/agents/coder-frontend.agent.md`. It is documentary only and does not
 authorize runtime loading, materialization, production use, productive-skill
-changes, target-repository writes, GitHub writes, canonical template changes, or
-a validation harness.
+changes, target-repository writes, GitHub writes, or canonical template changes.
 
 ## Snapshot Anchors
 
@@ -181,13 +180,13 @@ The kernel must not own or perform:
 - must not alter canonical templates;
 - must not write target repository artifacts outside an authorized execution
   package;
-- must not claim production readiness from this documentary draft.
+- must not claim production readiness from this documentary pass.
 
 These prohibitions are not optional specialization slots.
 
-## Draft Boundary
+## Pass Boundary
 
-This draft records behavior parity requirements only. It is not a runtime pass,
-not a materialization pass, not a target repository pass, not productive
-authorization, not a materializer authorization, not a GitHub write
-authorization, and not a target repository write authorization.
+This clean documentary pass records behavior parity requirements only. It is
+not a runtime pass, not a materialization pass, not a target repository pass,
+not productive authorization, not a materializer authorization, not a GitHub
+write authorization, and not a target repository write authorization.

@@ -13,7 +13,12 @@ const repoRoot = path.resolve(devSkillRoot, "..", "..");
 const realRepoRoot = fs.realpathSync.native(repoRoot);
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 const skippedWalkNames = new Set([".git", "node_modules", ...ignoredNames]);
-const cleanPassMarker = ["CLEAN", "EXCELLENT", "PASS"].join("_");
+const cleanPassStatus = ["CLEAN", "EXCELLENT", "PASS"].join("_");
+const stalePrePromotionTerms = [
+  ["initial", " ", ["dra", "ft"].join("")].join(""),
+  ["not", " ", "promoted"].join(""),
+  ["not", " ", "a", " ", "clean", " ", "pass"].join(""),
+];
 
 const kernelPrefix =
   "skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel";
@@ -51,6 +56,7 @@ const docs = {
   staticDoc: `${kernelPrefix}/validation/STATIC_CHECKS.md`,
   goldenDoc: `${kernelPrefix}/validation/GOLDEN_TESTS.md`,
 };
+const documentaryPaths = Object.values(docs);
 
 const exactInvalidHandoff = [
   "STATUS: BLOCKED",
@@ -206,7 +212,7 @@ function checkRequiredFiles() {
     "CFE-ST-001",
     missing.length === 0,
     missing.length === 0
-      ? "required template, snapshot, draft docs, and validation files exist"
+      ? "required template, snapshot, promoted docs, and validation files exist"
       : `missing required files: ${missing.join(", ")}`,
   );
 }
@@ -249,21 +255,36 @@ function checkSnapshotParity() {
   );
 }
 
-function checkNoCleanPassMarker() {
-  const badFiles = [];
+function checkPromotionStatusAndNoStaleWording() {
+  const badStatusFiles = [];
+  const staleFiles = [];
+
+  for (const relativePath of documentaryPaths) {
+    const text = readText(relativePath);
+    if (!text.includes(`Status: \`${cleanPassStatus}\`.`)) {
+      badStatusFiles.push(`${relativePath} missing clean-pass status`);
+    }
+  }
+
   for (const entry of walk(kernelPrefix)) {
     if (!allowedKernelFileSet.has(entry)) continue;
     const relativePath = `${kernelPrefix}/${entry}`;
-    if (readText(relativePath).includes(cleanPassMarker)) {
-      badFiles.push(relativePath);
+    const text = readText(relativePath).toLowerCase();
+    const foundTerms = stalePrePromotionTerms.filter((term) =>
+      text.includes(term),
+    );
+    if (foundTerms.length > 0) {
+      staleFiles.push(`${relativePath} contains stale pre-promotion wording`);
     }
   }
+
+  const checkFailures = [...badStatusFiles, ...staleFiles];
   record(
     "CFE-ST-003",
-    badFiles.length === 0,
-    badFiles.length === 0
-      ? "draft kernel contains no clean-pass marker"
-      : `draft kernel contains forbidden clean-pass marker: ${badFiles.join(", ")}`,
+    checkFailures.length === 0,
+    checkFailures.length === 0
+      ? "documentary files declare clean pass and contain no stale pre-promotion wording"
+      : `promotion status or wording failures: ${checkFailures.join(", ")}`,
   );
 }
 
@@ -370,14 +391,16 @@ function checkReadyRequiresEvidence() {
   );
 }
 
-function checkValidationDocsReadOnlyNoPromotion() {
+function checkValidationDocsPromotionAwareNoAutomaticFuturePromotion() {
   const staticText = readText(docs.staticDoc);
   const goldenText = readText(docs.goldenDoc);
   const requiredTerms = [
-    "read-only",
-    "does not promote",
-    "automatic promotion",
-    "initial draft, not promoted, not a clean pass",
+    cleanPassStatus,
+    "promotion-aware",
+    "does not authorize runtime pass",
+    "automatic",
+    "future",
+    "promotion",
   ];
   const ok = [staticText, goldenText].every((text) =>
     requiredTerms.every((term) => text.includes(term)),
@@ -386,8 +409,8 @@ function checkValidationDocsReadOnlyNoPromotion() {
     "CFE-ST-009",
     ok,
     ok
-      ? "validation docs declare read-only support with no promotion"
-      : "validation docs missing read-only or no-promotion declarations",
+      ? "validation docs declare promotion-aware support with no automatic future promotion"
+      : "validation docs missing promotion-aware or no-automatic-future-promotion declarations",
   );
 }
 
@@ -406,7 +429,9 @@ function checkBundleListsHarness() {
     "reference/coder_frontend_kernel/validation/check-golden.mjs",
     "read-only",
     "blocking",
-    "authorize promotion",
+    cleanPassStatus,
+    "final human audit authorization",
+    "automatic promotion",
   ];
   const missing = required.filter((term) => !bundle.includes(term));
   record(
@@ -429,7 +454,7 @@ function checkStaticDocRequirements() {
     "canonical template changes",
     "generated reports",
     "fixtures",
-    "`CLEAN` + `_EXCELLENT` + `_PASS`",
+    cleanPassStatus,
   ];
   const missing = required.filter((term) => !text.includes(term));
   record(
@@ -446,13 +471,13 @@ function main() {
     checkRequiredFiles();
     checkKernelAllowlist();
     checkSnapshotParity();
-    checkNoCleanPassMarker();
+    checkPromotionStatusAndNoStaleWording();
     checkNoDisallowedPaths();
     checkStructuralAnchors();
     checkInvalidHandoffShape();
     checkDurableDocsProhibited();
     checkReadyRequiresEvidence();
-    checkValidationDocsReadOnlyNoPromotion();
+    checkValidationDocsPromotionAwareNoAutomaticFuturePromotion();
     checkBundleListsHarness();
     checkStaticDocRequirements();
   } catch (error) {

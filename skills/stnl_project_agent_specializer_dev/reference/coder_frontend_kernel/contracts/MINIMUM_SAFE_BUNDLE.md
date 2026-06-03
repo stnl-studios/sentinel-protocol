@@ -1,8 +1,8 @@
 # Minimum Safe Bundle
 
-Status: initial draft, not promoted, not a clean pass.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-The minimum safe bundle for this initial documentary draft is intentionally
+The minimum safe bundle for this clean kernel lab dev pass is intentionally
 small and allowlist-bound.
 
 ## Required Files
@@ -23,7 +23,7 @@ blocking documentary/textual harness support. No fixture, generated report,
 runtime loader, materialization path, production artifact, target-repository
 artifact, runtime execution, materializer, production use, target repository
 write, GitHub write, canonical template change, or productive-skill change is
-authorized for this draft.
+authorized by this pass.
 
 ## Snapshot Requirement
 
@@ -81,14 +81,18 @@ The bundle must explicitly preserve:
   as a canonical execution artifact, `core` docs as a resync action, and
   `units` docs as a resync action.
 
-## Draft Boundary
+## Pass Boundary
+
+The bundle may claim `CLEAN_EXCELLENT_PASS` only as a kernel lab dev
+documentary, contractual, minimum semantic, hardened executable textual harness
+pass with final human audit authorization.
 
 The bundle must not authorize runtime loading, materialization, production use,
 target repository writes, GitHub writes, productive-skill changes, canonical
 template changes, materializer behavior, validation harnesses beyond the four
-read-only files listed above, generated reports, runtime loader work, promotion,
-automatic promotion, or target-repository artifacts. The harness does not
-authorize promotion.
+read-only files listed above, generated reports, runtime loader work, automatic
+future promotion, or target-repository artifacts. The harness does not authorize
+automatic promotion.
 
 ## Ignore Rules
 

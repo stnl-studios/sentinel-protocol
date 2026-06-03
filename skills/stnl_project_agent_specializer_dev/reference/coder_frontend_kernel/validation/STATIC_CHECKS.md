@@ -1,17 +1,22 @@
 # Coder Front-End Static Checks
 
-Status: read-only structural support for the initial draft. This support is
-blocking documentary validation only. It does not promote the kernel, does not
-authorize automatic promotion, and does not change the status from `initial draft, not promoted, not a clean pass`.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 The static checks validate the minimum documentary structure of the
-`coder-frontend` kernel draft. They do not execute agent runtime, do not load a
-runtime agent, do not materialize anything, do not write target repositories,
-do not write GitHub, and do not alter canonical templates.
+`coder-frontend` clean kernel lab dev pass. They do not execute agent runtime,
+do not load a runtime agent, do not materialize anything, do not write target
+repositories, do not write GitHub, and do not alter canonical templates.
+
+This harness accepts `CLEAN_EXCELLENT_PASS` as the `coder-frontend` kernel
+documentary status after the explicitly authorized promotion audit. Passing
+these checks does not authorize runtime pass, materialization pass, target repo
+pass, productive skill authorization, materializer authorization, GitHub
+writes, target repo writes, generated reports, fixtures, or automatic future
+promotion.
 
 ## Required Files
 
-The harness requires exactly the current documentary draft bundle plus the four
+The harness requires exactly the current documentary bundle plus the four
 validation files. Inside
 `skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/`,
 the exact allowed file list is:
@@ -35,7 +40,7 @@ The local dev snapshot must remain byte-for-byte equal to
 
 ## Prohibitions
 
-The draft bundle and harness prohibit:
+The bundle and harness prohibit:
 
 - runtime loader;
 - materialization path;
@@ -46,8 +51,8 @@ The draft bundle and harness prohibit:
 - generated reports;
 - fixtures.
 
-The clean-pass marker assembled as `CLEAN` + `_EXCELLENT` + `_PASS` is
-prohibited in this kernel while it remains a draft.
+Every primary documentary file must declare `CLEAN_EXCELLENT_PASS`; stale
+pre-promotion wording is rejected.
 
 ## Structural Anchors
 
@@ -73,8 +78,8 @@ The checks preserve these anchors in the correct documentary sources:
 - `__MACOSX` and `.DS_Store` are ignored.
 - The kernel directory must match the exact allowlist above.
 - The dev snapshot must equal the canonical template byte-for-byte.
-- Every regular file permitted by the kernel allowlist must not contain the
-  clean-pass marker.
+- Every primary documentary file must declare `CLEAN_EXCELLENT_PASS`.
+- The kernel must not contain stale pre-promotion wording.
 - The kernel directory must not contain fixture paths, generated report paths,
   runtime-loader paths, materializer paths, or materialization paths.
 - Required anchors must be present in the expected contract, parity, gates, and
@@ -92,4 +97,5 @@ REQUEST: replay previous handoff or regenerate from owner
   `PLAN.md`, `core` docs, and `units` docs.
 - `READY` without implementation evidence, changed paths or equivalent
   evidence, checks, and residual risk must remain invalid.
-- Both validation documents must declare read-only support and no promotion.
+- Both validation documents must declare promotion-aware support while
+  preserving no automatic future promotion.

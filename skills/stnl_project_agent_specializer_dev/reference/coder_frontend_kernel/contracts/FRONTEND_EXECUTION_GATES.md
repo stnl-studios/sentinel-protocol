@@ -1,9 +1,9 @@
 # Front-End Execution Gates
 
-Status: initial draft, not promoted, not a clean pass.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-These gates define initial documentary checks for the `coder-frontend` kernel.
-They are not a runtime implementation, not a validation harness, not a
+These gates define documentary checks for the `coder-frontend` kernel. They are
+not a runtime implementation, not a runtime validation harness, not a
 materialization path, not a production path, and not productive-skill behavior.
 
 ## Package Authority Gate
@@ -182,7 +182,7 @@ Reject any kernel behavior that attempts to:
 - touch `core` docs as a resync action;
 - touch `units` docs as a resync action;
 - alter canonical templates;
-- write target repository artifacts from this documentary draft;
+- write target repository artifacts from this documentary pass;
 - introduce runtime loading;
 - introduce materialization;
 - claim production use.

@@ -1,14 +1,21 @@
 # Coder Front-End Golden Tests
 
-Status: read-only semantic/golden support for the initial draft. This support
-is blocking documentary validation only. It does not promote the kernel, does
-not authorize automatic promotion, and does not change the status from `initial draft, not promoted, not a clean pass`.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-The golden checks validate semantic coverage in the draft contracts. They run
-the static harness first and then verify that the golden scenarios below remain
-represented by documentary anchors. They do not execute agent runtime, do not
-materialize anything, do not write target repositories, do not write GitHub, and
-do not produce generated reports or fixtures.
+The golden checks validate semantic coverage in the clean documentary
+contracts. They run the static harness first and then verify that the golden
+scenarios below remain represented by documentary anchors. They do not execute
+agent runtime, do not materialize anything, do not write target repositories,
+do not write GitHub, and do not produce generated reports or fixtures.
+
+The golden harness is promotion-aware and accepts `CLEAN_EXCELLENT_PASS` as the
+documentary status after the explicitly authorized promotion audit. This pass is
+limited to kernel lab dev documentary validation, contractual validation,
+minimum semantic validation, hardened executable textual harness validation,
+and final human audit authorization. It does not authorize runtime pass,
+materialization pass, target repo pass, productive skill authorization,
+materializer authorization, GitHub writes, target repo writes, or automatic
+future promotion.
 
 ## Required Case Format
 

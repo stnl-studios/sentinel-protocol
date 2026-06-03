@@ -1,12 +1,11 @@
 # Coder Front-End Kernel Contract
 
-Status: initial draft, not promoted, not a clean pass.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-This contract defines the initial documentary behavior of the `coder-frontend`
-kernel. It does not implement runtime behavior, runtime loading,
-materialization, target-repository writes, GitHub writes,
-productive-skill behavior, canonical template changes, production use, or
-automatic promotion.
+This contract defines the documentary behavior of the `coder-frontend` kernel.
+It does not implement runtime behavior, runtime loading, materialization,
+target-repository writes, GitHub writes, productive-skill behavior, canonical
+template changes, production use, or automatic promotion.
 
 ## Source Alignment
 
@@ -244,7 +243,7 @@ durable documentation owner:
 - no `PLAN.md` as a canonical execution artifact;
 - no `core` docs as a resync action;
 - no `units` docs as a resync action;
-- no target repository write authorization from this documentary draft;
+- no target repository write authorization from this documentary pass;
 - no materialization path;
 - no production-agent adoption path.
 
