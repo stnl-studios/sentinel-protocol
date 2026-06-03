@@ -12,11 +12,18 @@ small and allowlist-bound.
 - `reference/coder_frontend_kernel/contracts/CONTRACT.md`;
 - `reference/coder_frontend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`;
 - `reference/coder_frontend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`;
-- `reference/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`.
+- `reference/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`;
+- `reference/coder_frontend_kernel/validation/STATIC_CHECKS.md`;
+- `reference/coder_frontend_kernel/validation/GOLDEN_TESTS.md`;
+- `reference/coder_frontend_kernel/validation/check-static.mjs`;
+- `reference/coder_frontend_kernel/validation/check-golden.mjs`.
 
-No validation directory, harness, fixture, generated report, runtime loader,
-materialization path, production artifact, or target-repository artifact is
-required or authorized for this draft.
+Only the four read-only validation files above are required or authorized as
+blocking documentary/textual harness support. No fixture, generated report,
+runtime loader, materialization path, production artifact, target-repository
+artifact, runtime execution, materializer, production use, target repository
+write, GitHub write, canonical template change, or productive-skill change is
+authorized for this draft.
 
 ## Snapshot Requirement
 
@@ -78,8 +85,10 @@ The bundle must explicitly preserve:
 
 The bundle must not authorize runtime loading, materialization, production use,
 target repository writes, GitHub writes, productive-skill changes, canonical
-template changes, materializer behavior, validation harnesses, generated
-reports, runtime loader work, or target-repository artifacts.
+template changes, materializer behavior, validation harnesses beyond the four
+read-only files listed above, generated reports, runtime loader work, promotion,
+automatic promotion, or target-repository artifacts. The harness does not
+authorize promotion.
 
 ## Ignore Rules
 

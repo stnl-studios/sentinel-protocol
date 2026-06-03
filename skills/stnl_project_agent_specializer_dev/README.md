@@ -43,10 +43,11 @@ alvo.
 O `coder_frontend_kernel` existe como draft documental inicial, ancorado ao
 snapshot dev local `reference/agents/coder-frontend.agent.md`, derivado
 literalmente de `templates/agents/coder-frontend.agent.md`. Esse draft não é
-promovido, não possui harness, não é runtime pass, não é materialization pass,
-não é target repo pass, não autoriza produção, não autoriza skill produtiva, não
-autoriza materializer, não autoriza escrita em GitHub, não autoriza escrita em
-repo alvo e não autoriza alteração em templates canônicos.
+promovido, possui apenas harness documental/textual read-only bloqueante, não é
+runtime pass, não é materialization pass, não é target repo pass, não autoriza
+produção, não autoriza skill produtiva, não autoriza materializer, não autoriza
+escrita em GitHub, não autoriza escrita em repo alvo e não autoriza alteração
+em templates canônicos.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
 target materialization, generated artifact, autorização para skill produtiva ou
@@ -88,9 +89,9 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   bloqueante, sem promoção automática;
 - preservar o draft inicial `coder_frontend_kernel` contra o snapshot dev local
   `reference/agents/coder-frontend.agent.md`, derivado literalmente de
-  `templates/agents/coder-frontend.agent.md`, sem harness, promoção, runtime,
-  materialização, produção, escrita em GitHub, escrita em repo alvo ou alteração
-  em templates canônicos;
+  `templates/agents/coder-frontend.agent.md`, com harness documental/textual
+  read-only bloqueante e sem promoção, runtime, materialização, produção,
+  escrita em GitHub, escrita em repo alvo ou alteração em templates canônicos;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
 - manter qualquer kernel futuro sujeito a autorização e auditoria próprias;
@@ -115,8 +116,8 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   autorizar materialização ou promoção automática;
 - tratar `reference/agents/**` como o único local autorizado para snapshots dev
   de base agents usados pelo kernel lab;
-- tratar `reference/coder_frontend_kernel/**` como draft documental dev-only até
-  uma rodada futura explicitamente autorizada;
+- tratar `reference/coder_frontend_kernel/**` como draft documental dev-only com
+  harness textual bloqueante até uma rodada futura explicitamente autorizada;
 - nunca usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou
   filesystem externo;
 - não tocar na skill produtiva, templates produtivos, installer, smoke,

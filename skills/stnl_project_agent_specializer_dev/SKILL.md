@@ -73,10 +73,11 @@ autorizado, `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`, `EXECUTION BRIEF`,
 mínimo frontend, consumo opcional de direção do `designer`, outputs com
 implementação, delta conciso, paths/evidência, checks, risco residual e blocker
 exato quando `BLOCKED`, além dos status `READY` e `BLOCKED`. Ele não possui
-harness, não é promoção, não é runtime pass, não é materialization pass, não é
-target repo pass, não autoriza produção, não autoriza skill produtiva, não
-autoriza materializer, não autoriza escrita em GitHub, não autoriza escrita em
-repo alvo e não autoriza alteração em templates canônicos.
+harness exceto os quatro arquivos documentais/textuais read-only bloqueantes
+de validação, não é promoção, não é runtime pass, não é materialization pass,
+não é target repo pass, não autoriza produção, não autoriza skill produtiva,
+não autoriza materializer, não autoriza escrita em GitHub, não autoriza escrita
+em repo alvo e não autoriza alteração em templates canônicos.
 
 ## Rota Atual
 
@@ -103,9 +104,10 @@ repo alvo e não autoriza alteração em templates canônicos.
    read-only, sem promoção automática.
 8. Preservar o draft inicial `coder_frontend_kernel` contra
    `reference/agents/coder-frontend.agent.md`, snapshot dev local derivado
-   literalmente de `templates/agents/coder-frontend.agent.md`, sem harness,
-   promoção, runtime, materialização, produção, escrita em GitHub, escrita em
-   repo alvo ou alteração em templates canônicos.
+   literalmente de `templates/agents/coder-frontend.agent.md`, com harness
+   documental/textual read-only bloqueante e sem promoção, runtime,
+   materialização, produção, escrita em GitHub, escrita em repo alvo ou
+   alteração em templates canônicos.
 9. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
 10. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
 11. Validar o pacote de agents como conjunto coerente.
@@ -237,6 +239,11 @@ Toda comparação deve validar que o kernel:
   `reference/coder_frontend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
   `reference/coder_frontend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
   `reference/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`
+- Validação documental/textual read-only do `coder-frontend`, sem promoção:
+  `reference/coder_frontend_kernel/validation/STATIC_CHECKS.md`,
+  `reference/coder_frontend_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/coder_frontend_kernel/validation/check-static.mjs` e
+  `reference/coder_frontend_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 
@@ -260,6 +267,8 @@ Toda comparação deve validar que o kernel:
 - produzir generated artifacts;
 - criar fixture, generated report, runtime ou materializer para o planner;
 - criar qualquer harness do planner além dos dois scripts read-only declarados;
+- criar fixture, generated report, runtime loader, materializer ou
+  materialization path para o `coder_frontend_kernel`;
 - materializar repo alvo;
 - tocar na skill produtiva `skills/stnl_project_agent_specializer/**`;
 - tocar em templates produtivos `templates/**`;
@@ -284,6 +293,8 @@ Comandos executados da raiz do repo:
 - `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
 - `node --check skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-static.mjs`
 - `node --check skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/validation/check-golden.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-static.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-golden.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-static.mjs`
@@ -294,3 +305,5 @@ Comandos executados da raiz do repo:
 - `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-static.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/validation/check-golden.mjs`

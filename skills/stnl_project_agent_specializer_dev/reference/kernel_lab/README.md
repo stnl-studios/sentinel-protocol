@@ -12,7 +12,7 @@ materialization flow.
 | `validation_eval_designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness. |
 | `execution_package_designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after final human audit with `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION` for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness. |
 | `designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human audit authorization. |
-| `coder_frontend_kernel` | initial draft | Documentary/dev-only draft anchored to `reference/agents/coder-frontend.agent.md`; no harness, no promotion, no runtime loading, no materialization, no production use. |
+| `coder_frontend_kernel` | initial draft | Documentary/dev-only draft anchored to `reference/agents/coder-frontend.agent.md`; has read-only documentary/textual blocking harness support, no promotion, no runtime loading, no materialization, no production use. |
 
 ## Objective
 
@@ -41,10 +41,11 @@ the local snapshot `reference/agents/designer.agent.md`. Its current status is
 
 The current draft case study is `coder_frontend_kernel`, anchored to the local
 snapshot `reference/agents/coder-frontend.agent.md`. Its current status is
-initial documentary draft only. It is not promoted and has no harness, runtime
-loading, materialization path, target-repository write authorization,
-productive-skill authorization, GitHub write authorization, production use, or
-canonical-template write authorization.
+initial documentary draft only. It is not promoted and has only read-only
+documentary/textual blocking harness support, no runtime loading,
+materialization path, target-repository write authorization, productive-skill
+authorization, GitHub write authorization, production use, or canonical-template
+write authorization.
 
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
@@ -80,7 +81,8 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
 5. preserve the frozen `designer_kernel` as the first design-contribution case
    study against its copied local snapshot;
 6. draft `coder_frontend_kernel` as the first front-end executor case study
-   against its copied local snapshot, without harness or promotion;
+   against its copied local snapshot, with read-only documentary/textual
+   blocking harness support and without promotion;
 7. kernelize agents by responsibility family, one authorized agent kernel at a
    time;
 8. keep every future kernel subject to its own authorization and human audit;

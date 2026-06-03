@@ -47,10 +47,11 @@ Skill: `stnl_project_agent_specializer_dev`
 - `reference/agents/designer.agent.md` is the local dev snapshot derived
   literally from `templates/agents/designer.agent.md`.
 - `coder_frontend_kernel` is an initial documentary draft only. It is not
-  promoted, not a clean pass, and has no validation harness, runtime loading,
-  materialization path, target-repository write authorization,
-  productive-skill authorization, GitHub write authorization, production use,
-  or canonical-template write authorization.
+  promoted, not a clean pass, and has only read-only documentary/textual
+  blocking validation harness support. It has no runtime loading,
+  materialization path, target-repository write authorization, productive-skill
+  authorization, GitHub write authorization, production use, or
+  canonical-template write authorization.
 - `reference/agents/coder-frontend.agent.md` is the local dev snapshot derived
   literally from `templates/agents/coder-frontend.agent.md`.
 
@@ -112,6 +113,10 @@ Required files:
 - `reference/coder_frontend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`
 - `reference/coder_frontend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
 - `reference/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`
+- `reference/coder_frontend_kernel/validation/STATIC_CHECKS.md`
+- `reference/coder_frontend_kernel/validation/GOLDEN_TESTS.md`
+- `reference/coder_frontend_kernel/validation/check-static.mjs`
+- `reference/coder_frontend_kernel/validation/check-golden.mjs`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 
@@ -128,8 +133,8 @@ Not active in this dev bundle:
 - no `designer` runtime, materializer, fixture, generated report, automatic
   promotion, GitHub writer, or target-writer flow is part of this bundle
 - no `coder-frontend` runtime, materializer, fixture, generated report,
-  automatic promotion, validation harness, runtime loader, GitHub writer,
-  production use, or target-writer flow is part of this bundle
+  automatic promotion, runtime loader, GitHub writer, production use, or
+  target-writer flow is part of this bundle
 
 Not included as canonical dev references:
 - no full reference/agents/** bundle is present; only copied base snapshots
