@@ -1,6 +1,6 @@
 # Orchestrator Kernel Contract
 
-Status: experimental kernel contract.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 This document defines the minimum contract for a future `orchestrator kernel` inside `stnl_project_agent_specializer_dev`. It is a design contract only. It does not implement kernel logic, module loading, activation gates, materialization, checks, or tests.
 
@@ -13,7 +13,8 @@ The companion critical golden-tests contract is defined in `reference/orchestrat
 
 ## What the orchestrator kernel is
 
-The orchestrator kernel is the fixed, small, non-optional core of a future experimental orchestration model.
+The orchestrator kernel is the fixed, small, non-optional core of a future
+optional orchestration model.
 
 It exists to preserve the minimum behavior needed for Sentinel routing to remain safe when optional orchestration modules are absent, disabled, incomplete, or still under development.
 
@@ -23,7 +24,10 @@ The kernel does not replace the base agents. The canonical base agents remain th
 
 The kernel does not retire the main flow. The existing Sentinel workflow remains canonical unless an authorized experimental contract explicitly defines, validates, and adopts a compatible experimental path.
 
-The kernel is experimental. It may inform future materialization and routing design, but by itself it does not authorize any change to the production skill, templates, agents, targets, or workflow.
+The kernel is frozen as `CLEAN_EXCELLENT_PASS` for the dev kernel lab. It may
+inform future materialization and routing design, but by itself it does not
+authorize any change to the production skill, templates, agents, targets, or
+workflow.
 
 ## Irremovable responsibilities
 

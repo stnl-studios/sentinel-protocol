@@ -1,6 +1,6 @@
 # Planner Kernel Minimum Safe Bundle
 
-Status: experimental minimum safe-bundle contract.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 This document defines the smallest non-optional contract set that must
 accompany a future `planner kernel` so the planner continues to behave as

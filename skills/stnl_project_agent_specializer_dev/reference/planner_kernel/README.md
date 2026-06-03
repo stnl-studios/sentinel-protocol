@@ -1,6 +1,6 @@
 # Planner Kernel Contracts
 
-Status: experimental documentation index for the kernel-lab route in
+Status: `CLEAN_EXCELLENT_PASS` documentation index for the kernel-lab route in
 `stnl_project_agent_specializer_dev`.
 
 This directory is a documentation-focused, read-only kernel lab for the base

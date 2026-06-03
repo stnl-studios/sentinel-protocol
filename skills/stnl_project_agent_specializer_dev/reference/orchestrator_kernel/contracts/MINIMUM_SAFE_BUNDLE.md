@@ -1,8 +1,9 @@
 # Orchestrator Kernel Minimum Safe Bundle
 
-Status: experimental minimum safe-bundle contract.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-This document defines the minimum safe bundle that must always accompany the future experimental `orchestrator kernel` in `stnl_project_agent_specializer_dev`.
+This document defines the minimum safe bundle that must always accompany the
+frozen `orchestrator kernel` in `stnl_project_agent_specializer_dev`.
 
 It complements `reference/orchestrator_kernel/contracts/CONTRACT.md` without duplicating the full kernel contract. The kernel contract defines the kernel boundary. This document defines the non-optional protection bundle that keeps that boundary safe when no optional orchestration module is active.
 
@@ -68,7 +69,7 @@ Optional modules may add precision, richer routing, target-specific knowledge, a
 
 ### No Override Of The Main Flow
 
-- The experimental kernel cannot replace, bypass, or silently alter the main Sentinel workflow.
+- The frozen kernel cannot replace, bypass, or silently alter the main Sentinel workflow.
 - The current base agents and main flow remain canonical unless an authorized experimental contract explicitly defines, validates, and adopts a compatible experimental path.
 - The kernel must not use optional modules as a backdoor to change gate ownership, role ownership, handoff semantics, or closure rules.
 
@@ -147,7 +148,9 @@ These may be future modules, checks, tests, or contracts. They are not part of t
 
 ## Relationship To The Kernel Contract
 
-`reference/orchestrator_kernel/contracts/CONTRACT.md` defines the experimental orchestrator kernel boundary: what the kernel is, what it must retain, what it must not absorb, and how future layers relate.
+`reference/orchestrator_kernel/contracts/CONTRACT.md` defines the orchestrator
+kernel boundary: what the kernel is, what it must retain, what it must not
+absorb, and how future layers relate.
 
 This document defines the mandatory compact protection set that the kernel relies on to remain safe inside that boundary.
 
@@ -183,4 +186,5 @@ This contract does not implement:
 - template changes
 - target artifact generation
 
-This document only defines the formal minimum safe bundle for the future experimental orchestrator kernel.
+This document only defines the formal minimum safe bundle for the frozen
+orchestrator kernel.

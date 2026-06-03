@@ -1,6 +1,6 @@
 # Orchestrator Kernel Contracts
 
-Status: experimental documentation index for the kernel-lab route in
+Status: `CLEAN_EXCELLENT_PASS` documentation index for the kernel-lab route in
 `stnl_project_agent_specializer_dev`.
 
 Nothing in this directory implements runtime loading, module execution,

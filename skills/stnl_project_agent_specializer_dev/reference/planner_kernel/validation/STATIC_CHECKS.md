@@ -1,6 +1,6 @@
 # Planner Kernel Static Checks
 
-Status: read-only executable structural support for the planner kernel lab.
+Status: read-only executable structural support for `CLEAN_EXCELLENT_PASS`.
 
 The local harness is
 `reference/planner_kernel/validation/check-static.mjs`. It uses only Node

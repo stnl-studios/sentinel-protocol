@@ -1,9 +1,9 @@
 # Planner Kernel Behavior Parity Spine
 
-Status: experimental behavior-parity spine for planner-kernel validation.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-This document records the compact operational spine the experimental
-`planner kernel` must preserve from the base `planner.agent.md`.
+This document records the compact operational spine the `planner kernel` must
+preserve from the base `planner.agent.md`.
 
 It is authoritative only for the kernel lab. It does not materialize an agent,
 does not replace the base planner, does not authorize generated artifacts, and

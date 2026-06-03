@@ -1,6 +1,6 @@
 # Orchestrator Kernel Static Checks
 
-Status: read-only structural support for the kernel lab.
+Status: read-only structural support for `CLEAN_EXCELLENT_PASS`.
 
 The static checks support the current re-start direction. They do not implement
 a runtime loader, materializer, target-project writer, final artifact generator,

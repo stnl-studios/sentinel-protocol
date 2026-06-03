@@ -1,7 +1,7 @@
 # Orchestrator Kernel Critical Golden Tests
 
-Status: read-only structural and semantic golden-test support for the kernel
-lab.
+Status: read-only structural and semantic golden-test support for
+`CLEAN_EXCELLENT_PASS`.
 
 The local `reference/orchestrator_kernel/validation/check-golden.mjs` harness
 validates structural documentation contracts in this file and minimum semantic

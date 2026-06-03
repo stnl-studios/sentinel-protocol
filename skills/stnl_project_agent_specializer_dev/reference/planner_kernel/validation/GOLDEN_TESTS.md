@@ -1,7 +1,7 @@
 # Planner Kernel Golden Tests
 
-Status: read-only executable semantic golden-test support for the planner
-kernel lab.
+Status: read-only executable semantic golden-test support for
+`CLEAN_EXCELLENT_PASS`.
 
 The local harness is
 `reference/planner_kernel/validation/check-golden.mjs`. It runs

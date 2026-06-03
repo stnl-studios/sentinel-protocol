@@ -1,6 +1,6 @@
 # Planner Kernel Contract
 
-Status: experimental planner-kernel contract.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 This document defines the minimum contract for a future `planner kernel` inside
 `stnl_project_agent_specializer_dev`. It is a design contract only. It does not

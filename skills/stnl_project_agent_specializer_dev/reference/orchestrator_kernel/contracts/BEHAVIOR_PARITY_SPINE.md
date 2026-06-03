@@ -1,9 +1,9 @@
 # Orchestrator Kernel Behavior Parity Spine
 
-Status: experimental behavior-parity spine for kernel-lab validation.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-This document records the compact operational spine the experimental
-`orchestrator kernel` must preserve from the base `orchestrator.agent.md`.
+This document records the compact operational spine the `orchestrator kernel`
+must preserve from the base `orchestrator.agent.md`.
 
 It is authoritative only for the kernel lab. It does not materialize an agent,
 does not replace the base orchestrator, does not authorize generated artifacts,

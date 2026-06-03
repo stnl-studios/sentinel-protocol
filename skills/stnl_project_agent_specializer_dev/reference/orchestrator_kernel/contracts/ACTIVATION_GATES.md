@@ -1,9 +1,9 @@
 # Orchestrator Kernel Activation Gates
 
-Status: experimental activation-gates contract.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-This document defines the activation gates for the future experimental
-`orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
+This document defines the activation gates for the frozen `orchestrator kernel`
+inside `stnl_project_agent_specializer_dev`.
 
 It is a documentation contract only. It does not implement a runtime loader,
 module execution, experimental materialization, static checks, golden tests, or
@@ -131,7 +131,7 @@ status, context, dependency, or conflict must reduce behavior or block.
 
 ## Initial Module Mapping
 
-This mapping is an experimental contract, not a runtime implementation.
+This mapping is a dev kernel-lab contract, not a runtime implementation.
 
 | Module | Initial gate | Meaning |
 | --- | --- | --- |
@@ -364,4 +364,4 @@ This contract does not implement:
 - real gate execution
 
 This document only defines the formal activation-gates contract for the future
-experimental orchestrator kernel.
+frozen orchestrator kernel.

@@ -1,8 +1,8 @@
 # Orchestrator Kernel Module Index
 
-Status: experimental module catalog.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-This document defines the initial module index for the future experimental
+This document defines the initial module index for the frozen
 `orchestrator kernel` inside `stnl_project_agent_specializer_dev`.
 
 It is a catalog of modules, not the full content or operational implementation
@@ -24,7 +24,7 @@ non-optional safety rule.
 
 ## Relationship To Existing Documents
 
-`reference/orchestrator_kernel/contracts/CONTRACT.md` defines the experimental kernel
+`reference/orchestrator_kernel/contracts/CONTRACT.md` defines the kernel
 boundary: what stays in the kernel, what must not be delegated, and how future
 layers relate.
 
@@ -321,7 +321,7 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
 
 - `module_id`: `checks.static`
 - `status`: `local_read_only_static_check_harness_available_no_materialization_authority`
-- `purpose`: Represent cheap static checks for the experimental orchestrator
+- `purpose`: Represent cheap static checks for the frozen orchestrator
   kernel and its module contracts. The static-check contract exists at
   `reference/orchestrator_kernel/validation/STATIC_CHECKS.md`, and the local read-only static-check harness exists at `reference/orchestrator_kernel/validation/check-static.mjs`, but
   there is still no runtime loader integration, runtime golden-test execution,
@@ -375,7 +375,7 @@ Markdown is the source format for this catalog. No JSON or YAML representation i
 - `module_id`: `tests.golden_critical`
 - `status`: `local_read_only_harness_available_no_materialization_authority`
 - `purpose`: Represent the structural and semantic golden-test contracts for
-  the experimental orchestrator kernel path. The golden-test contract exists at
+  the frozen orchestrator kernel path. The golden-test contract exists at
   `reference/orchestrator_kernel/validation/GOLDEN_TESTS.md`, and the local read-only golden-test harness exists at
   `reference/orchestrator_kernel/validation/check-golden.mjs`, but there are still no real
   fixtures, no runtime execution, and no materialization authority.
@@ -474,5 +474,5 @@ This catalog does not implement:
 - production template changes
 - smoke changes
 
-This document only defines the formal module index catalog for the future experimental
+This document only defines the formal module index catalog for the frozen
 orchestrator kernel.
