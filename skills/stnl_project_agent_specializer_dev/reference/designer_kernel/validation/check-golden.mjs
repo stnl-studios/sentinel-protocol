@@ -13,6 +13,10 @@ const devSkillRoot = path.resolve(referenceRoot, "..");
 const repoRoot = path.resolve(devSkillRoot, "..", "..");
 const realRepoRoot = fs.realpathSync.native(repoRoot);
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
+const validDocumentaryStatuses = [
+  "DRAFT_INITIAL_DESIGNER_KERNEL",
+  "CLEAN_EXCELLENT_PASS",
+];
 
 const kernelPrefix =
   "skills/stnl_project_agent_specializer_dev/reference/designer_kernel";
@@ -547,7 +551,6 @@ const snapshotEvidence = [
 ];
 
 const contractEvidence = [
-  "DRAFT_INITIAL_DESIGNER_KERNEL",
   "optional per round",
   "real UX impact",
   "required",
@@ -567,6 +570,11 @@ if (!hasAll(snapshot, snapshotEvidence)) {
 
 if (!hasAll(contracts, contractEvidence)) {
   console.error("DSG-GT-BASE FAIL contracts are missing designer kernel evidence");
+  ok = false;
+}
+
+if (!validDocumentaryStatuses.some((status) => contracts.includes(status))) {
+  console.error("DSG-GT-BASE FAIL contracts are missing a valid designer kernel status");
   ok = false;
 }
 

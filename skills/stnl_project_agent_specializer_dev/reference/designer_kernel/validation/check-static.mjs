@@ -14,8 +14,10 @@ const realRepoRoot = fs.realpathSync.native(repoRoot);
 
 const ignoredNames = new Set(["__MACOSX", ".DS_Store"]);
 const skippedWalkNames = new Set([".git", "node_modules", ...ignoredNames]);
-const draftStatus = "DRAFT_INITIAL_DESIGNER_KERNEL";
-const finalPassToken = ["CLEAN", "EXCELLENT", "PASS"].join("_");
+const validDocumentaryStatuses = [
+  "DRAFT_INITIAL_DESIGNER_KERNEL",
+  "CLEAN_EXCELLENT_PASS",
+];
 
 const kernelPrefix =
   "skills/stnl_project_agent_specializer_dev/reference/designer_kernel";
@@ -139,6 +141,35 @@ const dangerousTerms = [
   "finalization",
   "materialization",
   "durable docs",
+];
+
+const prohibitedPromotionClaimTerms = [
+  "runtime pass",
+  "materialization pass",
+  "target repo pass",
+  "target-repository pass",
+  "productive skill authorized",
+  "productive-skill authorized",
+  "productive skill behavior",
+  "productive-skill behavior",
+  "productive skill change",
+  "productive-skill change",
+  "authorized materializer",
+  "materializer authorized",
+  "materializer",
+  "GitHub write",
+  "GitHub writes",
+  "write to GitHub",
+  "writes to GitHub",
+  "target repo write",
+  "target repo writes",
+  "target-repository write",
+  "target-repository writes",
+  "write to target repo",
+  "writes to target repo",
+  "target repositories",
+  "target repo artifact",
+  "target artifacts",
 ];
 
 function isInside(childPath, parentPath) {
@@ -268,6 +299,11 @@ function hasSafePolarity(text, term) {
   });
 }
 
+function documentaryStatusFor(text) {
+  const match = text.match(/^Status:\s*`([^`]+)`\./m);
+  return match?.[1] ?? null;
+}
+
 function result(id, failures, success) {
   if (failures.length === 0) {
     console.log(`${id} PASS ${success}`);
@@ -311,16 +347,42 @@ let ok = true;
 
 {
   const failures = [];
+  const declaredStatuses = new Map();
   for (const relativePath of documentaryPaths) {
     const text = readText(relativePath);
-    if (!text.includes(draftStatus)) {
-      failures.push(`${relativePath} missing ${draftStatus}`);
+    const status = documentaryStatusFor(text);
+    if (!status) {
+      failures.push(`${relativePath} missing documentary Status declaration`);
+      continue;
     }
-    if (text.includes(finalPassToken)) {
-      failures.push(`${relativePath} contains prohibited final pass token`);
+    if (!validDocumentaryStatuses.includes(status)) {
+      failures.push(`${relativePath} has invalid documentary status ${status}`);
+      continue;
+    }
+    declaredStatuses.set(relativePath, status);
+  }
+
+  const uniqueStatuses = new Set(declaredStatuses.values());
+  if (uniqueStatuses.size > 1) {
+    failures.push(
+      `mixed documentary statuses found: ${[...uniqueStatuses].sort().join(", ")}`,
+    );
+  }
+
+  const text = documentaryPaths.map(readText).join("\n");
+  for (const term of prohibitedPromotionClaimTerms) {
+    if (
+      text.toLowerCase().includes(term.toLowerCase()) &&
+      !hasSafePolarity(text, term)
+    ) {
+      failures.push(`unsafe promotion/pass/authorization context found for ${term}`);
     }
   }
-  ok = result("DSG-CH-004", failures, "documentary files keep draft status") && ok;
+  ok = result(
+    "DSG-CH-004",
+    failures,
+    "documentary status declarations are valid, consistent, and non-promoting",
+  ) && ok;
 }
 
 for (const requirement of sectionRequirements) {

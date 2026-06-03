@@ -8,7 +8,7 @@ Skill: `stnl_project_agent_specializer_dev`
 - `planner_kernel` is frozen as `CLEAN_EXCELLENT_PASS` for the documentary,
   contractual, and semantic kernel lab after the separately authorized human
   audit.
-- All four passes are dev kernel-lab results only. They do not authorize runtime,
+- All five passes are dev kernel-lab results only. They do not authorize runtime,
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
 - `planner_kernel` has read-only executable validation harnesses as blocking
@@ -38,6 +38,14 @@ Skill: `stnl_project_agent_specializer_dev`
 - `reference/agents/execution-package-designer.agent.md` is the local dev
   snapshot derived literally from
   `templates/agents/execution-package-designer.agent.md`.
+- `designer_kernel` is frozen as `CLEAN_EXCELLENT_PASS` after controlled
+  documentary promotion. This pass is limited to the documentary, contractual,
+  minimum-semantic dev kernel lab with a hardened executable textual harness
+  and final human audit authorization; it grants no runtime,
+  materialization, target-repository write, productive-skill, materializer,
+  GitHub write, target repo write, or production-agent authorization.
+- `reference/agents/designer.agent.md` is the local dev snapshot derived
+  literally from `templates/agents/designer.agent.md`.
 
 Required files:
 - `reference/agents/orchestrator.agent.md`
@@ -81,6 +89,16 @@ Required files:
 - `reference/execution_package_designer_kernel/validation/GOLDEN_TESTS.md`
 - `reference/execution_package_designer_kernel/validation/check-static.mjs`
 - `reference/execution_package_designer_kernel/validation/check-golden.mjs`
+- `reference/agents/designer.agent.md`
+- `reference/designer_kernel/README.md`
+- `reference/designer_kernel/contracts/CONTRACT.md`
+- `reference/designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`
+- `reference/designer_kernel/contracts/DESIGN_CONTRIBUTION_GATES.md`
+- `reference/designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- `reference/designer_kernel/validation/STATIC_CHECKS.md`
+- `reference/designer_kernel/validation/GOLDEN_TESTS.md`
+- `reference/designer_kernel/validation/check-static.mjs`
+- `reference/designer_kernel/validation/check-golden.mjs`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 
@@ -94,6 +112,8 @@ Not active in this dev bundle:
   report, automatic promotion, or target-writer flow is part of this bundle
 - no `execution-package-designer` runtime, materializer, fixture, generated
   report, automatic promotion, or target-writer flow is part of this bundle
+- no `designer` runtime, materializer, fixture, generated report, automatic
+  promotion, GitHub writer, or target-writer flow is part of this bundle
 
 Not included as canonical dev references:
 - no full reference/agents/** bundle is present; only copied base snapshots

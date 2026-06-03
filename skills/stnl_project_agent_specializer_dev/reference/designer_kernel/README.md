@@ -1,10 +1,13 @@
 # Designer Kernel
 
-Status: `DRAFT_INITIAL_DESIGNER_KERNEL`.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-This is the controlled initial draft for the documentary designer kernel. It is
-not a promotion pass, not a runtime pass, not a materialization pass, and not a
-productive-skill change.
+This is the controlled clean documentary pass for the designer kernel. It is
+limited to the kernel lab dev documentary, contractual, minimum semantic, and
+hardened executable textual harness scope, with final human audit authorized.
+It is not a runtime pass, not a materialization pass, not a target repo pass,
+not a productive-skill authorization, not a materializer authorization, not a
+GitHub write authorization, and not a target repo write authorization.
 
 The kernel preserves the irreducible designer mission: produce practical UX
 direction for the current round when there is real UX impact, while remaining an
@@ -19,9 +22,9 @@ This bundle is limited to:
 - textual validation documentation and harnesses under
   `reference/designer_kernel/validation/`.
 
-It does not alter frozen kernels, productive skill behavior, target repositories,
-GitHub state, durable project documentation, materialization output, or global
-kernel status.
+It does not alter other frozen kernels, productive skill behavior, target
+repositories, GitHub state, durable project documentation, materialization
+output, runtime behavior, or target repo state.
 
 ## Core Invariants
 
@@ -50,8 +53,24 @@ kernel status.
 - `validation/check-static.mjs`;
 - `validation/check-golden.mjs`.
 
-## Current Limitation
+## Pass Boundary
 
-This draft is intentionally not a final quality status. Passing the checks means
-only that the initial documentary bundle preserves the required design role
-shape well enough for the next audit round.
+`CLEAN_EXCELLENT_PASS` means only:
+
+- kernel lab dev pass;
+- documentary validation pass;
+- contractual validation pass;
+- minimum semantic validation pass;
+- hardened executable textual harness pass;
+- final human audit authorized.
+
+`CLEAN_EXCELLENT_PASS` does not authorize:
+
+- does not authorize runtime pass;
+- does not authorize materialization pass;
+- does not authorize target repo pass;
+- does not authorize agent execution in production;
+- does not authorize productive skill authorized status;
+- does not authorize materializer authorized status;
+- does not authorize GitHub writes;
+- does not authorize target repo writes.

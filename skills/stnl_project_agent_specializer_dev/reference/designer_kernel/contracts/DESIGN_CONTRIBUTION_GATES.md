@@ -1,10 +1,10 @@
 # Design Contribution Gates
 
-Status: `DRAFT_INITIAL_DESIGNER_KERNEL`.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 These gates decide whether a designer contribution is allowed, ready, blocked,
-or safely bypassable. They are documentary gates for the initial draft, not a
-runtime implementation.
+or safely bypassable. They are documentary gates for the clean kernel lab dev
+pass, not a runtime implementation.
 
 ## Entry Gate
 
@@ -89,3 +89,15 @@ Reject any contribution that attempts to:
 - must not write durable docs;
 - must not perform resync/finalization;
 - must not materialize target artifacts.
+
+## Pass Boundary
+
+`CLEAN_EXCELLENT_PASS` means only kernel lab dev documentary, contractual,
+minimum semantic, hardened executable textual harness validation, and final
+human audit authorization.
+
+`CLEAN_EXCELLENT_PASS` does not authorize runtime pass, materialization pass,
+target repo pass, production agent execution, productive skill authorization,
+materializer authorization, GitHub writes, target repo writes, implementation,
+validation running, durable docs, `VALIDATION PACK` ownership, `EXECUTION
+PACKAGE` ownership, or resync/finalization.

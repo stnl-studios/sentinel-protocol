@@ -1,6 +1,6 @@
 # Designer Kernel Contract
 
-Status: `DRAFT_INITIAL_DESIGNER_KERNEL`.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 This contract defines the documentary behavior of the `designer` kernel. It
 does not implement runtime behavior, materialization, target-repository writes,
@@ -13,9 +13,8 @@ GitHub writes, productive-skill behavior, or automatic promotion.
   `reference/agents/designer.agent.md`;
 - documentary kernel: `reference/designer_kernel/**`.
 
-The snapshot must be a byte-for-byte copy of the productive/base origin for this
-draft. Kernel review uses the local dev snapshot as the audit point after that
-copy exists.
+The snapshot must be a byte-for-byte copy of the productive/base origin. Kernel
+review uses the local dev snapshot as the audit point after that copy exists.
 
 ## Identity
 
@@ -188,3 +187,15 @@ Completion means the design contribution is honest, local, practical, and usable
 by downstream owners. It never means implementation, validation execution,
 runner verdict, round closure, durable documentation, resync, materialization, or
 global pass status.
+
+## Pass Boundary
+
+`CLEAN_EXCELLENT_PASS` means only kernel lab dev documentary validation,
+contractual validation, minimum semantic validation, hardened executable textual
+harness validation, and final human audit authorization.
+
+`CLEAN_EXCELLENT_PASS` does not authorize runtime pass, materialization pass,
+target repo pass, production agent execution, productive skill authorization,
+materializer authorization, GitHub writes, target repo writes, implementation,
+validation running, durable docs, `VALIDATION PACK` ownership, `EXECUTION
+PACKAGE` ownership, or resync/finalization.

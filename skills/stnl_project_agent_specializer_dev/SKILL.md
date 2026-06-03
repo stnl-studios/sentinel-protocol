@@ -23,11 +23,12 @@ respectivo snapshot dev de base agent em `reference/agents/**`. O
 `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` após auditoria humana
 final com `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION`, limitado ao kernel
 lab dev documental, contratual, semântico mínimo e com harness textual
-executável endurecido.
+executável endurecido. O `designer_kernel` também está congelado como
+`CLEAN_EXCELLENT_PASS` após promoção documental controlada.
 
-Há quatro kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
-`planner_kernel`, `validation_eval_designer_kernel` e
-`execution_package_designer_kernel`.
+Há cinco kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+`planner_kernel`, `validation_eval_designer_kernel`,
+`execution_package_designer_kernel` e `designer_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -54,6 +55,17 @@ endurecido. Ele não autoriza runtime pass, materialization pass, target repo
 pass, skill produtiva autorizada, materializer autorizado, repo alvo ou agente
 executado em produção.
 
+O `designer_kernel` é pass exclusivo do kernel lab dev documental, contratual,
+semântico mínimo e com harness textual executável endurecido. Ele preserva
+`optional per round`, real UX impact, `design-contributor`, `targeted-local`,
+decisão de `required` vs `advisory` pelo orchestrator, `READY` difícil,
+`BLOCKED` honesto e estreito, contribuição efêmera, no durable docs, no
+`VALIDATION PACK` ownership, no `EXECUTION PACKAGE` ownership, no
+implementation, no validation running e no resync/finalization. Ele não
+autoriza runtime pass, materialization pass, target repo pass, skill produtiva
+autorizada, materializer autorizado, escrita em GitHub, escrita em repo alvo ou
+agente executado em produção.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -72,12 +84,17 @@ executado em produção.
    `templates/agents/execution-package-designer.agent.md`.
 5. Executar os harnesses do `execution_package_designer_kernel` somente como
    apoio bloqueante read-only, sem promoção automática.
-6. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-7. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-8. Validar o pacote de agents como conjunto coerente.
-9. Avançar para Project Senior Profile somente depois dos agents kernelizados
+6. Preservar o `designer_kernel` congelado contra
+   `reference/agents/designer.agent.md`, snapshot dev local derivado literalmente
+   de `templates/agents/designer.agent.md`.
+7. Executar os harnesses do `designer_kernel` somente como apoio bloqueante
+   read-only, sem promoção automática.
+8. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+9. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+10. Validar o pacote de agents como conjunto coerente.
+11. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-10. Reconstruir a skill/materialização completa somente depois de agents e
+12. Reconstruir a skill/materialização completa somente depois de agents e
     Profile estáveis.
 
 ## Famílias Sugeridas
@@ -180,6 +197,20 @@ Toda comparação deve validar que o kernel:
   `reference/validation_eval_designer_kernel/validation/GOLDEN_TESTS.md`,
   `reference/validation_eval_designer_kernel/validation/check-static.mjs` e
   `reference/validation_eval_designer_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `designer`:
+  `reference/agents/designer.agent.md`
+- Kernel documental do `designer`:
+  `reference/designer_kernel/README.md`
+- Contratos documentais do `designer`:
+  `reference/designer_kernel/contracts/CONTRACT.md`,
+  `reference/designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/designer_kernel/contracts/DESIGN_CONTRIBUTION_GATES.md` e
+  `reference/designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- Validação documental e harnesses read-only do `designer`:
+  `reference/designer_kernel/validation/STATIC_CHECKS.md`,
+  `reference/designer_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/designer_kernel/validation/check-static.mjs` e
+  `reference/designer_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 
@@ -225,6 +256,8 @@ Comandos executados da raiz do repo:
 - `node --check skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-golden.mjs`
 - `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-static.mjs`
 - `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-golden.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-static.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-golden.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-static.mjs`
@@ -233,3 +266,5 @@ Comandos executados da raiz do repo:
 - `node skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-golden.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-static.mjs`
 - `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-golden.mjs`

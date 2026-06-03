@@ -1,9 +1,9 @@
 # Minimum Safe Bundle
 
-Status: `DRAFT_INITIAL_DESIGNER_KERNEL`.
+Status: `CLEAN_EXCELLENT_PASS`.
 
-The minimum safe bundle for this initial draft is intentionally small and
-allowlist-bound.
+The minimum safe bundle for this clean kernel lab dev pass is intentionally
+small and allowlist-bound.
 
 ## Required Files
 
@@ -43,11 +43,17 @@ The bundle must explicitly preserve:
 - no validation running;
 - no resync/finalization.
 
-## Draft Boundary
+## Pass Boundary
 
-The bundle must remain `DRAFT_INITIAL_DESIGNER_KERNEL`. It must not claim a
-final pass, update global status, alter frozen kernels, or change productive
-skill behavior.
+The bundle may claim `CLEAN_EXCELLENT_PASS` only as a kernel lab dev
+documentary, contractual, minimum semantic, hardened executable textual harness
+pass with final human audit authorization.
+
+The bundle must not authorize runtime pass, materialization pass, target repo
+pass, production agent execution, productive skill authorization, materializer
+authorization, GitHub writes, target repo writes, implementation, validation
+running, durable docs, `VALIDATION PACK` ownership, `EXECUTION PACKAGE`
+ownership, or resync/finalization.
 
 ## Ignore Rules
 

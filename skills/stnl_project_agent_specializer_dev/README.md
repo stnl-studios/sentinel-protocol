@@ -6,13 +6,13 @@ materializar agents em um repo alvo.
 
 O foco imediato mudou para validação de kernelização de agents fora do fluxo de
 materialização da skill. O kernel lab contém `orchestrator_kernel`,
-`planner_kernel`, `validation_eval_designer_kernel` e o kernel congelado
-`execution_package_designer_kernel`.
+`planner_kernel`, `validation_eval_designer_kernel`,
+`execution_package_designer_kernel` e o kernel congelado `designer_kernel`.
 
-Há quatro kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
-`planner_kernel`, `validation_eval_designer_kernel` e
-`execution_package_designer_kernel`. Esses passes são resultados exclusivos do
-kernel lab dev.
+Há cinco kernels congelados como `CLEAN_EXCELLENT_PASS`:
+`orchestrator_kernel`, `planner_kernel`, `validation_eval_designer_kernel`,
+`execution_package_designer_kernel` e `designer_kernel`. Esses passes são
+resultados exclusivos do kernel lab dev.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -31,6 +31,14 @@ somente para o kernel lab dev documental, contratual, semântico mínimo e com
 harness textual executável endurecido; não é runtime pass, materialization
 pass, target repo pass, autorização para skill produtiva ou autorização para
 materializer.
+
+O `designer_kernel` foi promovido para `CLEAN_EXCELLENT_PASS` após promoção
+documental controlada com snapshot byte-a-byte preservado. Esse pass vale
+somente para o kernel lab dev documental, contratual, semântico mínimo e com
+harness textual executável endurecido; não é runtime pass, materialization
+pass, target repo pass, agente executado em produção, autorização para skill
+produtiva, autorização para materializer, escrita em GitHub ou escrita em repo
+alvo.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
 target materialization, generated artifact, autorização para skill produtiva ou
@@ -63,6 +71,13 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   `reference/execution_package_designer_kernel/validation/check-static.mjs` e
   `reference/execution_package_designer_kernel/validation/check-golden.mjs` como
   apoio bloqueante, sem promoção automática;
+- preservar o `designer_kernel` congelado contra o snapshot dev local
+  `reference/agents/designer.agent.md`, derivado literalmente de
+  `templates/agents/designer.agent.md`;
+- executar os harnesses read-only
+  `reference/designer_kernel/validation/check-static.mjs` e
+  `reference/designer_kernel/validation/check-golden.mjs` como apoio
+  bloqueante, sem promoção automática;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
 - manter qualquer kernel futuro sujeito a autorização e auditoria próprias;
@@ -83,8 +98,8 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   `reference/planner_kernel/validation/check-static.mjs` e
   `reference/planner_kernel/validation/check-golden.mjs`, além dos harnesses
   equivalentes do `validation_eval_designer_kernel` e do
-  `execution_package_designer_kernel`, read-only, sem autorizar materialização
-  ou promoção automática;
+  `execution_package_designer_kernel` e do `designer_kernel`, read-only, sem
+  autorizar materialização ou promoção automática;
 - tratar `reference/agents/**` como o único local autorizado para snapshots dev
   de base agents usados pelo kernel lab;
 - nunca usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou

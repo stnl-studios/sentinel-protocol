@@ -1,6 +1,6 @@
 # Designer Behavior Parity Spine
 
-Status: `DRAFT_INITIAL_DESIGNER_KERNEL`.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 This spine records the behavior that must remain aligned with
 `reference/agents/designer.agent.md`. It is documentary only.
@@ -118,3 +118,15 @@ The designer must not own or perform:
 - must not write durable docs.
 
 These prohibitions are not optional specialization slots.
+
+## Pass Boundary
+
+`CLEAN_EXCELLENT_PASS` means only the kernel lab dev documentary, contractual,
+minimum semantic, and hardened textual harness pass with final human audit
+authorized.
+
+`CLEAN_EXCELLENT_PASS` does not authorize runtime pass, materialization pass,
+target repo pass, production agent execution, productive skill authorization,
+materializer authorization, GitHub writes, target repo writes, durable docs,
+`VALIDATION PACK` ownership, `EXECUTION PACKAGE` ownership, implementation,
+validation running, or resync/finalization.

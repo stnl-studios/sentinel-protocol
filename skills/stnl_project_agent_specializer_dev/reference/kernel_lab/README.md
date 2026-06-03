@@ -11,6 +11,7 @@ materialization flow.
 | `planner_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, and semantic kernel lab. |
 | `validation_eval_designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after the separately authorized human audit for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness. |
 | `execution_package_designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after final human audit with `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION` for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness. |
+| `designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human audit authorization. |
 
 ## Objective
 
@@ -33,18 +34,23 @@ The fourth authorized case study is the frozen
 `EXECUTION_PACKAGE_DESIGNER_KERNEL: CLEAN_EXCELLENT_PASS` after final human
 audit with `CLEAN_AUDIT_PASS_FOR_PROMOTION_RECOMMENDATION`.
 
+The fifth authorized case study is the frozen `designer_kernel`, anchored to
+the local snapshot `reference/agents/designer.agent.md`. Its current status is
+`CLEAN_EXCELLENT_PASS` after controlled documentary promotion.
+
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
 `reference/planner_kernel/validation/check-golden.mjs`. They are executable
 read-only blocking validation support only; they do not grant automatic
 promotion for this or any future kernel.
 
-The four frozen pass statuses are kernel-lab dev results only. The
-`validation_eval_designer_kernel` and `execution_package_designer_kernel` passes
-are documentary, contractual, minimum semantic, and backed by hardened
-executable textual harnesses. None of these states authorize runtime,
-materialization, target-repository writes,
-productive-skill changes, or a materializer.
+The five frozen pass statuses are kernel-lab dev results only. The
+`validation_eval_designer_kernel`, `execution_package_designer_kernel`, and
+`designer_kernel` passes are documentary, contractual, minimum semantic, and
+backed by hardened executable textual harnesses. These states do not authorize
+runtime pass, materialization pass, target repo pass, target-repository writes,
+productive-skill changes, a materializer, GitHub writes, target repo writes, or
+agent execution in production.
 
 The work keeps the productive skill, productive templates, target repositories,
 installer, smoke checks, `.github/**`, `.codex/**`, `AGENTS.md`, and external
@@ -63,14 +69,16 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
    proof-design case study against its copied local snapshot;
 4. preserve the frozen `execution_package_designer_kernel` as the first
    execution-package-design case study against its copied local snapshot;
-5. kernelize agents by responsibility family, one authorized agent kernel at a
+5. preserve the frozen `designer_kernel` as the first design-contribution case
+   study against its copied local snapshot;
+6. kernelize agents by responsibility family, one authorized agent kernel at a
    time;
-6. keep every future kernel subject to its own authorization and human audit;
-7. extract reusable principles without forcing every agent into one mold;
-8. validate the agent package as a coherent set only after future authorized
+7. keep every future kernel subject to its own authorization and human audit;
+8. extract reusable principles without forcing every agent into one mold;
+9. validate the agent package as a coherent set only after future authorized
    rounds;
-9. advance to Project Senior Profile only after agents are stable;
-10. rebuild the skill and any complete materialization flow only after agents and
+10. advance to Project Senior Profile only after agents are stable;
+11. rebuild the skill and any complete materialization flow only after agents and
     Profile are stable.
 
 ## Validation Criteria

@@ -1,10 +1,18 @@
 # Designer Golden Tests
 
-Status: `DRAFT_INITIAL_DESIGNER_KERNEL`.
+Status: `CLEAN_EXCELLENT_PASS`.
 
 These golden tests describe positive and negative designer-kernel behavior for
-the controlled initial draft. They are textual contract scenarios, not runtime
-materialization.
+the controlled designer kernel harness. They are textual contract scenarios,
+not runtime materialization.
+
+The golden harness is promotion-aware and accepts `CLEAN_EXCELLENT_PASS` as the
+documentary status after the separately authorized promotion audit. This pass is
+limited to kernel lab dev documentary validation, contractual validation,
+minimum semantic validation, hardened executable textual harness validation, and
+final human audit authorization. It does not authorize runtime pass,
+materialization pass, target repo pass, productive skill authorization,
+materializer authorization, GitHub writes, or target repo writes.
 
 The harness validates each scenario by local subsection evidence. A phrase in
 one golden test or subsection must not satisfy another test or subsection.
