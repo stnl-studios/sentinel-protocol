@@ -64,8 +64,8 @@ Required input:
 
 Optional input:
 
-- direction from `designer` when there is real UX, interaction, accessibility,
-  responsiveness, or visual consistency impact;
+- direction from `designer.agent.md` when there is real UX, interaction,
+  accessibility, responsiveness, or visual consistency impact;
 - already-stabilized shared contracts;
 - local framework, design system, routing, state, analytics, localization, and
   testing conventions;
@@ -75,6 +75,16 @@ If required input is absent, contradictory, stale, or insufficient for safe
 execution, the kernel must return `BLOCKED`. It must not reconstruct missing
 handoffs from runtime temporary files, scratchpads, broad repository reading, or
 local preference.
+
+When required preparation handoff is missing or invalid, the handoff shape must
+be exactly:
+
+```text
+STATUS: BLOCKED
+REASON: required handoff missing or invalid
+NEXT_OWNER: orchestrator
+REQUEST: replay previous handoff or regenerate from owner
+```
 
 ## Output Contract
 
@@ -107,6 +117,10 @@ missing package detail, missing contract basis, missing edit capability, missing
 execution capability, unsafe inference, or partial edits without safe
 completion.
 
+When `BLOCKED` follows partial editing, the handoff must explicitly preserve the
+objective blocker, touched files, partial work left behind, and whether the
+partial state is inspectable/reusable or should be discarded and re-executed.
+
 No other terminal status is valid. Progress notes, logs, partial diffs,
 operational narration, or implicit terminal states never count as final executor
 handoff.
@@ -126,10 +140,16 @@ The kernel must:
   schemas, APIs, and compatibility;
 - follow local framework, design system, routing, state, styling, package
   manager, scripts, testing strategy, and design language conventions;
-- apply the active front-end quality guardrail when the package touches
-  browser/client UI, components, state, forms, services, stores, async
-  lifecycle, API mapping, design system usage, UI states, contract behavior,
-  performance, or testability;
+- apply `stnl_frontend_quality` when the package touches web/browser client UI,
+  components, state, forms, service/facade/store use, async lifecycle, API
+  mapping, design system usage, UI states, contract behavior, performance, or
+  testability;
+- avoid unnecessary rerenders, duplicate requests, render waterfalls, oversized
+  browser-side logic, fragile selectors, and unnecessary dependency growth;
+- keep components cohesive, state predictable, and code easy to reason about;
+- validate user-visible behavior for UI/interaction changes, state transitions
+  for async/form flows, routing and permission behavior for navigation changes,
+  and contract alignment for integration-sensitive UI changes;
 - review the final diff for scope control, state coverage, accessibility,
   keyboard and focus behavior, responsive behavior, error handling, contract
   alignment, naming, consistency, and obvious test or type regressions.
@@ -164,9 +184,9 @@ Return `BLOCKED` when:
 - the brief does not define an executable front-end or client-side cut;
 - the assigned `EXECUTION PACKAGE` or `WORK_PACKAGE_ID` is missing,
   contradictory, stale, or insufficient for safe execution;
-- the assigned `EXECUTION PACKAGE` was not received from the
-  execution-package-design owner through orchestrator in the current round, or
-  replayed by orchestrator from current-round context;
+- the assigned `EXECUTION PACKAGE` was not received from
+  `execution-package-designer.agent.md` through orchestrator in the current
+  round, or replayed by orchestrator from current-round context;
 - required front-end context, contract basis, or dependency is missing for safe
   implementation;
 - the runtime lacks real edit capability, or lacks required execution capability
@@ -190,6 +210,7 @@ The kernel must not become planner:
 The kernel must not become designer:
 
 - no ownership of UX direction;
+- no replacement of `designer.agent.md` direction;
 - no product intent invention;
 - no broad redesign or new shared pattern decision.
 
@@ -217,6 +238,12 @@ durable documentation owner:
 - no round closure;
 - no resync/finalization;
 - no durable docs;
+- no `Feature CONTEXT`;
+- no `DONE`;
+- no ADR;
+- no `PLAN.md` as a canonical execution artifact;
+- no `core` docs as a resync action;
+- no `units` docs as a resync action;
 - no target repository write authorization from this documentary draft;
 - no materialization path;
 - no production-agent adoption path.

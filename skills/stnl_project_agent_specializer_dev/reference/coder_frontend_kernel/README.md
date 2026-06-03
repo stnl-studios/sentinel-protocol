@@ -33,7 +33,9 @@ materialization output, runtime behavior, or target repository state.
 - enters during execution for front-end, web, or client-side cuts;
 - applies an authorized `WORK_PACKAGE_ID` from an `EXECUTION PACKAGE`;
 - consumes `EXECUTION BRIEF` and `VALIDATION PACK`;
-- may consume `designer` direction when real UX impact exists;
+- may consume `designer.agent.md` direction when real UX impact exists;
+- applies `stnl_frontend_quality` as the package-level front-end quality
+  guardrail when web/browser client work is touched;
 - implements only the assigned front-end cut;
 - terminal statuses are only `READY` and `BLOCKED`;
 - final handoff includes implementation evidence, changed paths or equivalent

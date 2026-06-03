@@ -36,11 +36,30 @@ The bundle must explicitly preserve:
 - required `VALIDATION PACK`;
 - required guardrails when present;
 - minimum technical frontend context;
-- optional `designer` direction;
+- optional `designer.agent.md` direction;
 - optional stabilized shared contracts;
 - optional local framework, design system, routing, state, analytics,
   localization, and testing conventions;
 - optional adjacent executor evidence;
+- `stnl_frontend_quality` named explicitly as the package-level front-end
+  quality guardrail when the package touches web/browser client UI, components,
+  state, forms, service/facade/store use, async lifecycle, API mapping, design
+  system usage, UI states, contract behavior, performance, or testability;
+- performance and maintainability awareness: avoid unnecessary rerenders,
+  duplicate requests, render waterfalls, oversized browser-side logic, fragile
+  selectors, and unnecessary dependency growth while keeping components
+  cohesive, state predictable, and code easy to reason about;
+- validation expectations by change type: user-visible behavior for
+  UI/interaction changes, state transitions for async/form flows, routing and
+  permission behavior for navigation changes, and contract alignment for
+  integration-sensitive UI changes;
+- exact required-preparation missing or invalid handoff shape with
+  `STATUS: BLOCKED`, `REASON: required handoff missing or invalid`,
+  `NEXT_OWNER: orchestrator`, and `REQUEST: replay previous handoff or
+  regenerate from owner`;
+- partial-edit `BLOCKED` requirements covering objective blocker, touched files,
+  partial work left behind, and whether the partial state is inspectable/reusable
+  or should be discarded and re-executed;
 - outputs covering implementation, concise delta, paths or evidence, checks
   run or not run, residual risk, and exact blocker when blocked;
 - statuses `READY` and `BLOCKED`;
@@ -51,6 +70,9 @@ The bundle must explicitly preserve:
 - anti-role-drift boundaries against planner, designer,
   validation-eval-designer, execution-package-designer, validation-runner,
   reviewer, finalizer, and resync.
+- durable-documentation exclusions: `Feature CONTEXT`, `DONE`, ADR, `PLAN.md`
+  as a canonical execution artifact, `core` docs as a resync action, and
+  `units` docs as a resync action.
 
 ## Draft Boundary
 

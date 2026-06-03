@@ -23,7 +23,9 @@ The local snapshot must preserve these anchors from the source template:
 - required `VALIDATION PACK`;
 - required quality guardrails when present;
 - minimum technical context for the affected front-end area;
-- optional `designer` direction when real UX impact exists;
+- optional `designer.agent.md` direction when real UX impact exists;
+- `stnl_frontend_quality` as the package-level front-end quality guardrail when
+  web/browser client work is touched;
 - statuses `READY` and `BLOCKED`;
 - implementation plus concise execution delta;
 - changed paths or equivalent implementation evidence;
@@ -59,7 +61,10 @@ The kernel enters for front-end, web, or client-side behavior, including:
 
 The kernel must preserve user-visible correctness, accessibility, interaction
 quality, responsive behavior, state coherence, and contract compatibility for
-the touched slice.
+the touched slice. It must avoid unnecessary rerenders, duplicate requests,
+render waterfalls, oversized browser-side logic, fragile selectors, and
+unnecessary dependency growth, while keeping components cohesive, state
+predictable, and code easy to reason about.
 
 ## Required Inputs
 
@@ -72,12 +77,21 @@ The parity baseline requires:
 - minimum technical context for the affected front-end area.
 
 Missing, contradictory, stale, or insufficient required input causes `BLOCKED`.
+When required preparation handoff is missing or invalid, the exact handoff shape
+is:
+
+```text
+STATUS: BLOCKED
+REASON: required handoff missing or invalid
+NEXT_OWNER: orchestrator
+REQUEST: replay previous handoff or regenerate from owner
+```
 
 ## Optional Inputs
 
 The parity baseline allows:
 
-- `designer` direction for real UX, interaction, accessibility,
+- `designer.agent.md` direction for real UX, interaction, accessibility,
   responsiveness, or visual consistency impact;
 - already-stabilized shared contracts;
 - local framework conventions;
@@ -104,7 +118,14 @@ or widen the authorized package.
 - checks not run are honestly listed;
 - residual risk is explicit;
 - user-visible behavior is covered;
-- front-end quality guardrails were applied when relevant;
+- `stnl_frontend_quality` was applied when the package touched web/browser
+  client UI, components, state, forms, service/facade/store use, async
+  lifecycle, API mapping, design system usage, UI states, contract behavior,
+  performance, or testability;
+- UI/interaction changes validated user-visible behavior when relevant;
+- async/form flows validated state transitions when relevant;
+- navigation changes validated routing and permission behavior when relevant;
+- integration-sensitive UI changes validated contract alignment when relevant;
 - inspection-only claims are labeled as such;
 - contract, accessibility, state, routing, permission, feature-flag,
   localization, analytics, or validation-sensitive risks are named when
@@ -130,7 +151,10 @@ If these conditions are not met, `READY` is unsafe.
 - partial edits exist but safe completion was not reached.
 
 The blocker must be exact and narrow, with the smallest useful DEV question or
-handoff replay request when applicable.
+handoff replay request when applicable. When `BLOCKED` follows partial editing,
+the handoff must explicitly preserve the objective blocker, touched files,
+partial work left behind, and whether the partial state is inspectable/reusable
+or should be discarded and re-executed.
 
 ## Negative Space
 
@@ -138,6 +162,7 @@ The kernel must not own or perform:
 
 - must not become planner;
 - must not become designer;
+- must not replace `designer.agent.md` direction;
 - must not become validation-eval-designer;
 - must not become execution-package-designer;
 - must not become validation-runner;
@@ -147,6 +172,12 @@ The kernel must not own or perform:
 - must not become materializer;
 - must not become runtime loader;
 - must not write durable docs;
+- must not touch `Feature CONTEXT`;
+- must not touch `DONE`;
+- must not touch ADR;
+- must not touch `PLAN.md` as a canonical execution artifact;
+- must not touch `core` docs as a resync action;
+- must not touch `units` docs as a resync action;
 - must not alter canonical templates;
 - must not write target repository artifacts outside an authorized execution
   package;

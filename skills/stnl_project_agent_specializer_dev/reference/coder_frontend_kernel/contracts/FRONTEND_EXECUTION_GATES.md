@@ -22,7 +22,7 @@ temporary runtime files.
 ## UX Direction Consumption Gate
 
 Pass when real UX impact is either resolved by package/brief context or covered
-by available `designer` direction.
+by available `designer.agent.md` direction.
 
 If UX direction exists, the kernel consumes it as execution input without
 becoming the design owner.
@@ -43,13 +43,15 @@ authorized package.
 
 ## Accessibility, Focus, And Keyboard Gate
 
-Pass when the touched interaction preserves or improves semantic structure,
+Pass when the touched interaction preserves required semantic structure,
 accessible names, labels, focus visibility, keyboard access, focus management,
-disabled and pending states, and assistive-technology-friendly state changes.
+disabled and pending states, and assistive-technology-friendly state changes,
+and improves them only when the authorized package, correctness, or safety
+requires that change.
 
 Fail when required accessibility, focus, or keyboard behavior is ambiguous and
-cannot be resolved from the package, designer input, existing local patterns, or
-bounded local reading.
+cannot be resolved from the package, `designer.agent.md` input, existing local
+patterns, or bounded local reading.
 
 ## Responsive And Visual Surface Gate
 
@@ -90,6 +92,27 @@ Fail when the implementation would require inventing payloads, schemas,
 business fallback, backend behavior, authorization behavior, or public contract
 changes.
 
+## Front-End Quality Guardrail Gate
+
+Pass when `stnl_frontend_quality` is applied as the binding structural guardrail
+for packages touching web/browser client UI, components, state, forms,
+service/facade/store use, async lifecycle, API mapping, design system usage, UI
+states, contract behavior, performance, or testability.
+
+Fail when safe completion would require violating `stnl_frontend_quality`,
+editing or restating the skill content, calling unrelated guardrails by reflex,
+or expanding scope beyond the authorized package.
+
+## Performance And Maintainability Gate
+
+Pass when the touched slice avoids unnecessary rerenders, duplicate requests,
+render waterfalls, oversized browser-side logic, fragile selectors, and
+unnecessary dependency growth, while keeping components cohesive, state
+predictable, and code easy to reason about.
+
+Fail when performance or maintainability would be degraded by a change outside
+the authorized package basis.
+
 ## Permission, Feature-Flag, Localization, And Analytics Caution Gate
 
 Pass only when permission checks, auth gating, feature flags, localization keys,
@@ -113,8 +136,26 @@ Pass when the final handoff includes:
 - user-visible behavior covered;
 - inspection-only confidence clearly labeled;
 - exact blocker when `BLOCKED`;
+- when `BLOCKED` follows partial editing: objective blocker, touched files,
+  partial work left behind, and whether the partial state is
+  inspectable/reusable or should be discarded and re-executed;
 - notes for validation-runner about contract, UX, accessibility, state, routing,
   permission, feature-flag, localization, analytics, or proof-sensitive risks.
+
+The handoff must show relevant validation by change type: user-visible behavior
+for UI/interaction changes, state transitions for async/form flows, routing and
+permission behavior for navigation changes, and contract alignment for
+integration-sensitive UI changes.
+
+When required preparation handoff is missing or invalid, pass only if the
+handoff shape is exactly:
+
+```text
+STATUS: BLOCKED
+REASON: required handoff missing or invalid
+NEXT_OWNER: orchestrator
+REQUEST: replay previous handoff or regenerate from owner
+```
 
 Fail when the response is only progress narration, command logs, an implicit
 status, a partial diff without safe completion, or a completion claim without
@@ -126,6 +167,7 @@ Reject any kernel behavior that attempts to:
 
 - become planner;
 - become designer;
+- replace `designer.agent.md` direction;
 - become validation-eval-designer;
 - become execution-package-designer;
 - become validation-runner;
@@ -133,6 +175,12 @@ Reject any kernel behavior that attempts to:
 - become finalizer;
 - become resync;
 - perform durable documentation ownership;
+- touch `Feature CONTEXT`;
+- touch `DONE`;
+- touch ADR;
+- touch `PLAN.md` as a canonical execution artifact;
+- touch `core` docs as a resync action;
+- touch `units` docs as a resync action;
 - alter canonical templates;
 - write target repository artifacts from this documentary draft;
 - introduce runtime loading;
