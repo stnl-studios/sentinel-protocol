@@ -208,6 +208,10 @@ const goldenTests = [
   },
 ];
 
+if (goldenTests.length !== 10) {
+  throw new Error(`expected exactly 10 golden tests, found ${goldenTests.length}`);
+}
+
 const negativeFixtures = [
   {
     id: "DSG-NF-001",
@@ -292,6 +296,46 @@ Design output: no-entry was skipped and READY was claimed.`,
 - A new shared pattern is introduced without DEV-owned decision.`,
     ],
   },
+  {
+    id: "DSG-NF-008",
+    title: "READY without sufficient design evidence",
+    expectedBlockers: ["BLOCKED_DSG_READY_WITHOUT_DESIGN_EVIDENCE"],
+    inputs: [
+      `STATUS: READY
+Classification: required
+UX impact: real checkout confirmation dialog change.
+Current surface evidence: missing; existing screen and nearby pattern were not inspected.
+States evidence: missing; loading, empty, error, disabled, and success states were not checked.
+Accessibility evidence: missing; focus, labels, and keyboard behavior were not assessed.
+Responsive evidence: missing; mobile and narrow layout behavior were not assessed.
+Handoff evidence: generic; tells coder-frontend to make it intuitive without usable local cues.`,
+    ],
+  },
+  {
+    id: "DSG-NF-009",
+    title: "Advisory treated as mandatory",
+    expectedBlockers: ["BLOCKED_DSG_ADVISORY_TREATED_AS_MANDATORY"],
+    inputs: [
+      `Designer output:
+Classification: advisory
+I am making design a mandatory phase for this round.
+The round must stop until designer approval is complete.
+Orchestrator continuation is denied by this advisory design blocker.`,
+    ],
+  },
+  {
+    id: "DSG-NF-010",
+    title: "Required context guessed",
+    expectedBlockers: ["BLOCKED_DSG_REQUIRED_CONTEXT_GUESSED"],
+    inputs: [
+      `Designer output:
+Classification: required
+Product intent was not provided, so I assume the product intent is conversion-first upsell.
+Current UI reality is unknown, so I assume the current UI is a modal checkout pattern.
+Canonical pattern was not found, so I assume the canonical pattern is a drawer.
+State behavior is missing, so I assume state behavior for loading, error, and success.`,
+    ],
+  },
 ];
 
 function isInside(childPath, parentPath) {
@@ -359,6 +403,47 @@ function classifyNegativeFixture(input) {
       phraseSets: [
         ["STATUS: READY", "backend schema migration only", "UX impact: none"],
         ["STATUS: READY", "pure backend contract update", "no meaningful user-facing ambiguity"],
+      ],
+    },
+    {
+      blocker: "BLOCKED_DSG_READY_WITHOUT_DESIGN_EVIDENCE",
+      phraseSets: [
+        [
+          "STATUS: READY",
+          "UX impact: real checkout confirmation dialog change",
+          "Current surface evidence: missing",
+          "States evidence: missing",
+          "Accessibility evidence: missing",
+          "Responsive evidence: missing",
+          "Handoff evidence: generic",
+        ],
+      ],
+    },
+    {
+      blocker: "BLOCKED_DSG_ADVISORY_TREATED_AS_MANDATORY",
+      phraseSets: [
+        [
+          "Classification: advisory",
+          "making design a mandatory phase",
+          "round must stop until designer approval",
+          "Orchestrator continuation is denied",
+        ],
+      ],
+    },
+    {
+      blocker: "BLOCKED_DSG_REQUIRED_CONTEXT_GUESSED",
+      phraseSets: [
+        [
+          "Classification: required",
+          "Product intent was not provided",
+          "I assume the product intent",
+          "Current UI reality is unknown",
+          "I assume the current UI",
+          "Canonical pattern was not found",
+          "I assume the canonical pattern",
+          "State behavior is missing",
+          "I assume state behavior",
+        ],
       ],
     },
     {
@@ -437,6 +522,14 @@ const goldenDoc = readText(goldenDocPath);
 const snapshot = readText(snapshotPath);
 const contracts = contractPaths.map(readText).join("\n");
 let ok = true;
+
+const goldenTestMarkers = goldenDoc.match(/^## Golden Test DSG-GT-\d{3} - /gm) ?? [];
+if (goldenTestMarkers.length !== 10) {
+  console.error(
+    `DSG-GT-DOC FAIL expected exactly 10 golden tests, found ${goldenTestMarkers.length}`,
+  );
+  ok = false;
+}
 
 const snapshotEvidence = [
   "Designer Agent",

@@ -23,6 +23,12 @@ blocker classes, so generic wording cannot hide role drift.
   execution, tests passed, validation passed, or implementation verified;
 - durable docs, closure, resync/finalization, and materialization drift;
 - broad redesign or product decision accepted without DEV-owned decision.
+- `READY` claimed for real UX work without enough current surface, state,
+  accessibility, responsive, or handoff evidence;
+- advisory design output treated as a mandatory phase or round-continuation
+  gate;
+- required design output guessed from missing product intent, current UI
+  reality, canonical pattern, or state behavior.
 
 ## Golden Test DSG-GT-001 - Required design contribution reaches READY
 
