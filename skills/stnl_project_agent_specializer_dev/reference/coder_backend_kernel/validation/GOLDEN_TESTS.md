@@ -5,7 +5,6 @@ Status:
 - `initial draft`;
 - `not promoted`;
 - `not a clean pass`;
-- `pending draft audit`;
 - `harness design complete`;
 - `harness creation complete`;
 - `pending hardened harness audit`;
@@ -23,16 +22,16 @@ initial `coder-backend` documentary draft. The harnesses exist as textual
 executable validation scripts of the kernel lab dev bundle:
 `validation/check-golden.mjs` and `validation/check-static.mjs`. They are not an
 active `MANIFEST.md` entry. They do not execute agent runtime, do not authorize
-runtime execution, do not materialize anything, do not authorize a
-materialization path, do not authorize production use, do not authorize
-productive-skill behavior or change, do not write target repositories, do not
-authorize target repository write, do not write GitHub, do not authorize GitHub
-write, and do not produce generated reports or fixtures.
+runtime execution, do not authorize a runtime loader, do not materialize
+anything, do not authorize materialization path, do not authorize production
+use, do not authorize productive-skill behavior or change, do not write target
+repositories, do not authorize target repository write, do not write GitHub, do
+not authorize GitHub write, do not authorize target repo write, do not produce
+generated reports, and do not create fixtures.
 
-The existence of these harness scripts does not prove `CLEAN_EXCELLENT_PASS`.
-The kernel remains `initial draft`, `not promoted`, and `not a clean pass`.
-Promotion still depends on `HARDENED_HARNESS_AUDIT` and
-`PROMOTION_EVALUATION`.
+These harness scripts do not prove `CLEAN_EXCELLENT_PASS`. The kernel remains
+`initial draft`, `not promoted`, and `not a clean pass`. Promotion still
+depends on `HARDENED_HARNESS_AUDIT` and `PROMOTION_EVALUATION`.
 
 The post-harness kernel allowlist contains exactly nine files:
 
@@ -48,8 +47,8 @@ The post-harness kernel allowlist contains exactly nine files:
 
 ## Required Case Format
 
-Future golden cases should use stable IDs, no duplicate IDs, ascending order,
-and this subsection shape:
+Golden cases must use stable IDs, no duplicate IDs, ascending order, and this
+subsection shape:
 
 - Objective
 - Input shape

@@ -5,7 +5,6 @@ Status:
 - `initial draft`;
 - `not promoted`;
 - `not a clean pass`;
-- `pending draft audit`;
 - `harness design complete`;
 - `harness creation complete`;
 - `pending hardened harness audit`;
@@ -45,12 +44,14 @@ The kernel allowlist contains exactly nine files under
 
 Only the files above are required or authorized in this phase. The harnesses
 exist as textual executable validation scripts of the kernel lab dev bundle.
-The scripts do not authorize runtime execution, do not authorize a runtime
-loader, do not authorize materialization path, do not authorize production use,
-do not authorize production readiness, do not authorize productive-skill
-behavior or change, do not authorize target repository write, do not authorize
-target artifacts, do not authorize GitHub write, do not authorize canonical
-template change, and do not authorize generated reports or fixtures.
+The scripts do not execute agent runtime, do not authorize runtime execution,
+do not authorize a runtime loader, do not authorize materialization path, do not
+authorize production use, do not authorize production readiness, do not
+authorize productive-skill behavior or change, do not authorize target
+repository write, do not authorize target repo write, do not authorize target
+artifacts, do not authorize GitHub write, do not authorize canonical template
+change, do not produce generated reports, do not create fixtures, and do not
+prove `CLEAN_EXCELLENT_PASS`.
 
 ## Snapshot Requirement
 

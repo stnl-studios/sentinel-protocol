@@ -5,9 +5,9 @@ Status:
 - `initial draft`;
 - `not promoted`;
 - `not a clean pass`;
-- `pending draft audit`;
-- `pending harness design`;
-- `pending harness creation`;
+- `harness design complete`;
+- `harness creation complete`;
+- `pending hardened harness audit`;
 - `pending promotion evaluation`;
 - `documentary only`;
 - `contractual only`;
@@ -21,6 +21,17 @@ These gates define initial documentary checks for the `coder-backend` kernel.
 They are not an active `MANIFEST.md` entry, not a runtime implementation, not a
 runtime validation harness, not a materialization path, not a production path,
 and not productive-skill behavior.
+
+The harnesses exist as textual executable validation scripts of the dev kernel
+lab bundle: `validation/check-static.mjs` and
+`validation/check-golden.mjs`. They do not execute agent runtime, do not
+authorize runtime execution, do not authorize a runtime loader, do not
+authorize materialization path, do not authorize production use, do not
+authorize productive-skill behavior or change, do not authorize GitHub write,
+do not authorize target repository write, do not authorize target repo write,
+do not produce generated reports, do not create fixtures, do not prove
+`CLEAN_EXCELLENT_PASS`, and do not make the kernel an active `MANIFEST.md`
+entry.
 
 ## Package Authority Gate
 

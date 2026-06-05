@@ -5,7 +5,6 @@ Status:
 - `initial draft`;
 - `not promoted`;
 - `not a clean pass`;
-- `pending draft audit`;
 - `harness design complete`;
 - `harness creation complete`;
 - `pending hardened harness audit`;
@@ -23,16 +22,17 @@ initial `coder-backend` documentary draft. The harnesses exist as textual
 executable validation scripts of the kernel lab dev bundle:
 `validation/check-static.mjs` and `validation/check-golden.mjs`. They are not an
 active `MANIFEST.md` entry. They do not execute agent runtime, do not load a
-runtime agent, do not authorize runtime execution, do not materialize anything,
-do not authorize a materialization path, do not authorize production use, do not
-authorize productive-skill behavior or change, do not write target repositories,
-do not authorize target repository write, do not write GitHub, do not authorize
-GitHub write, and do not alter canonical templates.
+runtime agent, do not authorize runtime execution, do not authorize a runtime
+loader, do not materialize anything, do not authorize materialization path, do
+not authorize production use, do not authorize productive-skill behavior or
+change, do not write target repositories, do not authorize target repository
+write, do not authorize target repo write, do not write GitHub, do not
+authorize GitHub write, do not alter canonical templates, do not produce
+generated reports, and do not create fixtures.
 
-The existence of these harness scripts does not prove `CLEAN_EXCELLENT_PASS`.
-The kernel remains `initial draft`, `not promoted`, and `not a clean pass`.
-Promotion still depends on `HARDENED_HARNESS_AUDIT` and
-`PROMOTION_EVALUATION`.
+These harness scripts do not prove `CLEAN_EXCELLENT_PASS`. The kernel remains
+`initial draft`, `not promoted`, and `not a clean pass`. Promotion still
+depends on `HARDENED_HARNESS_AUDIT` and `PROMOTION_EVALUATION`.
 
 ## Required Files
 
@@ -70,15 +70,15 @@ The bundle prohibits:
 - `CLEAN_EXCELLENT_PASS`.
 
 Every primary documentary file must declare initial-draft status, not-promoted
-status, not-a-clean-pass status, pending audit/harness/promotion status,
-documentary-only status, contractual-only status, minimum-semantic-only status,
-dev-kernel-lab-only status, non-runtime status, non-production status, and no
-materialization path.
+status, not-a-clean-pass status, harness-design-complete status,
+harness-creation-complete status, pending-hardened-harness-audit status,
+pending-promotion status, documentary-only status, contractual-only status,
+minimum-semantic-only status, dev-kernel-lab-only status, non-runtime status,
+non-production status, and no materialization path.
 
 ## Structural Anchors
 
-The future static checks should preserve these anchors in the correct
-documentary sources:
+The static checks preserve these anchors in the correct documentary sources:
 
 - `coder-backend`;
 - `agent_version: 2026.5.1`;
@@ -101,7 +101,7 @@ documentary sources:
 - no finalization;
 - no resync.
 
-## Static Rules For Future Harness
+## Static Rules For Current Harness
 
 - Required files must exist and remain inside the repository after `realpath`
   resolution.

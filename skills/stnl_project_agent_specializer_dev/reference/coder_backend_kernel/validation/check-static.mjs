@@ -56,7 +56,6 @@ const requiredDraftStatusTerms = [
   "initial draft",
   "not promoted",
   "not a clean pass",
-  "pending promotion evaluation",
   "documentary only",
   "contractual only",
   "minimum semantic only",
@@ -65,6 +64,58 @@ const requiredDraftStatusTerms = [
   "non-production",
   "no materialization path",
 ];
+
+const requiredPostHarnessStatusTerms = [
+  "harness design complete",
+  "harness creation complete",
+  "pending hardened harness audit",
+  "pending promotion evaluation",
+];
+
+const prohibitedPostHarnessDriftClaims = [
+  { label: "pending draft audit", pattern: /\bpending\s+draft\s+audit\b/i },
+  { label: "pending harness design", pattern: /\bpending\s+harness\s+design\b/i },
+  { label: "pending harness creation", pattern: /\bpending\s+harness\s+creation\b/i },
+  {
+    label: "static harness absence",
+    pattern: /\b(?:there\s+is\s+)?no\s+`?validation\/check-static\.mjs`?\b/i,
+  },
+  {
+    label: "golden harness absence",
+    pattern: /\b(?:there\s+is\s+)?no\s+`?validation\/check-golden\.mjs`?\b/i,
+  },
+  {
+    label: "future executable checks",
+    pattern: /\bExecutable\s+checks\s+belong\s+to\s+future\s+phases\b/i,
+  },
+  {
+    label: "future harness assertion",
+    pattern:
+      /\b(?:harness(?:es)?|executable\s+checks?)\s+(?:belongs?|belong|is|are|remains?|remain)\s+(?:to\s+)?future\s+phases?\b/i,
+  },
+  { label: "pre-harness current state", pattern: /\bpre-harness\b/i },
+];
+
+const requiredHarnessBoundaryTerms = [
+  "textual executable validation scripts",
+  "validation/check-static.mjs",
+  "validation/check-golden.mjs",
+  "do not execute agent runtime",
+  "do not authorize runtime execution",
+  "do not authorize a runtime loader",
+  "do not authorize materialization path",
+  "do not authorize production use",
+  "do not authorize productive-skill behavior or change",
+  "do not authorize GitHub write",
+  "do not authorize target repository write",
+  "do not authorize target repo write",
+  "do not produce generated reports",
+  "do not create fixtures",
+  "do not prove `CLEAN_EXCELLENT_PASS`",
+  "active `MANIFEST.md` entry",
+];
+
+const allowlistDocPaths = [docs.readme, docs.bundle, docs.staticDoc, docs.goldenDoc];
 
 const exactInvalidHandoff = [
   "STATUS: BLOCKED",
@@ -444,6 +495,89 @@ function checkDraftStatus() {
   );
 }
 
+function checkPostHarnessStatus() {
+  const failures = [];
+
+  for (const relativePath of documentaryPaths) {
+    const lower = readText(relativePath).toLowerCase();
+    for (const term of requiredPostHarnessStatusTerms) {
+      if (!lower.includes(term)) {
+        failures.push(`${relativePath} missing post-harness status term: ${term}`);
+      }
+    }
+  }
+
+  const driftFailures = findImproperPositiveClaims(
+    documentaryPaths,
+    prohibitedPostHarnessDriftClaims,
+  );
+
+  record(
+    "CBE-ST-013",
+    failures.length === 0 && driftFailures.length === 0,
+    failures.length === 0 && driftFailures.length === 0
+      ? "all primary documents declare post-harness status and block stale pre-harness drift"
+      : [...failures, ...driftFailures].join("; "),
+  );
+}
+
+function checkReadmeHarnessScripts() {
+  const readme = readText(docs.readme);
+  const missing = ["validation/check-static.mjs", "validation/check-golden.mjs"].filter(
+    (relativePath) => !readme.includes(relativePath),
+  );
+
+  record(
+    "CBE-ST-014",
+    missing.length === 0,
+    missing.length === 0
+      ? "README.md lists both textual executable harness scripts"
+      : `README.md missing harness script(s): ${missing.join(", ")}`,
+  );
+}
+
+function checkPostHarnessAllowlistDocs() {
+  const failures = [];
+
+  for (const relativePath of allowlistDocPaths) {
+    const text = readText(relativePath);
+    for (const kernelFile of kernelFiles) {
+      if (!text.includes(kernelFile)) {
+        failures.push(`${relativePath} missing post-harness allowlist file: ${kernelFile}`);
+      }
+    }
+  }
+
+  record(
+    "CBE-ST-015",
+    failures.length === 0,
+    failures.length === 0
+      ? "README, bundle, static checks, and golden tests recognize the exact nine-file post-harness allowlist"
+      : failures.join("; "),
+  );
+}
+
+function checkHarnessBoundaryDeclarations() {
+  const failures = [];
+
+  for (const relativePath of documentaryPaths) {
+    const text = readText(relativePath);
+    for (const term of requiredHarnessBoundaryTerms) {
+      if (!containsAny(text, [term])) {
+        failures.push(`${relativePath} missing harness boundary term: ${term}`);
+      }
+    }
+  }
+
+  record(
+    "CBE-ST-016",
+    failures.length === 0,
+    failures.length === 0
+      ? "all primary documents separate textual executable harnesses from runtime, materialization, production, writes, fixtures, reports, promotion, and MANIFEST activation"
+      : failures.join("; "),
+  );
+}
+
 function checkImproperPositiveClaims() {
   const claimPatterns = [
     { label: "CLEAN_EXCELLENT_PASS", pattern: /CLEAN_EXCELLENT_PASS/i },
@@ -811,6 +945,10 @@ function main() {
     checkSnapshotParity();
     checkKernelAllowlist();
     checkDraftStatus();
+    checkPostHarnessStatus();
+    checkReadmeHarnessScripts();
+    checkPostHarnessAllowlistDocs();
+    checkHarnessBoundaryDeclarations();
     checkImproperPositiveClaims();
     checkStructuralAnchors();
     checkInvalidHandoffShape();

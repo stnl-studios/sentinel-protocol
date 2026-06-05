@@ -48,6 +48,37 @@ const requiredTermsByCase = new Map([
   ["CBE-GT-014", [["durable docs", "durable-documentation"], ["finalization"], ["resync"]]],
 ]);
 
+const prohibitedGoldenHarnessDriftClaims = [
+  {
+    label: "golden harness absence",
+    pattern: /\b(?:there\s+is\s+)?no\s+`?validation\/check-golden\.mjs`?\b/i,
+  },
+  {
+    label: "static harness absence",
+    pattern: /\b(?:there\s+is\s+)?no\s+`?validation\/check-static\.mjs`?\b/i,
+  },
+  {
+    label: "future executable checks",
+    pattern: /\bExecutable\s+checks\s+belong\s+to\s+future\s+phases\b/i,
+  },
+  {
+    label: "future harness assertion",
+    pattern:
+      /\b(?:harness(?:es)?|executable\s+checks?)\s+(?:belongs?|belong|is|are|remains?|remain)\s+(?:to\s+)?future\s+phases?\b/i,
+  },
+  { label: "pre-harness current state", pattern: /\bpre-harness\b/i },
+];
+
+const requiredGoldenHarnessSeparationTerms = [
+  "textual executable validation scripts",
+  "non-runtime",
+  "no materialization path",
+  "do not prove `CLEAN_EXCELLENT_PASS`",
+  "do not authorize runtime execution",
+  "do not authorize materialization path",
+  "do not authorize production use",
+];
+
 const results = [];
 
 function isInside(childPath, parentPath) {
@@ -280,6 +311,30 @@ function hasImproperPositiveClaim(text, claims) {
   return false;
 }
 
+function findImproperClaimsInText(text, claims) {
+  const failures = [];
+
+  for (const segment of sentenceClaimSegments(text)) {
+    for (const claim of claims) {
+      const flags = claim.pattern.flags.includes("g")
+        ? claim.pattern.flags
+        : `${claim.pattern.flags}g`;
+      const pattern = new RegExp(claim.pattern.source, flags);
+      const matches = [...segment.text.matchAll(pattern)];
+      for (const match of matches) {
+        if (claimIsDirectlyNegatedOrProhibitive(segment.text, match[0], segment.context)) {
+          continue;
+        }
+        failures.push(
+          `positive or ambiguous ${claim.label}: ${normalize(segment.text).slice(0, 180)}`,
+        );
+      }
+    }
+  }
+
+  return failures;
+}
+
 function parseGoldenCases(text) {
   const caseHeadingPattern = /^## (CBE-GT-\d{3})(?:\s+-.*)?$/gm;
   const headings = [];
@@ -436,6 +491,25 @@ function checkCaseMinimumTerms(parsed) {
   );
 }
 
+function checkGoldenHarnessBoundary(text) {
+  const driftFailures = findImproperClaimsInText(text, prohibitedGoldenHarnessDriftClaims);
+  const missingSeparation = requiredGoldenHarnessSeparationTerms.filter(
+    (term) => !containsAll(text, [term]),
+  );
+  const failures = [
+    ...driftFailures,
+    ...missingSeparation.map((term) => `missing harness separation term: ${term}`),
+  ];
+
+  record(
+    "CBE-GT-HARNESS",
+    failures.length === 0,
+    failures.length === 0
+      ? "golden document keeps textual executable harnesses separate from future/inexistent harness, runtime, materialization, production, and promotion claims"
+      : failures.join("; "),
+  );
+}
+
 function checkExplicitFailureConditions(parsed) {
   const sectionsById = new Map(parsed.sections.map((section) => [section.id, section]));
   const failures = [];
@@ -523,7 +597,9 @@ function main() {
   try {
     const staticOk = runStaticPrecondition();
     if (staticOk) {
-      const parsed = parseGoldenCases(readText(goldenDoc));
+      const goldenText = readText(goldenDoc);
+      checkGoldenHarnessBoundary(goldenText);
+      const parsed = parseGoldenCases(goldenText);
       checkCaseIdsAndOrder(parsed);
       checkCaseSections(parsed);
       checkCaseMinimumTerms(parsed);
