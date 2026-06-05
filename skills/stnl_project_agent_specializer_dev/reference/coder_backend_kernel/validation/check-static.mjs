@@ -94,6 +94,13 @@ const prohibitedResidualStatusClaims = [
   { label: "pre-harness current state", pattern: /\bpre-harness\b/i },
 ];
 
+const prohibitedLiteralResidualPatterns = [
+  {
+    label: "residual clean-pass proof denial",
+    pattern: /\bdo(?:es)?\s+not\s+prove\s+`?CLEAN_EXCELLENT_PASS`?(?=$|[\s,.;:)\]])/i,
+  },
+];
+
 const requiredHarnessBoundaryTerms = [
   "textual executable validation scripts",
   "validation/check-static.mjs",
@@ -116,6 +123,18 @@ const requiredHarnessBoundaryTerms = [
 ];
 
 const allowlistDocPaths = [docs.readme, docs.bundle, docs.staticDoc, docs.goldenDoc];
+
+const expectedReadmeBundleBullets = [
+  "`README.md`;",
+  "`contracts/CONTRACT.md`;",
+  "`contracts/BEHAVIOR_PARITY_SPINE.md`;",
+  "`contracts/MINIMUM_SAFE_BUNDLE.md`;",
+  "`contracts/BACKEND_EXECUTION_GATES.md`;",
+  "`validation/STATIC_CHECKS.md`;",
+  "`validation/GOLDEN_TESTS.md`;",
+  "`validation/check-static.mjs`;",
+  "`validation/check-golden.mjs`.",
+];
 
 const exactInvalidHandoff = [
   "STATUS: BLOCKED",
@@ -409,6 +428,85 @@ function findImproperPositiveClaims(paths, claims) {
   return failures;
 }
 
+function findLiteralProhibitedPatterns(paths, claims) {
+  const failures = [];
+  for (const relativePath of paths) {
+    const text = readText(relativePath);
+    for (const claim of claims) {
+      const flags = claim.pattern.flags.includes("g")
+        ? claim.pattern.flags
+        : `${claim.pattern.flags}g`;
+      const pattern = new RegExp(claim.pattern.source, flags);
+      for (const match of text.matchAll(pattern)) {
+        failures.push(`${relativePath} contains ${claim.label}: ${normalize(match[0])}`);
+      }
+    }
+  }
+  return failures;
+}
+
+function parseMarkdownHeading(line) {
+  const match = line.match(/^(#{1,6})\s+(.+?)\s*#*\s*$/);
+  if (!match) return null;
+  return { level: match[1].length, title: match[2].trim() };
+}
+
+function extractMarkdownSectionLines(text, headingTitle, headingLevel) {
+  const lines = text.split(/\r?\n/);
+  const start = lines.findIndex((line) => {
+    const heading = parseMarkdownHeading(line);
+    return (
+      heading &&
+      heading.level === headingLevel &&
+      heading.title.toLowerCase() === headingTitle.toLowerCase()
+    );
+  });
+
+  if (start === -1) return null;
+
+  const section = [];
+  for (let index = start + 1; index < lines.length; index += 1) {
+    const heading = parseMarkdownHeading(lines[index]);
+    if (heading && heading.level <= headingLevel) break;
+    section.push(lines[index]);
+  }
+  return section;
+}
+
+function readmeBundleSectionFailures() {
+  const readme = readText(docs.readme);
+  const section = extractMarkdownSectionLines(readme, "Bundle", 2);
+  if (!section) return ["README.md missing ## Bundle section"];
+
+  const bullets = section
+    .map((line) => line.match(/^\s*[-*]\s+(.+?)\s*$/))
+    .filter(Boolean)
+    .map((match) => match[1].trim());
+  const expectedSet = new Set(expectedReadmeBundleBullets);
+  const counts = new Map();
+  for (const bullet of bullets) {
+    counts.set(bullet, (counts.get(bullet) || 0) + 1);
+  }
+
+  const failures = [];
+  for (const expected of expectedReadmeBundleBullets) {
+    const count = counts.get(expected) || 0;
+    if (count === 0) {
+      failures.push(`README.md ## Bundle missing required bullet: ${expected}`);
+    } else if (count > 1) {
+      failures.push(`README.md ## Bundle duplicates required bullet: ${expected}`);
+    }
+  }
+
+  for (const bullet of bullets) {
+    if (!expectedSet.has(bullet)) {
+      failures.push(`README.md ## Bundle has extra bullet: ${bullet}`);
+    }
+  }
+
+  return failures;
+}
+
 function checkRequiredFiles() {
   const failures = [];
   for (const relativePath of requiredPaths) {
@@ -500,13 +598,18 @@ function checkResidualStatusWordingAbsent() {
     documentaryPaths,
     prohibitedResidualStatusClaims,
   );
+  const literalFailures = findLiteralProhibitedPatterns(
+    documentaryPaths,
+    prohibitedLiteralResidualPatterns,
+  );
+  const failures = [...driftFailures, ...literalFailures];
 
   record(
     "CBE-ST-013",
-    driftFailures.length === 0,
-    driftFailures.length === 0
+    failures.length === 0,
+    failures.length === 0
       ? "all primary documents reject stale pre-promotion and phase-status wording"
-      : driftFailures.join("; "),
+      : failures.join("; "),
   );
 }
 
@@ -526,7 +629,7 @@ function checkReadmeHarnessScripts() {
 }
 
 function checkPostHarnessAllowlistDocs() {
-  const failures = [];
+  const failures = readmeBundleSectionFailures();
 
   for (const relativePath of allowlistDocPaths) {
     const text = readText(relativePath);
@@ -541,7 +644,7 @@ function checkPostHarnessAllowlistDocs() {
     "CBE-ST-015",
     failures.length === 0,
     failures.length === 0
-      ? "README, bundle, static checks, and golden tests recognize the exact nine-file post-harness allowlist"
+      ? "README ## Bundle, bundle, static checks, and golden tests recognize the exact nine-file post-harness allowlist"
       : failures.join("; "),
   );
 }
