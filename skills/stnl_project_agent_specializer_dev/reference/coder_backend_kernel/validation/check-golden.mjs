@@ -110,21 +110,174 @@ function containsAll(text, terms) {
   return terms.every((term) => lower.includes(normalizeLower(term)));
 }
 
-function splitBlocks(text) {
-  return text
-    .split(/\n\s*\n/)
-    .map((block) => block.trim())
+function escapeRegExp(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function splitSentences(line) {
+  return line
+    .split(/(?<=[.!?;])\s+|(?<=:)\s+(?=[A-Z`])/)
+    .map((sentence) => sentence.trim())
     .filter(Boolean);
 }
 
-function isNegatedOrProhibitive(block) {
-  const lower = normalizeLower(block);
-  return /\b(not|no|never|without|invalid|missing|prohibit|prohibits|prohibited|reject|rejects|rejected|block|blocks|blocked|fail|fails|failed|failure|unsafe|absent|pending)\b/.test(
-    lower,
+function previousMeaningfulLine(lines, startIndex) {
+  for (let index = startIndex - 1; index >= 0; index -= 1) {
+    const line = lines[index].trim();
+    if (line.length > 0) return line;
+  }
+  return "";
+}
+
+function isListItem(sentence) {
+  return /^\s*[-*]\s+/.test(sentence);
+}
+
+function isProhibitiveListContext(context) {
+  return /\b(prohibits?|prohibited|prohibitions?|forbidden|blocks?|blocked|rejects?|rejected|invalid|excluded|exclusions?|must not|does not authorize|do not authorize|not authorized|not allowed|not permitted)\b/i.test(
+    context,
+  );
+}
+
+function hasPositiveActivationVerb(sentence) {
+  return /\b(is|are|be|being|been|becomes?|become|remains?|remain)\s+(authorized|allowed|permitted|active|enabled|available|produced|created|generated|executed|loaded|materialized|written|ready)\b/i.test(
+    sentence,
   ) ||
-    /\b(must not|does not|do not|cannot|may not|is not|are not|not an active|not a runtime|not a materialization|not a production|not productive|not a clean pass|does not prove)\b/.test(
-      lower,
+    /\b(authorizes?|allows?|permits?|produces?|creates?|generates?|executes?|loads?|materializes?|enables?)\b/i.test(
+      sentence,
     );
+}
+
+function sentenceClaimSegments(text) {
+  const lines = text.split(/\r?\n/);
+  const segments = [];
+  let paragraph = "";
+  let paragraphContext = "";
+  let activeListContext = "";
+  let listItem = "";
+  let listItemContext = "";
+
+  function addSentences(source, context) {
+    for (const sentence of splitSentences(source)) {
+      segments.push({ text: sentence, context });
+    }
+  }
+
+  function flushParagraph() {
+    if (paragraph.trim().length > 0) {
+      addSentences(paragraph, paragraphContext);
+      paragraph = "";
+      paragraphContext = "";
+    }
+  }
+
+  function flushListItem() {
+    if (listItem.trim().length > 0) {
+      addSentences(listItem, listItemContext);
+      listItem = "";
+      listItemContext = "";
+    }
+  }
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const trimmed = line.trim();
+
+    if (trimmed.length === 0) {
+      flushListItem();
+      flushParagraph();
+      continue;
+    }
+
+    if (/^\s*[-*]\s+/.test(line)) {
+      flushListItem();
+      flushParagraph();
+      const context = activeListContext || previousMeaningfulLine(lines, index);
+      listItem = trimmed;
+      listItemContext = context;
+      continue;
+    }
+
+    if (listItem.length > 0 && /^\s+/.test(line)) {
+      listItem = `${listItem} ${trimmed}`;
+      continue;
+    }
+
+    flushListItem();
+
+    if (/^#{1,6}\s+/.test(trimmed)) {
+      flushParagraph();
+      activeListContext = trimmed;
+      addSentences(line, previousMeaningfulLine(lines, index));
+      continue;
+    }
+
+    if (trimmed.endsWith(":")) {
+      flushParagraph();
+      activeListContext = trimmed;
+      addSentences(line, previousMeaningfulLine(lines, index));
+      continue;
+    }
+
+    if (paragraph.length === 0) {
+      paragraphContext = previousMeaningfulLine(lines, index);
+    }
+    paragraph = paragraph.length === 0 ? trimmed : `${paragraph} ${trimmed}`;
+  }
+
+  flushListItem();
+  flushParagraph();
+  return segments;
+}
+
+function claimIsDirectlyNegatedOrProhibitive(sentence, claimText, context) {
+  const claim = escapeRegExp(claimText.trim()).replace(/\s+/g, "\\s+");
+  const beforeClaim = String.raw`[^.!?;\n]{0,260}${claim}`;
+  const afterClaim = String.raw`${claim}[^.!?;\n]{0,260}`;
+  const directNoClaim = new RegExp(String.raw`\bno\s+${claim}\b`, "i");
+  const positiveAfterClaim = new RegExp(String.raw`${claim}(?:\s+(?:is|are|remains?|remain|becomes?|become|must\s+be|should\s+be))?\s+(?:authorized|authorised|allowed|permitted|active|enabled|available|produced|created|generated|executed|loaded|materialized|written|ready)\b`, "i");
+
+  if (!directNoClaim.test(sentence) && positiveAfterClaim.test(sentence)) {
+    return false;
+  }
+
+  const directPatterns = [
+    new RegExp(String.raw`\b(?:must|does|do|did|may|can|is|are|was|were|should)\s+not\s+(?:claim|authorize|authorise|allow|permit|prove|implement|execute|enter|load|materialize|write|produce|create|generate|use|promote|return|emit|alter|touch|include|contain|become|introduce|mean|means)\b${beforeClaim}`, "i"),
+    new RegExp(String.raw`\b(?:cannot|never)\s+(?:claim|authorize|authorise|allow|permit|prove|implement|execute|enter|load|materialize|write|produce|create|generate|use|promote|return|emit|alter|touch|include|contain|become|introduce|mean|means)\b${beforeClaim}`, "i"),
+    new RegExp(String.raw`\bnot\s+(?:authorized|authorised|allowed|permitted)\s+(?:for|to|as)?${beforeClaim}`, "i"),
+    new RegExp(String.raw`\bnot\s+(?:an?\s+)?${claim}\b`, "i"),
+    directNoClaim,
+    new RegExp(String.raw`\bno\b${beforeClaim}`, "i"),
+    new RegExp(String.raw`\b(?:prohibits?|prohibited|forbids?|forbidden|blocks?|blocked|rejects?|rejected|invalidates?|invalid|unsafe|absent|excluded)\b${beforeClaim}`, "i"),
+    new RegExp(String.raw`${afterClaim}\b(?:is|are|remains?|remain|must\s+remain|must\s+be|should\s+remain|should\s+be)?\s*(?:not\s+)?(?:authorized|authorised|allowed|permitted|prohibited|forbidden|blocked|rejected|invalid|unsafe|absent|excluded)\b`, "i"),
+    new RegExp(String.raw`${afterClaim}\b(?:must|may|can|does|do|is|are)\s+not\b`, "i"),
+  ];
+
+  if (directPatterns.some((pattern) => pattern.test(sentence))) return true;
+
+  return (
+    isListItem(sentence) &&
+    isProhibitiveListContext(context) &&
+    !hasPositiveActivationVerb(sentence)
+  );
+}
+
+function hasImproperPositiveClaim(text, claims) {
+  for (const segment of sentenceClaimSegments(text)) {
+    for (const claim of claims) {
+      const flags = claim.pattern.flags.includes("g")
+        ? claim.pattern.flags
+        : `${claim.pattern.flags}g`;
+      const pattern = new RegExp(claim.pattern.source, flags);
+      const matches = [...segment.text.matchAll(pattern)];
+      for (const match of matches) {
+        if (!claimIsDirectlyNegatedOrProhibitive(segment.text, match[0], segment.context)) {
+          return true;
+        }
+      }
+    }
+  }
+  return false;
 }
 
 function parseGoldenCases(text) {
@@ -309,10 +462,13 @@ function checkExplicitFailureConditions(parsed) {
     const expectedBehavior = extractSubsection(section.text, "### Expected behavior");
     const expectedBlocker = extractSubsection(section.text, "### Expected blocker");
     const activeText = `${expectedBehavior}\n${expectedBlocker}`;
-    const activeLocalPlan =
-      /\b(local plan|reconstruct|proceeds with implementation|claims validation verdict ownership)\b/i.test(
-        activeText,
-      ) && !isNegatedOrProhibitive(activeText);
+    const activeLocalPlan = hasImproperPositiveClaim(activeText, [
+      {
+        label: "local handoff substitution",
+        pattern:
+          /\b(local plan|reconstruct|proceeds with implementation|claims validation verdict ownership)\b/i,
+      },
+    ]);
     if (activeLocalPlan) {
       failures.push(`${id} converts missing handoff into local plan or owner substitution`);
     }
@@ -324,17 +480,19 @@ function checkExplicitFailureConditions(parsed) {
     { label: "fixture/generated report", pattern: /\b(fixtures?|generated\s+reports?)\b/i },
   ];
 
-  const blocks = splitBlocks(documentText);
-  for (let index = 0; index < blocks.length; index += 1) {
-    const block = blocks[index];
-    const inheritedBlock = `${blocks[index - 1] ?? ""}\n${block}`;
+  const segments = sentenceClaimSegments(documentText);
+  for (const segment of segments) {
     for (const claim of positiveClaimPatterns) {
-      if (
-        claim.pattern.test(block) &&
-        !isNegatedOrProhibitive(block) &&
-        !isNegatedOrProhibitive(inheritedBlock)
-      ) {
-        failures.push(`positive active ${claim.label} claim: ${normalize(block).slice(0, 180)}`);
+      const flags = claim.pattern.flags.includes("g")
+        ? claim.pattern.flags
+        : `${claim.pattern.flags}g`;
+      const pattern = new RegExp(claim.pattern.source, flags);
+      const matches = [...segment.text.matchAll(pattern)];
+      for (const match of matches) {
+        if (claimIsDirectlyNegatedOrProhibitive(segment.text, match[0], segment.context)) {
+          continue;
+        }
+        failures.push(`positive active ${claim.label} claim: ${normalize(segment.text).slice(0, 180)}`);
       }
     }
   }

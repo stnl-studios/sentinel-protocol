@@ -6,8 +6,9 @@ Status:
 - `not promoted`;
 - `not a clean pass`;
 - `pending draft audit`;
-- `pending harness design`;
-- `pending harness creation`;
+- `harness design complete`;
+- `harness creation complete`;
+- `pending hardened harness audit`;
 - `pending promotion evaluation`;
 - `documentary only`;
 - `contractual only`;
@@ -18,7 +19,9 @@ Status:
 - `no materialization path`.
 
 The minimum safe bundle for this initial kernel lab dev draft is intentionally
-small and allowlist-bound. It is not an active `MANIFEST.md` entry.
+small and allowlist-bound. It is not an active `MANIFEST.md` entry. The
+post-harness textual validation scripts exist only inside this dev kernel lab
+bundle and do not prove promotion.
 
 ## Required Files
 
@@ -29,13 +32,25 @@ small and allowlist-bound. It is not an active `MANIFEST.md` entry.
 - `reference/coder_backend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`;
 - `reference/coder_backend_kernel/contracts/BACKEND_EXECUTION_GATES.md`;
 - `reference/coder_backend_kernel/validation/STATIC_CHECKS.md`;
-- `reference/coder_backend_kernel/validation/GOLDEN_TESTS.md`.
+- `reference/coder_backend_kernel/validation/GOLDEN_TESTS.md`;
+- `reference/coder_backend_kernel/validation/check-static.mjs`;
+- `reference/coder_backend_kernel/validation/check-golden.mjs`.
 
-Only the documentary files above are required or authorized in this phase. No
-validation script, fixture, generated report, runtime loader, materialization
-path, production artifact, target-repository artifact, runtime execution,
-materializer, production use, target repository write, GitHub write, canonical
-template change, or productive-skill change is authorized by this draft.
+The kernel allowlist contains exactly nine files under
+`reference/coder_backend_kernel/`: `README.md`, `contracts/CONTRACT.md`,
+`contracts/BEHAVIOR_PARITY_SPINE.md`, `contracts/MINIMUM_SAFE_BUNDLE.md`,
+`contracts/BACKEND_EXECUTION_GATES.md`, `validation/STATIC_CHECKS.md`,
+`validation/GOLDEN_TESTS.md`, `validation/check-static.mjs`, and
+`validation/check-golden.mjs`.
+
+Only the files above are required or authorized in this phase. The harnesses
+exist as textual executable validation scripts of the kernel lab dev bundle.
+The scripts do not authorize runtime execution, do not authorize a runtime
+loader, do not authorize materialization path, do not authorize production use,
+do not authorize production readiness, do not authorize productive-skill
+behavior or change, do not authorize target repository write, do not authorize
+target artifacts, do not authorize GitHub write, do not authorize canonical
+template change, and do not authorize generated reports or fixtures.
 
 ## Snapshot Requirement
 
@@ -102,8 +117,12 @@ The bundle may claim only initial draft status. It must not claim
 pass, productive skill authorization, materializer authorization, GitHub writes,
 target repository writes, automatic promotion, or active `MANIFEST.md` status.
 
-Checks executable as `check-static.mjs` or `check-golden.mjs` are not part of
-this bundle. Harness design and harness creation belong to future phases.
+Executable checks as `check-static.mjs` and `check-golden.mjs` are part of the
+post-harness dev kernel lab bundle. Their existence does not prove
+`CLEAN_EXCELLENT_PASS`; it does not authorize runtime, materialization,
+production, productive skill use, GitHub write, or target repo write. The kernel
+remains `initial draft`, `not promoted`, and `not a clean pass`. Promotion still
+depends on `HARDENED_HARNESS_AUDIT` and `PROMOTION_EVALUATION`.
 
 ## Ignore Rules
 

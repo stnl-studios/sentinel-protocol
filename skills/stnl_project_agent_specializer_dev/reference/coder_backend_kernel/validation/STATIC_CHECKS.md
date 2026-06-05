@@ -6,8 +6,9 @@ Status:
 - `not promoted`;
 - `not a clean pass`;
 - `pending draft audit`;
-- `pending harness design`;
-- `pending harness creation`;
+- `harness design complete`;
+- `harness creation complete`;
+- `pending hardened harness audit`;
 - `pending promotion evaluation`;
 - `documentary only`;
 - `contractual only`;
@@ -17,17 +18,21 @@ Status:
 - `non-production`;
 - `no materialization path`.
 
-These static checks are textual pre-harness criteria for the initial
-`coder-backend` documentary draft. They are not an active `MANIFEST.md` entry.
-They do not execute agent runtime, do not load a runtime agent, do not
-materialize anything, do not write target repositories, do not write GitHub, and
-do not alter canonical templates.
+These static checks are post-harness textual validation criteria for the
+initial `coder-backend` documentary draft. The harnesses exist as textual
+executable validation scripts of the kernel lab dev bundle:
+`validation/check-static.mjs` and `validation/check-golden.mjs`. They are not an
+active `MANIFEST.md` entry. They do not execute agent runtime, do not load a
+runtime agent, do not authorize runtime execution, do not materialize anything,
+do not authorize a materialization path, do not authorize production use, do not
+authorize productive-skill behavior or change, do not write target repositories,
+do not authorize target repository write, do not write GitHub, do not authorize
+GitHub write, and do not alter canonical templates.
 
-There is no `validation/check-static.mjs` in this phase. There is also no
-`validation/check-golden.mjs` in this phase. Executable static and golden
-checks belong to future harness design and harness creation phases. This phase
-does not prove `CLEAN_EXCELLENT_PASS`; it only prepares criteria for later draft
-audit, harness design, harness creation, and promotion evaluation.
+The existence of these harness scripts does not prove `CLEAN_EXCELLENT_PASS`.
+The kernel remains `initial draft`, `not promoted`, and `not a clean pass`.
+Promotion still depends on `HARDENED_HARNESS_AUDIT` and
+`PROMOTION_EVALUATION`.
 
 ## Required Files
 
@@ -40,7 +45,9 @@ the exact allowed file list is:
 - `contracts/MINIMUM_SAFE_BUNDLE.md`;
 - `contracts/BACKEND_EXECUTION_GATES.md`;
 - `validation/STATIC_CHECKS.md`;
-- `validation/GOLDEN_TESTS.md`.
+- `validation/GOLDEN_TESTS.md`;
+- `validation/check-static.mjs`;
+- `validation/check-golden.mjs`.
 
 The local dev snapshot must remain byte-for-byte equal to
 `templates/agents/coder-backend.agent.md`.
@@ -49,11 +56,11 @@ The local dev snapshot must remain byte-for-byte equal to
 
 The bundle prohibits:
 
-- `validation/check-static.mjs`;
-- `validation/check-golden.mjs`;
 - runtime loader;
+- runtime execution;
 - materialization path;
 - production use;
+- productive-skill authorization;
 - target repository writes;
 - GitHub writes;
 - canonical template changes;
@@ -99,9 +106,15 @@ documentary sources:
 - Required files must exist and remain inside the repository after `realpath`
   resolution.
 - `__MACOSX` and `.DS_Store` must be ignored.
-- The kernel directory must match the exact initial-draft allowlist above.
+- The kernel directory must match the exact post-harness allowlist above.
 - The dev snapshot must equal the canonical template byte-for-byte.
-- No executable harness file may exist in this phase.
+- The textual executable harness files may exist only as
+  `validation/check-static.mjs` and `validation/check-golden.mjs` in this dev
+  kernel lab bundle.
+- The harness scripts must not authorize runtime execution, materialization
+  path, production use, productive-skill change, GitHub write, target repository
+  write, fixtures, generated reports, runtime loader, materializer, or target
+  artifacts.
 - Every primary documentary file must declare initial-draft, not-promoted, and
   not-clean-pass status.
 - The kernel directory must not contain fixture paths, generated report paths,

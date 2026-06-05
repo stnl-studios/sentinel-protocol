@@ -6,8 +6,9 @@ Status:
 - `not promoted`;
 - `not a clean pass`;
 - `pending draft audit`;
-- `pending harness design`;
-- `pending harness creation`;
+- `harness design complete`;
+- `harness creation complete`;
+- `pending hardened harness audit`;
 - `pending promotion evaluation`;
 - `documentary only`;
 - `contractual only`;
@@ -17,17 +18,33 @@ Status:
 - `non-production`;
 - `no materialization path`.
 
-These golden checks are textual pre-harness scenarios for the initial
-`coder-backend` documentary draft. They are not an active `MANIFEST.md` entry.
-They do not execute agent runtime, do not materialize anything, do not write
-target repositories, do not write GitHub, and do not produce generated reports
-or fixtures.
+These golden checks are post-harness textual validation scenarios for the
+initial `coder-backend` documentary draft. The harnesses exist as textual
+executable validation scripts of the kernel lab dev bundle:
+`validation/check-golden.mjs` and `validation/check-static.mjs`. They are not an
+active `MANIFEST.md` entry. They do not execute agent runtime, do not authorize
+runtime execution, do not materialize anything, do not authorize a
+materialization path, do not authorize production use, do not authorize
+productive-skill behavior or change, do not write target repositories, do not
+authorize target repository write, do not write GitHub, do not authorize GitHub
+write, and do not produce generated reports or fixtures.
 
-There is no `validation/check-golden.mjs` in this phase. There is also no
-`validation/check-static.mjs` in this phase. Executable golden and static checks
-belong to future harness design and harness creation phases. This phase does
-not prove `CLEAN_EXCELLENT_PASS`; it only prepares criteria for later draft
-audit, harness design, harness creation, and promotion evaluation.
+The existence of these harness scripts does not prove `CLEAN_EXCELLENT_PASS`.
+The kernel remains `initial draft`, `not promoted`, and `not a clean pass`.
+Promotion still depends on `HARDENED_HARNESS_AUDIT` and
+`PROMOTION_EVALUATION`.
+
+The post-harness kernel allowlist contains exactly nine files:
+
+- `README.md`;
+- `contracts/CONTRACT.md`;
+- `contracts/BEHAVIOR_PARITY_SPINE.md`;
+- `contracts/MINIMUM_SAFE_BUNDLE.md`;
+- `contracts/BACKEND_EXECUTION_GATES.md`;
+- `validation/STATIC_CHECKS.md`;
+- `validation/GOLDEN_TESTS.md`;
+- `validation/check-static.mjs`;
+- `validation/check-golden.mjs`.
 
 ## Required Case Format
 
