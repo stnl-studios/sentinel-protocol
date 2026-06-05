@@ -1,24 +1,21 @@
 # Coder Back-End Golden Tests
 
-Status:
+Status: `CLEAN_EXCELLENT_PASS`.
 
-- `initial draft`;
-- `not promoted`;
-- `not a clean pass`;
-- `harness design complete`;
-- `harness creation complete`;
-- `pending hardened harness audit`;
-- `pending promotion evaluation`;
-- `documentary only`;
-- `contractual only`;
-- `minimum semantic only`;
+Promotion state:
+
+- `documentary promotion applied`;
+- `documentary validation pass`;
+- `contractual pass`;
+- `minimum semantic pass`;
+- `hardened textual executable harness pass`;
 - `dev kernel lab only`;
 - `non-runtime`;
 - `non-production`;
 - `no materialization path`.
 
-These golden checks are post-harness textual validation scenarios for the
-initial `coder-backend` documentary draft. The harnesses exist as textual
+These golden checks are promoted textual validation scenarios for the
+`coder-backend` documentary/dev kernel lab pass. The harnesses exist as textual
 executable validation scripts of the kernel lab dev bundle:
 `validation/check-golden.mjs` and `validation/check-static.mjs`. They are not an
 active `MANIFEST.md` entry. They do not execute agent runtime, do not authorize
@@ -27,11 +24,16 @@ anything, do not authorize materialization path, do not authorize production
 use, do not authorize productive-skill behavior or change, do not write target
 repositories, do not authorize target repository write, do not write GitHub, do
 not authorize GitHub write, do not authorize target repo write, do not produce
-generated reports, and do not create fixtures.
+generated reports, do not create fixtures, do not authorize target artifacts,
+do not authorize active runtime adoption, and do not alter canonical templates.
 
-These harness scripts do not prove `CLEAN_EXCELLENT_PASS`. The kernel remains
-`initial draft`, `not promoted`, and `not a clean pass`. Promotion still
-depends on `HARDENED_HARNESS_AUDIT` and `PROMOTION_EVALUATION`.
+These harness scripts prove only documentary/dev kernel lab
+`CLEAN_EXCELLENT_PASS`. Passing them does not authorize runtime pass,
+runtime loader, runtime execution, materialization pass, materialization path,
+target repository pass, production use, productive skill authorization,
+materializer authorization, GitHub writes, or target repository writes. They do
+not authorize generated reports, fixtures, target artifacts, active runtime
+adoption, canonical template changes, or automatic future promotion.
 
 The post-harness kernel allowlist contains exactly nine files:
 

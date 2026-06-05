@@ -8,13 +8,14 @@ O foco imediato mudou para validação de kernelização de agents fora do fluxo
 materialização da skill. O kernel lab contém `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, o kernel congelado `designer_kernel` e o
-kernel promovido `coder_frontend_kernel`.
+kernel promovido `coder_frontend_kernel` e o kernel promovido
+`coder_backend_kernel`.
 
-Há seis kernels congelados como `CLEAN_EXCELLENT_PASS`:
+Há sete kernels congelados como `CLEAN_EXCELLENT_PASS`:
 `orchestrator_kernel`, `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, `designer_kernel` e
-`coder_frontend_kernel`. Esses passes são resultados exclusivos do kernel lab
-dev.
+`coder_frontend_kernel` e `coder_backend_kernel`. Esses passes são resultados
+exclusivos do kernel lab dev.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -50,6 +51,17 @@ endurecido; não é runtime pass, não é materialization pass, não é target r
 pass, não autoriza produção, não autoriza skill produtiva, não autoriza
 materializer, não autoriza escrita em GitHub, não autoriza escrita em repo alvo
 e não autoriza alteração em templates canônicos.
+
+O `coder_backend_kernel` foi promovido para `CLEAN_EXCELLENT_PASS` após
+promoção documental controlada com snapshot byte-a-byte preservado e harness
+documental/textual endurecido. Esse pass vale somente para o kernel lab dev
+documental, contratual, semântico mínimo e com harness textual executável
+endurecido; não é runtime pass, não é materialization pass, não é target repo
+pass, não autoriza runtime loader, não autoriza materialization path, não
+autoriza produção, não autoriza skill produtiva, não autoriza materializer, não
+autoriza escrita em GitHub, não autoriza escrita em repo alvo, não autoriza
+generated reports, fixtures, target artifacts, active runtime adoption ou
+alteração em templates canônicos.
 
 A skill dev continua experimental. Não há runtime real, materializer ativo,
 target materialization, generated artifact, autorização para skill produtiva ou
@@ -94,6 +106,13 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   `templates/agents/coder-frontend.agent.md`, com harness documental/textual
   endurecido e sem runtime, materialização, produção, escrita em GitHub,
   escrita em repo alvo ou alteração em templates canônicos;
+- preservar o `coder_backend_kernel` promovido contra o snapshot dev local
+  `reference/agents/coder-backend.agent.md`, derivado literalmente de
+  `templates/agents/coder-backend.agent.md`, com harness documental/textual
+  endurecido e sem runtime, runtime loader, materialização, materialization
+  path, produção, escrita em GitHub, escrita em repo alvo, generated reports,
+  fixtures, target artifacts, active runtime adoption, skill produtiva ou
+  alteração em templates canônicos;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
 - manter qualquer kernel futuro sujeito a autorização e auditoria próprias;
@@ -121,6 +140,11 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
 - tratar `reference/coder_frontend_kernel/**` como clean pass documental
   dev-only com harness textual bloqueante, sem autorizar runtime,
   materialização, produção, GitHub, repo alvo ou skill produtiva;
+- tratar `reference/coder_backend_kernel/**` como clean pass documental
+  dev-only com harness textual bloqueante, sem autorizar runtime, runtime
+  loader, materialização, materialization path, produção, GitHub, repo alvo,
+  generated reports, fixtures, target artifacts, active runtime adoption ou
+  skill produtiva;
 - nunca usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou
   filesystem externo;
 - não tocar na skill produtiva, templates produtivos, installer, smoke,

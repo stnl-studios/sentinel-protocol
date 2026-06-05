@@ -1,26 +1,23 @@
 # Minimum Safe Bundle
 
-Status:
+Status: `CLEAN_EXCELLENT_PASS`.
 
-- `initial draft`;
-- `not promoted`;
-- `not a clean pass`;
-- `harness design complete`;
-- `harness creation complete`;
-- `pending hardened harness audit`;
-- `pending promotion evaluation`;
-- `documentary only`;
-- `contractual only`;
-- `minimum semantic only`;
+Promotion state:
+
+- `documentary promotion applied`;
+- `documentary validation pass`;
+- `contractual pass`;
+- `minimum semantic pass`;
+- `hardened textual executable harness pass`;
 - `dev kernel lab only`;
 - `non-runtime`;
 - `non-production`;
 - `no materialization path`.
 
-The minimum safe bundle for this initial kernel lab dev draft is intentionally
-small and allowlist-bound. It is not an active `MANIFEST.md` entry. The
-post-harness textual validation scripts exist only inside this dev kernel lab
-bundle and do not prove promotion.
+The minimum safe bundle for this promoted kernel lab dev pass is intentionally
+small and allowlist-bound. It is not an active `MANIFEST.md` entry. The textual
+validation scripts exist only inside this dev kernel lab bundle and prove only
+documentary/dev kernel lab `CLEAN_EXCELLENT_PASS`.
 
 ## Required Files
 
@@ -49,9 +46,10 @@ do not authorize a runtime loader, do not authorize materialization path, do not
 authorize production use, do not authorize production readiness, do not
 authorize productive-skill behavior or change, do not authorize target
 repository write, do not authorize target repo write, do not authorize target
-artifacts, do not authorize GitHub write, do not authorize canonical template
-change, do not produce generated reports, do not create fixtures, and do not
-prove `CLEAN_EXCELLENT_PASS`.
+artifacts, do not authorize active runtime adoption, do not authorize GitHub
+write, do not authorize canonical template change, do not produce generated
+reports, do not create fixtures, and prove only documentary/dev kernel lab
+`CLEAN_EXCELLENT_PASS`.
 
 ## Snapshot Requirement
 
@@ -111,19 +109,20 @@ The bundle must explicitly preserve:
   as a canonical execution artifact, `core` docs as a resync action, and `units`
   docs as a resync action.
 
-## Draft Boundary
+## Pass Boundary
 
-The bundle may claim only initial draft status. It must not claim
-`CLEAN_EXCELLENT_PASS`, runtime pass, materialization pass, target repository
+The bundle may claim `CLEAN_EXCELLENT_PASS` only for documentary/dev kernel lab
+scope. It must not claim runtime pass, materialization pass, target repository
 pass, productive skill authorization, materializer authorization, GitHub writes,
-target repository writes, automatic promotion, or active `MANIFEST.md` status.
+target repository writes, automatic future promotion, active runtime adoption,
+production use, or active `MANIFEST.md` status.
 
 Executable checks as `check-static.mjs` and `check-golden.mjs` are part of the
-post-harness dev kernel lab bundle. Their existence does not prove
-`CLEAN_EXCELLENT_PASS`; it does not authorize runtime, materialization,
-production, productive skill use, GitHub write, or target repo write. The kernel
-remains `initial draft`, `not promoted`, and `not a clean pass`. Promotion still
-depends on `HARDENED_HARNESS_AUDIT` and `PROMOTION_EVALUATION`.
+promoted dev kernel lab bundle. Their existence proves only documentary/dev
+kernel lab `CLEAN_EXCELLENT_PASS`; it does not authorize runtime,
+materialization, production, productive skill use, GitHub write, target repo
+write, generated reports, fixtures, target artifacts, active runtime adoption,
+or canonical template changes.
 
 ## Ignore Rules
 

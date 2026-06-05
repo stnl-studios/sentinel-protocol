@@ -1,27 +1,24 @@
 # Coder Back-End Kernel Contract
 
-Status:
+Status: `CLEAN_EXCELLENT_PASS`.
 
-- `initial draft`;
-- `not promoted`;
-- `not a clean pass`;
-- `harness design complete`;
-- `harness creation complete`;
-- `pending hardened harness audit`;
-- `pending promotion evaluation`;
-- `documentary only`;
-- `contractual only`;
-- `minimum semantic only`;
+Promotion state:
+
+- `documentary promotion applied`;
+- `documentary validation pass`;
+- `contractual pass`;
+- `minimum semantic pass`;
+- `hardened textual executable harness pass`;
 - `dev kernel lab only`;
 - `non-runtime`;
 - `non-production`;
 - `no materialization path`.
 
-This contract defines the initial documentary behavior of the `coder-backend`
+This contract defines the promoted documentary behavior of the `coder-backend`
 kernel. It is not an active `MANIFEST.md` entry. It does not implement runtime
 behavior, runtime loading, materialization, target-repository writes, GitHub
 writes, productive-skill behavior, canonical template changes, production use,
-or automatic promotion.
+or automatic future promotion.
 
 The harnesses exist as textual executable validation scripts of the dev kernel
 lab bundle: `validation/check-static.mjs` and
@@ -30,7 +27,9 @@ authorize runtime execution, do not authorize a runtime loader, do not
 authorize materialization path, do not authorize production use, do not
 authorize productive-skill behavior or change, do not authorize GitHub write,
 do not authorize target repository write, do not authorize target repo write,
-do not produce generated reports, do not create fixtures, do not prove
+do not produce generated reports, do not create fixtures, do not authorize
+target artifacts, do not authorize active runtime adoption, do not authorize
+canonical template changes, prove only documentary/dev kernel lab
 `CLEAN_EXCELLENT_PASS`, and do not make the kernel an active `MANIFEST.md`
 entry.
 

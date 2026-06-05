@@ -1,24 +1,21 @@
 # Coder Back-End Static Checks
 
-Status:
+Status: `CLEAN_EXCELLENT_PASS`.
 
-- `initial draft`;
-- `not promoted`;
-- `not a clean pass`;
-- `harness design complete`;
-- `harness creation complete`;
-- `pending hardened harness audit`;
-- `pending promotion evaluation`;
-- `documentary only`;
-- `contractual only`;
-- `minimum semantic only`;
+Promotion state:
+
+- `documentary promotion applied`;
+- `documentary validation pass`;
+- `contractual pass`;
+- `minimum semantic pass`;
+- `hardened textual executable harness pass`;
 - `dev kernel lab only`;
 - `non-runtime`;
 - `non-production`;
 - `no materialization path`.
 
-These static checks are post-harness textual validation criteria for the
-initial `coder-backend` documentary draft. The harnesses exist as textual
+These static checks are promoted textual validation criteria for the
+`coder-backend` documentary/dev kernel lab pass. The harnesses exist as textual
 executable validation scripts of the kernel lab dev bundle:
 `validation/check-static.mjs` and `validation/check-golden.mjs`. They are not an
 active `MANIFEST.md` entry. They do not execute agent runtime, do not load a
@@ -28,11 +25,16 @@ not authorize production use, do not authorize productive-skill behavior or
 change, do not write target repositories, do not authorize target repository
 write, do not authorize target repo write, do not write GitHub, do not
 authorize GitHub write, do not alter canonical templates, do not produce
-generated reports, and do not create fixtures.
+generated reports, do not create fixtures, do not authorize target artifacts,
+and do not authorize active runtime adoption.
 
-These harness scripts do not prove `CLEAN_EXCELLENT_PASS`. The kernel remains
-`initial draft`, `not promoted`, and `not a clean pass`. Promotion still
-depends on `HARDENED_HARNESS_AUDIT` and `PROMOTION_EVALUATION`.
+These harness scripts prove only documentary/dev kernel lab
+`CLEAN_EXCELLENT_PASS`. Passing them does not authorize runtime pass,
+runtime loader, runtime execution, materialization pass, materialization path,
+target repository pass, production use, productive skill authorization,
+materializer authorization, GitHub writes, or target repository writes. They do
+not authorize generated reports, fixtures, target artifacts, active runtime
+adoption, canonical template changes, or automatic future promotion.
 
 ## Required Files
 
@@ -66,15 +68,16 @@ The bundle prohibits:
 - canonical template changes;
 - generated reports;
 - fixtures;
+- target artifacts;
+- active runtime adoption;
 - active `MANIFEST.md` entry;
-- `CLEAN_EXCELLENT_PASS`.
+- automatic future promotion.
 
-Every primary documentary file must declare initial-draft status, not-promoted
-status, not-a-clean-pass status, harness-design-complete status,
-harness-creation-complete status, pending-hardened-harness-audit status,
-pending-promotion status, documentary-only status, contractual-only status,
-minimum-semantic-only status, dev-kernel-lab-only status, non-runtime status,
-non-production status, and no materialization path.
+Every primary documentary file must declare `CLEAN_EXCELLENT_PASS`,
+documentary promotion applied, documentary validation pass, contractual pass,
+minimum semantic pass, hardened textual executable harness pass,
+dev-kernel-lab-only status, non-runtime status, non-production status, and no
+materialization path.
 
 ## Structural Anchors
 
@@ -115,8 +118,9 @@ The static checks preserve these anchors in the correct documentary sources:
   path, production use, productive-skill change, GitHub write, target repository
   write, fixtures, generated reports, runtime loader, materializer, or target
   artifacts.
-- Every primary documentary file must declare initial-draft, not-promoted, and
-  not-clean-pass status.
+- Every primary documentary file must declare `CLEAN_EXCELLENT_PASS` and the
+  documentary/dev kernel lab pass boundary.
+- Stale status wording from the previous phase must be absent.
 - The kernel directory must not contain fixture paths, generated report paths,
   runtime-loader paths, materializer paths, or materialization paths.
 - Required anchors must be present in the expected contract, parity, gates, and

@@ -1,23 +1,20 @@
 # Back-End Execution Gates
 
-Status:
+Status: `CLEAN_EXCELLENT_PASS`.
 
-- `initial draft`;
-- `not promoted`;
-- `not a clean pass`;
-- `harness design complete`;
-- `harness creation complete`;
-- `pending hardened harness audit`;
-- `pending promotion evaluation`;
-- `documentary only`;
-- `contractual only`;
-- `minimum semantic only`;
+Promotion state:
+
+- `documentary promotion applied`;
+- `documentary validation pass`;
+- `contractual pass`;
+- `minimum semantic pass`;
+- `hardened textual executable harness pass`;
 - `dev kernel lab only`;
 - `non-runtime`;
 - `non-production`;
 - `no materialization path`.
 
-These gates define initial documentary checks for the `coder-backend` kernel.
+These gates define promoted documentary checks for the `coder-backend` kernel.
 They are not an active `MANIFEST.md` entry, not a runtime implementation, not a
 runtime validation harness, not a materialization path, not a production path,
 and not productive-skill behavior.
@@ -29,7 +26,9 @@ authorize runtime execution, do not authorize a runtime loader, do not
 authorize materialization path, do not authorize production use, do not
 authorize productive-skill behavior or change, do not authorize GitHub write,
 do not authorize target repository write, do not authorize target repo write,
-do not produce generated reports, do not create fixtures, do not prove
+do not produce generated reports, do not create fixtures, do not authorize
+target artifacts, do not authorize active runtime adoption, do not authorize
+canonical template changes, prove only documentary/dev kernel lab
 `CLEAN_EXCELLENT_PASS`, and do not make the kernel an active `MANIFEST.md`
 entry.
 
@@ -252,8 +251,9 @@ Reject any kernel behavior that attempts to:
 - touch `core` docs as a resync action;
 - touch `units` docs as a resync action;
 - alter canonical templates;
-- write target repository artifacts from this documentary draft;
+- write target repository artifacts from this documentary pass;
 - introduce runtime loading;
 - introduce materialization;
 - claim production use;
-- claim `CLEAN_EXCELLENT_PASS`.
+- claim runtime, materialization, production, or target repository pass beyond
+  the documentary/dev kernel lab `CLEAN_EXCELLENT_PASS` boundary.

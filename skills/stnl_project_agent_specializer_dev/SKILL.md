@@ -26,12 +26,13 @@ lab dev documental, contratual, semântico mínimo e com harness textual
 executável endurecido. O `designer_kernel` também está congelado como
 `CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
 `coder_frontend_kernel` também está promovido como `CLEAN_EXCELLENT_PASS` após
-promoção documental controlada.
+promoção documental controlada. O `coder_backend_kernel` também está promovido
+como `CLEAN_EXCELLENT_PASS` após promoção documental controlada.
 
-Há seis kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+Há sete kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
-`execution_package_designer_kernel`, `designer_kernel` e
-`coder_frontend_kernel`.
+`execution_package_designer_kernel`, `designer_kernel`, `coder_frontend_kernel`
+e `coder_backend_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -82,6 +83,20 @@ autoriza skill produtiva, não autoriza materializer, não autoriza escrita em
 GitHub, não autoriza escrita em repo alvo e não autoriza alteração em templates
 canônicos.
 
+O `coder_backend_kernel` é clean pass documental exclusivo do kernel lab dev.
+Ele preserva `executor`, `targeted-local`, execução de pacote back-end
+autorizado, `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`, `EXECUTION BRIEF`,
+`VALIDATION PACK`, guardrails requeridos quando presentes, contexto técnico
+mínimo back-end, `stnl_backend_quality`, `stnl_backend_sql_quality`, outputs
+com implementação, delta conciso, paths/evidência, checks, risco residual e
+blocker exato quando `BLOCKED`, além dos status `READY` e `BLOCKED`. Ele possui
+harness documental/textual endurecido de validação, não é runtime pass, não é
+materialization pass, não é target repo pass, não autoriza runtime loader, não
+autoriza materialization path, não autoriza produção, não autoriza skill
+produtiva, não autoriza materializer, não autoriza escrita em GitHub, não
+autoriza escrita em repo alvo, não autoriza generated reports, fixtures, target
+artifacts, active runtime adoption ou alteração em templates canônicos.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -110,12 +125,19 @@ canônicos.
    literalmente de `templates/agents/coder-frontend.agent.md`, com harness
    documental/textual endurecido e sem runtime, materialização, produção,
    escrita em GitHub, escrita em repo alvo ou alteração em templates canônicos.
-9. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-10. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-11. Validar o pacote de agents como conjunto coerente.
-12. Avançar para Project Senior Profile somente depois dos agents kernelizados
+9. Preservar o `coder_backend_kernel` promovido contra
+   `reference/agents/coder-backend.agent.md`, snapshot dev local derivado
+   literalmente de `templates/agents/coder-backend.agent.md`, com harness
+   documental/textual endurecido e sem runtime, runtime loader, materialização,
+   materialization path, produção, escrita em GitHub, escrita em repo alvo,
+   generated reports, fixtures, target artifacts, active runtime adoption, skill
+   produtiva ou alteração em templates canônicos.
+10. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+11. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+12. Validar o pacote de agents como conjunto coerente.
+13. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-13. Reconstruir a skill/materialização completa somente depois de agents e
+14. Reconstruir a skill/materialização completa somente depois de agents e
     Profile estáveis.
 
 ## Famílias Sugeridas
@@ -247,6 +269,21 @@ Toda comparação deve validar que o kernel:
   `reference/coder_frontend_kernel/validation/GOLDEN_TESTS.md`,
   `reference/coder_frontend_kernel/validation/check-static.mjs` e
   `reference/coder_frontend_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `coder-backend`:
+  `reference/agents/coder-backend.agent.md`
+- Kernel documental clean pass do `coder-backend`:
+  `reference/coder_backend_kernel/README.md`
+- Contratos documentais clean pass do `coder-backend`:
+  `reference/coder_backend_kernel/contracts/CONTRACT.md`,
+  `reference/coder_backend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/coder_backend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/coder_backend_kernel/contracts/BACKEND_EXECUTION_GATES.md`
+- Validação documental/textual read-only do `coder-backend`, sem promoção
+  automática futura:
+  `reference/coder_backend_kernel/validation/STATIC_CHECKS.md`,
+  `reference/coder_backend_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/coder_backend_kernel/validation/check-static.mjs` e
+  `reference/coder_backend_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 

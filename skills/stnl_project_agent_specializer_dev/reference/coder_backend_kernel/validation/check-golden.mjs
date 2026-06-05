@@ -49,6 +49,14 @@ const requiredTermsByCase = new Map([
 ]);
 
 const prohibitedGoldenHarnessDriftClaims = [
+  { label: "residual phase status", pattern: /\binitial\s+draft\b/i },
+  { label: "residual phase status", pattern: /\bnot\s+promoted\b/i },
+  { label: "residual phase status", pattern: /\bnot\s+a\s+clean\s+pass\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+hardened\s+harness\s+audit\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+promotion\s+evaluation\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+draft\s+audit\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+harness\s+design\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+harness\s+creation\b/i },
   {
     label: "golden harness absence",
     pattern: /\b(?:there\s+is\s+)?no\s+`?validation\/check-golden\.mjs`?\b/i,
@@ -71,12 +79,17 @@ const prohibitedGoldenHarnessDriftClaims = [
 
 const requiredGoldenHarnessSeparationTerms = [
   "textual executable validation scripts",
+  "CLEAN_EXCELLENT_PASS",
+  "documentary promotion applied",
+  "hardened textual executable harness pass",
   "non-runtime",
   "no materialization path",
-  "do not prove `CLEAN_EXCELLENT_PASS`",
+  "prove only documentary/dev kernel lab `CLEAN_EXCELLENT_PASS`",
   "do not authorize runtime execution",
   "do not authorize materialization path",
   "do not authorize production use",
+  "do not authorize target artifacts",
+  "do not authorize active runtime adoption",
 ];
 
 const results = [];
@@ -505,7 +518,7 @@ function checkGoldenHarnessBoundary(text) {
     "CBE-GT-HARNESS",
     failures.length === 0,
     failures.length === 0
-      ? "golden document keeps textual executable harnesses separate from future/inexistent harness, runtime, materialization, production, and promotion claims"
+      ? "golden document keeps textual executable harnesses separate from future/inexistent harness, runtime, materialization, production, and automatic future promotion claims"
       : failures.join("; "),
   );
 }

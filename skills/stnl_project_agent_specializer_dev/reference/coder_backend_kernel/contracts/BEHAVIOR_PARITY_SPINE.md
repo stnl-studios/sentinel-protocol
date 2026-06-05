@@ -1,23 +1,20 @@
 # Coder Back-End Behavior Parity Spine
 
-Status:
+Status: `CLEAN_EXCELLENT_PASS`.
 
-- `initial draft`;
-- `not promoted`;
-- `not a clean pass`;
-- `harness design complete`;
-- `harness creation complete`;
-- `pending hardened harness audit`;
-- `pending promotion evaluation`;
-- `documentary only`;
-- `contractual only`;
-- `minimum semantic only`;
+Promotion state:
+
+- `documentary promotion applied`;
+- `documentary validation pass`;
+- `contractual pass`;
+- `minimum semantic pass`;
+- `hardened textual executable harness pass`;
 - `dev kernel lab only`;
 - `non-runtime`;
 - `non-production`;
 - `no materialization path`.
 
-This spine records the initial behavior that must remain aligned with
+This spine records the promoted behavior that must remain aligned with
 `reference/agents/coder-backend.agent.md`. It is not an active `MANIFEST.md`
 entry. It is documentary only and does not authorize runtime loading,
 materialization, production use, productive-skill changes, target-repository
@@ -30,7 +27,9 @@ authorize runtime execution, do not authorize a runtime loader, do not
 authorize materialization path, do not authorize production use, do not
 authorize productive-skill behavior or change, do not authorize GitHub write,
 do not authorize target repository write, do not authorize target repo write,
-do not produce generated reports, do not create fixtures, do not prove
+do not produce generated reports, do not create fixtures, do not authorize
+target artifacts, do not authorize active runtime adoption, do not authorize
+canonical template changes, prove only documentary/dev kernel lab
 `CLEAN_EXCELLENT_PASS`, and do not make the kernel an active `MANIFEST.md`
 entry.
 
@@ -222,9 +221,11 @@ The kernel must not own or perform:
 
 These prohibitions are not optional specialization slots.
 
-## Draft Boundary
+## Pass Boundary
 
-This initial draft records behavior parity requirements only. It is not a clean
-pass, not a runtime pass, not a materialization pass, not a target repository
-pass, not productive authorization, not a materializer authorization, not a
-GitHub write authorization, and not a target repository write authorization.
+`CLEAN_EXCELLENT_PASS` records behavior parity requirements only for the dev
+kernel lab documentary, contractual, minimum semantic, and hardened textual
+executable harness scope. It is not a runtime pass, not a materialization pass,
+not a target repository pass, not productive authorization, not a materializer
+authorization, not a GitHub write authorization, not a target repository write
+authorization, not active runtime adoption, and not production use.

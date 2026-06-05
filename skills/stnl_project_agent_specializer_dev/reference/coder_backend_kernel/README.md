@@ -1,26 +1,23 @@
 # Coder Back-End Kernel
 
-Status:
+Status: `CLEAN_EXCELLENT_PASS`.
 
-- `initial draft`;
-- `not promoted`;
-- `not a clean pass`;
-- `harness design complete`;
-- `harness creation complete`;
-- `pending hardened harness audit`;
-- `pending promotion evaluation`;
-- `documentary only`;
-- `contractual only`;
-- `minimum semantic only`;
+Promotion state:
+
+- `documentary promotion applied`;
+- `documentary validation pass`;
+- `contractual pass`;
+- `minimum semantic pass`;
+- `hardened textual executable harness pass`;
 - `dev kernel lab only`;
 - `non-runtime`;
 - `non-production`;
 - `no materialization path`.
 
-This is the initial documentary draft for the `coder-backend` kernel. It is a
-dev kernel lab artifact only. It is not an active `MANIFEST.md` entry, not a
-runtime loader, not a materializer input, not productive skill behavior, and not
-production authorization.
+This is the controlled clean documentary pass for the `coder-backend` kernel.
+It is a dev kernel lab artifact only. It is not an active `MANIFEST.md` entry,
+not a runtime loader, not a materializer input, not productive skill behavior,
+and not production authorization.
 
 The harnesses exist as textual executable validation scripts of the dev kernel
 lab bundle: `validation/check-static.mjs` and
@@ -29,22 +26,24 @@ authorize runtime execution, do not authorize a runtime loader, do not
 authorize materialization path, do not authorize production use, do not
 authorize productive-skill behavior or change, do not authorize GitHub write,
 do not authorize target repository write, do not authorize target repo write,
-do not produce generated reports, do not create fixtures, do not prove
+do not produce generated reports, do not create fixtures, do not authorize
+target artifacts, do not authorize active runtime adoption, do not authorize
+canonical template changes, prove only documentary/dev kernel lab
 `CLEAN_EXCELLENT_PASS`, and do not make the kernel an active `MANIFEST.md`
 entry.
 
-This draft preserves the irreducible `coder-backend` mission: execute an
+This promoted kernel preserves the irreducible `coder-backend` mission: execute an
 authorized server-side work package with correctness, safety, contract
 awareness, data and operational rigor, scope discipline, and honest technical
 evidence while remaining a strict specialist executor.
 
 ## Scope
 
-This initial draft is limited to:
+This promoted bundle is limited to:
 
 - the local dev snapshot at `reference/agents/coder-backend.agent.md`;
 - documentary contracts under `reference/coder_backend_kernel/contracts/`;
-- post-harness textual validation criteria and scripts under
+- promoted textual validation criteria and scripts under
   `reference/coder_backend_kernel/validation/`.
 
 It does not alter frozen kernels, productive templates, productive skill
@@ -89,22 +88,26 @@ repository state.
 - `validation/check-static.mjs`;
 - `validation/check-golden.mjs`.
 
-## Draft Boundary
+## Pass Boundary
 
-This initial draft means only:
+`CLEAN_EXCELLENT_PASS` means only:
 
-- kernel lab dev documentary draft;
-- contractual draft;
-- minimum semantic draft;
-- post-harness textual criteria and scripts;
-- pending hardened harness audit.
+- kernel lab dev pass;
+- documentary validation pass;
+- contractual pass;
+- minimum semantic pass;
+- hardened textual executable harness pass;
+- documented promotion applied.
 
-This initial draft does not authorize:
+`CLEAN_EXCELLENT_PASS` does not authorize:
 
-- `CLEAN_EXCELLENT_PASS`;
 - runtime pass;
+- runtime loader;
+- runtime execution;
 - materialization pass;
+- materialization path;
 - target repository pass;
+- active runtime adoption;
 - active `MANIFEST.md` entry;
 - agent execution in production;
 - productive skill authorization;
@@ -114,4 +117,6 @@ This initial draft does not authorize:
 - canonical template changes;
 - generated reports;
 - fixtures;
+- target artifacts;
+- production use;
 - runtime or materializer adoption.

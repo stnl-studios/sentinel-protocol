@@ -52,30 +52,28 @@ const docs = {
 };
 const documentaryPaths = Object.values(docs);
 
-const requiredDraftStatusTerms = [
-  "initial draft",
-  "not promoted",
-  "not a clean pass",
-  "documentary only",
-  "contractual only",
-  "minimum semantic only",
+const requiredPromotedStatusTerms = [
+  "CLEAN_EXCELLENT_PASS",
+  "documentary promotion applied",
+  "documentary validation pass",
+  "contractual pass",
+  "minimum semantic pass",
+  "hardened textual executable harness pass",
   "dev kernel lab only",
   "non-runtime",
   "non-production",
   "no materialization path",
 ];
 
-const requiredPostHarnessStatusTerms = [
-  "harness design complete",
-  "harness creation complete",
-  "pending hardened harness audit",
-  "pending promotion evaluation",
-];
-
-const prohibitedPostHarnessDriftClaims = [
-  { label: "pending draft audit", pattern: /\bpending\s+draft\s+audit\b/i },
-  { label: "pending harness design", pattern: /\bpending\s+harness\s+design\b/i },
-  { label: "pending harness creation", pattern: /\bpending\s+harness\s+creation\b/i },
+const prohibitedResidualStatusClaims = [
+  { label: "residual phase status", pattern: /\binitial\s+draft\b/i },
+  { label: "residual phase status", pattern: /\bnot\s+promoted\b/i },
+  { label: "residual phase status", pattern: /\bnot\s+a\s+clean\s+pass\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+hardened\s+harness\s+audit\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+promotion\s+evaluation\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+draft\s+audit\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+harness\s+design\b/i },
+  { label: "residual phase status", pattern: /\bpending\s+harness\s+creation\b/i },
   {
     label: "static harness absence",
     pattern: /\b(?:there\s+is\s+)?no\s+`?validation\/check-static\.mjs`?\b/i,
@@ -111,7 +109,9 @@ const requiredHarnessBoundaryTerms = [
   "do not authorize target repo write",
   "do not produce generated reports",
   "do not create fixtures",
-  "do not prove `CLEAN_EXCELLENT_PASS`",
+  "do not authorize target artifacts",
+  "do not authorize active runtime adoption",
+  "prove only documentary/dev kernel lab `CLEAN_EXCELLENT_PASS`",
   "active `MANIFEST.md` entry",
 ];
 
@@ -475,13 +475,13 @@ function checkKernelAllowlist() {
   );
 }
 
-function checkDraftStatus() {
+function checkPromotedStatus() {
   const failures = [];
   for (const relativePath of documentaryPaths) {
     const lower = readText(relativePath).toLowerCase();
-    for (const term of requiredDraftStatusTerms) {
-      if (!lower.includes(term)) {
-        failures.push(`${relativePath} missing draft status term: ${term}`);
+    for (const term of requiredPromotedStatusTerms) {
+      if (!lower.includes(term.toLowerCase())) {
+        failures.push(`${relativePath} missing promoted status term: ${term}`);
       }
     }
   }
@@ -490,34 +490,23 @@ function checkDraftStatus() {
     "CBE-ST-004",
     failures.length === 0,
     failures.length === 0
-      ? "all primary documents preserve initial draft and non-runtime status"
+      ? "all primary documents declare CLEAN_EXCELLENT_PASS and dev-only non-runtime boundaries"
       : failures.join("; "),
   );
 }
 
-function checkPostHarnessStatus() {
-  const failures = [];
-
-  for (const relativePath of documentaryPaths) {
-    const lower = readText(relativePath).toLowerCase();
-    for (const term of requiredPostHarnessStatusTerms) {
-      if (!lower.includes(term)) {
-        failures.push(`${relativePath} missing post-harness status term: ${term}`);
-      }
-    }
-  }
-
+function checkResidualStatusWordingAbsent() {
   const driftFailures = findImproperPositiveClaims(
     documentaryPaths,
-    prohibitedPostHarnessDriftClaims,
+    prohibitedResidualStatusClaims,
   );
 
   record(
     "CBE-ST-013",
-    failures.length === 0 && driftFailures.length === 0,
-    failures.length === 0 && driftFailures.length === 0
-      ? "all primary documents declare post-harness status and block stale pre-harness drift"
-      : [...failures, ...driftFailures].join("; "),
+    driftFailures.length === 0,
+    driftFailures.length === 0
+      ? "all primary documents reject stale pre-promotion and phase-status wording"
+      : driftFailures.join("; "),
   );
 }
 
@@ -573,20 +562,21 @@ function checkHarnessBoundaryDeclarations() {
     "CBE-ST-016",
     failures.length === 0,
     failures.length === 0
-      ? "all primary documents separate textual executable harnesses from runtime, materialization, production, writes, fixtures, reports, promotion, and MANIFEST activation"
+      ? "all primary documents separate textual executable harnesses from runtime, materialization, production, writes, fixtures, reports, target artifacts, active adoption, and MANIFEST activation"
       : failures.join("; "),
   );
 }
 
 function checkImproperPositiveClaims() {
   const claimPatterns = [
-    { label: "CLEAN_EXCELLENT_PASS", pattern: /CLEAN_EXCELLENT_PASS/i },
     { label: "runtime pass", pattern: /\bruntime\s+(pass|implementation|loading|loader|validation|execution)\b/i },
     { label: "materialization pass", pattern: /\bmaterialization\s+(pass|path|output|route)\b/i },
     { label: "production authorization", pattern: /\bproduction\s+(authorization|use|path|readiness)\b/i },
     { label: "productive skill authorization", pattern: /\bproductive[-\s]skill\s+(authorization|behavior|change|changes)\b/i },
     { label: "GitHub write authorization", pattern: /\bGitHub\s+(write\s+authorization|writes?)\b/i },
     { label: "target repository write authorization", pattern: /\btarget[-\s]repository\s+(write\s+authorization|writes?|artifacts?|state|pass)\b/i },
+    { label: "active runtime adoption", pattern: /\bactive\s+runtime\s+adoption\b/i },
+    { label: "canonical template changes", pattern: /\bcanonical\s+template\s+(changes?|write\s+authorization)\b/i },
     { label: "active MANIFEST.md entry", pattern: /\bactive\s+`?MANIFEST\.md`?\s+entry\b/i },
   ];
   const failures = findImproperPositiveClaims(documentaryPaths, claimPatterns);
@@ -595,7 +585,7 @@ function checkImproperPositiveClaims() {
     "CBE-ST-005",
     failures.length === 0,
     failures.length === 0
-      ? "positive clean-pass, runtime, materialization, production, GitHub, target-repo, and MANIFEST claims are negation-aware blocked"
+      ? "positive runtime, materialization, production, GitHub, target-repo, adoption, template, and MANIFEST claims are negation-aware blocked"
       : failures.join("; "),
   );
 }
@@ -944,8 +934,8 @@ function main() {
     checkRequiredFiles();
     checkSnapshotParity();
     checkKernelAllowlist();
-    checkDraftStatus();
-    checkPostHarnessStatus();
+    checkPromotedStatus();
+    checkResidualStatusWordingAbsent();
     checkReadmeHarnessScripts();
     checkPostHarnessAllowlistDocs();
     checkHarnessBoundaryDeclarations();
