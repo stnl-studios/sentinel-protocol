@@ -27,6 +27,25 @@ const CROSS_CUT_NEGATIVES = Object.freeze([
   ['docs/core/TESTING.md expansion beyond the cut', /docs\/core\/TESTING\.md[\s\S]{0,80}expansion beyond the cut/i],
 ]);
 
+const FORBIDDEN_CROSS_CUT_CLAIMS = Object.freeze([
+  [
+    'docs/core/TESTING.md expansion beyond the cut',
+    /docs\/core\/TESTING\.md[^.]*\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed)|expand|replace|substitute)[^.]*\b(?:beyond the cut|outside the cut|VALIDATION PACK|validation)\b/i,
+  ],
+  ['docs/core/TESTING.md proof outside VALIDATION PACK', /docs\/core\/TESTING\.md[^.]*\b(?:authoriz(?:e|es|ed)|permits?|allows?)[^.]*\b(?:proof|commands?)[^.]*\boutside[^.]*VALIDATION PACK/i],
+  ['docs/core/TESTING.md replaces VALIDATION PACK', /docs\/core\/TESTING\.md[^.]*\b(?:replace|replaces|substitute|substitutes)[^.]*VALIDATION PACK/i],
+  ['temp paths source of truth', /\btemp paths?[^.]*\b(?:source of truth|authoritative|primary source)\b|\b(?:source of truth|authoritative|primary source)[^.]*temp paths?\b/i],
+  ['header-aware reading weakened', /header-aware reading[^.]*\b(?:removed|optional|weakened|not required|may be skipped)\b/i],
+  ['QA CHECKLIST UPDATE edits checklist', /QA CHECKLIST UPDATE[^.]*\b(?:edits?|updates?|writes?)[^.]*`?qa_checklist\.md`?|checklist edit[^.]*\b(?:accepted|allowed|authorized)\b/i],
+  ['proof inflation accepted', /proof inflation[^.]*\b(?:accepted|allowed|authorized)\b|inflated to `?PASS`?[^.]*\b(?:accepted|allowed|authorized)\b/i],
+  ['invalid READY accepted', /invalid\s+`?READY`?[^.]*\b(?:validated|accepted|allowed|authorized)\b/i],
+  ['irrelevant green accepted', /irrelevant green(?: output)?[^.]*\b(?:justifies|proves|validates|allows)[^.]*`?PASS`?/i],
+  ['correction/verdict mix accepted', /correction\/verdict mix[^.]*\b(?:accepted|allowed|authorized)\b|CORRECTION PACK[^.]*\b(?:mixed|combined)[^.]*`?(?:PASS|PARTIAL|FAIL|BLOCKED)`?/i],
+  ['proof redesign accepted', /proof redesign[^.]*\b(?:accepted|allowed|authorized)\b|redesign[^.]*VALIDATION PACK[^.]*\b(?:accepted|allowed|authorized)\b/i],
+  ['correction/review drift accepted', /correction\/review drift[^.]*\b(?:accepted|allowed|authorized)\b|architecture review[^.]*\b(?:accepted|allowed|authorized)\b/i],
+  ['closure/resync/durable docs drift accepted', /closure\/resync\/durable docs drift[^.]*\b(?:accepted|allowed|authorized)\b|(?:closure|resync|durable documentation)[^.]*\b(?:accepted|allowed|authorized)\b/i],
+]);
+
 const SCENARIOS = Object.freeze([
   {
     id: 'VR-GT-001',
@@ -212,6 +231,37 @@ function requirePatterns(text, patterns, context) {
   }
 }
 
+function sentences(text) {
+  return text
+    .replace(/\r/g, '')
+    .split(/\n\s*\n|(?<=[.!?])\s+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+}
+
+function isProhibitiveLocal(text) {
+  return /\b(does not|do not|must not|cannot|can not|not|never|without|reject|rejects|block|blocks|prohibit|prohibits|prohibited|forbid|forbidden|unauthori[sz]|limited to|only for|sem|no)\b/i.test(
+    text.replace(/\bnot\s+only\b/gi, 'not-only'),
+  );
+}
+
+function hasForbiddenAffirmativeClaim(sentence, pattern) {
+  if (!pattern.test(sentence)) {
+    return false;
+  }
+
+  const clauses = sentence
+    .split(/\b(?:but|however|though|although|except that)\b|;/i)
+    .map((clause) => clause.trim())
+    .filter(Boolean);
+
+  if (clauses.some((clause) => pattern.test(clause) && !isProhibitiveLocal(clause))) {
+    return true;
+  }
+
+  return !isProhibitiveLocal(sentence);
+}
+
 function runStaticFirst() {
   const result = spawnSync(process.execPath, [staticHarness], {
     cwd: repoRoot,
@@ -237,6 +287,7 @@ function validateCrossCutBoundaries(markdown) {
     section,
     [
       /docs\/core\/TESTING\.md[\s\S]{0,160}canonical commands[\s\S]{0,160}manual\s+paths[\s\S]{0,160}prerequisites[\s\S]{0,160}harness limits/i,
+      /VALIDATION PACK[\s\S]{0,120}principal proof contract|principal proof contract[\s\S]{0,120}VALIDATION PACK/i,
       /Runtime temp paths[\s\S]{0,80}prohibited/i,
       /Header-aware reading[\s\S]{0,80}File Purpose Header metadata/i,
       /QA CHECKLIST UPDATE[\s\S]{0,80}handoff data/i,
@@ -247,6 +298,15 @@ function validateCrossCutBoundaries(markdown) {
 
   for (const [label, pattern] of CROSS_CUT_NEGATIVES) {
     assert(pattern.test(section), `Cross-Cut Boundaries missing negative drift class: ${label}`);
+  }
+
+  for (const sentence of sentences(section)) {
+    for (const [label, pattern] of FORBIDDEN_CROSS_CUT_CLAIMS) {
+      assert(
+        !hasForbiddenAffirmativeClaim(sentence, pattern),
+        `Cross-Cut Boundaries contains forbidden ${label} claim: ${sentence}`,
+      );
+    }
   }
 }
 

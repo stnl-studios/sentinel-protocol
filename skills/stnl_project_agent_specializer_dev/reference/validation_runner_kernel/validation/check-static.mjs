@@ -75,58 +75,97 @@ const DENIED_PATH_PATTERNS = Object.freeze([
 const AUTHORIZATION_PATTERNS = Object.freeze([
   {
     label: 'kernel promotion',
-    pattern: /\b(promotes?|promoted|promotion)\b/i,
-    allowed:
-      /\bnot promoted\b|does not[^.]*promote|do not[^.]*promote|must not[^.]*promote|not promote|reject|block|prohibit|drift scan|drift|does not make[^.]*promoted|kernel promotion\b[^.]*does not authorize|automatic promotion\b[^.]*does not|not[^.]*promotion/i,
+    trigger: /\b(promotes?|promoted)\b|\b(?:kernel|automatic)\s+promotion\b/i,
+    target: /\b(promotes?|promoted|promotion)\b/i,
   },
   {
     label: 'CLEAN_EXCELLENT_PASS accepted status',
-    pattern: /\bCLEAN_EXCELLENT_PASS\b/i,
-    allowed:
-      /\bnot CLEAN_EXCELLENT_PASS\b|does not authorize\s+`?CLEAN_EXCELLENT_PASS`?|`?CLEAN_EXCELLENT_PASS`?[^.]*does not authorize|reject|block|prohibit/i,
+    trigger: /\bCLEAN_EXCELLENT_PASS\b/i,
+    target: /\bCLEAN_EXCELLENT_PASS\b/i,
   },
   {
     label: 'runtime authorization',
-    pattern:
-      /\b(authoriz(?:e|es|ed)[^.]*runtime|runtime loader|runtime loading|runtime artifacts?|runtime path)\b/i,
-    allowed: /does not|do not|must not|not authorize|non-runtime|without|reject|block|prohibit|sem/i,
+    trigger:
+      /\b(authoriz(?:e|es|ed)[^.]*runtime|runtime loader|runtime loading|runtime artifacts?|runtime path|may\s+create[^.]*runtime)\b/i,
+    target: /\bruntime(?:\s+(?:loader|loading|artifacts?|path))?\b/i,
   },
   {
     label: 'production authorization',
-    pattern: /\b(authoriz(?:e|es|ed)[^.]*production|production path|prod path)\b/i,
-    allowed: /does not|do not|must not|not authorize|non-production|without|reject|block|prohibit|sem/i,
+    trigger: /\b(authoriz(?:e|es|ed)[^.]*production|production path|prod path)\b/i,
+    target: /\bproduction|prod path\b/i,
   },
   {
     label: 'materialization authorization',
-    pattern:
-      /\b(authoriz(?:e|es|ed)[^.]*materialization|materialization path|materializer|materialization, production)\b/i,
-    allowed: /does not|do not|must not|not authorize|no materialization path|without|reject|block|prohibit|sem/i,
+    trigger:
+      /\b(authoriz(?:e|es|ed)[^.]*materiali[sz]ation|materiali[sz]ation path|materializer|may\s+create[^.]*materiali[sz]ation)\b/i,
+    target: /\bmateriali[sz]ation(?:\s+path)?\b|\bmaterializer\b/i,
   },
   {
     label: 'fixture artifact authorization',
-    pattern: /\b(authoriz(?:e|es|ed)[^.]*fixtures?|create fixtures?|fixture artifact)\b/i,
-    allowed: /does not|do not|must not|not authorize|without|reject|block|prohibit/i,
+    trigger: /\b(authoriz(?:e|es|ed)[^.]*fixtures?|create fixtures?|fixture artifact)\b/i,
+    target: /\bfixtures?|fixture artifact\b/i,
   },
   {
     label: 'generated report authorization',
-    pattern: /\b(authoriz(?:e|es|ed)[^.]*generated reports?|generated reports?)\b/i,
-    allowed: /does not|do not|must not|not authorize|without|reject|block|prohibit/i,
+    trigger: /\b(authoriz(?:e|es|ed)[^.]*generated reports?|generated reports?)\b/i,
+    target: /\bgenerated reports?\b/i,
   },
   {
     label: 'target artifact authorization',
-    pattern: /\b(authoriz(?:e|es|ed)[^.]*target artifact|target artifact generation)\b/i,
-    allowed: /does not|do not|must not|not authorize|without|reject|block|prohibit/i,
+    trigger: /\b(authoriz(?:e|es|ed)[^.]*target artifact|target artifact generation)\b/i,
+    target: /\btarget artifact(?: generation)?\b/i,
   },
   {
     label: 'productive skill/template update authorization',
-    pattern:
+    trigger:
       /\b(authoriz(?:e|es|ed)[^.]*productive-skill|productive-skill changes?|productive skill update|productive-template changes?|productive template update|template changes?)\b/i,
-    allowed: /does not|do not|must not|not authorize|without|reject|block|prohibit/i,
+    target: /\bproductive[- ]skill|productive[- ]template|template changes?\b/i,
   },
   {
     label: 'global docs update authorization',
-    pattern: /\b(authoriz(?:e|es|ed)[^.]*global docs|global docs updates?)\b/i,
-    allowed: /does not|do not|must not|not authorize|without|reject|block|prohibit|sem/i,
+    trigger: /\b(authoriz(?:e|es|ed)[^.]*global docs|global docs updates?|may\s+update[^.]*global docs)\b/i,
+    target: /\bglobal docs(?: updates?)?\b/i,
+  },
+  {
+    label: 'proof redesign authorization',
+    trigger: /\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed))[^.]*\b(?:redesign(?:\s+the)?\s+`?VALIDATION PACK`?|proof redesign)\b/i,
+    target: /\bredesign(?:\s+the)?\s+`?VALIDATION PACK`?|\bproof redesign\b/i,
+  },
+  {
+    label: 'code correction authorization',
+    trigger: /\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed))[^.]*\b(?:correct code|code correction|code fixing)\b/i,
+    target: /\bcorrect code|code correction|code fixing\b/i,
+  },
+  {
+    label: 'architecture review authorization',
+    trigger: /\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed))[^.]*\b(?:review architecture|architecture review|judge architecture)\b/i,
+    target: /\breview architecture|architecture review|judge architecture\b/i,
+  },
+  {
+    label: 'closure authorization',
+    trigger: /\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed))[^.]*\b(?:close the round|create `?DONE`?|closure)\b/i,
+    target: /\bclose the round|create `?DONE`?|\bclosure\b/i,
+  },
+  {
+    label: 'resync authorization',
+    trigger: /\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed))[^.]*\b(?:perform resync|execute resync|resync)\b/i,
+    target: /\bperform resync|execute resync|\bresync\b/i,
+  },
+  {
+    label: 'durable docs authorization',
+    trigger: /\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed))[^.]*\b(?:edit durable documentation|write durable documentation|durable docs?)\b/i,
+    target: /\bedit durable documentation|write durable documentation|durable docs?\b/i,
+  },
+  {
+    label: 'qa checklist edit authorization',
+    trigger: /\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed))[^.]*\b(?:edit\s+`?qa_checklist\.md`?|checklist edit)\b/i,
+    target: /\bedit\s+`?qa_checklist\.md`?|\bchecklist edit\b/i,
+  },
+  {
+    label: 'docs/core/TESTING.md expansion authorization',
+    trigger:
+      /docs\/core\/TESTING\.md[^.]*\b(?:may|can|could|allows?|permits?|authoriz(?:e|es|ed)|expand|replace|substitute)[^.]*\b(?:beyond the cut|outside the cut|VALIDATION PACK|validation)\b/i,
+    target: /docs\/core\/TESTING\.md|beyond the cut|outside the cut|VALIDATION PACK/i,
   },
 ]);
 
@@ -345,22 +384,132 @@ function sentences(text) {
     .filter(Boolean);
 }
 
+function cloneRegex(pattern, forceGlobal = false) {
+  const flags = new Set(pattern.flags);
+  if (forceGlobal) {
+    flags.add('g');
+  } else {
+    flags.delete('g');
+  }
+  return new RegExp(pattern.source, [...flags].join(''));
+}
+
+function regexMatches(pattern, text) {
+  const matcher = cloneRegex(pattern, true);
+  const matches = [];
+  let match;
+  while ((match = matcher.exec(text)) !== null) {
+    matches.push({
+      text: match[0],
+      index: match.index,
+      end: match.index + match[0].length,
+    });
+    if (match[0].length === 0) {
+      matcher.lastIndex += 1;
+    }
+  }
+  return matches;
+}
+
+function lastBoundaryIndex(prefix) {
+  let boundary = 0;
+  const boundaryPattern =
+    /[;:]|\b(?:but|however|though|although|except that)\b|\band\s+(?=(?:this\s+harness\s+|the\s+runner\s+|the\s+kernel\s+)?(?:authoriz|may|can|could|allows?|permits?|creates?|updates?|edits?|performs?|reviews?|corrects?|closes?|redesigns?))/gi;
+  let match;
+  while ((match = boundaryPattern.exec(prefix)) !== null) {
+    boundary = match.index + match[0].length;
+  }
+  return boundary;
+}
+
+function nextBoundaryIndex(suffix) {
+  const boundaryPattern =
+    /[;:]|\b(?:but|however|though|although|except that)\b|\band\s+(?=(?:this\s+harness\s+|the\s+runner\s+|the\s+kernel\s+)?(?:authoriz|may|can|could|allows?|permits?|creates?|updates?|edits?|performs?|reviews?|corrects?|closes?|redesigns?))/i;
+  const match = boundaryPattern.exec(suffix);
+  return match ? match.index : suffix.length;
+}
+
+function localClaimContext(sentence, start, end) {
+  const prefix = sentence.slice(0, start);
+  const suffix = sentence.slice(end);
+  const localStart = lastBoundaryIndex(prefix);
+  const localEnd = end + nextBoundaryIndex(suffix);
+  return sentence.slice(localStart, localEnd).trim();
+}
+
+function sanitizeNegationText(text) {
+  return text
+    .replace(/`BLOCKED`/gi, '`TERMINAL_BLOCKED`')
+    .replace(/\bnot\s+only\b/gi, 'not-only')
+    .replace(/\bnot\s+applicable\b/gi, 'not-applicable');
+}
+
 function isProhibitiveLocal(sentence) {
-  return /\b(does not|do not|must not|cannot|not|never|without|reject|rejects|rejected|block|blocks|blocked|prohibit|prohibited|forbid|forbidden|unauthoriz|limited to|sem|no)\b|non[- ]/i.test(
-    sentence,
+  const local = sanitizeNegationText(sentence);
+  return /\b(does not|do not|must not|shall not|should not|may not|cannot|can not|is not|are not|not|never|without|reject|rejects|rejected|block(?:s|ed)?(?=\s+(?:when|if|unless|or|and|the|validation|proof|condition))|prohibit|prohibits|prohibited|forbid|forbids|forbidden|unauthori[sz]|limited to|only for|read only|sem|no)\b|\bnon[- ](?:runtime|production|proof)\b/i.test(
+    local,
   );
 }
 
-function hasLocalProhibition(text, pattern) {
+function classifyLocalClaim(text, anchor) {
+  const pattern = anchor.pattern ?? anchor;
+  const reject = anchor.reject;
+  const result = {
+    matched: false,
+    affirmative: false,
+    prohibitive: false,
+    contradictory: false,
+    contradictorySentence: '',
+  };
+
   for (const sentence of sentences(text)) {
-    if (pattern.test(sentence) && isProhibitiveLocal(sentence)) {
-      return true;
+    const matches = regexMatches(pattern, sentence);
+    if (matches.length === 0) {
+      continue;
+    }
+
+    let sentenceAffirmative = false;
+    let sentenceProhibitive = false;
+
+    for (const match of matches) {
+      result.matched = true;
+      const local = localClaimContext(sentence, match.index, match.end);
+      const rejected = reject ? reject.test(sentence) || reject.test(local) : false;
+      const prohibited = rejected || isProhibitiveLocal(local);
+
+      if (prohibited) {
+        result.prohibitive = true;
+        sentenceProhibitive = true;
+      } else {
+        result.affirmative = true;
+        sentenceAffirmative = true;
+      }
+    }
+
+    if (sentenceAffirmative && sentenceProhibitive) {
+      result.contradictory = true;
+      result.contradictorySentence = sentence;
     }
   }
-  return false;
+
+  return result;
+}
+
+function hasLocalProhibition(text, anchor) {
+  const claim = classifyLocalClaim(text, anchor);
+  return claim.prohibitive && !claim.contradictory;
 }
 
 function hasPositiveAnchor(text, anchor) {
+  const polarity = anchor.polarity ?? 'presence';
+  if (polarity === 'affirmative') {
+    const claim = classifyLocalClaim(text, anchor);
+    return claim.affirmative && !claim.contradictory;
+  }
+  if (polarity === 'prohibitive') {
+    return hasLocalProhibition(text, anchor);
+  }
+
   const pattern = anchor.pattern ?? anchor;
   const reject = anchor.reject;
   for (const sentence of sentences(text)) {
@@ -373,6 +522,11 @@ function hasPositiveAnchor(text, anchor) {
 
 function requirePositive(sectionText, anchor, context) {
   const label = anchor.label ?? String(anchor.pattern ?? anchor);
+  const claim = anchor.polarity ? classifyLocalClaim(sectionText, anchor) : null;
+  if (claim?.contradictory) {
+    fail(`${context} has contradictory local claim for positive anchor ${label}: ${claim.contradictorySentence}`);
+    return;
+  }
   if (!hasPositiveAnchor(sectionText, anchor)) {
     fail(`${context} missing required positive anchor: ${label}`);
   }
@@ -380,7 +534,12 @@ function requirePositive(sectionText, anchor, context) {
 
 function requireNegative(sectionText, anchor, context) {
   const label = anchor.label ?? String(anchor.pattern);
-  if (!hasLocalProhibition(sectionText, anchor.pattern)) {
+  const claim = classifyLocalClaim(sectionText, anchor);
+  if (claim.contradictory) {
+    fail(`${context} has contradictory local claim for prohibitive anchor ${label}: ${claim.contradictorySentence}`);
+    return;
+  }
+  if (!hasLocalProhibition(sectionText, anchor)) {
     fail(`${context} missing required local prohibitive anchor: ${label}`);
   }
 }
@@ -414,12 +573,31 @@ function validatePromotionRuntimeClaims(docs) {
   for (const [relPath, content] of Object.entries(docs)) {
     for (const sentence of sentences(content)) {
       for (const rule of AUTHORIZATION_PATTERNS) {
-        if (rule.pattern.test(sentence) && !rule.allowed.test(sentence)) {
+        const forbidden = forbiddenAuthorizationClaim(sentence, rule);
+        if (forbidden === 'contradictory') {
+          fail(`${relPath} has contradictory ${rule.label} claim: ${sentence}`);
+          continue;
+        }
+        if (forbidden === 'affirmative') {
           fail(`${relPath} has non-prohibitive ${rule.label} claim: ${sentence}`);
         }
       }
     }
   }
+}
+
+function forbiddenAuthorizationClaim(sentence, rule) {
+  if (!rule.trigger.test(sentence)) {
+    return false;
+  }
+  const claim = classifyLocalClaim(sentence, { pattern: rule.target });
+  if (claim.contradictory) {
+    return 'contradictory';
+  }
+  if (!claim.prohibitive || claim.affirmative) {
+    return 'affirmative';
+  }
+  return false;
 }
 
 function validateGlobalDocsClean() {
@@ -515,6 +693,38 @@ function validateHarnessSources() {
   }
 }
 
+const validationPackConsumedAnchor = Object.freeze({
+  label: 'VALIDATION PACK consumed',
+  pattern: /consumes?\s+the\s+current-round\s+`?VALIDATION PACK`?|strict\s+(?:`?VALIDATION PACK`?\s+consumption|consumption\s+of\s+the\s+current-round\s+`?VALIDATION PACK`?)/i,
+  polarity: 'affirmative',
+});
+
+const validationPackPresentAnchor = Object.freeze({
+  label: 'VALIDATION PACK present',
+  pattern: /current-round\s+`?VALIDATION PACK`?\s+(?:exists|is present)|`?VALIDATION PACK`?\s+is\s+present|current-round\s+`?VALIDATION PACK`?/i,
+  polarity: 'affirmative',
+});
+
+const readyAppliedEvidenceAnchor = Object.freeze({
+  label: 'READY applied-change evidence',
+  pattern: /valid\s+(?:terminal\s+)?(?:executor\s+)?`?READY`?[\s\S]{0,120}applied-change\s+evidence|`?READY`?\s+includes\s+applied-change\s+evidence|`?READY`?\s+handoff\s+with\s+applied-change\s+evidence/i,
+  polarity: 'affirmative',
+});
+
+const passDirectProofAnchor = Object.freeze({
+  label: 'PASS requires direct proof',
+  pattern: /`?PASS`?\s+requires\s+direct proof|`?PASS`?\s+only\s+when[\s\S]{0,80}direct(?:ly)?\s+proved|`?PASS`?\s+[\s\S]{0,40}direct proof/i,
+  reject: /`?PASS`?[\s\S]{0,40}does not require direct proof|`?PASS`?[\s\S]{0,80}without direct proof/i,
+  polarity: 'affirmative',
+});
+
+const docsTestingCutLimitAnchor = Object.freeze({
+  label: 'docs/core/TESTING.md cut limit',
+  pattern:
+    /(?:docs\/core\/TESTING\.md[\s\S]{0,180}(?:limited to|only for)[\s\S]{0,160}canonical commands[\s\S]{0,160}manual\s+paths[\s\S]{0,160}prerequisites[\s\S]{0,160}harness limits|only[\s\S]{0,80}docs\/core\/TESTING\.md[\s\S]{0,180}canonical commands[\s\S]{0,160}manual\s+paths[\s\S]{0,160}prerequisites[\s\S]{0,160}harness limits)/i,
+  polarity: 'prohibitive',
+});
+
 const statusAnchors = Object.freeze([
   { label: 'initial draft', pattern: /initial draft/i },
   { label: 'not promoted', pattern: /not promoted/i },
@@ -536,6 +746,13 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'no runtime', pattern: /runtime/i },
       { label: 'no materialization', pattern: /materialization/i },
       { label: 'no production', pattern: /production|prod/i },
+      { label: 'no target artifact', pattern: /target artifact/i },
+      { label: 'no fixture', pattern: /fixtures/i },
+      { label: 'no generated report', pattern: /generated reports/i },
+      { label: 'no global docs', pattern: /global-docs|global docs/i },
+      { label: 'no productive skill', pattern: /productive-skill|productive skill/i },
+      { label: 'no template path', pattern: /template/i },
+      { label: 'no promotion', pattern: /automatic promotion|promote/i },
     ],
   },
   {
@@ -553,8 +770,8 @@ const ANCHOR_MATRIX = Object.freeze([
     section: /^Scope Limits$/i,
     requiredPositive: [
       { label: 'proof-execution', pattern: /proof-execution/i },
-      { label: 'VALIDATION PACK', pattern: /VALIDATION PACK/ },
-      { label: 'READY applied evidence', pattern: /READY[\s\S]{0,120}applied-change evidence/i },
+      validationPackConsumedAnchor,
+      readyAppliedEvidenceAnchor,
       { label: 'terminal verdicts', pattern: /PASS[\s\S]{0,80}PARTIAL[\s\S]{0,80}FAIL[\s\S]{0,80}BLOCKED/ },
       { label: 'sem runtime/materialization/prod', pattern: /sem runtime\/materialization\/prod/i },
     ],
@@ -563,6 +780,12 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'no runtime', pattern: /runtime/i },
       { label: 'no materialization', pattern: /materialization/i },
       { label: 'no production', pattern: /production|prod/i },
+      { label: 'no repo-target writes', pattern: /repo-target writes/i },
+      { label: 'no global docs', pattern: /global docs updates/i },
+      { label: 'no productive skill update', pattern: /productive-skill changes/i },
+      { label: 'no productive template update', pattern: /productive-template changes/i },
+      { label: 'no kernel promotion', pattern: /kernel promotion/i },
+      { label: 'no materializer', pattern: /materializer/i },
     ],
   },
   {
@@ -574,8 +797,8 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'proof-execution', pattern: /proof-execution/i },
       { label: 'minimal-verification', pattern: /minimal-verification/i },
       { label: 'post implementation', pattern: /post-implementation|pós-implementação/i },
-      { label: 'VALIDATION PACK', pattern: /VALIDATION PACK/ },
-      { label: 'READY applied evidence', pattern: /READY[\s\S]{0,120}applied-change evidence/i },
+      validationPackPresentAnchor,
+      readyAppliedEvidenceAnchor,
     ],
     requiredNegative: [],
   },
@@ -583,13 +806,34 @@ const ANCHOR_MATRIX = Object.freeze([
     file: 'contracts/CONTRACT.md',
     section: /^Input Contract$/i,
     requiredPositive: [
-      { label: 'docs/core/TESTING.md', pattern: /docs\/core\/TESTING\.md/ },
+      readyAppliedEvidenceAnchor,
+      validationPackPresentAnchor,
+      docsTestingCutLimitAnchor,
       { label: 'canonical commands', pattern: /canonical commands/i },
       { label: 'manual paths', pattern: /manual paths/i },
       { label: 'prerequisites', pattern: /prerequisites/i },
       { label: 'harness limits', pattern: /harness limits/i },
     ],
-    requiredNegative: [{ label: 'no proof redesign', pattern: /proof redesign/i }],
+    requiredNegative: [
+      { label: 'no proof redesign', pattern: /proof redesign/i },
+      { label: 'docs/core/TESTING not outside pack', pattern: /only for[\s\S]{0,160}canonical commands/i },
+    ],
+  },
+  {
+    file: 'contracts/CONTRACT.md',
+    section: /^VALIDATION PACK Contract$/i,
+    requiredPositive: [
+      { label: 'strict proof contract', pattern: /`?VALIDATION PACK`?\s+is\s+the\s+strict proof contract/i, polarity: 'affirmative' },
+    ],
+    requiredNegative: [
+      { label: 'no proof redesign', pattern: /redesign/i },
+      { label: 'no proof broadening', pattern: /broaden/i },
+      { label: 'no proof narrowing', pattern: /narrow/i },
+      { label: 'no proof replacement', pattern: /replace/i },
+      { label: 'no proof weakening', pattern: /weaken/i },
+      { label: 'no silent proof reduction', pattern: /silently reduce/i },
+      { label: 'no criteria invention', pattern: /invent criteria|criteria/i },
+    ],
   },
   {
     file: 'contracts/CONTRACT.md',
@@ -605,17 +849,16 @@ const ANCHOR_MATRIX = Object.freeze([
     file: 'contracts/CONTRACT.md',
     section: /^Verdict Contract$/i,
     requiredPositive: [
-      {
-        label: 'PASS requires direct proof',
-        pattern: /`?PASS`? requires direct proof/i,
-        reject: /`?PASS`? does not require direct proof/i,
-      },
+      passDirectProofAnchor,
       { label: 'PASS PARTIAL FAIL BLOCKED', pattern: /PASS[\s\S]{0,80}PARTIAL[\s\S]{0,80}FAIL[\s\S]{0,80}BLOCKED/ },
       { label: 'FAIL disproven', pattern: /FAIL[\s\S]{0,80}behavior or contract[\s\S]{0,80}disproven/i },
       { label: 'BLOCKED infeasible absent invalid prevented', pattern: /BLOCKED[\s\S]{0,160}infeasible[\s\S]{0,80}absent[\s\S]{0,80}invalid[\s\S]{0,80}prevented/i },
     ],
     requiredNegative: [
       { label: 'PASS cannot rest on invalid proof', pattern: /PASS[\s\S]{0,120}cannot/i },
+      { label: 'no invalid READY as PASS proof', pattern: /invalid executor readiness/i },
+      { label: 'no inferred evidence as direct proof', pattern: /inferred evidence/i },
+      { label: 'no unrelated green as proof', pattern: /green output unrelated to the cut/i },
     ],
   },
   {
@@ -648,7 +891,22 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'no durable docs', pattern: /edit(?:ing)? durable documentation/i },
     ],
     requiredNegative: [
-      { label: 'no runtime/materialization/prod', pattern: /runtime|materialization|production/i },
+      { label: 'no proof redesign', pattern: /redesign(?:ing)? `?VALIDATION PACK`?|proof redesign/i },
+      { label: 'no criteria invention', pattern: /invent criteria|criteria invention/i },
+      { label: 'no silent proof reduction', pattern: /silently reduce proof|silent proof reduction/i },
+      { label: 'no code correction', pattern: /correct(?:ing)? code|code correction/i },
+      { label: 'no architecture review', pattern: /review(?:ing)? architecture|architecture review/i },
+      { label: 'no closure', pattern: /clos(?:e|ing) the round/i },
+      { label: 'no resync', pattern: /execut(?:e|ing) resync|perform(?:ing)? resync|resync/i },
+      { label: 'no durable docs', pattern: /edit(?:ing)? durable documentation|write durable documentation/i },
+      { label: 'no invalid READY validation', pattern: /validate an invalid executor `?READY`?|invalid executor `?READY`?/i },
+      { label: 'no inferred evidence as direct proof', pattern: /accept inferred evidence as direct proof|inferred evidence/i },
+      { label: 'no correction pack as verdict', pattern: /treat `?CORRECTION PACK`? as a verdict/i },
+      { label: 'no correction verdict mix', pattern: /mix `?CORRECTION PACK`?[\s\S]{0,80}`?PASS`?/i },
+      { label: 'no irrelevant green as proof', pattern: /generic green output as proof|green output as proof/i },
+      { label: 'no runtime authorization', pattern: /runtime/i },
+      { label: 'no materialization authorization', pattern: /materialization/i },
+      { label: 'no production authorization', pattern: /production/i },
     ],
   },
   {
@@ -658,9 +916,12 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'header-aware reading', pattern: /header-aware reading/i },
       { label: 'File Purpose Header metadata', pattern: /File Purpose Header metadata/i },
       { label: 'runtime temp paths prohibited', pattern: /runtime temp paths[\s\S]{0,80}source of truth/i },
-      { label: 'docs/core/TESTING slice', pattern: /docs\/core\/TESTING\.md[\s\S]{0,160}canonical commands[\s\S]{0,120}manual paths[\s\S]{0,120}prerequisites[\s\S]{0,120}harness limits/i },
+      docsTestingCutLimitAnchor,
     ],
-    requiredNegative: [{ label: 'runtime temp paths not source of truth', pattern: /runtime temp paths|runtime temporary files/i }],
+    requiredNegative: [
+      { label: 'runtime temp paths not source of truth', pattern: /runtime temp paths|runtime temporary files/i },
+      { label: 'docs/core/TESTING limited to cut support', pattern: /only[\s\S]{0,120}docs\/core\/TESTING\.md|only[\s\S]{0,160}canonical commands/i },
+    ],
   },
   {
     file: 'contracts/BEHAVIOR_PARITY_SPINE.md',
@@ -668,10 +929,15 @@ const ANCHOR_MATRIX = Object.freeze([
     requiredPositive: [
       { label: 'non-reducible semantics', pattern: /non-reducible semantics/i },
       { label: 'correction exclusivity', pattern: /correction exclusivity/i },
-      { label: 'PASS direct proof', pattern: /PASS[\s\S]{0,80}directly proved/i },
+      validationPackConsumedAnchor,
+      readyAppliedEvidenceAnchor,
+      passDirectProofAnchor,
       { label: 'irrelevant green output non-proof', pattern: /irrelevant green output[\s\S]{0,40}non-proof/i },
     ],
-    requiredNegative: [],
+    requiredNegative: [
+      { label: 'no checklist edit', pattern: /without editing checklists/i },
+      { label: 'irrelevant green non-proof', pattern: /irrelevant green output[\s\S]{0,40}non-proof/i },
+    ],
   },
   {
     file: 'contracts/BEHAVIOR_PARITY_SPINE.md',
@@ -706,6 +972,10 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'no runtime', pattern: /runtime/i },
       { label: 'no materializer', pattern: /materializer/i },
       { label: 'no global docs', pattern: /global docs/i },
+      { label: 'no extra executable files', pattern: /extra executable files/i },
+      { label: 'no materialization path', pattern: /materialization path/i },
+      { label: 'no productive template update', pattern: /productive template update/i },
+      { label: 'no productive skill update', pattern: /productive skill update/i },
     ],
   },
   {
@@ -716,8 +986,8 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'validation-runner', pattern: /validation-runner/i },
       { label: 'proof-execution', pattern: /proof-execution/i },
       { label: 'minimal-verification', pattern: /minimal-verification/i },
-      { label: 'VALIDATION PACK', pattern: /VALIDATION PACK/ },
-      { label: 'READY applied-change evidence', pattern: /READY[\s\S]{0,120}applied-change evidence/i },
+      validationPackConsumedAnchor,
+      readyAppliedEvidenceAnchor,
     ],
     requiredNegative: [],
   },
@@ -741,7 +1011,9 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'READY missing', pattern: /READY[\s\S]{0,80}missing/i },
       { label: 'no concrete implementation', pattern: /no concrete implementation/i },
     ],
-    requiredNegative: [{ label: 'no proof redesign', pattern: /redesigning proof|criteria invention|silent proof reduction/i }],
+    requiredNegative: [
+      { label: 'no proof redesign', pattern: /redesigning proof/i },
+    ],
   },
   {
     file: 'contracts/MINIMUM_SAFE_BUNDLE.md',
@@ -757,18 +1029,34 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'no runtime', pattern: /runtime/i },
       { label: 'no materializer', pattern: /materializer/i },
       { label: 'no global docs', pattern: /global docs/i },
+      { label: 'no materialization path', pattern: /materialization path/i },
+      { label: 'no productive template update', pattern: /productive template changes/i },
+      { label: 'no productive skill update', pattern: /productive skill changes/i },
+      { label: 'no target artifact', pattern: /target artifact generation/i },
+      { label: 'no fixture', pattern: /fixtures/i },
+      { label: 'no generated report', pattern: /generated reports/i },
+      { label: 'no kernel promotion', pattern: /kernel promotion/i },
     ],
   },
   {
     file: 'contracts/PROOF_EXECUTION_GATES.md',
     section: /^Gate 1 - Current-Round Proof Contract$/i,
-    requiredPositive: [{ label: 'Gate 1 current-round proof contract', pattern: /Gate 1 current-round proof contract/i }],
-    requiredNegative: [{ label: 'no redesign criteria invention', pattern: /redesign|invent/i }],
+    requiredPositive: [
+      { label: 'Gate 1 current-round proof contract', pattern: /Gate 1 current-round proof contract/i },
+      validationPackPresentAnchor,
+    ],
+    requiredNegative: [
+      { label: 'no proof redesign', pattern: /redesign/i },
+      { label: 'no criteria invention', pattern: /invent/i },
+    ],
   },
   {
     file: 'contracts/PROOF_EXECUTION_GATES.md',
     section: /^Gate 2 - Valid Executor READY$/i,
-    requiredPositive: [{ label: 'Gate 2 valid executor READY', pattern: /Gate 2 valid executor `?READY`?/i }],
+    requiredPositive: [
+      { label: 'Gate 2 valid executor READY', pattern: /Gate 2 valid executor `?READY`?/i },
+      readyAppliedEvidenceAnchor,
+    ],
     requiredNegative: [{ label: 'invalid READY not validated', pattern: /invalid readiness|READY without applied evidence/i }],
   },
   {
@@ -786,8 +1074,11 @@ const ANCHOR_MATRIX = Object.freeze([
   {
     file: 'contracts/PROOF_EXECUTION_GATES.md',
     section: /^Gate 5 - Direct Proof Threshold$/i,
-    requiredPositive: [{ label: 'Gate 5 direct proof threshold', pattern: /Gate 5 direct proof threshold/i }],
-    requiredNegative: [{ label: 'inference cannot satisfy proof', pattern: /Inference|stale logs|intent|unscoped success/i }],
+    requiredPositive: [
+      { label: 'Gate 5 direct proof threshold', pattern: /Gate 5 direct proof threshold/i },
+      { label: 'PASS direct evidence', pattern: /direct evidence for `?PASS`?/i, polarity: 'affirmative' },
+    ],
+    requiredNegative: [{ label: 'inference cannot satisfy proof', pattern: /cannot satisfy direct proof/i }],
   },
   {
     file: 'contracts/PROOF_EXECUTION_GATES.md',
@@ -883,7 +1174,7 @@ const ANCHOR_MATRIX = Object.freeze([
     file: 'validation/GOLDEN_TESTS.md',
     section: /^Cross-Cut Boundaries$/i,
     requiredPositive: [
-      { label: 'docs/core/TESTING.md cut limit', pattern: /docs\/core\/TESTING\.md[\s\S]{0,120}canonical commands[\s\S]{0,120}manual[\s\S]{0,120}prerequisites[\s\S]{0,120}harness limits/i },
+      docsTestingCutLimitAnchor,
       { label: 'runtime temp paths prohibited', pattern: /Runtime temp paths[\s\S]{0,80}prohibited/i },
       { label: 'header-aware reading', pattern: /Header-aware reading[\s\S]{0,80}File Purpose Header metadata/i },
       { label: 'QA CHECKLIST UPDATE handoff data', pattern: /QA CHECKLIST UPDATE[\s\S]{0,80}handoff data/i },
@@ -920,10 +1211,7 @@ function validateAnchorMatrix(docs) {
 }
 
 function runLocalNegationSelfTest() {
-  const passRequires = {
-    pattern: /PASS requires direct proof/i,
-    reject: /PASS does not require direct proof/i,
-  };
+  const passRequires = passDirectProofAnchor;
 
   assert(
     hasPositiveAnchor('PASS requires direct proof.', passRequires),
@@ -933,6 +1221,124 @@ function runLocalNegationSelfTest() {
     !hasPositiveAnchor('PASS does not require direct proof.', passRequires),
     'local negation self-test failed: negated direct-proof anchor passed',
   );
+
+  const affirmativeCases = [
+    [
+      'validation pack consumption',
+      validationPackConsumedAnchor,
+      'The runner consumes the current-round VALIDATION PACK.',
+      'The runner does not consume VALIDATION PACK.',
+    ],
+    [
+      'READY applied evidence',
+      readyAppliedEvidenceAnchor,
+      'The runner requires valid READY with applied-change evidence.',
+      'The runner does not require valid READY with applied-change evidence.',
+    ],
+    [
+      'PASS direct proof',
+      passDirectProofAnchor,
+      'PASS requires direct proof.',
+      'PASS does not require direct proof.',
+    ],
+  ];
+
+  for (const [label, anchor, positive, negative] of affirmativeCases) {
+    assert(hasPositiveAnchor(positive, anchor), `local polarity self-test failed: positive ${label} did not pass`);
+    assert(!hasPositiveAnchor(negative, anchor), `local polarity self-test failed: negated ${label} passed`);
+  }
+
+  const prohibitiveCases = [
+    [
+      'proof redesign',
+      { pattern: /redesign(?:\s+the)?\s+`?VALIDATION PACK`?|proof redesign/i },
+      'The runner must not redesign the VALIDATION PACK.',
+      'The runner may redesign the VALIDATION PACK.',
+    ],
+    [
+      'code correction',
+      { pattern: /correct code|code correction/i },
+      'The runner must not correct code.',
+      'The runner may correct code.',
+    ],
+    [
+      'architecture review',
+      { pattern: /review architecture|architecture review/i },
+      'The runner must not review architecture.',
+      'The runner may review architecture.',
+    ],
+    [
+      'closure',
+      { pattern: /close the round/i },
+      'The runner must not close the round.',
+      'The runner may close the round.',
+    ],
+    [
+      'resync',
+      { pattern: /perform resync|resync/i },
+      'The runner must not perform resync.',
+      'The runner may perform resync.',
+    ],
+    [
+      'durable docs',
+      { pattern: /edit durable documentation|durable docs?/i },
+      'The runner must not edit durable documentation.',
+      'The runner may edit durable documentation.',
+    ],
+    [
+      'runtime authorization',
+      { pattern: /runtime/i },
+      'The harness does not authorize runtime.',
+      'The harness authorizes runtime.',
+    ],
+    [
+      'materialization authorization',
+      { pattern: /materialization/i },
+      'The harness does not authorize materialization.',
+      'The harness authorizes materialization.',
+    ],
+    [
+      'production authorization',
+      { pattern: /production/i },
+      'The harness does not authorize production.',
+      'The harness authorizes production.',
+    ],
+    [
+      'docs/core/TESTING cut limit',
+      docsTestingCutLimitAnchor,
+      'docs/core/TESTING.md is limited to canonical commands, manual paths, prerequisites, and harness limits for the cut.',
+      'docs/core/TESTING.md may expand validation beyond the cut.',
+    ],
+  ];
+
+  for (const [label, anchor, positive, negative] of prohibitiveCases) {
+    assert(hasLocalProhibition(positive, anchor), `local polarity self-test failed: prohibitive ${label} did not pass`);
+    assert(!hasLocalProhibition(negative, anchor), `local polarity self-test failed: permissive ${label} passed`);
+  }
+
+  const authRule = (label) => AUTHORIZATION_PATTERNS.find((rule) => rule.label === label);
+  const authorizationCases = [
+    ['runtime authorization', 'The harness does not authorize runtime.', false],
+    ['runtime authorization', 'The harness does not block and authorizes runtime.', true],
+    ['runtime authorization', 'The harness does not authorize runtime, but this harness authorizes runtime.', true],
+    ['runtime authorization', 'sem runtime.', false],
+    ['runtime authorization', 'The harness authorizes runtime.', true],
+    ['materialization authorization', 'The harness authorizes materialization.', true],
+    ['production authorization', 'The harness authorizes production.', true],
+    ['materialization authorization', 'The runner may create materialization path.', true],
+    ['global docs update authorization', 'The runner may update global docs.', true],
+    ['qa checklist edit authorization', 'The runner may edit qa_checklist.md.', true],
+  ];
+
+  for (const [ruleLabel, sentence, shouldFail] of authorizationCases) {
+    const rule = authRule(ruleLabel);
+    assert(rule !== undefined, `local authorization self-test missing rule ${ruleLabel}`);
+    const failed = Boolean(forbiddenAuthorizationClaim(sentence, rule));
+    assert(
+      failed === shouldFail,
+      `local authorization self-test failed for ${ruleLabel}: ${sentence}`,
+    );
+  }
 }
 
 function main() {

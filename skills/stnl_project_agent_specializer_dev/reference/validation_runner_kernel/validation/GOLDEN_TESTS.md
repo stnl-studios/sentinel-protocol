@@ -17,6 +17,9 @@ changes, or template changes.
 
 - `docs/core/TESTING.md` is limited to canonical commands, accepted manual
   paths, prerequisites, and harness limits for the cut.
+- The current-round `VALIDATION PACK` remains the principal proof contract.
+  `docs/core/TESTING.md` does not replace that contract and does not authorize
+  proof or commands beyond it.
 - Runtime temp paths are prohibited as Sentinel source of truth.
 - Header-aware reading must respect File Purpose Header metadata.
 - `QA CHECKLIST UPDATE` is handoff data; the runner does not edit
