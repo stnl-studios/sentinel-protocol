@@ -112,8 +112,9 @@ const AUTHORIZATION_PATTERNS = Object.freeze([
   },
   {
     label: 'target artifact authorization',
-    trigger: /\b(authoriz(?:e|es|ed)[^.]*target artifact|target artifact generation)\b/i,
-    target: /\btarget artifact(?: generation)?\b/i,
+    trigger:
+      /\b(?:(?:may|can|could)\s+(?:create|generate|write)[^.]*target artifacts?|(?:allows?|permits?|authoriz(?:e|es|ed))[^.]*target artifacts?(?:\s+generation)?|target artifact generation)\b/i,
+    target: /\btarget artifacts?(?:\s+generation)?\b/i,
   },
   {
     label: 'productive skill/template update authorization',
@@ -1328,6 +1329,14 @@ function runLocalNegationSelfTest() {
     ['materialization authorization', 'The runner may create materialization path.', true],
     ['global docs update authorization', 'The runner may update global docs.', true],
     ['qa checklist edit authorization', 'The runner may edit qa_checklist.md.', true],
+    ['target artifact authorization', 'The runner may create target artifact.', true],
+    ['target artifact authorization', 'The runner may create target artifacts.', true],
+    ['target artifact authorization', 'The runner may generate target artifacts.', true],
+    ['target artifact authorization', 'The runner may write target artifacts.', true],
+    ['target artifact authorization', 'The runner can create target artifacts.', true],
+    ['target artifact authorization', 'The runner must not create target artifacts.', false],
+    ['target artifact authorization', 'The runner does not authorize target artifact generation.', false],
+    ['target artifact authorization', 'The bundle must not authorize target artifact generation.', false],
   ];
 
   for (const [ruleLabel, sentence, shouldFail] of authorizationCases) {
