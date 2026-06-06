@@ -1,15 +1,31 @@
 # Validation Runner Kernel Golden Tests
 
-Status: future golden-test design for
+Status: current textual golden harness for
 `VALIDATION_RUNNER_KERNEL: initial draft`.
 
-This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, has
-`no executable harness yet`, is `dev kernel lab only`, is `non-runtime`, is
-`non-production`, and has `no materialization path`.
+This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, is
+`dev kernel lab only`, is `non-runtime`, is `non-production`, and has
+`no materialization path`.
 
-There is no `validation/check-golden.mjs` in this phase. This document records
-future semantic scenarios only; it does not implement or authorize executable
-harness behavior.
+The textual executable harness now exists at `validation/check-golden.mjs` and
+runs `validation/check-static.mjs` first. Harness pass does not promote the
+kernel, does not authorize `CLEAN_EXCELLENT_PASS`, and does not authorize
+runtime, materialization, production, global docs updates, productive-skill
+changes, or template changes.
+
+## Cross-Cut Boundaries
+
+- `docs/core/TESTING.md` is limited to canonical commands, accepted manual
+  paths, prerequisites, and harness limits for the cut.
+- Runtime temp paths are prohibited as Sentinel source of truth.
+- Header-aware reading must respect File Purpose Header metadata.
+- `QA CHECKLIST UPDATE` is handoff data; the runner does not edit
+  `qa_checklist.md`.
+- Negative drift classes include proof inflation, invalid `READY`,
+  irrelevant green output, correction/verdict mix, proof redesign,
+  correction/review drift, closure/resync/durable docs drift, checklist edit,
+  temp paths, header-aware reading removal, and `docs/core/TESTING.md`
+  expansion beyond the cut.
 
 ## Golden Test VR-GT-001 - Direct proof allows PASS
 
@@ -34,7 +50,9 @@ Emit terminal `PASS` with evidence per obligation and compact
 Fail if `PASS` is unavailable despite direct proof, or if `PASS` lacks direct
 critical-obligation evidence.
 
-Expected blocker: `BLOCKED_VR_PASS_WITHOUT_DIRECT_PROOF`.
+### Expected blocker
+
+`BLOCKED_VR_PASS_WITHOUT_DIRECT_PROOF`.
 
 ## Golden Test VR-GT-002 - Incomplete proof becomes PARTIAL
 
@@ -57,7 +75,9 @@ residual risk.
 Fail if partial proof is inflated to `PASS` or collapsed into an ungrounded
 generic failure.
 
-Expected blocker: `BLOCKED_VR_PARTIAL_INFLATED_OR_COLLAPSED`.
+### Expected blocker
+
+`BLOCKED_VR_PARTIAL_INFLATED_OR_COLLAPSED`.
 
 ## Golden Test VR-GT-003 - Disproven behavior becomes FAIL
 
@@ -80,7 +100,9 @@ routed first and budget remains.
 Fail if disproven behavior is softened into `PARTIAL`, treated as `BLOCKED`, or
 hidden behind generic green output.
 
-Expected blocker: `BLOCKED_VR_FAIL_NOT_EMITTED_FOR_DISPROOF`.
+### Expected blocker
+
+`BLOCKED_VR_FAIL_NOT_EMITTED_FOR_DISPROOF`.
 
 ## Golden Test VR-GT-004 - Missing proof becomes BLOCKED
 
@@ -104,7 +126,9 @@ blocked proof path and minimum fact needed.
 Fail if missing proof is converted into assumed success, inferred proof, or a
 quietly reduced validation threshold.
 
-Expected blocker: `BLOCKED_VR_MISSING_PROOF_ACCEPTED`.
+### Expected blocker
+
+`BLOCKED_VR_MISSING_PROOF_ACCEPTED`.
 
 ## Golden Test VR-GT-005 - Invalid executor READY is not validated
 
@@ -119,14 +143,17 @@ narration, command logs, intent, analysis, or pseudo-implementation.
 
 ### Expected behavior
 
-Reject validation entry and preserve the invalid handoff condition.
+Reject validation entry and preserve the invalid handoff condition. Do not
+validate invalid `READY`.
 
 ### Fail condition
 
 Fail if the runner validates the invalid executor output or emits a synthetic
 verdict about implementation quality.
 
-Expected blocker: `BLOCKED_VR_INVALID_EXECUTOR_READY_VALIDATED`.
+### Expected blocker
+
+`BLOCKED_VR_INVALID_EXECUTOR_READY_VALIDATED`.
 
 ## Golden Test VR-GT-006 - Correction pack is non-terminal and exclusive
 
@@ -150,7 +177,9 @@ handoff.
 Fail if `CORRECTION PACK` is treated as a verdict, mixed with `PASS`,
 `PARTIAL`, `FAIL`, or `BLOCKED`, or replaced by loose narrative fix requests.
 
-Expected blocker: `BLOCKED_VR_CORRECTION_PACK_MIXED_WITH_VERDICT`.
+### Expected blocker
+
+`BLOCKED_VR_CORRECTION_PACK_MIXED_WITH_VERDICT`.
 
 ## Golden Test VR-GT-007 - Irrelevant green output is not proof
 
@@ -172,7 +201,9 @@ unproved, failed, or blocked as evidence warrants.
 
 Fail if generic green output justifies `PASS`.
 
-Expected blocker: `BLOCKED_VR_IRRELEVANT_GREEN_ACCEPTED`.
+### Expected blocker
+
+`BLOCKED_VR_IRRELEVANT_GREEN_ACCEPTED`.
 
 ## Golden Test VR-GT-008 - Runner does not redesign proof
 
@@ -187,13 +218,16 @@ runner attempts to replace it with newly invented criteria.
 
 ### Expected behavior
 
-Block or report the pack problem. Do not rewrite the `VALIDATION PACK`.
+Block or report the pack problem. Do not rewrite the `VALIDATION PACK`, do not
+redesign proof, and do not invent criteria.
 
 ### Fail condition
 
-Fail if runner-time criteria invention is accepted.
+Fail if runner-time criteria invention or proof redesign is accepted.
 
-Expected blocker: `BLOCKED_VR_VALIDATION_PACK_REDESIGNED`.
+### Expected blocker
+
+`BLOCKED_VR_VALIDATION_PACK_REDESIGNED`.
 
 ## Golden Test VR-GT-009 - Runner does not correct or review architecture
 
@@ -208,13 +242,17 @@ outside pack obligations, or replace `reviewer`.
 
 ### Expected behavior
 
-Reject role drift and preserve validation evidence only.
+Reject role drift and preserve validation evidence only. The runner does not
+correct code and does not review architecture.
 
 ### Fail condition
 
-Fail if proof execution becomes code correction or architecture review.
+Fail if proof execution becomes code correction, correction/review drift, or
+architecture review.
 
-Expected blocker: `BLOCKED_VR_RUNNER_ROLE_DRIFT`.
+### Expected blocker
+
+`BLOCKED_VR_RUNNER_ROLE_DRIFT`.
 
 ## Golden Test VR-GT-010 - Runner does not close, resync, or write durable docs
 
@@ -229,12 +267,15 @@ create `DONE`, update `Feature CONTEXT`, close the round, or perform resync.
 
 ### Expected behavior
 
-Reject closure and durable-documentation drift. Emit only runner evidence,
-terminal verdict or formal correction handoff, and compact checklist handoff
-data when applicable.
+Reject closure/resync/durable docs drift. Emit only runner evidence, terminal
+verdict or formal correction handoff, and compact checklist handoff data when
+applicable.
 
 ### Fail condition
 
-Fail if runner output becomes finalization or resync.
+Fail if runner output becomes finalization, checklist edit, closure, durable
+documentation, or resync.
 
-Expected blocker: `BLOCKED_VR_FINALIZER_OR_RESYNC_DRIFT`.
+### Expected blocker
+
+`BLOCKED_VR_FINALIZER_OR_RESYNC_DRIFT`.

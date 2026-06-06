@@ -2,14 +2,18 @@
 
 Status: `VALIDATION_RUNNER_KERNEL: initial draft`.
 
-This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, has
-`no executable harness yet`, is `dev kernel lab only`, is `non-runtime`, is
-`non-production`, and has `no materialization path`.
+This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, is
+`dev kernel lab only`, is `non-runtime`, is `non-production`, and has
+`no materialization path`.
+
+The textual executable harness now exists for read-only validation of this
+kernel. Harness pass does not promote the kernel, does not authorize
+`CLEAN_EXCELLENT_PASS`, and does not authorize runtime, materialization,
+production, global docs updates, productive-skill changes, or template changes.
 
 This is the initial documentary contract for `validation-runner`. It does not
 implement runtime loading, materialization, target-repository writes, fixtures,
-generated reports, productive-skill behavior, automatic promotion, or
-executable harness files.
+generated reports, productive-skill behavior, or automatic promotion.
 
 ## Identity
 
@@ -19,8 +23,8 @@ The kernel must preserve:
 - agent version: `2026.5.1`;
 - role class: `proof-execution`;
 - reading scope class: `minimal-verification`;
-- workflow position: after implementation and after a current-round
-  `VALIDATION PACK` exists;
+- workflow position: after implementation / pós-implementação and after a
+  current-round `VALIDATION PACK` exists;
 - required execution target: concrete implementation produced by an executor;
 - required executor entry condition: valid terminal `READY` with
   applied-change evidence;
@@ -52,7 +56,7 @@ The runner may enter only when all of these are true:
 
 If the executor handoff is absent, implicit, intermediate, ambiguous,
 descriptive-only, pseudo-implementation, command-log-only, or `READY` without
-applied-change evidence, the runner must not validate it. That condition is an
+applied evidence, the runner must not validate it. That condition is an
 invalid operational handoff, not proof of implementation quality.
 
 ## Input Contract
@@ -79,8 +83,8 @@ project references needed to interpret a pack obligation.
 
 `VALIDATION PACK` is the strict proof contract for this runner. The kernel must
 not redesign, broaden, narrow, replace, weaken, strengthen, or silently reduce
-the pack. It must not invent criteria or create new proof obligations at runner
-time.
+the pack. It must not invent criteria or create new proof obligations at
+runner time.
 
 When the pack is missing, stale, contradictory, too incomplete, not
 current-round, or not executable without guessing, the runner blocks or returns
@@ -97,8 +101,9 @@ logs, irrelevant green output, and generic command success do not count as
 direct proof of the cut.
 
 Green checks are useful only when they touch the required behavior, contract,
-state, UX claim, or guardrail obligation. Green but irrelevant checks must be
-recorded as limited signal and cannot justify `PASS`.
+state, UX claim, or guardrail obligation. Irrelevant green output and green but
+irrelevant checks must be recorded as limited signal and cannot justify
+`PASS`.
 
 ## Verdict Contract
 
@@ -109,9 +114,11 @@ Terminal verdicts are exclusive:
 - `FAIL`;
 - `BLOCKED`.
 
+The terminal verdict set is `PASS`, `PARTIAL`, `FAIL`, and `BLOCKED`.
+
 `PASS` requires direct proof of all critical obligations needed for the cut. It
-cannot rest on inferred evidence, invalid executor readiness, missing required
-checks, or green output unrelated to the cut.
+`PASS` cannot rest on inferred evidence, invalid executor readiness, missing
+required checks, or green output unrelated to the cut.
 
 `PARTIAL` means some in-scope obligations are directly proved while other
 non-critical or bounded obligations remain unproved, failed, or blocked, and
@@ -161,27 +168,29 @@ never `passed`.
 
 The kernel must explicitly block:
 
-- redesigning `VALIDATION PACK`;
-- inventing criteria;
-- silently reducing proof;
-- correcting code;
-- reviewing architecture;
-- closing the round;
-- executing resync;
-- editing durable documentation;
-- validating an invalid executor `READY`;
-- accepting inferred evidence as direct proof;
-- treating `CORRECTION PACK` as a verdict;
-- mixing `CORRECTION PACK` with `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`;
-- using generic green output as proof of the cut;
-- creating runtime, materialization, or production paths.
+- must not redesign `VALIDATION PACK`;
+- must not invent criteria;
+- must not silently reduce proof;
+- must not correct code;
+- must not review architecture;
+- must not close the round;
+- must not execute resync;
+- must not edit durable documentation;
+- must not validate an invalid executor `READY`;
+- must not accept inferred evidence as direct proof;
+- must not treat `CORRECTION PACK` as a verdict;
+- must not mix `CORRECTION PACK` with `PASS`, `PARTIAL`, `FAIL`, or `BLOCKED`;
+- must not use generic green output as proof of the cut;
+- must not create runtime, materialization, or production paths.
 
 ## Reading Contract
 
 - reading scope class: `minimal-verification`;
 - read `VALIDATION PACK` first;
 - read only the relevant `docs/core/TESTING.md` slice when it clarifies
-  commands, manual paths, prerequisites, or harness limits;
+  canonical commands, accepted manual paths, prerequisites, or harness limits;
+- use header-aware reading and respect File Purpose Header metadata when a
+  file exposes it;
 - read coder evidence and the relevant `WORK_PACKAGE_ID`;
 - read implementation, runtime surface, contract, harness, fixture, or
   observation path only as needed to execute pack obligations;
@@ -189,7 +198,8 @@ The kernel must explicitly block:
 - widen only when one explicit pack obligation cannot otherwise be executed or
   interpreted honestly;
 - never use scratchpads, `workspaceStorage`, `chat-session-resources`,
-  `content.txt`, or runtime temporary files as Sentinel source of truth.
+  `content.txt`, runtime temp paths, or runtime temporary files as Sentinel
+  source of truth.
 
 If bounded reading cannot support honest proof execution, the kernel must emit
 `BLOCKED` or a handoff-validity blocker instead of guessing.

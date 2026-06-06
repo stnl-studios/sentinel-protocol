@@ -2,16 +2,21 @@
 
 Status: `VALIDATION_RUNNER_KERNEL: initial draft`.
 
-This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, has
-`no executable harness yet`, is `dev kernel lab only`, is `non-runtime`, is
-`non-production`, and has `no materialization path`.
+This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, is
+`dev kernel lab only`, is `non-runtime`, is `non-production`, and has
+`no materialization path`.
+
+The textual executable harness now exists for the dev kernel lab bundle.
+Harness pass does not promote the kernel and does not authorize runtime,
+materialization, production, global docs updates, productive-skill changes, or
+template changes.
 
 This document defines the smallest documentary bundle that can preserve the
-`validation-runner` role without executable harness support.
+`validation-runner` role with its read-only textual harness.
 
 ## Required Bundle Facts
 
-The minimum safe bundle contains:
+The 9-file post-harness bundle contains:
 
 - snapshot parity with `templates/agents/validation-runner.agent.md`;
 - `README.md`;
@@ -20,13 +25,18 @@ The minimum safe bundle contains:
 - `contracts/MINIMUM_SAFE_BUNDLE.md`;
 - `contracts/PROOF_EXECUTION_GATES.md`;
 - `validation/STATIC_CHECKS.md`;
-- `validation/GOLDEN_TESTS.md`.
+- `validation/GOLDEN_TESTS.md`;
+- `validation/check-static.mjs`;
+- `validation/check-golden.mjs`.
 
-No executable `.mjs` file is part of this phase.
+Harness textual exists in the two validation scripts, but harness pass does
+not promote the kernel. The bundle does not authorize extra executable files,
+runtime loader, materializer, materialization path, global docs update,
+productive template update, or productive skill update.
 
 ## Minimum Identity Set
 
-The bundle is unsafe if it loses any of these facts:
+The minimum identity set is unsafe if it loses any of these facts:
 
 - canonical agent: `validation-runner`;
 - role class: `proof-execution`;
@@ -41,7 +51,7 @@ The bundle is unsafe if it loses any of these facts:
 
 ## Minimum Evidence Set
 
-The runner needs enough evidence to identify:
+The minimum evidence set must identify:
 
 - the cut and pack obligations;
 - deterministic checks and their pack classifications;
@@ -58,7 +68,7 @@ implementation inspection, stale logs, and inferred evidence are not enough for
 
 ## Minimum Blocking Set
 
-The runner must block or preserve the handoff problem when:
+The minimum blocking set must block or preserve the handoff problem when:
 
 - `VALIDATION PACK` is missing, stale, contradictory, or too incomplete;
 - executor `READY` is missing or lacks applied-change evidence;
@@ -72,15 +82,17 @@ The runner must block or preserve the handoff problem when:
 
 ## Minimum Boundary Set
 
-The bundle must not authorize:
+The minimum boundary set must not authorize:
 
-- runtime loader;
-- materialization path;
-- productive template changes;
-- productive skill changes;
-- target artifact generation;
-- fixtures;
-- generated reports;
-- global docs updates;
-- kernel promotion;
-- executable harness creation.
+- must not authorize runtime loader;
+- must not authorize materialization path;
+- must not authorize materializer;
+- must not authorize productive template changes;
+- must not authorize productive skill changes;
+- must not authorize target artifact generation;
+- must not authorize fixtures;
+- must not authorize generated reports;
+- must not authorize global docs updates;
+- must not authorize kernel promotion;
+- must not authorize extra executable harness files outside the 9-file
+  post-harness bundle.
