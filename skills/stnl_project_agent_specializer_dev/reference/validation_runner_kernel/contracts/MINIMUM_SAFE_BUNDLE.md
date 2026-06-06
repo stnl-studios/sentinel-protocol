@@ -1,0 +1,86 @@
+# Validation Runner Minimum Safe Bundle
+
+Status: `VALIDATION_RUNNER_KERNEL: initial draft`.
+
+This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, has
+`no executable harness yet`, is `dev kernel lab only`, is `non-runtime`, is
+`non-production`, and has `no materialization path`.
+
+This document defines the smallest documentary bundle that can preserve the
+`validation-runner` role without executable harness support.
+
+## Required Bundle Facts
+
+The minimum safe bundle contains:
+
+- snapshot parity with `templates/agents/validation-runner.agent.md`;
+- `README.md`;
+- `contracts/CONTRACT.md`;
+- `contracts/BEHAVIOR_PARITY_SPINE.md`;
+- `contracts/MINIMUM_SAFE_BUNDLE.md`;
+- `contracts/PROOF_EXECUTION_GATES.md`;
+- `validation/STATIC_CHECKS.md`;
+- `validation/GOLDEN_TESTS.md`.
+
+No executable `.mjs` file is part of this phase.
+
+## Minimum Identity Set
+
+The bundle is unsafe if it loses any of these facts:
+
+- canonical agent: `validation-runner`;
+- role class: `proof-execution`;
+- reading class: `minimal-verification`;
+- post-implementation position;
+- strict `VALIDATION PACK` consumption;
+- concrete implementation as validation target;
+- valid executor `READY` with applied-change evidence as entry gate;
+- terminal verdicts only: `PASS`, `PARTIAL`, `FAIL`, `BLOCKED`;
+- `CORRECTION PACK` as non-terminal and verdict-exclusive;
+- compact `QA CHECKLIST UPDATE` handoff without checklist edits.
+
+## Minimum Evidence Set
+
+The runner needs enough evidence to identify:
+
+- the cut and pack obligations;
+- deterministic checks and their pack classifications;
+- stack guardrail checks only when derived by the pack;
+- command, observation, manual path, or hybrid proof method used;
+- result per obligation;
+- whether each result is direct evidence, inference, stale signal, irrelevant
+  green, blocked proof, or missing proof;
+- final verdict rationale or formal correction rationale.
+
+The bundle must reject proof inflation. Generic green checks, intent,
+implementation inspection, stale logs, and inferred evidence are not enough for
+`PASS`.
+
+## Minimum Blocking Set
+
+The runner must block or preserve the handoff problem when:
+
+- `VALIDATION PACK` is missing, stale, contradictory, or too incomplete;
+- executor `READY` is missing or lacks applied-change evidence;
+- there is no concrete implementation to validate;
+- proof depends on unavailable environment, credentials, fixtures,
+  permissions, or harness;
+- obligations cannot be interpreted without redesigning proof;
+- execution would require criteria invention or silent proof reduction;
+- a correction request would become architecture review, broad refactor, or
+  replanning.
+
+## Minimum Boundary Set
+
+The bundle must not authorize:
+
+- runtime loader;
+- materialization path;
+- productive template changes;
+- productive skill changes;
+- target artifact generation;
+- fixtures;
+- generated reports;
+- global docs updates;
+- kernel promotion;
+- executable harness creation.
