@@ -133,13 +133,27 @@ const negativeMutations = Object.freeze([
     blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
     base: 'Reviewer does not run validation instead of `validation-runner`.',
     mutated: 'Reviewer may run validation instead of `validation-runner`.',
-    expected: /run validation|validation-runner/i,
+    expected: /(?:run validation.*validation-runner|validation-runner.*run validation)/i,
+  },
+  {
+    name: 'reviewer should run validation',
+    blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    base: 'Reviewer must not run validation.',
+    mutated: 'Reviewer should run validation.',
+    expected: /run validation/i,
   },
   {
     name: 'reviewer may emit PARTIAL',
     blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
     base: 'Reviewer must not emit `PARTIAL`; that verdict is owned by validation-runner.',
     mutated: 'Reviewer may emit `PARTIAL` as a validation verdict.',
+    expected: /PARTIAL/i,
+  },
+  {
+    name: 'reviewer is allowed to emit PARTIAL',
+    blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    base: 'Reviewer must not emit `PARTIAL`; that verdict is owned by validation-runner.',
+    mutated: 'Reviewer is allowed to emit `PARTIAL`.',
     expected: /PARTIAL/i,
   },
   {
@@ -154,7 +168,7 @@ const negativeMutations = Object.freeze([
     blocker: 'BLOCKED_RV_GREEN_PROOF_OVERRIDES_STRUCTURE',
     base: 'Green tests do not allow structural approval when material semantic risk remains.',
     mutated: 'Green tests allow structural approval when material semantic risk remains.',
-    expected: /green tests|structural approval/i,
+    expected: /(?:green tests.*structural approval|structural approval.*green tests)/i,
   },
   {
     name: 'reviewer may decide DONE',
@@ -171,11 +185,53 @@ const negativeMutations = Object.freeze([
     expected: /close the round/i,
   },
   {
+    name: 'reviewer should close the round',
+    blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
+    base: 'Reviewer does not close the round; finalizer owns closure.',
+    mutated: 'Reviewer should close the round.',
+    expected: /close the round/i,
+  },
+  {
+    name: 'reviewer is allowed to close the round',
+    blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
+    base: 'Reviewer is not allowed to close the round; finalizer owns closure.',
+    mutated: 'Reviewer is allowed to close the round.',
+    expected: /close the round/i,
+  },
+  {
+    name: 'reviewer is permitted to close the round',
+    blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
+    base: 'Reviewer is not permitted to close the round; finalizer owns closure.',
+    mutated: 'Reviewer is permitted to close the round.',
+    expected: /close the round/i,
+  },
+  {
+    name: 'reviewer is responsible for round closure',
+    blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
+    base: 'Reviewer is not responsible for round closure; finalizer owns closure.',
+    mutated: 'Reviewer is responsible for round closure.',
+    expected: /round closure/i,
+  },
+  {
+    name: 'reviewer has authority to close the round',
+    blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
+    base: 'Reviewer does not have authority to close the round; finalizer owns closure.',
+    mutated: 'Reviewer has authority to close the round.',
+    expected: /close the round/i,
+  },
+  {
     name: 'reviewer may write Feature CONTEXT',
     blocker: 'BLOCKED_RV_REPLACES_RESYNC',
     base: 'Reviewer does not write Feature CONTEXT during semantic review.',
     mutated: 'Reviewer may write Feature CONTEXT during semantic review.',
     expected: /Feature CONTEXT/i,
+  },
+  {
+    name: 'reviewer is responsible for Feature CONTEXT updates',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer is not responsible for Feature CONTEXT updates during semantic review.',
+    mutated: 'Reviewer is responsible for Feature CONTEXT updates.',
+    expected: /Feature CONTEXT updates/i,
   },
   {
     name: 'reviewer may write ADRs',
@@ -196,6 +252,13 @@ const negativeMutations = Object.freeze([
     blocker: 'BLOCKED_RV_REPLACES_RESYNC',
     base: 'Reviewer does not write shared canon during semantic review.',
     mutated: 'Reviewer may write shared canon during semantic review.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer has authority to write shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not have authority to write shared canon during semantic review.',
+    mutated: 'Reviewer has authority to write shared canon.',
     expected: /shared canon/i,
   },
   {
@@ -220,6 +283,13 @@ const negativeMutations = Object.freeze([
     expected: /apply patches/i,
   },
   {
+    name: 'reviewer is permitted to apply patches',
+    blocker: 'BLOCKED_RV_REPLACES_CODER_FIXER',
+    base: 'Reviewer is not permitted to apply patches during semantic review.',
+    mutated: 'Reviewer is permitted to apply patches.',
+    expected: /apply patches/i,
+  },
+  {
     name: 'reviewer may execute correction packs',
     blocker: 'BLOCKED_RV_REPLACES_CODER_FIXER',
     base: 'Reviewer does not execute correction packs; it only routes them.',
@@ -231,7 +301,7 @@ const negativeMutations = Object.freeze([
     blocker: 'BLOCKED_RV_REPLACES_CODER_FIXER',
     base: 'Reviewer must not broad-refactor the implementation.',
     mutated: 'Reviewer may broad-refactor the implementation.',
-    expected: /broad-refactor|broad refactor/i,
+    expected: /broad[- ]refactor/i,
   },
   {
     name: 'reviewer may create target artifacts',
@@ -294,70 +364,70 @@ const negativeMutations = Object.freeze([
     blocker: 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE',
     base: 'Subjective style preference must not be a blocker absent concrete risk.',
     mutated: 'Subjective style preference may be a blocker absent concrete risk.',
-    expected: /subjective style preference|blocker/i,
+    expected: /(?:subjective style preference.*blocker|blocker.*subjective style preference)/i,
   },
   {
     name: 'PASS may be emitted without artifact or diff',
     blocker: 'BLOCKED_RV_PASS_SHAPE_INVALID',
     base: '`PASS` must not be emitted when artifact or diff is absent.',
     mutated: '`PASS` may be emitted when artifact or diff is absent.',
-    expected: /PASS|artifact|diff/i,
+    expected: /(?:PASS.*(?:artifact|diff)|(?:artifact|diff).*PASS)/i,
   },
   {
     name: 'PASS may be emitted with unresolved material risk',
     blocker: 'BLOCKED_RV_MATERIAL_RISK_NOT_FAIL',
     base: '`PASS` must not be emitted with unresolved material risk.',
     mutated: '`PASS` may be emitted with unresolved material risk.',
-    expected: /PASS|unresolved material risk/i,
+    expected: /(?:PASS.*unresolved material risk|unresolved material risk.*PASS)/i,
   },
   {
     name: 'PASS may be emitted with CORRECTION PACK',
     blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
     base: '`PASS` is not emitted with `CORRECTION PACK`.',
     mutated: '`PASS` may be emitted with `CORRECTION PACK`.',
-    expected: /PASS|CORRECTION PACK/i,
+    expected: /(?:PASS.*CORRECTION PACK|CORRECTION PACK.*PASS)/i,
   },
   {
     name: 'FAIL may be used for aesthetic preference alone',
     blocker: 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE',
     base: '`FAIL` must not be used for aesthetic preference alone.',
     mutated: '`FAIL` may be used for aesthetic preference alone.',
-    expected: /FAIL|aesthetic preference/i,
+    expected: /(?:FAIL.*aesthetic preference|aesthetic preference.*FAIL)/i,
   },
   {
     name: 'CORRECTION PACK may be broad',
     blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
     base: '`CORRECTION PACK` must not be broad.',
     mutated: '`CORRECTION PACK` may be broad.',
-    expected: /CORRECTION PACK|broad/i,
+    expected: /(?:CORRECTION PACK.*broad|broad.*CORRECTION PACK)/i,
   },
   {
     name: 'CORRECTION PACK may be vague',
     blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
     base: '`CORRECTION PACK` must not be vague.',
     mutated: '`CORRECTION PACK` may be vague.',
-    expected: /CORRECTION PACK|vague/i,
+    expected: /(?:CORRECTION PACK.*vague|vague.*CORRECTION PACK)/i,
   },
   {
     name: 'CORRECTION PACK may be repo-wide',
     blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
     base: '`CORRECTION PACK` must not be repo-wide.',
     mutated: '`CORRECTION PACK` may be repo-wide.',
-    expected: /CORRECTION PACK|repo-wide/i,
+    expected: /(?:CORRECTION PACK.*repo-wide|repo-wide.*CORRECTION PACK)/i,
   },
   {
     name: 'CORRECTION PACK may be redesign-oriented',
     blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
     base: '`CORRECTION PACK` must not be redesign-oriented.',
     mutated: '`CORRECTION PACK` may be redesign-oriented.',
-    expected: /CORRECTION PACK|redesign-oriented/i,
+    expected: /(?:CORRECTION PACK.*redesign-oriented|redesign-oriented.*CORRECTION PACK)/i,
   },
   {
     name: 'multiple CORRECTION PACK blocks may be emitted',
     blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
     base: 'Multiple `CORRECTION PACK` instances must not be emitted.',
     mutated: 'Multiple `CORRECTION PACK` instances may be emitted.',
-    expected: /multiple|CORRECTION PACK/i,
+    expected: /(?:Multiple.*CORRECTION PACK|CORRECTION PACK.*Multiple)/i,
   },
   {
     name: 'reviewer authorizes runtime',
@@ -374,11 +444,25 @@ const negativeMutations = Object.freeze([
     expected: /materialization/i,
   },
   {
+    name: 'reviewer should authorize materialization',
+    blocker: 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION',
+    base: 'Reviewer must not authorize materialization.',
+    mutated: 'Reviewer should authorize materialization.',
+    expected: /materialization/i,
+  },
+  {
     name: 'reviewer authorizes production',
     blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
     base: 'Reviewer does not authorize production.',
     mutated: 'Reviewer authorizes production.',
     expected: /production/i,
+  },
+  {
+    name: 'reviewer is responsible for production adoption',
+    blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    base: 'Reviewer is not responsible for production adoption.',
+    mutated: 'Reviewer is responsible for production adoption.',
+    expected: /production adoption/i,
   },
   {
     name: 'reviewer authorizes productive skill',
@@ -433,43 +517,43 @@ const negativeMutations = Object.freeze([
     name: 'productive template may be fallback when snapshot missing',
     blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
     base: 'Productive template must not be fallback when snapshot is missing.',
-    mutated: 'Productive template may be fallback when snapshot is missing.',
-    expected: /productive template|snapshot/i,
+    mutated: 'The productive template is allowed as fallback when snapshot is missing.',
+    expected: /(?:productive template.*(?:fallback|snapshot)|(?:fallback|snapshot).*productive template)/i,
   },
   {
     name: 'scratchpads may be source of truth',
     blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
     base: 'Scratchpads must not be source of truth.',
-    mutated: 'Scratchpads may be source of truth.',
-    expected: /scratchpads|source of truth/i,
+    mutated: 'Scratchpads are permitted as source of truth.',
+    expected: /(?:Scratchpads.*source of truth|source of truth.*Scratchpads)/i,
   },
   {
     name: 'workspaceStorage may be source of truth',
     blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
     base: '`workspaceStorage` must not be source of truth.',
     mutated: '`workspaceStorage` may be source of truth.',
-    expected: /workspaceStorage|source of truth/i,
+    expected: /(?:workspaceStorage.*source of truth|source of truth.*workspaceStorage)/i,
   },
   {
     name: 'chat-session-resources may be source of truth',
     blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
     base: '`chat-session-resources` must not be source of truth.',
     mutated: '`chat-session-resources` may be source of truth.',
-    expected: /chat-session-resources|source of truth/i,
+    expected: /(?:chat-session-resources.*source of truth|source of truth.*chat-session-resources)/i,
   },
   {
     name: 'content.txt may be source of truth',
     blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
     base: '`content.txt` must not be source of truth.',
     mutated: '`content.txt` may be source of truth.',
-    expected: /content\.txt|source of truth/i,
+    expected: /(?:content\.txt.*source of truth|source of truth.*content\.txt)/i,
   },
   {
     name: 'runtime temp paths may be source of truth',
     blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
     base: 'Runtime temp paths must not be source of truth.',
     mutated: 'Runtime temp paths may be source of truth.',
-    expected: /runtime temp paths|source of truth/i,
+    expected: /(?:runtime temp paths.*source of truth|source of truth.*runtime temp paths)/i,
   },
 ]);
 
@@ -574,13 +658,13 @@ function splitClauses(text) {
 }
 
 function hasLocalNegation(clause) {
-  return /\b(?:no|not|never|without|does not|do not|must not|cannot|can not|is not|are not|was not|were not|isn't|aren't|won't|rejects?|blocks?|prohibits?|prohibited|prohibition on|forbidden|unauthori[sz]ed|unsafe if|fail if|fail condition|input shape|expected blocker|não|nao|sem)\b/i.test(
+  return /\b(?:does not|do not|must not|cannot|can not|is not|are not|never|no|without|forbidden|prohibited|rejects?|blocks?|unsafe if|fail if|not|was not|were not|isn't|aren't|won't|prohibits?|prohibition on|unauthori[sz]ed|fail condition|input shape|expected blocker|não|nao|sem)\b/i.test(
     clause,
   );
 }
 
 function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b/i.test(
+  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+to\b|\b(?:is|are)\s+responsible\s+for\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are)\s+accountable\s+for\b/i.test(
     clause,
   );
 }
@@ -589,11 +673,39 @@ function hasAffirmingStatus(clause) {
   return /\b(?:status|ready|active|enabled|pass|approved|available|supported|CLEAN_EXCELLENT_PASS)\b/i.test(clause);
 }
 
-function catchesAffirmativeClaim(text, pattern) {
-  return splitClauses(text).some(
-    (clause) =>
-      pattern.test(clause) && (hasAffirmingVerb(clause) || hasAffirmingStatus(clause)) && !hasLocalNegation(clause),
+function hasForbiddenStandaloneClaim(clause, claim) {
+  return Boolean(claim.standalone) && claim.pattern.test(clause);
+}
+
+function hasContradictoryClaim(clause, claim) {
+  return (
+    claim.pattern.test(clause) &&
+    hasLocalNegation(clause) &&
+    (/\b(?:may|can|could|should)\b/i.test(clause) ||
+      /\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b/i.test(clause))
   );
+}
+
+function findForbiddenClaims(text, claims) {
+  const matches = [];
+  for (const clause of splitClauses(text)) {
+    for (const claim of claims) {
+      const matched = claim.pattern.test(clause);
+      const nonNegated =
+        matched &&
+        !hasLocalNegation(clause) &&
+        (hasAffirmingVerb(clause) || hasAffirmingStatus(clause) || hasForbiddenStandaloneClaim(clause, claim));
+      if (nonNegated || hasContradictoryClaim(clause, claim)) {
+        matches.push({
+          matched: true,
+          blocker: claim.blocker,
+          excerpt: clause,
+          claimName: claim.name,
+        });
+      }
+    }
+  }
+  return matches;
 }
 
 function checkStaticHarnessPasses() {
@@ -622,15 +734,37 @@ function checkGoldenDoc() {
 }
 
 function checkInMemoryNegativeMutations() {
+  assert(negativeMutations.length >= 49, `expected at least 49 negative mutations, found ${negativeMutations.length}`);
+  const mutationClaims = negativeMutations.map((mutation) => ({
+    name: mutation.name,
+    blocker: mutation.blocker,
+    pattern: mutation.expected,
+  }));
+
   for (const mutation of negativeMutations) {
     const mutated = mutation.mutated;
+    assert(Boolean(mutation.blocker), `${mutation.name} mutation must declare semantic blocker`);
     assert(mutated !== mutation.base, `${mutation.name} mutation must change text in memory`);
+    const mutatedMatches = findForbiddenClaims(mutated, mutationClaims);
+    const expectedMatch = mutatedMatches.find((match) => match.claimName === mutation.name);
     assert(
-      catchesAffirmativeClaim(mutated, mutation.expected),
+      Boolean(expectedMatch),
       `${mutation.name} should trigger ${mutation.blocker} through affirmative forbidden-claim detection`,
     );
+    if (expectedMatch) {
+      assert(
+        expectedMatch.blocker === mutation.blocker,
+        `${mutation.name} detected blocker ${expectedMatch.blocker} but expected ${mutation.blocker}`,
+      );
+      assert(Boolean(expectedMatch.excerpt), `${mutation.name} must return a useful excerpt`);
+      assert(
+        mutation.expected.test(expectedMatch.excerpt),
+        `${mutation.name} excerpt must contain the prohibited action for ${mutation.blocker}`,
+      );
+    }
+    const baseMatches = findForbiddenClaims(mutation.base, mutationClaims);
     assert(
-      !catchesAffirmativeClaim(mutation.base, mutation.expected),
+      !baseMatches.some((match) => match.claimName === mutation.name),
       `${mutation.name} base text should remain accepted as local negation for ${mutation.blocker}`,
     );
   }

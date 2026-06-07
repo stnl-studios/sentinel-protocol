@@ -211,31 +211,61 @@ function splitClauses(text) {
 }
 
 function hasLocalNegation(clause) {
-  return /\b(?:no|not|never|without|does not|do not|must not|cannot|can not|is not|are not|was not|were not|isn't|aren't|won't|rejects?|blocks?|prohibits?|prohibited|prohibition on|forbidden|unauthori[sz]ed|unsafe if|fail if|fail condition|input shape|expected blocker|não|nao|sem)\b/i.test(
+  return /\b(?:does not|do not|must not|cannot|can not|is not|are not|never|no|without|forbidden|prohibited|rejects?|blocks?|unsafe if|fail if|not|was not|were not|isn't|aren't|won't|prohibits?|prohibition on|unauthori[sz]ed|fail condition|input shape|expected blocker|não|nao|sem)\b/i.test(
     clause,
   );
 }
 
 function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?)\b/i.test(
+  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+to\b|\b(?:is|are)\s+responsible\s+for\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are)\s+accountable\s+for\b/i.test(
     clause,
   );
 }
 
 function hasAffirmingStatus(clause) {
-  return /\b(?:status|ready|active|enabled|pass|approved|available|supported)\b/i.test(clause);
+  return /\b(?:status|ready|active|enabled|pass|approved|available|supported|CLEAN_EXCELLENT_PASS)\b/i.test(clause);
+}
+
+function hasForbiddenStandaloneClaim(clause, claim) {
+  return Boolean(claim.standalone) && claim.pattern.test(clause);
+}
+
+function hasContradictoryClaim(clause, claim) {
+  return (
+    claim.pattern.test(clause) &&
+    hasLocalNegation(clause) &&
+    (/\b(?:may|can|could|should)\b/i.test(clause) ||
+      /\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b/i.test(clause))
+  );
+}
+
+function findForbiddenClaims(text, claims) {
+  const matches = [];
+  for (const clause of splitClauses(text)) {
+    for (const claim of claims) {
+      const matched = claim.pattern.test(clause);
+      const nonNegated =
+        matched &&
+        !hasLocalNegation(clause) &&
+        (hasAffirmingVerb(clause) || hasAffirmingStatus(clause) || hasForbiddenStandaloneClaim(clause, claim));
+      if (nonNegated || hasContradictoryClaim(clause, claim)) {
+        matches.push({
+          matched: true,
+          blocker: claim.blocker,
+          excerpt: clause,
+          claimName: claim.name,
+        });
+      }
+    }
+  }
+  return matches;
 }
 
 function findAffirmativeClaims(text, claims, label) {
-  for (const clause of splitClauses(text)) {
-    for (const claim of claims) {
-      if (claim.pattern.test(clause) && (hasAffirmingVerb(clause) || hasAffirmingStatus(clause)) && !hasLocalNegation(clause)) {
-        fail(`${label} has non-negated prohibited claim (${claim.name}): ${clause}`);
-      }
-      if (claim.pattern.test(clause) && hasAffirmingVerb(clause) && !hasLocalNegation(clause)) {
-        fail(`${label} has affirmative prohibited authorization (${claim.name}): ${clause}`);
-      }
-    }
+  for (const match of findForbiddenClaims(text, claims)) {
+    assert(Boolean(match.blocker), `${label} prohibited claim (${match.claimName}) must include semantic blocker`);
+    assert(Boolean(match.excerpt), `${label} prohibited claim (${match.claimName}) must include useful excerpt`);
+    fail(`${label} has non-negated prohibited claim ${match.blocker} (${match.claimName}): ${match.excerpt}`);
   }
 }
 
@@ -291,19 +321,19 @@ function checkSnapshotParity() {
 }
 
 const forbiddenDocumentClaims = Object.freeze([
-  { name: 'CLEAN_EXCELLENT_PASS', pattern: /\bCLEAN_EXCELLENT_PASS\b/i },
-  { name: 'promotion', pattern: /\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b/i },
-  { name: 'runtime', pattern: /\bruntime\b/i },
-  { name: 'runtime loader', pattern: /\bruntime loader\b/i },
-  { name: 'materialization', pattern: /\bmateriali[sz]ation(?: path)?\b/i },
-  { name: 'materializer', pattern: /\bmaterializer\b/i },
-  { name: 'production', pattern: /\bproduction\b/i },
-  { name: 'productive skill activation', pattern: /\bproductive[- ]skill activation\b/i },
-  { name: 'GitHub write', pattern: /\bGitHub writes?\b|\bwrite(?:s)? to GitHub\b/i },
-  { name: 'target repo write', pattern: /\btarget[- ]repo(?:sitory)? writes?\b|\bwrite(?:s)? to target[- ]repo/i },
-  { name: 'target artifact', pattern: /\btarget artifacts?\b/i },
-  { name: 'fixture', pattern: /\bfixtures?\b/i },
-  { name: 'generated report', pattern: /\bgenerated reports?\b/i },
+  { name: 'CLEAN_EXCELLENT_PASS', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\bCLEAN_EXCELLENT_PASS\b/i, standalone: true },
+  { name: 'promotion', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b/i },
+  { name: 'runtime', blocker: 'BLOCKED_RV_RUNTIME_AUTHORIZATION', pattern: /\bruntime\b/i },
+  { name: 'runtime loader', blocker: 'BLOCKED_RV_RUNTIME_LOADER_AUTHORIZATION', pattern: /\bruntime loader\b/i },
+  { name: 'materialization', blocker: 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION', pattern: /\bmateriali[sz]ation(?: path)?\b/i },
+  { name: 'materializer', blocker: 'BLOCKED_RV_MATERIALIZER_AUTHORIZATION', pattern: /\bmaterializer\b/i },
+  { name: 'production', blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION', pattern: /\bproduction\b/i },
+  { name: 'productive skill activation', blocker: 'BLOCKED_RV_PRODUCTIVE_SKILL_AUTHORIZATION', pattern: /\bproductive[- ]skill activation\b/i },
+  { name: 'GitHub write', blocker: 'BLOCKED_RV_GITHUB_WRITE_AUTHORIZATION', pattern: /\bGitHub writes?\b|\bwrite(?:s)? to GitHub\b/i },
+  { name: 'target repo write', blocker: 'BLOCKED_RV_TARGET_REPO_WRITE_AUTHORIZATION', pattern: /\btarget[- ]repo(?:sitory)? writes?\b|\bwrite(?:s)? to target[- ]repo/i },
+  { name: 'target artifact', blocker: 'BLOCKED_RV_TARGET_ARTIFACT_AUTHORIZATION', pattern: /\btarget artifacts?\b/i },
+  { name: 'fixture', blocker: 'BLOCKED_RV_FIXTURE_AUTHORIZATION', pattern: /\bfixtures?\b/i },
+  { name: 'generated report', blocker: 'BLOCKED_RV_GENERATED_REPORT_AUTHORIZATION', pattern: /\bgenerated reports?\b/i },
 ]);
 
 function checkDocumentStatus(docs) {
