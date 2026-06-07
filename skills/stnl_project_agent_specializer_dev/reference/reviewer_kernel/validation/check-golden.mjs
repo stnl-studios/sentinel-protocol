@@ -129,34 +129,347 @@ const scenarios = Object.freeze([
 
 const negativeMutations = Object.freeze([
   {
-    name: 'promoted runtime claim',
-    base: 'Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.\nThis kernel is not runtime.',
-    mutate: () => 'Reviewer authorizes runtime and production ready behavior.',
-    expected: /runtime|production/i,
+    name: 'reviewer may run validation instead of validation-runner',
+    blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    base: 'Reviewer does not run validation instead of `validation-runner`.',
+    mutated: 'Reviewer may run validation instead of `validation-runner`.',
+    expected: /run validation|validation-runner/i,
   },
   {
-    name: 'correction pack mixed with pass',
-    base: '`CORRECTION PACK` is mutually exclusive with `PASS` and `FAIL`.',
-    mutate: () => '`CORRECTION PACK` may be emitted with `PASS` when useful.',
-    expected: /PASS/i,
+    name: 'reviewer may emit PARTIAL',
+    blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    base: 'Reviewer must not emit `PARTIAL`; that verdict is owned by validation-runner.',
+    mutated: 'Reviewer may emit `PARTIAL` as a validation verdict.',
+    expected: /PARTIAL/i,
   },
   {
-    name: 'reviewer replaces runner',
-    base: 'Reviewer does not run validation and does not replace `validation-runner`.',
-    mutate: () => 'Reviewer may run validation and replace `validation-runner`.',
-    expected: /run validation|replace/i,
+    name: 'reviewer may emit BLOCKED',
+    blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    base: 'Reviewer must not emit `BLOCKED`; that verdict is owned by validation-runner.',
+    mutated: 'Reviewer may emit `BLOCKED` as a validation verdict.',
+    expected: /BLOCKED/i,
   },
   {
-    name: 'reviewer edits code',
-    base: 'Reviewer does not edit code or apply patches.',
-    mutate: () => 'Reviewer can edit code and apply patches.',
-    expected: /edit code|apply patches/i,
+    name: 'green tests are enough for structural approval',
+    blocker: 'BLOCKED_RV_GREEN_PROOF_OVERRIDES_STRUCTURE',
+    base: 'Green tests do not allow structural approval when material semantic risk remains.',
+    mutated: 'Green tests allow structural approval when material semantic risk remains.',
+    expected: /green tests|structural approval/i,
   },
   {
-    name: 'reading broad discovery',
-    base: 'Reviewer must not reopen discovery, scan repo-wide, or use runtime temp paths as Sentinel source of truth.',
-    mutate: () => 'Reviewer may reopen discovery, scan repo-wide, and use runtime temp paths as Sentinel source of truth.',
-    expected: /reopen discovery|runtime temp paths/i,
+    name: 'reviewer may decide DONE',
+    blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
+    base: 'Reviewer does not decide `DONE`; finalizer owns closure.',
+    mutated: 'Reviewer may decide `DONE` after semantic review.',
+    expected: /DONE/i,
+  },
+  {
+    name: 'reviewer may close the round',
+    blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
+    base: 'Reviewer does not close the round; finalizer owns closure.',
+    mutated: 'Reviewer may close the round after PASS.',
+    expected: /close the round/i,
+  },
+  {
+    name: 'reviewer may write Feature CONTEXT',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not write Feature CONTEXT during semantic review.',
+    mutated: 'Reviewer may write Feature CONTEXT during semantic review.',
+    expected: /Feature CONTEXT/i,
+  },
+  {
+    name: 'reviewer may write ADRs',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not write ADRs during semantic review.',
+    mutated: 'Reviewer may write ADRs during semantic review.',
+    expected: /ADRs/i,
+  },
+  {
+    name: 'reviewer may write PLAN.md',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not write `PLAN.md` during semantic review.',
+    mutated: 'Reviewer may write `PLAN.md` during semantic review.',
+    expected: /PLAN\.md/i,
+  },
+  {
+    name: 'reviewer may write shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not write shared canon during semantic review.',
+    mutated: 'Reviewer may write shared canon during semantic review.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer may sync docs',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not sync docs during semantic review.',
+    mutated: 'Reviewer may sync docs during semantic review.',
+    expected: /sync docs/i,
+  },
+  {
+    name: 'reviewer may edit code',
+    blocker: 'BLOCKED_RV_REPLACES_CODER_FIXER',
+    base: 'Reviewer does not edit code during semantic review.',
+    mutated: 'Reviewer may edit code during semantic review.',
+    expected: /edit code/i,
+  },
+  {
+    name: 'reviewer may apply patches',
+    blocker: 'BLOCKED_RV_REPLACES_CODER_FIXER',
+    base: 'Reviewer does not apply patches during semantic review.',
+    mutated: 'Reviewer may apply patches during semantic review.',
+    expected: /apply patches/i,
+  },
+  {
+    name: 'reviewer may execute correction packs',
+    blocker: 'BLOCKED_RV_REPLACES_CODER_FIXER',
+    base: 'Reviewer does not execute correction packs; it only routes them.',
+    mutated: 'Reviewer may execute correction packs after review.',
+    expected: /execute correction packs/i,
+  },
+  {
+    name: 'reviewer may broad-refactor',
+    blocker: 'BLOCKED_RV_REPLACES_CODER_FIXER',
+    base: 'Reviewer must not broad-refactor the implementation.',
+    mutated: 'Reviewer may broad-refactor the implementation.',
+    expected: /broad-refactor|broad refactor/i,
+  },
+  {
+    name: 'reviewer may create target artifacts',
+    blocker: 'BLOCKED_RV_CREATES_TARGET_ARTIFACTS',
+    base: 'Reviewer does not create target artifacts.',
+    mutated: 'Reviewer may create target artifacts.',
+    expected: /target artifacts/i,
+  },
+  {
+    name: 'reviewer may redesign EXECUTION PACKAGE',
+    blocker: 'BLOCKED_RV_REDESIGNS_PACKAGE',
+    base: 'Reviewer does not redesign `EXECUTION PACKAGE`.',
+    mutated: 'Reviewer may redesign `EXECUTION PACKAGE`.',
+    expected: /EXECUTION PACKAGE/i,
+  },
+  {
+    name: 'reviewer may redesign the cut',
+    blocker: 'BLOCKED_RV_REDESIGNS_CUT',
+    base: 'Reviewer does not redesign the cut.',
+    mutated: 'Reviewer may redesign the cut.',
+    expected: /redesign the cut/i,
+  },
+  {
+    name: 'reviewer may redesign the plan',
+    blocker: 'BLOCKED_RV_REDESIGNS_PLAN',
+    base: 'Reviewer does not redesign the plan.',
+    mutated: 'Reviewer may redesign the plan.',
+    expected: /redesign the plan/i,
+  },
+  {
+    name: 'reviewer may redesign the brief',
+    blocker: 'BLOCKED_RV_REDESIGNS_BRIEF',
+    base: 'Reviewer does not redesign the brief.',
+    mutated: 'Reviewer may redesign the brief.',
+    expected: /redesign the brief/i,
+  },
+  {
+    name: 'reviewer may redesign validation design',
+    blocker: 'BLOCKED_RV_REDESIGNS_VALIDATION_DESIGN',
+    base: 'Reviewer does not redesign validation design.',
+    mutated: 'Reviewer may redesign validation design.',
+    expected: /validation design/i,
+  },
+  {
+    name: 'reviewer may reopen broad discovery',
+    blocker: 'BLOCKED_RV_REVIEW_MINIMAL_BROKEN',
+    base: 'Reviewer must not reopen broad discovery.',
+    mutated: 'Reviewer may reopen broad discovery.',
+    expected: /broad discovery/i,
+  },
+  {
+    name: 'reviewer may review the whole repo by default',
+    blocker: 'BLOCKED_RV_REVIEW_MINIMAL_BROKEN',
+    base: 'Reviewer must not review the whole repo by default.',
+    mutated: 'Reviewer may review the whole repo by default.',
+    expected: /whole repo/i,
+  },
+  {
+    name: 'subjective style preference may be blocker without concrete risk',
+    blocker: 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE',
+    base: 'Subjective style preference must not be a blocker absent concrete risk.',
+    mutated: 'Subjective style preference may be a blocker absent concrete risk.',
+    expected: /subjective style preference|blocker/i,
+  },
+  {
+    name: 'PASS may be emitted without artifact or diff',
+    blocker: 'BLOCKED_RV_PASS_SHAPE_INVALID',
+    base: '`PASS` must not be emitted when artifact or diff is absent.',
+    mutated: '`PASS` may be emitted when artifact or diff is absent.',
+    expected: /PASS|artifact|diff/i,
+  },
+  {
+    name: 'PASS may be emitted with unresolved material risk',
+    blocker: 'BLOCKED_RV_MATERIAL_RISK_NOT_FAIL',
+    base: '`PASS` must not be emitted with unresolved material risk.',
+    mutated: '`PASS` may be emitted with unresolved material risk.',
+    expected: /PASS|unresolved material risk/i,
+  },
+  {
+    name: 'PASS may be emitted with CORRECTION PACK',
+    blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
+    base: '`PASS` is not emitted with `CORRECTION PACK`.',
+    mutated: '`PASS` may be emitted with `CORRECTION PACK`.',
+    expected: /PASS|CORRECTION PACK/i,
+  },
+  {
+    name: 'FAIL may be used for aesthetic preference alone',
+    blocker: 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE',
+    base: '`FAIL` must not be used for aesthetic preference alone.',
+    mutated: '`FAIL` may be used for aesthetic preference alone.',
+    expected: /FAIL|aesthetic preference/i,
+  },
+  {
+    name: 'CORRECTION PACK may be broad',
+    blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
+    base: '`CORRECTION PACK` must not be broad.',
+    mutated: '`CORRECTION PACK` may be broad.',
+    expected: /CORRECTION PACK|broad/i,
+  },
+  {
+    name: 'CORRECTION PACK may be vague',
+    blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
+    base: '`CORRECTION PACK` must not be vague.',
+    mutated: '`CORRECTION PACK` may be vague.',
+    expected: /CORRECTION PACK|vague/i,
+  },
+  {
+    name: 'CORRECTION PACK may be repo-wide',
+    blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
+    base: '`CORRECTION PACK` must not be repo-wide.',
+    mutated: '`CORRECTION PACK` may be repo-wide.',
+    expected: /CORRECTION PACK|repo-wide/i,
+  },
+  {
+    name: 'CORRECTION PACK may be redesign-oriented',
+    blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
+    base: '`CORRECTION PACK` must not be redesign-oriented.',
+    mutated: '`CORRECTION PACK` may be redesign-oriented.',
+    expected: /CORRECTION PACK|redesign-oriented/i,
+  },
+  {
+    name: 'multiple CORRECTION PACK blocks may be emitted',
+    blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
+    base: 'Multiple `CORRECTION PACK` instances must not be emitted.',
+    mutated: 'Multiple `CORRECTION PACK` instances may be emitted.',
+    expected: /multiple|CORRECTION PACK/i,
+  },
+  {
+    name: 'reviewer authorizes runtime',
+    blocker: 'BLOCKED_RV_RUNTIME_AUTHORIZATION',
+    base: 'Reviewer does not authorize runtime.',
+    mutated: 'Reviewer authorizes runtime.',
+    expected: /runtime/i,
+  },
+  {
+    name: 'reviewer authorizes materialization',
+    blocker: 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION',
+    base: 'Reviewer does not authorize materialization.',
+    mutated: 'Reviewer authorizes materialization.',
+    expected: /materialization/i,
+  },
+  {
+    name: 'reviewer authorizes production',
+    blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    base: 'Reviewer does not authorize production.',
+    mutated: 'Reviewer authorizes production.',
+    expected: /production/i,
+  },
+  {
+    name: 'reviewer authorizes productive skill',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_SKILL_AUTHORIZATION',
+    base: 'Reviewer does not authorize productive skill.',
+    mutated: 'Reviewer authorizes productive skill.',
+    expected: /productive skill/i,
+  },
+  {
+    name: 'reviewer authorizes materializer',
+    blocker: 'BLOCKED_RV_MATERIALIZER_AUTHORIZATION',
+    base: 'Reviewer does not authorize materializer.',
+    mutated: 'Reviewer authorizes materializer.',
+    expected: /materializer/i,
+  },
+  {
+    name: 'reviewer authorizes runtime loader',
+    blocker: 'BLOCKED_RV_RUNTIME_LOADER_AUTHORIZATION',
+    base: 'Reviewer does not authorize runtime loader.',
+    mutated: 'Reviewer authorizes runtime loader.',
+    expected: /runtime loader/i,
+  },
+  {
+    name: 'reviewer authorizes fixture',
+    blocker: 'BLOCKED_RV_FIXTURE_AUTHORIZATION',
+    base: 'Reviewer does not authorize fixture creation.',
+    mutated: 'Reviewer authorizes fixture creation.',
+    expected: /fixture/i,
+  },
+  {
+    name: 'reviewer authorizes generated report',
+    blocker: 'BLOCKED_RV_GENERATED_REPORT_AUTHORIZATION',
+    base: 'Reviewer does not authorize generated report creation.',
+    mutated: 'Reviewer authorizes generated report creation.',
+    expected: /generated report/i,
+  },
+  {
+    name: 'reviewer authorizes target artifact',
+    blocker: 'BLOCKED_RV_TARGET_ARTIFACT_AUTHORIZATION',
+    base: 'Reviewer does not authorize target artifact creation.',
+    mutated: 'Reviewer authorizes target artifact creation.',
+    expected: /target artifact/i,
+  },
+  {
+    name: 'REVIEWER_KERNEL is CLEAN_EXCELLENT_PASS',
+    blocker: 'BLOCKED_RV_STATUS_PROMOTION',
+    base: '`REVIEWER_KERNEL` is not `CLEAN_EXCELLENT_PASS`.',
+    mutated: '`REVIEWER_KERNEL` is `CLEAN_EXCELLENT_PASS`.',
+    expected: /CLEAN_EXCELLENT_PASS/i,
+  },
+  {
+    name: 'productive template may be fallback when snapshot missing',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not be fallback when snapshot is missing.',
+    mutated: 'Productive template may be fallback when snapshot is missing.',
+    expected: /productive template|snapshot/i,
+  },
+  {
+    name: 'scratchpads may be source of truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads must not be source of truth.',
+    mutated: 'Scratchpads may be source of truth.',
+    expected: /scratchpads|source of truth/i,
+  },
+  {
+    name: 'workspaceStorage may be source of truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: '`workspaceStorage` must not be source of truth.',
+    mutated: '`workspaceStorage` may be source of truth.',
+    expected: /workspaceStorage|source of truth/i,
+  },
+  {
+    name: 'chat-session-resources may be source of truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: '`chat-session-resources` must not be source of truth.',
+    mutated: '`chat-session-resources` may be source of truth.',
+    expected: /chat-session-resources|source of truth/i,
+  },
+  {
+    name: 'content.txt may be source of truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: '`content.txt` must not be source of truth.',
+    mutated: '`content.txt` may be source of truth.',
+    expected: /content\.txt|source of truth/i,
+  },
+  {
+    name: 'runtime temp paths may be source of truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Runtime temp paths must not be source of truth.',
+    mutated: 'Runtime temp paths may be source of truth.',
+    expected: /runtime temp paths|source of truth/i,
   },
 ]);
 
@@ -261,20 +574,25 @@ function splitClauses(text) {
 }
 
 function hasLocalNegation(clause) {
-  return /\b(?:no|not|never|without|does not|do not|must not|cannot|can not|rejects?|blocks?|prohibits?|forbidden|unauthori[sz]ed|unsafe if|fail if|fail condition)\b/i.test(
+  return /\b(?:no|not|never|without|does not|do not|must not|cannot|can not|is not|are not|was not|were not|isn't|aren't|won't|rejects?|blocks?|prohibits?|prohibited|prohibition on|forbidden|unauthori[sz]ed|unsafe if|fail if|fail condition|input shape|expected blocker|não|nao|sem)\b/i.test(
     clause,
   );
 }
 
 function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|decides?|replaces?|implements?|promotes?)\b/i.test(
+  return /\b(?:may|can|could|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b/i.test(
     clause,
   );
 }
 
+function hasAffirmingStatus(clause) {
+  return /\b(?:status|ready|active|enabled|pass|approved|available|supported|CLEAN_EXCELLENT_PASS)\b/i.test(clause);
+}
+
 function catchesAffirmativeClaim(text, pattern) {
   return splitClauses(text).some(
-    (clause) => pattern.test(clause) && hasAffirmingVerb(clause) && !hasLocalNegation(clause),
+    (clause) =>
+      pattern.test(clause) && (hasAffirmingVerb(clause) || hasAffirmingStatus(clause)) && !hasLocalNegation(clause),
   );
 }
 
@@ -305,15 +623,15 @@ function checkGoldenDoc() {
 
 function checkInMemoryNegativeMutations() {
   for (const mutation of negativeMutations) {
-    const mutated = mutation.mutate(mutation.base);
+    const mutated = mutation.mutated;
     assert(mutated !== mutation.base, `${mutation.name} mutation must change text in memory`);
     assert(
       catchesAffirmativeClaim(mutated, mutation.expected),
-      `${mutation.name} should be detected as an affirmative forbidden claim`,
+      `${mutation.name} should trigger ${mutation.blocker} through affirmative forbidden-claim detection`,
     );
     assert(
       !catchesAffirmativeClaim(mutation.base, mutation.expected),
-      `${mutation.name} base text should remain accepted as local negation`,
+      `${mutation.name} base text should remain accepted as local negation for ${mutation.blocker}`,
     );
   }
 }
