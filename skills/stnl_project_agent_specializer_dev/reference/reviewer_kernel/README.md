@@ -1,0 +1,70 @@
+# Reviewer Kernel
+
+Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.
+
+This is a documentary/dev-only initial draft for the base `reviewer` agent. It
+is not promoted, not `CLEAN_EXCELLENT_PASS`, not runtime, not production, and
+has no materialization path, no runtime loader, no materializer, no executable
+harness, no target artifact, no productive skill activation, and no template
+mutation.
+
+This directory records the initial semantic kernel shape for the
+`semantic-review` role. It preserves the reviewer as a post-implementation,
+pre-finalizer reviewer of the implemented artifact and resulting diff inside
+the authorized cut. It does not prove behavior, implement fixes, close the
+round, sync durable documentation, or write shared canon.
+
+## Source Alignment
+
+- productive/base copy origin:
+  `templates/agents/reviewer.agent.md`;
+- local dev snapshot and audit point:
+  `reference/agents/reviewer.agent.md`;
+- documentary initial kernel bundle:
+  `reference/reviewer_kernel/**`.
+
+The local snapshot must remain byte-for-byte equal to the productive template
+until a later explicitly authorized phase changes that relationship. The
+productive template is only the copy origin and is not a fallback when the
+snapshot is missing.
+
+## Included Files
+
+The initial 7-file documentary bundle is read in this order:
+
+1. `README.md` - status, source alignment, bundle, and scope limits.
+2. `contracts/CONTRACT.md` - identity, entry, input, output, verdict,
+   correction, reading, and boundary contract.
+3. `contracts/BEHAVIOR_PARITY_SPINE.md` - irreducible behavior preserved from
+   the base `reviewer`.
+4. `contracts/MINIMUM_SAFE_BUNDLE.md` - smallest non-optional documentary
+   bundle for the role.
+5. `contracts/SEMANTIC_REVIEW_GATES.md` - entry, review, verdict, correction,
+   and boundary gates for honest semantic review.
+6. `validation/STATIC_CHECKS.md` - planned textual static-check contract only.
+7. `validation/GOLDEN_TESTS.md` - planned textual golden-test contract only.
+
+No `check-static.mjs`, `check-golden.mjs`, fixture, generated report, runtime
+loader, materializer, or materialization path is part of this phase.
+
+## Scope Limits
+
+This kernel is specific to `reviewer`, role class `semantic-review`, reading
+scope class `review-minimal`. It is not a generic reviewer, generic opinion
+agent, proof executor, finalizer, resync owner, coder, fixer, planner,
+execution-package designer, validation-pack designer, or materializer.
+
+The reviewer enters after concrete implementation and before finalization. It
+reviews the implemented artifact and resulting diff inside the authorized cut
+for semantic risk, architectural risk, boundary drift, maintainability,
+complexity, improper coupling, unauthorized inference, contract drift,
+product-decision leakage, and scope expansion.
+
+The reviewer emits short delta-only output. It may emit `PASS`, `FAIL`, or
+exactly one formal `CORRECTION PACK` block. `CORRECTION PACK` is mutually
+exclusive with `PASS` and `FAIL`.
+
+This directory does not authorize runtime, materialization, repo-target writes,
+global docs updates, productive-skill changes, productive-template changes,
+automatic future promotion, status extension outside this initial draft, a
+materializer, a shared production path, or any executable harness.
