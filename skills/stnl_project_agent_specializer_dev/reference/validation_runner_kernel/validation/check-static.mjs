@@ -78,6 +78,25 @@ const STALE_CLAIM_PATTERNS = Object.freeze([
   [/\bnao foi promovido\b/i, 'stale Portuguese not-promoted status'],
 ]);
 
+const FORBIDDEN_PASS_CONTRADICTION_PATTERNS = Object.freeze([
+  [/`?PASS`?\s+does\s+not\s+require\s+direct proof/i, 'PASS does not require direct proof'],
+  [/`?PASS`?\s+can\s+pass\s+without\s+direct proof/i, 'PASS can pass without direct proof'],
+  [/`?PASS`?\s+may\s+pass\s+without\s+direct proof/i, 'PASS may pass without direct proof'],
+  [/`?PASS`?\s+may\s+be\s+based\s+on\s+inferred evidence/i, 'PASS may be based on inferred evidence'],
+  [/`?PASS`?\s+may\s+rest\s+on\s+inferred evidence/i, 'PASS may rest on inferred evidence'],
+  [
+    /`?PASS`?\s+may\s+rest\s+on\s+green output unrelated to the cut/i,
+    'PASS may rest on green output unrelated to the cut',
+  ],
+  [/`?PASS`?\s+may\s+rest\s+on\s+invalid executor readiness/i, 'PASS may rest on invalid executor readiness'],
+  [/`?PASS`?\s+may\s+rest\s+on\s+missing required checks/i, 'PASS may rest on missing required checks'],
+  [/`?PASS`?\s+can\s+rest\s+on\s+missing required checks/i, 'PASS can rest on missing required checks'],
+  [
+    /`?PASS`?\s+may\s+be\s+justified\s+by\s+generic green output/i,
+    'PASS may be justified by generic green output',
+  ],
+]);
+
 const DENIED_PATH_PATTERNS = Object.freeze([
   [/fixture/i, 'fixture path'],
   [/generated[-_ ]?report/i, 'generated report path'],
@@ -575,6 +594,40 @@ function validateNoStaleClaims(docs) {
   }
 }
 
+function isRejectedPassContradictionExample(sentence, match) {
+  const suffix = sentence.slice(match.end);
+  return /^`?\s*(?:fails?|must fail|should fail|is rejected|must be rejected|is forbidden|is prohibited)\b/i.test(
+    suffix,
+  );
+}
+
+function forbiddenPassContradictionClaim(sentence) {
+  for (const [pattern, label] of FORBIDDEN_PASS_CONTRADICTION_PATTERNS) {
+    for (const match of regexMatches(pattern, sentence)) {
+      if (!isRejectedPassContradictionExample(sentence, match)) {
+        return label;
+      }
+    }
+  }
+
+  return null;
+}
+
+function hasForbiddenPassContradiction(text) {
+  return sentences(text).some((sentence) => forbiddenPassContradictionClaim(sentence));
+}
+
+function validateNoPassContradictions(docs) {
+  for (const [relPath, content] of Object.entries(docs)) {
+    for (const sentence of sentences(content)) {
+      const label = forbiddenPassContradictionClaim(sentence);
+      if (label) {
+        fail(`${relPath} contains forbidden direct-proof contradiction (${label}): ${sentence}`);
+      }
+    }
+  }
+}
+
 function validatePromotionRuntimeClaims(docs) {
   for (const [relPath, content] of Object.entries(docs)) {
     for (const sentence of sentences(content)) {
@@ -686,6 +739,7 @@ function validateHarnessSources() {
     ['local negation', /hasLocalProhibition|isProhibitiveLocal/],
     ['bundle by section', /validateReadmeBundleSection/],
     ['stale claim scan', /STALE_CLAIM_PATTERNS/],
+    ['PASS contradiction scan', /FORBIDDEN_PASS_CONTRADICTION_PATTERNS/],
     ['global docs coherence', /validateGlobalDocsCoherent|GLOBAL_DOCS/],
   ];
 
@@ -1254,6 +1308,44 @@ function runLocalNegationSelfTest() {
     'local negation self-test failed: negated direct-proof anchor passed',
   );
 
+  const forbiddenPassCases = [
+    'PASS does not require direct proof.',
+    'PASS can pass without direct proof.',
+    'PASS may pass without direct proof.',
+    'PASS may be based on inferred evidence.',
+    'PASS may rest on inferred evidence.',
+    'PASS may rest on green output unrelated to the cut.',
+    'PASS may rest on invalid executor readiness.',
+    'PASS may rest on missing required checks.',
+    'PASS can rest on missing required checks.',
+    'PASS may be justified by generic green output.',
+  ];
+
+  const permittedPassCases = [
+    'PASS requires direct proof.',
+    'PASS cannot rest on inferred evidence.',
+    'PASS cannot rest on invalid executor readiness.',
+    'PASS cannot rest on missing required checks.',
+    'PASS cannot rest on green output unrelated to the cut.',
+    'Generic green output cannot justify PASS.',
+    'Irrelevant green output cannot justify PASS.',
+    'Example enforced by the harness: `PASS does not require direct proof` fails.',
+  ];
+
+  for (const sentence of forbiddenPassCases) {
+    assert(
+      hasForbiddenPassContradiction(sentence),
+      `direct-proof contradiction self-test failed: forbidden sentence passed: ${sentence}`,
+    );
+  }
+
+  for (const sentence of permittedPassCases) {
+    assert(
+      !hasForbiddenPassContradiction(sentence),
+      `direct-proof contradiction self-test failed: permitted sentence failed: ${sentence}`,
+    );
+  }
+
   const affirmativeCases = [
     [
       'validation pack consumption',
@@ -1393,6 +1485,7 @@ function main() {
 
   validateReadmeBundleSection(docs['README.md']);
   validateNoStaleClaims(docs);
+  validateNoPassContradictions(docs);
   validatePromotionRuntimeClaims(docs);
   validateAnchorMatrix(docs);
   validateHarnessSources();
