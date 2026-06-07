@@ -9,13 +9,14 @@ materialização da skill. O kernel lab contém `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, o kernel congelado `designer_kernel` e o
 kernel promovido `coder_frontend_kernel` e o kernel promovido
-`coder_backend_kernel`.
+`coder_backend_kernel`, além do kernel promovido `validation_runner_kernel`.
 
-Há sete kernels congelados como `CLEAN_EXCELLENT_PASS`:
+Há oito kernels congelados como `CLEAN_EXCELLENT_PASS`:
 `orchestrator_kernel`, `planner_kernel`, `validation_eval_designer_kernel`,
-`execution_package_designer_kernel`, `designer_kernel` e
-`coder_frontend_kernel` e `coder_backend_kernel`. Esses passes são resultados
-exclusivos do kernel lab dev.
+`execution_package_designer_kernel`, `designer_kernel`,
+`coder_frontend_kernel`, `coder_backend_kernel` e
+`validation_runner_kernel`. Esses passes são resultados exclusivos do kernel
+lab dev.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -59,6 +60,18 @@ documental, contratual, semântico mínimo e com harness textual executável
 endurecido; não é runtime pass, não é materialization pass, não é target repo
 pass, não autoriza runtime loader, não autoriza materialization path, não
 autoriza produção, não autoriza skill produtiva, não autoriza materializer, não
+autoriza escrita em GitHub, não autoriza escrita em repo alvo, não autoriza
+generated reports, fixtures, target artifacts, active runtime adoption ou
+alteração em templates canônicos.
+
+O `validation_runner_kernel` foi promovido para
+`VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental
+controlada com snapshot byte-a-byte preservado e harness documental/textual
+endurecido. Esse pass vale somente para o kernel lab dev documental,
+contratual, semântico mínimo e com harness textual executável endurecido; não
+é runtime pass, não é materialization pass, não é target repo pass, não
+autoriza runtime loader, não autoriza materialization path, não autoriza
+produção, não autoriza skill produtiva, não autoriza materializer, não
 autoriza escrita em GitHub, não autoriza escrita em repo alvo, não autoriza
 generated reports, fixtures, target artifacts, active runtime adoption ou
 alteração em templates canônicos.
@@ -113,6 +126,13 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   path, produção, escrita em GitHub, escrita em repo alvo, generated reports,
   fixtures, target artifacts, active runtime adoption, skill produtiva ou
   alteração em templates canônicos;
+- preservar o `validation_runner_kernel` promovido contra o snapshot dev local
+  `reference/agents/validation-runner.agent.md`, derivado literalmente de
+  `templates/agents/validation-runner.agent.md`, com harness
+  documental/textual endurecido e sem runtime, runtime loader, materialização,
+  materialization path, produção, escrita em GitHub, escrita em repo alvo,
+  generated reports, fixtures, target artifacts, active runtime adoption,
+  materializer, skill produtiva ou alteração em templates canônicos;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
 - manter qualquer kernel futuro sujeito a autorização e auditoria próprias;
@@ -145,6 +165,11 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   loader, materialização, materialization path, produção, GitHub, repo alvo,
   generated reports, fixtures, target artifacts, active runtime adoption ou
   skill produtiva;
+- tratar `reference/validation_runner_kernel/**` como clean pass documental
+  dev-only com harness textual bloqueante, sem autorizar runtime, runtime
+  loader, materialização, materialization path, produção, GitHub, repo alvo,
+  generated reports, fixtures, target artifacts, active runtime adoption,
+  materializer, skill produtiva ou alteração em templates canônicos;
 - nunca usar fallback para a skill produtiva, `templates/**`, `~/.agents/**` ou
   filesystem externo;
 - não tocar na skill produtiva, templates produtivos, installer, smoke,

@@ -1,17 +1,20 @@
 # Validation Runner Kernel Golden Tests
 
 Status: current textual golden harness for
-`VALIDATION_RUNNER_KERNEL: initial draft`.
+`VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, is
-`dev kernel lab only`, is `non-runtime`, is `non-production`, and has
-`no materialization path`.
+Documentary promotion applied. This status is a documentary validation pass,
+contractual pass, minimum semantic pass, and hardened textual executable
+harness pass for the dev kernel lab only. It is `dev kernel lab only`,
+`non-runtime`, `non-production`, and has `no materialization path`,
+`no runtime loader`, `no materializer`, `no target artifact`,
+`no productive skill activation`, and `no template mutation`.
 
 The textual executable harness now exists at `validation/check-golden.mjs` and
-runs `validation/check-static.mjs` first. Harness pass does not promote the
-kernel, does not authorize `CLEAN_EXCELLENT_PASS`, and does not authorize
+runs `validation/check-static.mjs` first. Harness pass does not authorize
 runtime, materialization, production, global docs updates, productive-skill
-changes, or template changes.
+changes, template changes, or any extension of `CLEAN_EXCELLENT_PASS` outside
+the dev kernel lab.
 
 ## Cross-Cut Boundaries
 

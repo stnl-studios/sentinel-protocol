@@ -8,7 +8,7 @@ Skill: `stnl_project_agent_specializer_dev`
 - `planner_kernel` is frozen as `CLEAN_EXCELLENT_PASS` for the documentary,
   contractual, and semantic kernel lab after the separately authorized human
   audit.
-- All seven passes are dev kernel-lab results only. They do not authorize runtime,
+- All eight passes are dev kernel-lab results only. They do not authorize runtime,
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
 - `planner_kernel` has read-only executable validation harnesses as blocking
@@ -65,6 +65,17 @@ Skill: `stnl_project_agent_specializer_dev`
   write authorization.
 - `reference/agents/coder-backend.agent.md` is the local dev snapshot derived
   literally from `templates/agents/coder-backend.agent.md`.
+- `validation_runner_kernel` is frozen as
+  `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS` after controlled documentary
+  promotion. This pass is limited to the documentary, contractual,
+  minimum-semantic dev kernel lab with a hardened executable textual harness
+  and final human authorization. It grants no runtime loading,
+  materialization path, target-repository write authorization,
+  productive-skill authorization, GitHub write authorization, production use,
+  generated reports, fixtures, target artifacts, active runtime adoption,
+  materializer authorization, or canonical-template write authorization.
+- `reference/agents/validation-runner.agent.md` is the local dev snapshot
+  derived literally from `templates/agents/validation-runner.agent.md`.
 
 Required files:
 - `reference/agents/orchestrator.agent.md`
@@ -138,6 +149,16 @@ Required files:
 - `reference/coder_backend_kernel/validation/GOLDEN_TESTS.md`
 - `reference/coder_backend_kernel/validation/check-static.mjs`
 - `reference/coder_backend_kernel/validation/check-golden.mjs`
+- `reference/agents/validation-runner.agent.md`
+- `reference/validation_runner_kernel/README.md`
+- `reference/validation_runner_kernel/contracts/CONTRACT.md`
+- `reference/validation_runner_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`
+- `reference/validation_runner_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- `reference/validation_runner_kernel/contracts/PROOF_EXECUTION_GATES.md`
+- `reference/validation_runner_kernel/validation/STATIC_CHECKS.md`
+- `reference/validation_runner_kernel/validation/GOLDEN_TESTS.md`
+- `reference/validation_runner_kernel/validation/check-static.mjs`
+- `reference/validation_runner_kernel/validation/check-golden.mjs`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 
@@ -160,6 +181,11 @@ Not active in this dev bundle:
   automatic future promotion, runtime loader, materialization path, active
   runtime adoption, GitHub writer, production use, target artifacts, or
   target-writer flow is part of this bundle
+- no `validation-runner` runtime, materializer, fixture, generated report,
+  automatic future promotion, runtime loader, materialization path, active
+  runtime adoption, GitHub writer, production use, target artifacts,
+  productive-skill activation, canonical-template mutation, or target-writer
+  flow is part of this bundle
 
 Not included as canonical dev references:
 - no full reference/agents/** bundle is present; only copied base snapshots

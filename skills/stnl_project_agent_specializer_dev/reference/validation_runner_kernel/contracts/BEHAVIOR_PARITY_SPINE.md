@@ -1,18 +1,21 @@
 # Validation Runner Behavior Parity Spine
 
-Status: `VALIDATION_RUNNER_KERNEL: initial draft`.
+Status: `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, is
-`dev kernel lab only`, is `non-runtime`, is `non-production`, and has
-`no materialization path`.
+Documentary promotion applied. This status is a documentary validation pass,
+contractual pass, minimum semantic pass, and hardened textual executable
+harness pass for the dev kernel lab only. It is `dev kernel lab only`,
+`non-runtime`, `non-production`, and has `no materialization path`,
+`no runtime loader`, `no materializer`, `no target artifact`,
+`no productive skill activation`, and `no template mutation`.
 
-The textual executable harness now exists for this dev kernel lab draft.
-Harness pass does not promote the kernel and does not authorize runtime,
-materialization, production, global docs updates, productive-skill changes, or
-template changes.
+The textual executable harness now exists for this dev kernel lab bundle.
+Harness pass does not authorize runtime, materialization, production, global
+docs updates, productive-skill changes, template changes, or any extension of
+`CLEAN_EXCELLENT_PASS` outside the dev kernel lab.
 
-This spine records the irreducible behavior that the initial documentary draft
-must preserve from `templates/agents/validation-runner.agent.md`.
+This spine records the irreducible behavior that the documentary kernel lab
+bundle must preserve from `templates/agents/validation-runner.agent.md`.
 
 ## Non-Reducible Semantics
 

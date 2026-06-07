@@ -1,15 +1,18 @@
 # Validation Runner Minimum Safe Bundle
 
-Status: `VALIDATION_RUNNER_KERNEL: initial draft`.
+Status: `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, is
-`dev kernel lab only`, is `non-runtime`, is `non-production`, and has
-`no materialization path`.
+Documentary promotion applied. This status is a documentary validation pass,
+contractual pass, minimum semantic pass, and hardened textual executable
+harness pass for the dev kernel lab only. It is `dev kernel lab only`,
+`non-runtime`, `non-production`, and has `no materialization path`,
+`no runtime loader`, `no materializer`, `no target artifact`,
+`no productive skill activation`, and `no template mutation`.
 
 The textual executable harness now exists for the dev kernel lab bundle.
-Harness pass does not promote the kernel and does not authorize runtime,
-materialization, production, global docs updates, productive-skill changes, or
-template changes.
+Harness pass does not authorize runtime, materialization, production, global
+docs updates, productive-skill changes, template changes, or any extension of
+`CLEAN_EXCELLENT_PASS` outside the dev kernel lab.
 
 This document defines the smallest documentary bundle that can preserve the
 `validation-runner` role with its read-only textual harness.
@@ -30,9 +33,10 @@ The 9-file post-harness bundle contains:
 - `validation/check-golden.mjs`.
 
 Harness textual exists in the two validation scripts, but harness pass does
-not promote the kernel. The bundle does not authorize extra executable files,
-runtime loader, materializer, materialization path, global docs update,
-productive template update, or productive skill update.
+not authorize status extension outside the dev kernel lab. The bundle does not
+authorize extra executable files, runtime loader, materializer,
+materialization path, global docs update, productive template update, or
+productive skill update.
 
 ## Minimum Identity Set
 
@@ -93,6 +97,7 @@ The minimum boundary set must not authorize:
 - must not authorize fixtures;
 - must not authorize generated reports;
 - must not authorize global docs updates;
-- must not authorize kernel promotion;
+- must not authorize automatic future promotion or status extension outside the
+  dev kernel lab;
 - must not authorize extra executable harness files outside the 9-file
   post-harness bundle.

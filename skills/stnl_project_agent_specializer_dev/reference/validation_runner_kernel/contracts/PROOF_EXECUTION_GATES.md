@@ -1,15 +1,18 @@
 # Validation Runner Proof Execution Gates
 
-Status: `VALIDATION_RUNNER_KERNEL: initial draft`.
+Status: `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-This kernel is `not promoted`, `not CLEAN_EXCELLENT_PASS`, is
-`dev kernel lab only`, is `non-runtime`, is `non-production`, and has
-`no materialization path`.
+Documentary promotion applied. This status is a documentary validation pass,
+contractual pass, minimum semantic pass, and hardened textual executable
+harness pass for the dev kernel lab only. It is `dev kernel lab only`,
+`non-runtime`, `non-production`, and has `no materialization path`,
+`no runtime loader`, `no materializer`, `no target artifact`,
+`no productive skill activation`, and `no template mutation`.
 
 The textual executable harness now exists and validates these documented gates
-read-only. Harness pass does not promote the kernel and does not authorize
-runtime, materialization, production, global docs updates, productive-skill
-changes, or template changes.
+read-only. Harness pass does not authorize runtime, materialization,
+production, global docs updates, productive-skill changes, template changes,
+or any extension of `CLEAN_EXCELLENT_PASS` outside the dev kernel lab.
 
 These gates document current proof-execution checks for the
 `validation-runner` kernel.

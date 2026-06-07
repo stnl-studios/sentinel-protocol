@@ -27,12 +27,15 @@ executável endurecido. O `designer_kernel` também está congelado como
 `CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
 `coder_frontend_kernel` também está promovido como `CLEAN_EXCELLENT_PASS` após
 promoção documental controlada. O `coder_backend_kernel` também está promovido
-como `CLEAN_EXCELLENT_PASS` após promoção documental controlada.
+como `CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
+`validation_runner_kernel` também está promovido como
+`VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental
+controlada.
 
-Há sete kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+Há oito kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, `designer_kernel`, `coder_frontend_kernel`
-e `coder_backend_kernel`.
+`coder_backend_kernel` e `validation_runner_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -97,6 +100,21 @@ produtiva, não autoriza materializer, não autoriza escrita em GitHub, não
 autoriza escrita em repo alvo, não autoriza generated reports, fixtures, target
 artifacts, active runtime adoption ou alteração em templates canônicos.
 
+O `validation_runner_kernel` é clean pass documental exclusivo do kernel lab
+dev. Ele preserva `proof-execution`, `minimal-verification`, validação
+pós-implementação, consumo estrito do `VALIDATION PACK`, entrada somente com
+executor `READY` válido e applied-change evidence, prova direta por obrigação,
+verdicts `PASS`, `PARTIAL`, `FAIL` e `BLOCKED`, `CORRECTION PACK` não
+terminal e exclusivo, `QA CHECKLIST UPDATE` como dados de handoff e limites
+contra proof redesign, correção de código, review de arquitetura, closure,
+resync e durable docs. Ele possui harness documental/textual endurecido de
+validação, não é runtime pass, não é materialization pass, não é target repo
+pass, não autoriza runtime loader, não autoriza materialization path, não
+autoriza produção, não autoriza skill produtiva, não autoriza materializer,
+não autoriza escrita em GitHub, não autoriza escrita em repo alvo, não
+autoriza generated reports, fixtures, target artifacts, active runtime
+adoption ou alteração em templates canônicos.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -132,12 +150,20 @@ artifacts, active runtime adoption ou alteração em templates canônicos.
    materialization path, produção, escrita em GitHub, escrita em repo alvo,
    generated reports, fixtures, target artifacts, active runtime adoption, skill
    produtiva ou alteração em templates canônicos.
-10. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-11. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-12. Validar o pacote de agents como conjunto coerente.
-13. Avançar para Project Senior Profile somente depois dos agents kernelizados
+10. Preservar o `validation_runner_kernel` promovido contra
+    `reference/agents/validation-runner.agent.md`, snapshot dev local derivado
+    literalmente de `templates/agents/validation-runner.agent.md`, com harness
+    documental/textual endurecido e sem runtime, runtime loader,
+    materialização, materialization path, produção, escrita em GitHub, escrita
+    em repo alvo, generated reports, fixtures, target artifacts, active runtime
+    adoption, materializer, skill produtiva ou alteração em templates
+    canônicos.
+11. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+12. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+13. Validar o pacote de agents como conjunto coerente.
+14. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-14. Reconstruir a skill/materialização completa somente depois de agents e
+15. Reconstruir a skill/materialização completa somente depois de agents e
     Profile estáveis.
 
 ## Famílias Sugeridas

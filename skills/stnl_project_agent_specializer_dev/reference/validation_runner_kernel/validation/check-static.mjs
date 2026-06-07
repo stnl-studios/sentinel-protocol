@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-import { execFileSync } from 'node:child_process';
 import {
   existsSync,
   lstatSync,
@@ -45,6 +44,17 @@ const GLOBAL_DOCS = Object.freeze([
   'skills/stnl_project_agent_specializer_dev/reference/kernel_lab/README.md',
 ]);
 
+const PROMOTED_KERNELS = Object.freeze([
+  'orchestrator_kernel',
+  'planner_kernel',
+  'validation_eval_designer_kernel',
+  'execution_package_designer_kernel',
+  'designer_kernel',
+  'coder_frontend_kernel',
+  'coder_backend_kernel',
+  'validation_runner_kernel',
+]);
+
 const TEMPLATE_AGENT = 'templates/agents/validation-runner.agent.md';
 const SNAPSHOT_AGENT =
   'skills/stnl_project_agent_specializer_dev/reference/agents/validation-runner.agent.md';
@@ -61,6 +71,11 @@ const STALE_CLAIM_PATTERNS = Object.freeze([
   [/future checks only/i, 'stale future-checks-only claim'],
   [/future semantic scenarios only/i, 'stale future-scenarios-only claim'],
   [/no executable `.mjs` file is part/i, 'stale no executable mjs claim'],
+  [/\binitial draft\b/i, 'stale initial draft status'],
+  [/\bnot promoted\b/i, 'stale not promoted status'],
+  [/\bnot CLEAN_EXCELLENT_PASS\b/i, 'stale not CLEAN_EXCELLENT_PASS status'],
+  [/\bnão foi promovido\b/i, 'stale Portuguese not-promoted status'],
+  [/\bnao foi promovido\b/i, 'stale Portuguese not-promoted status'],
 ]);
 
 const DENIED_PATH_PATTERNS = Object.freeze([
@@ -73,16 +88,6 @@ const DENIED_PATH_PATTERNS = Object.freeze([
 ]);
 
 const AUTHORIZATION_PATTERNS = Object.freeze([
-  {
-    label: 'kernel promotion',
-    trigger: /\b(promotes?|promoted)\b|\b(?:kernel|automatic)\s+promotion\b/i,
-    target: /\b(promotes?|promoted|promotion)\b/i,
-  },
-  {
-    label: 'CLEAN_EXCELLENT_PASS accepted status',
-    trigger: /\bCLEAN_EXCELLENT_PASS\b/i,
-    target: /\bCLEAN_EXCELLENT_PASS\b/i,
-  },
   {
     label: 'runtime authorization',
     trigger:
@@ -601,15 +606,33 @@ function forbiddenAuthorizationClaim(sentence, rule) {
   return false;
 }
 
-function validateGlobalDocsClean() {
-  try {
-    const status = execFileSync('git', ['status', '--short', '--', ...GLOBAL_DOCS], {
-      cwd: repoRoot,
-      encoding: 'utf8',
-    });
-    assert(status.trim() === '', `forbidden global docs are modified:\n${status.trim()}`);
-  } catch (error) {
-    fail(`Unable to verify forbidden global docs with git status: ${error.message}`);
+function validateGlobalDocsCoherent() {
+  for (const relPath of GLOBAL_DOCS) {
+    const buffer = readRepoBuffer(relPath);
+    const content = buffer ? buffer.toString('utf8') : '';
+    const context = `global doc ${relPath}`;
+
+    assert(/\b(?:eight|oito)\b/i.test(content), `${context} must state the eight promoted kernels`);
+    assert(!/\b(?:all\s+seven|seven\s+frozen\s+pass|seven\s+passes|sete\s+kernels|sete\s+passes)\b/i.test(content), `${context} contains stale seven-kernel status`);
+
+    for (const kernel of PROMOTED_KERNELS) {
+      assert(content.includes(kernel), `${context} missing promoted kernel ${kernel}`);
+    }
+
+    assert(
+      /VALIDATION_RUNNER_KERNEL:\s*CLEAN_EXCELLENT_PASS/.test(content),
+      `${context} missing validation runner clean pass status`,
+    );
+    assert(/dev kernel lab|kernel lab dev/i.test(content), `${context} missing dev kernel lab limit`);
+    assert(/document(?:ary|al)|documental/i.test(content), `${context} missing documentary promotion scope`);
+    assert(/runtime/i.test(content), `${context} missing runtime prohibition`);
+    assert(/materiali[sz]ation|materialização/i.test(content), `${context} missing materialization prohibition`);
+    assert(/materializer/i.test(content), `${context} missing materializer prohibition`);
+    assert(/GitHub/i.test(content), `${context} missing GitHub write prohibition`);
+    assert(/repo alvo|target repo|target-repository/i.test(content), `${context} missing target repo prohibition`);
+    assert(/productive-skill|skill produtiva/i.test(content), `${context} missing productive skill prohibition`);
+    assert(/template mutation|canonical-template|templates canônicos/i.test(content), `${context} missing template mutation prohibition`);
+    assert(/target artifacts?/i.test(content), `${context} missing target artifact prohibition`);
   }
 }
 
@@ -663,7 +686,7 @@ function validateHarnessSources() {
     ['local negation', /hasLocalProhibition|isProhibitiveLocal/],
     ['bundle by section', /validateReadmeBundleSection/],
     ['stale claim scan', /STALE_CLAIM_PATTERNS/],
-    ['forbidden global docs', /GLOBAL_DOCS/],
+    ['global docs coherence', /validateGlobalDocsCoherent|GLOBAL_DOCS/],
   ];
 
   const goldenRequired = [
@@ -727,15 +750,23 @@ const docsTestingCutLimitAnchor = Object.freeze({
 });
 
 const statusAnchors = Object.freeze([
-  { label: 'initial draft', pattern: /initial draft/i },
-  { label: 'not promoted', pattern: /not promoted/i },
-  { label: 'not CLEAN_EXCELLENT_PASS', pattern: /not CLEAN_EXCELLENT_PASS/i },
+  { label: 'CLEAN_EXCELLENT_PASS status', pattern: /VALIDATION_RUNNER_KERNEL:\s*CLEAN_EXCELLENT_PASS/i },
+  { label: 'documentary promotion applied', pattern: /documentary promotion applied/i },
+  { label: 'documentary validation pass', pattern: /documentary validation pass/i },
+  { label: 'contractual pass', pattern: /contractual pass/i },
+  { label: 'minimum semantic pass', pattern: /minimum semantic pass/i },
+  { label: 'hardened textual executable harness pass', pattern: /hardened textual executable harness pass/i },
   { label: 'dev kernel lab only', pattern: /dev kernel lab only/i },
   { label: 'non-runtime', pattern: /non-runtime/i },
   { label: 'non-production', pattern: /non-production/i },
   { label: 'no materialization path', pattern: /no materialization path/i },
+  { label: 'no runtime loader', pattern: /no runtime loader/i },
+  { label: 'no materializer', pattern: /no materializer/i },
+  { label: 'no target artifact', pattern: /no target artifact/i },
+  { label: 'no productive skill activation', pattern: /no productive skill activation/i },
+  { label: 'no template mutation', pattern: /no template mutation/i },
   { label: 'harness textual exists', pattern: /textual executable harness now exists|harness textual exists/i },
-  { label: 'harness does not promote', pattern: /harness pass does not promote/i },
+  { label: 'harness no external status extension', pattern: /harness pass does not authorize status extension|does not extend `?CLEAN_EXCELLENT_PASS`? outside/i },
 ]);
 
 const ANCHOR_MATRIX = Object.freeze([
@@ -753,7 +784,7 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'no global docs', pattern: /global-docs|global docs/i },
       { label: 'no productive skill', pattern: /productive-skill|productive skill/i },
       { label: 'no template path', pattern: /template/i },
-      { label: 'no promotion', pattern: /automatic promotion|promote/i },
+      { label: 'no automatic future promotion', pattern: /automatic future promotion|status extension outside/i },
     ],
   },
   {
@@ -785,7 +816,7 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'no global docs', pattern: /global docs updates/i },
       { label: 'no productive skill update', pattern: /productive-skill changes/i },
       { label: 'no productive template update', pattern: /productive-template changes/i },
-      { label: 'no kernel promotion', pattern: /kernel promotion/i },
+      { label: 'no automatic future promotion', pattern: /automatic future promotion|status extension outside the dev kernel lab/i },
       { label: 'no materializer', pattern: /materializer/i },
     ],
   },
@@ -967,7 +998,7 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'check-static', pattern: /validation\/check-static\.mjs/i },
       { label: 'check-golden', pattern: /validation\/check-golden\.mjs/i },
       { label: 'harness textual exists', pattern: /Harness textual exists|textual executable harness now exists/i },
-      { label: 'harness does not promote', pattern: /harness pass does\s+not promote/i },
+      { label: 'harness no external status extension', pattern: /harness pass does\s+not authorize status extension|does\s+not extend `?CLEAN_EXCELLENT_PASS`? outside/i },
     ],
     requiredNegative: [
       { label: 'no runtime', pattern: /runtime/i },
@@ -1024,7 +1055,7 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'runtime loader', pattern: /runtime loader/i },
       { label: 'materialization path', pattern: /materialization path/i },
       { label: 'global docs updates', pattern: /global docs updates/i },
-      { label: 'kernel promotion', pattern: /kernel promotion/i },
+      { label: 'automatic future promotion boundary', pattern: /automatic future promotion|status extension outside the\s+dev kernel lab/i },
     ],
     requiredNegative: [
       { label: 'no runtime', pattern: /runtime/i },
@@ -1036,7 +1067,7 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'no target artifact', pattern: /target artifact generation/i },
       { label: 'no fixture', pattern: /fixtures/i },
       { label: 'no generated report', pattern: /generated reports/i },
-      { label: 'no kernel promotion', pattern: /kernel promotion/i },
+      { label: 'no automatic future promotion', pattern: /automatic future promotion|status extension outside the\s+dev kernel lab/i },
     ],
   },
   {
@@ -1123,7 +1154,7 @@ const ANCHOR_MATRIX = Object.freeze([
       { label: 'anchors by file', pattern: /anchors by file and section/i },
       { label: 'local negation', pattern: /negação local|local prohibitive/i },
       { label: 'stale claim scan', pattern: /stale-claim scan|stale claim/i },
-      { label: 'docs globais proibidos', pattern: /docs globais proibidos/i },
+      { label: 'docs globais coerentes', pattern: /docs globais coerentes/i },
     ],
     requiredNegative: [],
   },
@@ -1365,7 +1396,7 @@ function main() {
   validatePromotionRuntimeClaims(docs);
   validateAnchorMatrix(docs);
   validateHarnessSources();
-  validateGlobalDocsClean();
+  validateGlobalDocsCoherent();
 
   if (errors.length > 0) {
     console.error('check-static: FAIL');
@@ -1378,7 +1409,7 @@ function main() {
   console.log('check-static: PASS');
   console.log(`allowlist files: ${EXPECTED_FILES.length}`);
   console.log('snapshot parity: PASS');
-  console.log('global docs status: clean');
+  console.log('global docs status: coherent');
 }
 
 main();
