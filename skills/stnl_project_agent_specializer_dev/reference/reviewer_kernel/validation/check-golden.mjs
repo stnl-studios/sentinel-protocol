@@ -311,6 +311,55 @@ const negativeMutations = Object.freeze([
     expected: /shared canon/i,
   },
   {
+    name: 'reviewer has jurisdiction regarding shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not have jurisdiction regarding shared canon during semantic review.',
+    mutated: 'Reviewer has jurisdiction regarding shared canon.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer has jurisdiction about shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not have jurisdiction about shared canon during semantic review.',
+    mutated: 'Reviewer has jurisdiction about shared canon.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer has authority around shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not have authority around shared canon during semantic review.',
+    mutated: 'Reviewer has authority around shared canon.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer has control over shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not have control over shared canon during semantic review.',
+    mutated: 'Reviewer has control over shared canon.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer controls shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not control shared canon during semantic review.',
+    mutated: 'Reviewer controls shared canon.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer governs shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not govern shared canon during semantic review.',
+    mutated: 'Reviewer governs shared canon.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer manages shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not manage shared canon during semantic review.',
+    mutated: 'Reviewer manages shared canon.',
+    expected: /shared canon/i,
+  },
+  {
     name: 'reviewer may sync docs',
     blocker: 'BLOCKED_RV_REPLACES_RESYNC',
     base: 'Reviewer does not sync docs during semantic review.',
@@ -661,6 +710,34 @@ const negativeMutations = Object.freeze([
     expected: /(?:Productive template.*fallback|fallback.*Productive template)/i,
   },
   {
+    name: 'template functions as fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not function as fallback.',
+    mutated: 'Template functions as fallback.',
+    expected: /(?:Template.*fallback|fallback.*Template)/i,
+  },
+  {
+    name: 'template works as fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not work as fallback.',
+    mutated: 'Template works as fallback.',
+    expected: /(?:Template.*fallback|fallback.*Template)/i,
+  },
+  {
+    name: 'productive template functions as fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not function as fallback.',
+    mutated: 'Productive template functions as fallback.',
+    expected: /(?:Productive template.*fallback|fallback.*Productive template)/i,
+  },
+  {
+    name: 'productive template works as fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not work as fallback.',
+    mutated: 'Productive template works as fallback.',
+    expected: /(?:Productive template.*fallback|fallback.*Productive template)/i,
+  },
+  {
     name: 'scratchpads may be source of truth',
     blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
     base: 'Scratchpads must not be source of truth.',
@@ -736,6 +813,41 @@ const negativeMutations = Object.freeze([
     base: 'Scratchpads are not the source of truth.',
     mutated: 'Scratchpads are the source of truth.',
     expected: /(?:Scratchpads.*source of truth|source of truth.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are canonical',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not canonical.',
+    mutated: 'Scratchpads are canonical.',
+    expected: /(?:Scratchpads.*canonical|canonical.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are authoritative source',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not authoritative source.',
+    mutated: 'Scratchpads are authoritative source.',
+    expected: /(?:Scratchpads.*authoritative source|authoritative source.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are authoritative truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not authoritative truth.',
+    mutated: 'Scratchpads are authoritative truth.',
+    expected: /(?:Scratchpads.*authoritative truth|authoritative truth.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are trusted source',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not trusted source.',
+    mutated: 'Scratchpads are trusted source.',
+    expected: /(?:Scratchpads.*trusted source|trusted source.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are accepted source of truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not accepted source of truth.',
+    mutated: 'Scratchpads are accepted source of truth.',
+    expected: /(?:Scratchpads.*accepted source of truth|accepted source of truth.*Scratchpads)/i,
   },
   {
     name: 'workspaceStorage may be source of truth',
@@ -959,7 +1071,7 @@ function hasLocalNegation(clause) {
 }
 
 function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about)\b|\b(?:has|have|with)\s+jurisdiction\s+(?:over|for)\b|\b(?:serve|serves|act|acts)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are)\s+(?:a\s+)?canonical\s+(?:source|truth)\b|\b(?:is|are|be|becomes?)\s+(?:the\s+)?fallback\b|\boperates?\s+as\s+fallback\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are|be)\s+accountable\s+(?:for|to)\b/i.test(
+  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted|controls?|governs?|manages?)\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about|around)\b|\b(?:has|have|with)\s+control\s+over\b|\b(?:has|have|with)\s+jurisdiction\s+(?:over|for|regarding|about)\b|\b(?:serve|serves|act|acts|functions?|works?)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are)\s+(?:a\s+)?canonical\s+(?:source|truth)\b|\b(?:is|are)\s+(?:canonical|authoritative\s+source|authoritative\s+truth|trusted\s+source|accepted\s+source\s+of\s+truth)\b|\b(?:is|are|be|becomes?)\s+(?:the\s+)?fallback\b|\boperates?\s+as\s+fallback\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are|be)\s+accountable\s+(?:for|to)\b/i.test(
     clause,
   );
 }
@@ -1029,7 +1141,7 @@ function checkGoldenDoc() {
 }
 
 function checkInMemoryNegativeMutations() {
-  assert(negativeMutations.length === 101, `expected exactly 101 negative mutations, found ${negativeMutations.length}`);
+  assert(negativeMutations.length === 117, `expected exactly 117 negative mutations, found ${negativeMutations.length}`);
   const mutationClaims = negativeMutations.map((mutation) => ({
     name: mutation.name,
     blocker: mutation.blocker,
