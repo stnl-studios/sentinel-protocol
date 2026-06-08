@@ -788,6 +788,79 @@ export function findForbiddenClaims(text) {
   return matches;
 }
 
+const GOLDEN_NEGATIVE_EXAMPLE_SECTIONS = new Set(['Fail condition', 'Expected blocker']);
+
+function normalizeGoldenSectionName(text) {
+  return text.trim().replace(/\s+/g, ' ');
+}
+
+function isGoldenNegativeExampleLine(text) {
+  return /^(?:Fail condition|Expected blocker):\s*\S/i.test(text.trim());
+}
+
+function isAllowedGoldenInputExample(match, sectionName) {
+  return (
+    sectionName === 'Input shape' &&
+    /\battempts?\b/i.test(match.excerpt) &&
+    /\breviewer\b/i.test(match.excerpt)
+  );
+}
+
+export function findForbiddenClaimsInGoldenTestsDoc(text) {
+  const matches = [];
+  let sectionName = '';
+  let paragraph = '';
+  let inFence = false;
+
+  function scanParagraph(label, candidate, section) {
+    const normalized = candidate.trim();
+    if (!normalized) {
+      return;
+    }
+    if (GOLDEN_NEGATIVE_EXAMPLE_SECTIONS.has(section) || isGoldenNegativeExampleLine(normalized)) {
+      return;
+    }
+    for (const match of findForbiddenClaims(normalized)) {
+      if (isAllowedGoldenInputExample(match, section)) {
+        continue;
+      }
+      matches.push({ ...match, excerpt: `${label}: ${match.excerpt}` });
+    }
+  }
+
+  function flushParagraph() {
+    scanParagraph(sectionName || 'document', paragraph, sectionName);
+    paragraph = '';
+  }
+
+  for (const line of text.replace(/\r/g, '').split('\n')) {
+    const trimmed = line.trim();
+    if (/^```/.test(trimmed)) {
+      flushParagraph();
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) {
+      continue;
+    }
+    const heading = headingMatch(trimmed);
+    if (heading) {
+      flushParagraph();
+      const headingText = normalizeGoldenSectionName(heading[2]);
+      scanParagraph('heading', headingText, '');
+      sectionName = heading[1].length === 3 ? headingText : '';
+      continue;
+    }
+    if (!trimmed) {
+      flushParagraph();
+      continue;
+    }
+    paragraph = paragraph ? `${paragraph} ${trimmed}` : trimmed;
+  }
+  flushParagraph();
+  return matches;
+}
+
 function findAffirmativeClaims(text, label) {
   for (const match of findForbiddenClaims(text)) {
     assert(Boolean(match.blocker), `${label} prohibited claim (${match.claimName}) must include semantic blocker`);
@@ -854,8 +927,15 @@ function checkDocumentStatus(docs) {
       /REVIEWER_KERNEL:\s*INITIAL_DRAFT/.test(text),
       `${relPath} must preserve REVIEWER_KERNEL: INITIAL_DRAFT`,
     );
-    if (relPath !== 'validation/GOLDEN_TESTS.md') {
-      findAffirmativeClaims(text, relPath);
+    const matches =
+      relPath === 'validation/GOLDEN_TESTS.md'
+        ? findForbiddenClaimsInGoldenTestsDoc(text)
+        : findForbiddenClaims(text);
+    for (const match of matches) {
+      assert(Boolean(match.blocker), `${relPath} prohibited claim (${match.claimName}) must include semantic blocker`);
+      assert(Boolean(match.family), `${relPath} prohibited claim (${match.claimName}) must include semantic family`);
+      assert(Boolean(match.excerpt), `${relPath} prohibited claim (${match.claimName}) must include useful excerpt`);
+      fail(`${relPath} has non-negated prohibited claim ${match.blocker} (${match.claimName}): ${match.excerpt}`);
     }
   }
 }

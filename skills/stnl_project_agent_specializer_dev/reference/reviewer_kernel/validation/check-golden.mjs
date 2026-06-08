@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
-import { findForbiddenClaims } from './check-static.mjs';
+import { findForbiddenClaims, findForbiddenClaimsInGoldenTestsDoc } from './check-static.mjs';
 import {
   existsSync,
   lstatSync,
@@ -1786,10 +1786,69 @@ function checkInMemoryNegativeMutations() {
   }
 }
 
+function goldenDocFragment(body) {
+  return `# Reviewer Kernel Golden Tests
+
+Status: planned textual golden-test contract for
+\`REVIEWER_KERNEL: INITIAL_DRAFT\`.
+
+${body}
+`;
+}
+
+function checkGoldenTestsScopedScanner() {
+  const normativeCases = [
+    ['normative reviewer proof', 'Reviewer runs proof.', 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER'],
+    ['normative DONE decision', 'Reviewer decides DONE.', 'BLOCKED_RV_REPLACES_FINALIZER'],
+    ['normative production authorization', 'Reviewer authorizes production.', 'BLOCKED_RV_PRODUCTION_AUTHORIZATION'],
+    ['normative scratchpads truth', 'Scratchpads are source of truth.', 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH'],
+    ['normative template restore', 'Template restores missing snapshot.', 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK'],
+    [
+      'input shape remains scanned',
+      '### Input shape\nReviewer authorizes production.',
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'expected behavior remains scanned',
+      '### Expected behavior\nScratchpads are source of truth.',
+      'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    ],
+  ];
+  for (const [name, body, expectedBlocker] of normativeCases) {
+    const matches = findForbiddenClaimsInGoldenTestsDoc(goldenDocFragment(body));
+    assert(
+      matches.some((match) => match.blocker === expectedBlocker),
+      `${name} should fail scoped GOLDEN_TESTS.md affirmative-claim scanning. actual=${formatMatches(matches)}`,
+    );
+  }
+
+  const validNegativeExamples = [
+    ['fail condition proof', 'Fail condition: Reviewer runs proof.'],
+    ['expected blocker DONE', 'Expected blocker: Reviewer decides DONE.'],
+    ['fail condition source truth', 'Fail condition: Scratchpads are source of truth.'],
+    ['expected blocker template restore', 'Expected blocker: Template restores missing snapshot.'],
+    ['fail condition block proof', '### Fail condition\nReviewer runs proof.'],
+    ['expected blocker block DONE', '### Expected blocker\nReviewer decides DONE.'],
+  ];
+  for (const [name, body] of validNegativeExamples) {
+    const matches = findForbiddenClaimsInGoldenTestsDoc(goldenDocFragment(body));
+    assert(matches.length === 0, `${name} should remain a valid negative example. actual=${formatMatches(matches)}`);
+  }
+
+  const followingNormativeLine = findForbiddenClaimsInGoldenTestsDoc(
+    goldenDocFragment('Fail condition: Reviewer runs proof.\n\nReviewer decides DONE.'),
+  );
+  assert(
+    followingNormativeLine.some((match) => match.blocker === 'BLOCKED_RV_REPLACES_FINALIZER'),
+    `line after inline Fail condition should still be scanned. actual=${formatMatches(followingNormativeLine)}`,
+  );
+}
+
 function main() {
   checkStaticHarnessPasses();
   checkGoldenDoc();
   checkInMemoryNegativeMutations();
+  checkGoldenTestsScopedScanner();
 
   if (errors.length > 0) {
     console.error('FAIL reviewer_kernel golden checks');
