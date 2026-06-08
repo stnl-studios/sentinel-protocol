@@ -211,13 +211,28 @@ function splitClauses(text) {
 }
 
 function hasLocalNegation(clause) {
-  return /\b(?:does not|do not|must not|cannot|can not|is not|are not|never|no|without|forbidden|prohibited|rejects?|blocks?|unsafe if|fail if|not|was not|were not|isn't|aren't|won't|prohibits?|prohibition on|unauthori[sz]ed|não|nao|sem)\b/i.test(
-    clause,
+  if (
+    /\b(?:does not|do not|must not|cannot|can not|is not|are not|never|no|without|not|was not|were not|isn't|aren't|won't|unauthori[sz]ed|não|nao|sem)\b/i.test(
+      clause,
+    )
+  ) {
+    return true;
+  }
+
+  return (
+    /\b(?:harness|validator|validation|checks?|gates?|script|kernel)\s+(?:rejects?|blocks?|prohibits?)\b/i.test(
+      clause,
+    ) ||
+    /\b(?:is|are|be)\s+(?:strictly\s+)?(?:forbidden|prohibited)\b/i.test(clause) ||
+    /\bprohibition on\b(?!\s*:)/i.test(clause) ||
+    /\b(?:unsafe if|fail if)\b(?!\s*:)[^.?!]*\b(?:appears?|is present|is found|exists?|occurs?)\b/i.test(
+      clause,
+    )
   );
 }
 
 function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for)\b|\b(?:serve|serves|act|acts)\s+as\s+(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are)\s+responsible\s+for\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are)\s+accountable\s+for\b/i.test(
+  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about)\b|\b(?:serve|serves|act|acts)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are)\s+accountable\s+for\b/i.test(
     clause,
   );
 }
@@ -334,7 +349,8 @@ const forbiddenDocumentClaims = Object.freeze([
   { name: 'target artifact', blocker: 'BLOCKED_RV_TARGET_ARTIFACT_AUTHORIZATION', pattern: /\btarget artifacts?\b/i },
   { name: 'fixture', blocker: 'BLOCKED_RV_FIXTURE_AUTHORIZATION', pattern: /\bfixtures?\b/i },
   { name: 'generated report', blocker: 'BLOCKED_RV_GENERATED_REPORT_AUTHORIZATION', pattern: /\bgenerated reports?\b/i },
-  { name: 'untrusted source of truth', blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH', pattern: /\b(?:scratchpads?|workspaceStorage|chat-session-resources|content\.txt|runtime temp paths?)\b[\s\S]{0,120}\bsource of truth\b|\bsource of truth\b[\s\S]{0,120}\b(?:scratchpads?|workspaceStorage|chat-session-resources|content\.txt|runtime temp paths?)\b/i },
+  { name: 'untrusted source of truth', blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH', pattern: /\b(?:scratchpads?|workspaceStorage|chat-session-resources|content\.txt|runtime temp paths?)\b[\s\S]{0,120}\b(?:source of truth|canonical source)\b|\b(?:source of truth|canonical source)\b[\s\S]{0,120}\b(?:scratchpads?|workspaceStorage|chat-session-resources|content\.txt|runtime temp paths?)\b/i },
+  { name: 'productive template fallback', blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK', pattern: /\b(?:productive\s+)?templates?\b[\s\S]{0,120}\bfallback\b|\bfallback\b[\s\S]{0,120}\b(?:productive\s+)?templates?\b/i },
 ]);
 
 function checkDocumentStatus(docs) {
