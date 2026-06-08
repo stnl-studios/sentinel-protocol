@@ -9,7 +9,7 @@ import {
   statSync,
 } from 'node:fs';
 import { dirname, isAbsolute, relative, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const KERNEL_PREFIX =
   'skills/stnl_project_agent_specializer_dev/reference/reviewer_kernel';
@@ -1796,6 +1796,130 @@ ${body}
 `;
 }
 
+function syntheticGoldenScenario(sections, id = 'RV-GT-999') {
+  return goldenDocFragment(`## Golden Test ${id} Synthetic
+
+${sections}`);
+}
+
+function checkGoldenScenarioCompletenessScanner() {
+  const incompleteScenarioCases = [
+    [
+      'minimal escaped input with expected blocker',
+      `### Input shape
+Reviewer attempts to authorize production.
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+      'RV-GT-998',
+    ],
+    [
+      'missing objective',
+      `### Input shape
+Reviewer attempts to authorize production.
+
+### Expected behavior
+The scenario must be blocked.
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'missing expected behavior',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'missing expected blocker',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Expected behavior
+The scenario must be blocked.`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'incompatible expected blocker',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Expected behavior
+The scenario must be blocked.
+
+### Expected blocker
+BLOCKED_RV_REPLACES_FINALIZER`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'one compatible and one incompatible input match',
+      `### Objective
+Confirm invalid reviewer actions are rejected.
+
+### Input shape
+Reviewer attempts to authorize production.
+Reviewer decides DONE.
+
+### Expected behavior
+The scenario must be blocked.
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
+      'BLOCKED_RV_REPLACES_FINALIZER',
+    ],
+  ];
+  assert(
+    incompleteScenarioCases.length === 6,
+    `expected exactly 6 incomplete scenario scanner cases, found ${incompleteScenarioCases.length}`,
+  );
+  for (const [name, sections, expectedBlocker, id] of incompleteScenarioCases) {
+    const matches = findForbiddenClaimsInGoldenTestsDoc(syntheticGoldenScenario(sections, id));
+    assert(
+      matches.some((match) => match.blocker === expectedBlocker),
+      `${name} should fail scoped GOLDEN_TESTS.md Input shape completeness scanning. actual=${formatMatches(matches)}`,
+    );
+  }
+
+  const completeScenarioCases = [
+    [
+      'complete compatible input shape example',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Expected behavior
+The scenario must be blocked.
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
+    ],
+  ];
+  assert(
+    completeScenarioCases.length === 1,
+    `expected exactly 1 complete scenario scanner case, found ${completeScenarioCases.length}`,
+  );
+  for (const [name, sections] of completeScenarioCases) {
+    const matches = findForbiddenClaimsInGoldenTestsDoc(syntheticGoldenScenario(sections));
+    assert(matches.length === 0, `${name} should remain allowed as a complete negative example. actual=${formatMatches(matches)}`);
+  }
+}
+
 function checkGoldenTestsScopedScanner() {
   const normativeCases = [
     ['normative reviewer proof', 'Reviewer runs proof.', 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER'],
@@ -1921,6 +2045,7 @@ function main() {
   checkStaticHarnessPasses();
   checkGoldenDoc();
   checkInMemoryNegativeMutations();
+  checkGoldenScenarioCompletenessScanner();
   checkGoldenTestsScopedScanner();
 
   if (errors.length > 0) {
@@ -1934,4 +2059,10 @@ function main() {
   console.log('PASS reviewer_kernel golden checks');
 }
 
-main();
+function isMainModule() {
+  return Boolean(process.argv[1]) && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+}
+
+if (isMainModule()) {
+  main();
+}

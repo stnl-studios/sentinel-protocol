@@ -789,6 +789,12 @@ export function findForbiddenClaims(text) {
 }
 
 const GOLDEN_NEGATIVE_EXAMPLE_SECTIONS = new Set(['Fail condition', 'Expected blocker']);
+const REQUIRED_GOLDEN_SCENARIO_SECTIONS = Object.freeze([
+  'Objective',
+  'Input shape',
+  'Expected behavior',
+  'Expected blocker',
+]);
 
 function normalizeGoldenSectionName(text) {
   return text.trim().replace(/\s+/g, ' ');
@@ -849,6 +855,9 @@ function collectGoldenScenarios(text) {
 function findAllowedGoldenScenarioInputExamples(text) {
   const allowed = new Set();
   for (const scenario of collectGoldenScenarios(text)) {
+    if (!REQUIRED_GOLDEN_SCENARIO_SECTIONS.every((section) => scenario.sections.has(section))) {
+      continue;
+    }
     const inputShape = normalizeGoldenBlockText(scenario.sections.get('Input shape') ?? '');
     const expectedBlockerText = scenario.sections.get('Expected blocker') ?? '';
     const expectedBlockers = new Set(
