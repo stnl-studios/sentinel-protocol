@@ -8,7 +8,7 @@ import {
   statSync,
 } from 'node:fs';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const KERNEL_PREFIX =
   'skills/stnl_project_agent_specializer_dev/reference/reviewer_kernel';
@@ -201,84 +201,599 @@ function parseFrontmatter(markdown, label) {
   return frontmatter;
 }
 
-function splitClauses(text) {
-  return text
-    .replace(/\r/g, '')
-    .replace(/\n+/g, ' ')
-    .split(/(?<=[.!?])\s+|\b(?:but|however|although|though|except that)\b/i)
-    .map((clause) => clause.trim())
-    .filter(Boolean);
+const CLAIM_SPAN = 190;
+const SOURCE_TRUST_SPAN = 150;
+const TEMPLATE_FALLBACK_SPAN = 170;
+const NEGATION_WINDOW = 110;
+
+function term(name, pattern) {
+  return Object.freeze({ name, pattern });
 }
 
-function hasLocalNegation(clause) {
-  if (
-    /\b(?:does not|do not|must not|cannot|can not|is not|are not|never|no|without|not|was not|were not|isn't|aren't|won't|unauthori[sz]ed|não|nao|sem)\b/i.test(
-      clause,
-    )
-  ) {
+function terms(...items) {
+  return Object.freeze(items.map(([name, pattern]) => term(name, pattern)));
+}
+
+const forbiddenFamilies = Object.freeze({
+  subjects: terms(
+    ['reviewer kernel', /\breviewer[-_ ]kernel\b|\bREVIEWER_KERNEL\b/i],
+    ['semantic reviewer', /\bsemantic[- ]reviewer\b/i],
+    ['reviewer', /\breviewer\b/i],
+  ),
+  authorityActions: terms(
+    ['own', /\bowns?\b|\bowning\b|\bowners?\b|\bownership\b/i],
+    ['authority', /\bauthorit(?:y|ies)\b|\bauthori[sz](?:e|es|ed|ing|ation)\b/i],
+    ['jurisdiction', /\bjurisdiction\b/i],
+    ['control', /\bcontrols?\b|\bcontrolled\b|\bcontrolling\b|\bcontrol\b/i],
+    ['govern', /\bgoverns?\b|\bgoverned\b|\bgoverning\b|\bgovernance\b/i],
+    ['manage', /\bmanages?\b|\bmanaged\b|\bmanaging\b|\bmanagement\b/i],
+    ['administer', /\badministers?\b|\badministered\b|\badministering\b/i],
+    ['supervise', /\bsupervises?\b|\bsupervised\b|\bsupervising\b/i],
+    ['maintain', /\bmaintains?\b|\bmaintained\b|\bmaintaining\b|\bmaintenance\b/i],
+    ['curate', /\bcurates?\b|\bcurated\b|\bcurating\b|\bcuration\b/i],
+    ['preserve', /\bpreserves?\b|\bpreserved\b|\bpreserving\b/i],
+    ['safeguard', /\bsafeguards?\b|\bsafeguarded\b|\bsafeguarding\b/i],
+    ['steward', /\bstewards?\b|\bstewardship\b/i],
+    ['custodian', /\bcustodians?\b|\bcustody\b/i],
+    ['caretaker', /\bcaretakers?\b/i],
+    ['guardian', /\bguardians?\b/i],
+    ['keeper', /\bkeepers?\b/i],
+    ['responsible', /\bresponsib(?:le|ility)\b/i],
+    ['accountable', /\baccountab(?:le|ility)\b/i],
+  ),
+  executionActions: terms(
+    ['run', /\bruns?\b|\brunning\b|\bran\b/i],
+    ['execute', /\bexecutes?\b|\bexecuted\b|\bexecuting\b|\bexecution\b/i],
+    ['write', /\bwrites?\b|\bwrote\b|\bwritten\b|\bwriting\b/i],
+    ['create', /\bcreates?\b|\bcreated\b|\bcreating\b|\bcreation\b/i],
+    ['generate', /\bgenerates?\b|\bgenerated\b|\bgenerating\b/i],
+    ['edit', /\bedits?\b|\bedited\b|\bediting\b/i],
+    ['patch', /\bpatch(?:es|ed|ing)?\b/i],
+    ['apply', /\bappl(?:y|ies|ied|ying)\b/i],
+    ['sync', /\bsyncs?\b|\bsynced\b|\bsyncing\b|\bresyncs?\b|\bresynced\b|\bresyncing\b/i],
+    ['decide', /\bdecides?\b|\bdecided\b|\bdeciding\b/i],
+    ['close', /\bcloses?\b|\bclosed\b|\bclosing\b/i],
+    ['finalize', /\bfinali[sz](?:e|es|ed|ing|ation)\b/i],
+    ['authorize', /\bauthori[sz](?:e|es|ed|ing|ation)\b/i],
+    ['activate', /\bactivates?\b|\bactivated\b|\bactivating\b|\bactivation\b/i],
+    ['enable', /\benables?\b|\benabled\b|\benabling\b/i],
+    ['support', /\bsupports?\b|\bsupported\b|\bsupporting\b/i],
+    ['replace', /\breplaces?\b|\breplaced\b|\breplacing\b|\breplacement\b/i],
+    ['substitute', /\bsubstitutes?\b|\bsubstituted\b|\bsubstituting\b|\bsubstitute\b/i],
+    ['restore', /\brestores?\b|\brestored\b|\brestoring\b|\brestore\b/i],
+    ['recover', /\brecovers?\b|\brecovered\b|\brecovering\b|\brecovery\b/i],
+    ['reconstruct', /\breconstructs?\b|\breconstructed\b|\breconstructing\b/i],
+    ['regenerate', /\bregenerates?\b|\bregenerated\b|\bregenerating\b/i],
+    ['supply', /\bsuppl(?:y|ies|ied|ying)\b/i],
+    ['fill', /\bfills?\b|\bfilled\b|\bfilling\b/i],
+    ['stand in', /\bstands?\s+in\b|\bstand[- ]in\b/i],
+    ['emit', /\bemits?\b|\bemitted\b|\bemitting\b/i],
+    ['promote', /\bpromotes?\b|\bpromoted\b|\bpromoting\b|\bpromotion\b|\bpromovido\b|\bpromocao\b|\bpromoção\b/i],
+    ['redesign', /\bredesigns?\b|\bredesigned\b|\bredesigning\b|\bredesign-oriented\b/i],
+    ['allow', /\ballows?\b|\ballowed\b|\ballowing\b|\bpermits?\b|\bpermitted\b|\bpermitting\b|\bmay\b|\bcan\b|\bcould\b|\bshould\b/i],
+    ['serve as', /\bserves?\s+as\b|\bacts?\s+as\b|\bfunctions?\s+as\b|\bworks?\s+as\b|\boperates?\s+as\b|\bbecomes?\b/i],
+  ),
+  durableCanonObjects: terms(
+    ['shared canon', /\bshared\s+canon\b/i],
+    ['canonical docs', /\bcanonical\s+docs?\b/i],
+    ['shared docs', /\bshared\s+docs?\b/i],
+    ['Feature CONTEXT', /\bFeature\s+CONTEXT\b/i],
+    ['ADR', /\bADRs?\b/i],
+    ['PLAN.md', /\bPLAN\.md\b/i],
+    ['durable docs', /\bdurable\s+(?:docs?|documentation)\b/i],
+    ['factual sync', /\bfactual\s+sync\b/i],
+    ['resync', /\bresync\b/i],
+    ['sync docs', /\bsync\s+docs?\b/i],
+  ),
+  validationObjects: terms(
+    ['validation-runner', /\bvalidation-runner\b/i],
+    ['validation', /\bvalidation\b/i],
+    ['proof', /\bproof\b/i],
+    ['checks', /\bchecks?\b/i],
+    ['runner verdict', /\brunner\s+verdicts?\b/i],
+    ['PARTIAL', /\bPARTIAL\b/i],
+    ['BLOCKED', /\bBLOCKED\b/i],
+  ),
+  finalizerObjects: terms(
+    ['DONE', /\bDONE\b/i],
+    ['closure', /\bclosure\b|\bround\s+closure\b/i],
+    ['close the round', /\bclose\s+the\s+round\b/i],
+    ['finalizer', /\bfinalizer\b/i],
+    ['finalization', /\bfinali[sz]ation\b/i],
+  ),
+  coderFixerObjects: terms(
+    ['code', /\bcode\b/i],
+    ['patches', /\bpatches\b/i],
+    ['correction pack', /\bCORRECTION\s+PACKs?\b|\bcorrection\s+packs?\b/i],
+    ['broad refactor', /\bbroad[- ]refactor\b/i],
+  ),
+  designObjects: terms(
+    ['EXECUTION PACKAGE', /\bEXECUTION\s+PACKAGE\b/i],
+    ['cut', /\bcut\b/i],
+    ['plan', /\bplan\b/i],
+    ['brief', /\bbrief\b/i],
+    ['validation design', /\bvalidation\s+design\b/i],
+  ),
+  untrustedSources: terms(
+    ['scratchpads', /\bscratchpads?\b/i],
+    ['workspaceStorage', /\bworkspaceStorage\b/i],
+    ['chat-session-resources', /\bchat-session-resources\b/i],
+    ['content.txt', /\bcontent\.txt\b/i],
+    ['runtime temp paths', /\bruntime\s+temp\s+paths?\b|\bruntime\s+temporary\s+files?\b/i],
+    ['temporary files', /\btemporary\s+files?\b/i],
+  ),
+  trustedClaims: terms(
+    ['source of truth', /\bsource\s+of\s+truth\b/i],
+    ['source', /\bsource\b/i],
+    ['truth', /\btruth\b/i],
+    ['canonical', /\bcanonical(?:\s+(?:source|truth|docs?))?\b/i],
+    ['authoritative', /\bauthoritative(?:\s+(?:source|truth))?\b/i],
+    ['trusted', /\btrusted(?:\s+source)?\b/i],
+    ['accepted', /\baccepted(?:\s+(?:truth|authority|source\s+of\s+truth|source))?\b/i],
+    ['valid', /\bvalid\s+source\b/i],
+    ['approved', /\bapproved\s+source\b/i],
+    ['verified', /\bverified(?:\s+source)?\b/i],
+    ['reliable', /\breliable(?:\s+source)?\b/i],
+    ['primary', /\bprimary(?:\s+source)?\b/i],
+    ['reference', /\breference(?:\s+source)?\b/i],
+  ),
+  templateSources: terms(
+    ['productive template', /\bproductive\s+templates?\b/i],
+    ['canonical template', /\bcanonical\s+templates?\b/i],
+    ['template', /\btemplates?\b/i],
+  ),
+  snapshotSources: terms(
+    ['missing snapshot', /\bmissing\s+snapshot\b/i],
+    ['reviewer snapshot', /\breviewer\s+snapshot\b/i],
+    ['dev snapshot', /\bdev\s+snapshot\b/i],
+    ['snapshot', /\bsnapshots?\b/i],
+  ),
+  fallbackClaims: terms(
+    ['fallback', /\bfallback\b/i],
+    ['backup', /\bbackup\b|\bbacks?\s+up\b/i],
+    ['replace', /\breplaces?\b|\breplaced\b|\breplacing\b/i],
+    ['restore', /\brestores?\b|\brestore\b|\brecover(?:s|y)?\b|\breconstructs?\b|\bregenerates?\b/i],
+    ['supply', /\bsuppl(?:y|ies|ied)\b|\bfills?\b/i],
+    ['substitute', /\bsubstitutes?\b|\bsubstitute\s+for\b|\bstand[- ]in\b|\bstands?\s+in\b/i],
+  ),
+  runtimeObjects: terms(['runtime', /\bruntime\b/i]),
+  materializationObjects: terms(['materialization', /\bmateriali[sz]ation(?:\s+path)?\b/i]),
+  materializerObjects: terms(['materializer', /\bmaterializer\b/i]),
+  productionObjects: terms(['production', /\bproduction\b|\bproduction\s+adoption\b/i]),
+  runtimeLoaderObjects: terms(['runtime loader', /\bruntime\s+loader\b/i]),
+  productiveSkillObjects: terms(['productive skill', /\bproductive[- ]skill(?:\s+activation)?\b/i]),
+  githubWriteObjects: terms(['GitHub write', /\bGitHub\s+writes?\b|\bwrite(?:s)?\s+to\s+GitHub\b/i]),
+  targetRepoObjects: terms(['target repo', /\btarget[- ]repo(?:sitory)?\b|\btarget\s+repo\b/i]),
+  targetArtifactObjects: terms(['target artifact', /\btarget\s+artifacts?\b|\btarget[- ]artifacts?\b/i]),
+  fixtureObjects: terms(['fixture', /\bfixtures?\b/i]),
+  generatedReportObjects: terms(['generated report', /\bgenerated\s+reports?\b/i]),
+});
+
+const allActionTerms = Object.freeze([
+  ...forbiddenFamilies.authorityActions,
+  ...forbiddenFamilies.executionActions,
+]);
+
+const authorizationActions = Object.freeze([
+  ...forbiddenFamilies.authorityActions,
+  ...forbiddenFamilies.executionActions.filter((item) =>
+    /^(authorize|activate|enable|support|allow|promote|decide|finalize)$/.test(item.name),
+  ),
+]);
+
+const creationActions = Object.freeze(
+  forbiddenFamilies.executionActions.filter((item) => /^(create|generate|write|supply|fill)$/.test(item.name)),
+);
+
+const structuredForbiddenClaims = Object.freeze([
+  {
+    claimName: 'reviewer replaces resync',
+    family: 'subject_action_object:durable-canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    subject: forbiddenFamilies.subjects,
+    action: allActionTerms,
+    object: forbiddenFamilies.durableCanonObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer replaces validation-runner',
+    family: 'subject_action_object:validation-runner',
+    blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    subject: forbiddenFamilies.subjects,
+    action: allActionTerms,
+    object: forbiddenFamilies.validationObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer replaces finalizer',
+    family: 'subject_action_object:finalizer',
+    blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
+    subject: forbiddenFamilies.subjects,
+    action: allActionTerms,
+    object: forbiddenFamilies.finalizerObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer replaces coder-fixer',
+    family: 'subject_action_object:coder-fixer',
+    blocker: 'BLOCKED_RV_REPLACES_CODER_FIXER',
+    subject: forbiddenFamilies.subjects,
+    action: allActionTerms,
+    object: forbiddenFamilies.coderFixerObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer creates target artifacts',
+    family: 'subject_action_object:target-artifact-creation',
+    blocker: 'BLOCKED_RV_CREATES_TARGET_ARTIFACTS',
+    subject: forbiddenFamilies.subjects,
+    action: creationActions,
+    object: forbiddenFamilies.targetArtifactObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer redesigns package',
+    family: 'subject_action_object:execution-package-design',
+    blocker: 'BLOCKED_RV_REDESIGNS_PACKAGE',
+    subject: forbiddenFamilies.subjects,
+    action: forbiddenFamilies.executionActions.filter((item) => item.name === 'redesign'),
+    object: forbiddenFamilies.designObjects.filter((item) => item.name === 'EXECUTION PACKAGE'),
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer redesigns cut',
+    family: 'subject_action_object:cut-design',
+    blocker: 'BLOCKED_RV_REDESIGNS_CUT',
+    subject: forbiddenFamilies.subjects,
+    action: forbiddenFamilies.executionActions.filter((item) => item.name === 'redesign'),
+    object: forbiddenFamilies.designObjects.filter((item) => item.name === 'cut'),
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer redesigns plan',
+    family: 'subject_action_object:plan-design',
+    blocker: 'BLOCKED_RV_REDESIGNS_PLAN',
+    subject: forbiddenFamilies.subjects,
+    action: forbiddenFamilies.executionActions.filter((item) => item.name === 'redesign'),
+    object: forbiddenFamilies.designObjects.filter((item) => item.name === 'plan'),
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer redesigns brief',
+    family: 'subject_action_object:brief-design',
+    blocker: 'BLOCKED_RV_REDESIGNS_BRIEF',
+    subject: forbiddenFamilies.subjects,
+    action: forbiddenFamilies.executionActions.filter((item) => item.name === 'redesign'),
+    object: forbiddenFamilies.designObjects.filter((item) => item.name === 'brief'),
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer redesigns validation design',
+    family: 'subject_action_object:validation-design',
+    blocker: 'BLOCKED_RV_REDESIGNS_VALIDATION_DESIGN',
+    subject: forbiddenFamilies.subjects,
+    action: forbiddenFamilies.executionActions.filter((item) => item.name === 'redesign'),
+    object: forbiddenFamilies.designObjects.filter((item) => item.name === 'validation design'),
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes runtime',
+    family: 'subject_action_object:runtime-authorization',
+    blocker: 'BLOCKED_RV_RUNTIME_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.runtimeObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes materialization',
+    family: 'subject_action_object:materialization-authorization',
+    blocker: 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.materializationObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes production',
+    family: 'subject_action_object:production-authorization',
+    blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.productionObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes runtime loader',
+    family: 'subject_action_object:runtime-loader-authorization',
+    blocker: 'BLOCKED_RV_RUNTIME_LOADER_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.runtimeLoaderObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes materializer',
+    family: 'subject_action_object:materializer-authorization',
+    blocker: 'BLOCKED_RV_MATERIALIZER_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.materializerObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes productive skill',
+    family: 'subject_action_object:productive-skill-authorization',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_SKILL_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.productiveSkillObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes GitHub write',
+    family: 'subject_action_object:github-write-authorization',
+    blocker: 'BLOCKED_RV_GITHUB_WRITE_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.githubWriteObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes target repo write',
+    family: 'subject_action_object:target-repo-authorization',
+    blocker: 'BLOCKED_RV_TARGET_REPO_WRITE_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.targetRepoObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes target artifact',
+    family: 'subject_action_object:target-artifact-authorization',
+    blocker: 'BLOCKED_RV_TARGET_ARTIFACT_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.targetArtifactObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes fixture',
+    family: 'subject_action_object:fixture-authorization',
+    blocker: 'BLOCKED_RV_FIXTURE_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.fixtureObjects,
+    span: CLAIM_SPAN,
+  },
+  {
+    claimName: 'reviewer authorizes generated report',
+    family: 'subject_action_object:generated-report-authorization',
+    blocker: 'BLOCKED_RV_GENERATED_REPORT_AUTHORIZATION',
+    subject: forbiddenFamilies.subjects,
+    action: authorizationActions,
+    object: forbiddenFamilies.generatedReportObjects,
+    span: CLAIM_SPAN,
+  },
+]);
+
+const pairedForbiddenClaims = Object.freeze([
+  {
+    claimName: 'untrusted source of truth',
+    family: 'untrusted_source:trusted-source-claim',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    left: forbiddenFamilies.untrustedSources,
+    right: forbiddenFamilies.trustedClaims,
+    span: SOURCE_TRUST_SPAN,
+  },
+  {
+    claimName: 'productive template fallback',
+    family: 'template_or_snapshot:fallback-recovery',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    left: [...forbiddenFamilies.templateSources, ...forbiddenFamilies.snapshotSources],
+    right: forbiddenFamilies.fallbackClaims,
+    span: TEMPLATE_FALLBACK_SPAN,
+  },
+]);
+
+const patternForbiddenClaims = Object.freeze([
+  { claimName: 'CLEAN_EXCELLENT_PASS', family: 'status-promotion', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\bREVIEWER_KERNEL\b[\s\S]{0,80}\bCLEAN_EXCELLENT_PASS\b|\bCLEAN_EXCELLENT_PASS\b[\s\S]{0,80}\bREVIEWER_KERNEL\b/i },
+  { claimName: 'promotion', family: 'status-promotion', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\bREVIEWER_KERNEL\b[\s\S]{0,100}\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b|\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b[\s\S]{0,100}\bREVIEWER_KERNEL\b/i },
+  { claimName: 'green proof overrides structure', family: 'output-shape', blocker: 'BLOCKED_RV_GREEN_PROOF_OVERRIDES_STRUCTURE', pattern: /\bgreen\s+(?:checks?|tests?|proof)\b[\s\S]{0,120}\b(?:allows?|forces?|is\s+enough|are\s+enough|sufficient|structural approval)\b|\bstructural approval\b[\s\S]{0,120}\bgreen\s+(?:checks?|tests?|proof)\b/i },
+  { claimName: 'PASS without artifact or diff', family: 'output-shape', blocker: 'BLOCKED_RV_PASS_SHAPE_INVALID', pattern: /\bPASS\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|emitted|available)\b[\s\S]{0,120}\b(?:without|absent|missing|no)\b[\s\S]{0,80}\b(?:artifact|diff)\b|\bPASS\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|emitted|available)\b[\s\S]{0,120}\b(?:artifact|diff)\b[\s\S]{0,80}\b(?:absent|missing)\b/i },
+  { claimName: 'PASS with unresolved material risk', family: 'output-shape', blocker: 'BLOCKED_RV_MATERIAL_RISK_NOT_FAIL', pattern: /\bPASS\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|emitted)\b[\s\S]{0,120}\bunresolved\s+material\s+risk\b|\bunresolved\s+material\s+risk\b[\s\S]{0,120}\bPASS\b/i },
+  { claimName: 'PASS with CORRECTION PACK', family: 'output-shape', blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID', pattern: /\bPASS\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|emitted)\b[\s\S]{0,120}\bCORRECTION\s+PACK\b|\bCORRECTION\s+PACK\b[\s\S]{0,120}\b(?:may|can|could|should|allowed|permitted|emitted)\b[\s\S]{0,80}\bPASS\b/i },
+  { claimName: 'FAIL for aesthetic preference', family: 'output-shape', blocker: 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE', pattern: /\bFAIL\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|used)\b[\s\S]{0,120}\baesthetic\s+preference\b|\baesthetic\s+preference\b[\s\S]{0,120}\b(?:may|can|could|should|allowed|permitted|used)\b[\s\S]{0,80}\bFAIL\b/i },
+  { claimName: 'subjective preference blocks closure', family: 'output-shape', blocker: 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE', pattern: /\bsubjective\s+style\s+preference\b[\s\S]{0,120}\b(?:may|can|could|should|becomes?)\b[\s\S]{0,80}\bblocker\b|\bblocker\b[\s\S]{0,120}\bsubjective\s+style\s+preference\b/i },
+  { claimName: 'invalid CORRECTION PACK shape', family: 'output-shape', blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID', pattern: /\bCORRECTION\s+PACK\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted)\b[\s\S]{0,120}\b(?:broad|vague|repo-wide|redesign-oriented)\b|\b(?:broad|vague|repo-wide|redesign-oriented)\b[\s\S]{0,120}\b(?:may|can|could|should|allowed|permitted)\b[\s\S]{0,80}\bCORRECTION\s+PACK\b|\bmultiple\b[\s\S]{0,80}\bCORRECTION\s+PACK\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|emitted)\b/i },
+  { claimName: 'review-minimal broken', family: 'reading-scope', blocker: 'BLOCKED_RV_REVIEW_MINIMAL_BROKEN', pattern: /\breviewer\b[\s\S]{0,120}\b(?:reopen\s+broad\s+discovery|review\s+the\s+whole\s+repo)\b|\b(?:broad\s+discovery|whole\s+repo)\b[\s\S]{0,120}\breviewer\b/i },
+]);
+
+function splitClauses(text) {
+  const clauses = [];
+  let paragraph = '';
+  let contextGuard = '';
+
+  function flushParagraph() {
+    const normalized = paragraph.trim();
+    if (!normalized) {
+      return;
+    }
+    for (const clause of normalized.split(/(?<=[.!?])\s+|[;|]\s+|\b(?:but|however|although|though|except that|then)\b/i)) {
+      const clean = clause.trim();
+      if (clean) {
+        clauses.push(`${contextGuard}${clean}`);
+      }
+    }
+    paragraph = '';
+  }
+
+  for (const line of text.replace(/\r/g, '').split('\n')) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      flushParagraph();
+      continue;
+    }
+    const heading = headingMatch(trimmed);
+    if (heading) {
+      flushParagraph();
+      const headingText = heading[2].trim();
+      contextGuard = /^(?:Input shape|Expected behavior|Fail condition|Expected blocker)$/i.test(headingText)
+        ? `Markdown ${headingText}: `
+        : '';
+      clauses.push(headingText);
+      continue;
+    }
+    const bullet = /^(?:[-*+]\s+|\d+\.\s+)/.test(trimmed);
+    const normalized = trimmed.replace(/^(?:[-*+]\s+|\d+\.\s+)/, '').trim();
+    if (bullet) {
+      flushParagraph();
+      paragraph = normalized;
+      continue;
+    }
+    paragraph = paragraph ? `${paragraph} ${normalized}` : normalized;
+    if (/\bunsafe\s+if\s+it:?\s*$/i.test(paragraph)) {
+      flushParagraph();
+      contextGuard = 'Markdown unsafe-if block: ';
+    }
+  }
+  flushParagraph();
+  return clauses;
+}
+
+function stripCaseLabel(clause) {
+  return clause.replace(
+    /^(?:reject case|fail if|unsafe if|expected blocker|prohibited case|block case|input shape|fail condition):\s*/i,
+    '',
+  );
+}
+
+function findTermHits(clause, family) {
+  const hits = [];
+  for (const item of family) {
+    const match = item.pattern.exec(clause);
+    if (match) {
+      hits.push({ family: item.name, index: match.index, text: match[0] });
+    }
+  }
+  return hits.sort((left, right) => left.index - right.index);
+}
+
+function spanWithin(hits, maxSpan) {
+  const starts = hits.map((hit) => hit.index);
+  return Math.max(...starts) - Math.min(...starts) <= maxSpan;
+}
+
+function hasLocalNegation(clause, relevantHits) {
+  if (/^Markdown (?:Input shape|Expected behavior|Fail condition|Expected blocker|unsafe-if block): /i.test(clause)) {
     return true;
   }
 
-  return (
-    /\b(?:harness|validator|validation|checks?|gates?|script|kernel)\s+(?:rejects?|blocks?|prohibits?)\b/i.test(
-      clause,
-    ) ||
-    /\b(?:is|are|be)\s+(?:strictly\s+)?(?:forbidden|prohibited)\b/i.test(clause) ||
-    /\bprohibition on\b(?!\s*:)/i.test(clause) ||
-    /\b(?:unsafe if|fail if)\b(?!\s*:)[^.?!]*\b(?:appears?|is present|is found|exists?|occurs?)\b/i.test(
-      clause,
-    )
-  );
+  const search = stripCaseLabel(clause);
+  const offset = clause.length - search.length;
+  const negations = [
+    ...search.matchAll(
+      /\b(?:does\s+not|do\s+not|must\s+not|cannot|can\s+not|is\s+not|are\s+not|was\s+not|were\s+not|not\s+allowed|not\s+permitted|never|no|without|rather\s+than|not|isn't|aren't|won't|unauthori[sz]ed|não|nao|sem)\b/gi,
+    ),
+    ...search.matchAll(
+      /\b(?:forbidden|prohibited|prohibits?|prohibition\s+on|rejects?|blocks?|fails?\s+if|validate(?:s)?\b[\s\S]{0,80}\bprohibit)\b/gi,
+    ),
+  ].map((match) => offset + match.index);
+
+  return negations.some((negationIndex) => {
+    const tail = clause.slice(negationIndex);
+    const negatedListWithoutNewSubject =
+      !/\b(?:reviewer|REVIEWER_KERNEL|reviewer[-_ ]kernel|semantic[- ]reviewer)\b/i.test(tail);
+    return relevantHits.some(
+      (hit) =>
+        Math.abs(hit.index - negationIndex) <= NEGATION_WINDOW ||
+        (negatedListWithoutNewSubject && hit.index >= negationIndex),
+    );
+  });
 }
 
-function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|restores?|supplies|supply|substitutes?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted|controls?|governs?|manages?|supervises?|administers?|maintains?)\b|\bbacks?\s+up\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about|around)\b|\b(?:has|have|with)\s+control\s+over\b|\b(?:has|have|with)\s+jurisdiction\s+(?:over|for|regarding|about)\b|\b(?:has|have|with)\s+(?:stewardship|ownership|custody)\s+over\b|\b(?:is|are|be)\s+(?:steward|owner|custodian|caretaker)\s+of\b|\b(?:is|are|be)\s+(?:responsible\s+owner\s+of|(?:source|doc)\s+owner\s+for)\b|\b(?:serve|serves|act|acts|functions?|works?)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are)\s+(?:a\s+)?canonical\s+(?:source|truth)\b|\b(?:is|are|be)\s+(?:canonical|authoritative|authoritative\s+source|authoritative\s+truth|trusted|trusted\s+source|valid\s+source|approved\s+source|accepted\s+truth|accepted\s+authority|accepted\s+source\s+of\s+truth)\b|\b(?:is|are|be|becomes?)\s+(?:the\s+)?fallback\b|\b(?:is|are|be)\s+backup\s+fallback\b|\b(?:is|are|be)\s+substitute\s+for\s+missing\s+snapshot\b|\boperates?\s+as\s+fallback\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are|be)\s+accountable\s+(?:for|to)\b/i.test(
-    clause,
-  );
+function structuredMatch(clause, claim) {
+  const subjectHits = findTermHits(clause, claim.subject);
+  const actionHits = findTermHits(clause, claim.action);
+  const objectHits = findTermHits(clause, claim.object);
+  for (const subject of subjectHits) {
+    for (const action of actionHits) {
+      for (const object of objectHits) {
+        if (action.index === object.index) {
+          continue;
+        }
+        const hits = [subject, action, object];
+        const ordered =
+          (subject.index <= action.index && action.index <= object.index) ||
+          (object.index <= action.index && action.index <= subject.index);
+        if (ordered && spanWithin(hits, claim.span) && !hasLocalNegation(clause, hits)) {
+          return { hits };
+        }
+      }
+    }
+  }
+  return null;
 }
 
-function hasAffirmingStatus(clause) {
-  return /\b(?:status|ready|active|enabled|pass|approved|available|supported|CLEAN_EXCELLENT_PASS)\b/i.test(clause);
+function pairedMatch(clause, claim) {
+  const leftHits = findTermHits(clause, claim.left);
+  const rightHits = findTermHits(clause, claim.right);
+  for (const left of leftHits) {
+    for (const right of rightHits) {
+      const hits = [left, right];
+      if (spanWithin(hits, claim.span) && !hasLocalNegation(clause, hits)) {
+        return { hits };
+      }
+    }
+  }
+  return null;
 }
 
-function hasForbiddenStandaloneClaim(clause, claim) {
-  return Boolean(claim.standalone) && claim.pattern.test(clause);
+function patternMatch(clause, claim) {
+  const match = claim.pattern.exec(clause);
+  if (!match) {
+    return null;
+  }
+  const hits = [{ family: claim.family, index: match.index, text: match[0] }];
+  return hasLocalNegation(clause, hits) ? null : { hits };
 }
 
-function hasContradictoryClaim(clause, claim) {
-  return (
-    claim.pattern.test(clause) &&
-    hasLocalNegation(clause) &&
-    (/\b(?:may|can|could|should)\b/i.test(clause) ||
-      /\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b/i.test(clause))
-  );
+function matchToResult(claim, clause) {
+  return {
+    matched: true,
+    blocker: claim.blocker,
+    claimName: claim.claimName,
+    family: claim.family,
+    excerpt: clause,
+  };
 }
 
-function findForbiddenClaims(text, claims) {
+export function findForbiddenClaims(text) {
   const matches = [];
   for (const clause of splitClauses(text)) {
-    for (const claim of claims) {
-      const matched = claim.pattern.test(clause);
-      const nonNegated =
-        matched &&
-        !hasLocalNegation(clause) &&
-        (hasAffirmingVerb(clause) || hasAffirmingStatus(clause) || hasForbiddenStandaloneClaim(clause, claim));
-      if (nonNegated || hasContradictoryClaim(clause, claim)) {
-        matches.push({
-          matched: true,
-          blocker: claim.blocker,
-          excerpt: clause,
-          claimName: claim.name,
-        });
+    for (const claim of structuredForbiddenClaims) {
+      if (structuredMatch(clause, claim)) {
+        matches.push(matchToResult(claim, clause));
+      }
+    }
+    for (const claim of pairedForbiddenClaims) {
+      if (pairedMatch(clause, claim)) {
+        matches.push(matchToResult(claim, clause));
+      }
+    }
+    for (const claim of patternForbiddenClaims) {
+      if (patternMatch(clause, claim)) {
+        matches.push(matchToResult(claim, clause));
       }
     }
   }
   return matches;
 }
 
-function findAffirmativeClaims(text, claims, label) {
-  for (const match of findForbiddenClaims(text, claims)) {
+function findAffirmativeClaims(text, label) {
+  for (const match of findForbiddenClaims(text)) {
     assert(Boolean(match.blocker), `${label} prohibited claim (${match.claimName}) must include semantic blocker`);
+    assert(Boolean(match.family), `${label} prohibited claim (${match.claimName}) must include semantic family`);
     assert(Boolean(match.excerpt), `${label} prohibited claim (${match.claimName}) must include useful excerpt`);
     fail(`${label} has non-negated prohibited claim ${match.blocker} (${match.claimName}): ${match.excerpt}`);
   }
@@ -335,32 +850,13 @@ function checkSnapshotParity() {
   );
 }
 
-const forbiddenDocumentClaims = Object.freeze([
-  { name: 'CLEAN_EXCELLENT_PASS', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\bCLEAN_EXCELLENT_PASS\b/i, standalone: true },
-  { name: 'promotion', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b/i },
-  { name: 'runtime', blocker: 'BLOCKED_RV_RUNTIME_AUTHORIZATION', pattern: /\bruntime\b/i },
-  { name: 'runtime loader', blocker: 'BLOCKED_RV_RUNTIME_LOADER_AUTHORIZATION', pattern: /\bruntime loader\b/i },
-  { name: 'materialization', blocker: 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION', pattern: /\bmateriali[sz]ation(?: path)?\b/i },
-  { name: 'materializer', blocker: 'BLOCKED_RV_MATERIALIZER_AUTHORIZATION', pattern: /\bmaterializer\b/i },
-  { name: 'production', blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION', pattern: /\bproduction\b/i },
-  { name: 'productive skill activation', blocker: 'BLOCKED_RV_PRODUCTIVE_SKILL_AUTHORIZATION', pattern: /\bproductive[- ]skill activation\b/i },
-  { name: 'GitHub write', blocker: 'BLOCKED_RV_GITHUB_WRITE_AUTHORIZATION', pattern: /\bGitHub writes?\b|\bwrite(?:s)? to GitHub\b/i },
-  { name: 'target repo write', blocker: 'BLOCKED_RV_TARGET_REPO_WRITE_AUTHORIZATION', pattern: /\btarget[- ]repo(?:sitory)? writes?\b|\bwrite(?:s)? to target[- ]repo/i },
-  { name: 'target artifact', blocker: 'BLOCKED_RV_TARGET_ARTIFACT_AUTHORIZATION', pattern: /\btarget artifacts?\b/i },
-  { name: 'fixture', blocker: 'BLOCKED_RV_FIXTURE_AUTHORIZATION', pattern: /\bfixtures?\b/i },
-  { name: 'generated report', blocker: 'BLOCKED_RV_GENERATED_REPORT_AUTHORIZATION', pattern: /\bgenerated reports?\b/i },
-  { name: 'reviewer resync authority', blocker: 'BLOCKED_RV_REPLACES_RESYNC', pattern: /\breviewer\b[\s\S]{0,160}\b(?:Feature CONTEXT|shared canon|shared docs|durable documentation|ADRs?|PLAN\.md)\b|\b(?:Feature CONTEXT|shared canon|shared docs|durable documentation|ADRs?|PLAN\.md)\b[\s\S]{0,160}\breviewer\b/i },
-  { name: 'untrusted source of truth', blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH', pattern: /\b(?:scratchpads?|workspaceStorage|chat-session-resources|content\.txt|runtime temp paths?)\b[\s\S]{0,120}\b(?:source of truth|canonical(?:\s+(?:source|truth))?|authoritative(?:\s+(?:source|truth))?|trusted(?:\s+source)?|valid\s+source|approved\s+source|accepted\s+(?:truth|authority|source\s+of\s+truth))\b|\b(?:source of truth|canonical(?:\s+(?:source|truth))?|authoritative(?:\s+(?:source|truth))?|trusted(?:\s+source)?|valid\s+source|approved\s+source|accepted\s+(?:truth|authority|source\s+of\s+truth))\b[\s\S]{0,120}\b(?:scratchpads?|workspaceStorage|chat-session-resources|content\.txt|runtime temp paths?)\b/i },
-  { name: 'productive template fallback', blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK', pattern: /\b(?:productive\s+)?templates?\b[\s\S]{0,120}\b(?:fallback|backs?\s+up\s+missing\s+snapshot|replaces?\s+missing\s+snapshot|restores?\s+missing\s+snapshot|suppl(?:y|ies)\s+missing\s+snapshot|substitutes?\s+missing\s+snapshot|substitute\s+for\s+missing\s+snapshot)\b|\b(?:fallback|backs?\s+up\s+missing\s+snapshot|replaces?\s+missing\s+snapshot|restores?\s+missing\s+snapshot|suppl(?:y|ies)\s+missing\s+snapshot|substitutes?\s+missing\s+snapshot|substitute\s+for\s+missing\s+snapshot)\b[\s\S]{0,120}\b(?:productive\s+)?templates?\b/i },
-]);
-
 function checkDocumentStatus(docs) {
   for (const [relPath, text] of docs) {
     assert(
       /REVIEWER_KERNEL:\s*INITIAL_DRAFT/.test(text),
       `${relPath} must preserve REVIEWER_KERNEL: INITIAL_DRAFT`,
     );
-    findAffirmativeClaims(text, forbiddenDocumentClaims, relPath);
+    findAffirmativeClaims(text, relPath);
   }
 }
 
@@ -589,4 +1085,6 @@ function main() {
   console.log('PASS reviewer_kernel static checks');
 }
 
-main();
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from 'node:child_process';
+import { findForbiddenClaims } from './check-static.mjs';
 import {
   existsSync,
   lstatSync,
@@ -1180,6 +1181,139 @@ const negativeMutations = Object.freeze([
   },
 ]);
 
+const generalizedMutationGroups = Object.freeze([
+  {
+    family: 'reviewer authority/control/ownership + durable canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    expected: /(?:shared canon|canonical docs|shared docs|Feature CONTEXT|ADR|PLAN\.md|durable docs|factual sync|resync)/i,
+    cases: [
+      ['reviewer owns shared canon', 'Reviewer does not own shared canon.', 'Reviewer owns shared canon.'],
+      ['reviewer custody over canonical docs', 'Reviewer does not have custody over canonical docs.', 'Reviewer has custody over canonical docs.'],
+      ['semantic reviewer governs shared docs', 'Semantic reviewer does not govern shared docs.', 'Semantic reviewer governs shared docs.'],
+      ['kernel administers Feature CONTEXT', '`REVIEWER_KERNEL` does not administer Feature CONTEXT.', '`REVIEWER_KERNEL` administers Feature CONTEXT.'],
+      ['reviewer preserves ADR', 'Reviewer does not preserve ADR.', 'Reviewer preserves ADR.'],
+      ['reviewer curates PLAN.md', 'Reviewer does not curate PLAN.md.', 'Reviewer curates PLAN.md.'],
+      ['reviewer safeguards durable docs', 'Reviewer does not safeguard durable docs.', 'Reviewer safeguards durable docs.'],
+      ['reviewer accountable for factual sync', 'Reviewer is not accountable for factual sync.', 'Reviewer is accountable for factual sync.'],
+      ['reviewer controls resync', 'Reviewer does not control resync.', 'Reviewer controls resync.'],
+      ['reviewer stewardship over shared canon', 'Reviewer does not have stewardship over shared canon.', 'Reviewer has stewardship over shared canon.'],
+    ],
+  },
+  {
+    family: 'untrusted source + trusted-source claim',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    expected: /(?:scratchpads?|workspaceStorage|chat-session-resources|content\.txt|runtime temp paths?|runtime temporary files?|temporary files?)/i,
+    cases: [
+      ['scratchpads verified source', 'Scratchpads are not verified source.', 'Scratchpads are verified source.'],
+      ['workspaceStorage reliable source', '`workspaceStorage` is not reliable source.', '`workspaceStorage` is reliable source.'],
+      ['chat session primary source', '`chat-session-resources` are not primary source.', '`chat-session-resources` are primary source.'],
+      ['content accepted source', '`content.txt` is not accepted source.', '`content.txt` is accepted source.'],
+      ['runtime temp paths canonical', 'Runtime temp paths are not canonical.', 'Runtime temp paths are canonical.'],
+      ['temporary files source of truth', 'Temporary files are not source of truth.', 'Temporary files are source of truth.'],
+      ['scratchpads approved source', 'Scratchpads are not approved source.', 'Scratchpads are approved source.'],
+      ['workspaceStorage reference source', '`workspaceStorage` is not reference source.', '`workspaceStorage` is reference source.'],
+      ['content authoritative truth', '`content.txt` is not authoritative truth.', '`content.txt` is authoritative truth.'],
+      ['runtime temporary files trusted', 'Runtime temporary files are not trusted.', 'Runtime temporary files are trusted.'],
+    ],
+  },
+  {
+    family: 'template/productive template + snapshot fallback/recovery',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    expected: /(?:template|snapshot|fallback|backup|restore|recover|regenerate|fills|stands in|replaces)/i,
+    cases: [
+      ['template restores missing snapshot', 'Template must not restore missing snapshot.', 'Template restores missing snapshot.'],
+      ['productive template recovers dev snapshot', 'Productive template must not recover dev snapshot.', 'Productive template recovers dev snapshot.'],
+      ['canonical template regenerates reviewer snapshot', 'Canonical template must not regenerate reviewer snapshot.', 'Canonical template regenerates reviewer snapshot.'],
+      ['template fills missing snapshot', 'Template must not fill missing snapshot.', 'Template fills missing snapshot.'],
+      ['productive template stands in', 'Productive template must not stand in for missing snapshot.', 'Productive template stands in for missing snapshot.'],
+      ['template backs up dev snapshot', 'Template must not back up dev snapshot.', 'Template backs up dev snapshot.'],
+      ['canonical template replaces reviewer snapshot', 'Canonical template must not replace reviewer snapshot.', 'Canonical template replaces reviewer snapshot.'],
+      ['productive template is fallback', 'Productive template is not fallback.', 'Productive template is fallback.'],
+      ['template becomes backup', 'Template must not become backup.', 'Template becomes backup.'],
+      ['reviewer snapshot becomes fallback', 'Reviewer snapshot is not fallback.', 'Reviewer snapshot becomes fallback.'],
+    ],
+  },
+  {
+    family: 'reviewer/kernel + runtime/prod/materialization/artifact authorization',
+    blocker: null,
+    expected: /(?:runtime|production|materialization|materializer|runtime loader|target artifact|generated report|fixture|GitHub write|target repo)/i,
+    cases: [
+      ['reviewer authorizes runtime', 'Reviewer does not authorize runtime.', 'Reviewer authorizes runtime.', 'BLOCKED_RV_RUNTIME_AUTHORIZATION'],
+      ['semantic reviewer enables production', 'Semantic reviewer does not enable production.', 'Semantic reviewer enables production.', 'BLOCKED_RV_PRODUCTION_AUTHORIZATION'],
+      ['kernel activates materialization', '`REVIEWER_KERNEL` does not activate materialization.', '`REVIEWER_KERNEL` activates materialization.', 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION'],
+      ['reviewer authority over materializer', 'Reviewer does not have authority over materializer.', 'Reviewer has authority over materializer.', 'BLOCKED_RV_MATERIALIZER_AUTHORIZATION'],
+      ['reviewer supports runtime loader', 'Reviewer does not support runtime loader.', 'Reviewer supports runtime loader.', 'BLOCKED_RV_RUNTIME_LOADER_AUTHORIZATION'],
+      ['reviewer authorizes target artifact', 'Reviewer does not authorize target artifact.', 'Reviewer authorizes target artifact.', 'BLOCKED_RV_TARGET_ARTIFACT_AUTHORIZATION'],
+      ['reviewer enables generated report', 'Reviewer does not enable generated report.', 'Reviewer enables generated report.', 'BLOCKED_RV_GENERATED_REPORT_AUTHORIZATION'],
+      ['reviewer authorizes fixture', 'Reviewer does not authorize fixture.', 'Reviewer authorizes fixture.', 'BLOCKED_RV_FIXTURE_AUTHORIZATION'],
+      ['reviewer authorizes GitHub write', 'Reviewer does not authorize GitHub write.', 'Reviewer authorizes GitHub write.', 'BLOCKED_RV_GITHUB_WRITE_AUTHORIZATION'],
+      ['reviewer controls target repo', 'Reviewer does not control target repo.', 'Reviewer controls target repo.', 'BLOCKED_RV_TARGET_REPO_WRITE_AUTHORIZATION'],
+    ],
+  },
+  {
+    family: 'heading variations',
+    blocker: null,
+    expected: /(?:shared canon|source of truth|missing snapshot|production|materialization)/i,
+    cases: [
+      ['heading reviewer owns canon', '### Reviewer does not own shared canon', '### Reviewer owns shared canon', 'BLOCKED_RV_REPLACES_RESYNC'],
+      ['heading scratchpads truth', '### Scratchpads are not source of truth', '### Scratchpads are source of truth', 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH'],
+      ['heading template restores snapshot', '### Template must not restore missing snapshot', '### Template restores missing snapshot', 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK'],
+      ['heading reviewer production', '### Reviewer does not authorize production', '### Reviewer authorizes production', 'BLOCKED_RV_PRODUCTION_AUTHORIZATION'],
+      ['heading kernel materialization', '### REVIEWER_KERNEL does not enable materialization', '### REVIEWER_KERNEL enables materialization', 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION'],
+    ],
+  },
+  {
+    family: 'bullet variations',
+    blocker: null,
+    expected: /(?:shared canon|trusted source|fallback|runtime|DONE)/i,
+    cases: [
+      ['bullet reviewer governs canon', '- Reviewer does not govern shared canon.', '- Reviewer governs shared canon.', 'BLOCKED_RV_REPLACES_RESYNC'],
+      ['bullet temp trusted', '- Temporary files are not trusted source.', '- Temporary files are trusted source.', 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH'],
+      ['bullet template fallback', '- Productive template is not fallback.', '- Productive template is fallback.', 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK'],
+      ['bullet runtime authorization', '- Reviewer does not authorize runtime.', '- Reviewer authorizes runtime.', 'BLOCKED_RV_RUNTIME_AUTHORIZATION'],
+      ['bullet done decision', '- Reviewer does not decide DONE.', '- Reviewer decides DONE.', 'BLOCKED_RV_REPLACES_FINALIZER'],
+    ],
+  },
+  {
+    family: 'deceptive inline labels',
+    blocker: null,
+    expected: /(?:production|materialization|source of truth|fallback|shared canon)/i,
+    cases: [
+      ['reject case production', 'Reviewer does not authorize production.', 'Reject case: Reviewer authorizes production.', 'BLOCKED_RV_PRODUCTION_AUTHORIZATION'],
+      ['fail if materialization', 'Reviewer does not authorize materialization.', 'Fail if: Reviewer authorizes materialization.', 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION'],
+      ['unsafe if source truth', 'Scratchpads are not source of truth.', 'Unsafe if: Scratchpads are source of truth.', 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH'],
+      ['expected blocker fallback', 'Template is not fallback.', 'Expected blocker: Template is fallback.', 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK'],
+      ['prohibited case canon', 'Reviewer does not own shared canon.', 'Prohibited case: Reviewer owns shared canon.', 'BLOCKED_RV_REPLACES_RESYNC'],
+    ],
+  },
+  {
+    family: 'distant negation then affirmative claim',
+    blocker: null,
+    expected: /(?:runs proof|source of truth|restores missing snapshot|enables production|controls shared canon)/i,
+    cases: [
+      ['distant validation proof', 'Reviewer does not run validation.', 'Reviewer does not run validation. Reviewer runs proof.', 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER'],
+      ['distant scratchpads truth', 'Scratchpads are not canonical.', 'Scratchpads are not canonical. Scratchpads are source of truth.', 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH'],
+      ['distant template recovery', 'Template is not fallback.', 'Template is not fallback. Template restores missing snapshot.', 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK'],
+      ['distant production auth', 'Reviewer does not authorize runtime.', 'Reviewer does not authorize runtime. Reviewer enables production.', 'BLOCKED_RV_PRODUCTION_AUTHORIZATION'],
+      ['distant canon control', 'Reviewer must not write shared canon.', 'Reviewer must not write shared canon. Reviewer controls shared canon.', 'BLOCKED_RV_REPLACES_RESYNC'],
+    ],
+  },
+]);
+
+const generalizedMutations = Object.freeze(
+  generalizedMutationGroups.flatMap((group) =>
+    group.cases.map(([name, base, mutated, blocker = group.blocker]) => ({
+      name: `${group.family}: ${name}`,
+      blocker,
+      base,
+      mutated,
+      expected: group.expected,
+    })),
+  ),
+);
+
+const allNegativeMutations = Object.freeze([...negativeMutations, ...generalizedMutations]);
+
 function fail(message) {
   errors.push(message);
 }
@@ -1271,81 +1405,6 @@ function requirePatterns(text, patterns, label) {
   }
 }
 
-function splitClauses(text) {
-  return text
-    .replace(/\r/g, '')
-    .replace(/\n+/g, ' ')
-    .split(/(?<=[.!?])\s+|\b(?:but|however|although|though|except that)\b/i)
-    .map((clause) => clause.trim())
-    .filter(Boolean);
-}
-
-function hasLocalNegation(clause) {
-  if (
-    /\b(?:does not|do not|must not|cannot|can not|is not|are not|never|no|without|not|was not|were not|isn't|aren't|won't|unauthori[sz]ed|não|nao|sem)\b/i.test(
-      clause,
-    )
-  ) {
-    return true;
-  }
-
-  return (
-    /\b(?:harness|validator|validation|checks?|gates?|script|kernel)\s+(?:rejects?|blocks?|prohibits?)\b/i.test(
-      clause,
-    ) ||
-    /\b(?:is|are|be)\s+(?:strictly\s+)?(?:forbidden|prohibited)\b/i.test(clause) ||
-    /\bprohibition on\b(?!\s*:)/i.test(clause) ||
-    /\b(?:unsafe if|fail if)\b(?!\s*:)[^.?!]*\b(?:appears?|is present|is found|exists?|occurs?)\b/i.test(
-      clause,
-    )
-  );
-}
-
-function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|restores?|supplies|supply|substitutes?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted|controls?|governs?|manages?|supervises?|administers?|maintains?)\b|\bbacks?\s+up\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about|around)\b|\b(?:has|have|with)\s+control\s+over\b|\b(?:has|have|with)\s+jurisdiction\s+(?:over|for|regarding|about)\b|\b(?:has|have|with)\s+(?:stewardship|ownership|custody)\s+over\b|\b(?:is|are|be)\s+(?:steward|owner|custodian|caretaker)\s+of\b|\b(?:is|are|be)\s+(?:responsible\s+owner\s+of|(?:source|doc)\s+owner\s+for)\b|\b(?:serve|serves|act|acts|functions?|works?)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are)\s+(?:a\s+)?canonical\s+(?:source|truth)\b|\b(?:is|are|be)\s+(?:canonical|authoritative|authoritative\s+source|authoritative\s+truth|trusted|trusted\s+source|valid\s+source|approved\s+source|accepted\s+truth|accepted\s+authority|accepted\s+source\s+of\s+truth)\b|\b(?:is|are|be|becomes?)\s+(?:the\s+)?fallback\b|\b(?:is|are|be)\s+backup\s+fallback\b|\b(?:is|are|be)\s+substitute\s+for\s+missing\s+snapshot\b|\boperates?\s+as\s+fallback\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are|be)\s+accountable\s+(?:for|to)\b/i.test(
-    clause,
-  );
-}
-
-function hasAffirmingStatus(clause) {
-  return /\b(?:status|ready|active|enabled|pass|approved|available|supported|CLEAN_EXCELLENT_PASS)\b/i.test(clause);
-}
-
-function hasForbiddenStandaloneClaim(clause, claim) {
-  return Boolean(claim.standalone) && claim.pattern.test(clause);
-}
-
-function hasContradictoryClaim(clause, claim) {
-  return (
-    claim.pattern.test(clause) &&
-    hasLocalNegation(clause) &&
-    (/\b(?:may|can|could|should)\b/i.test(clause) ||
-      /\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b/i.test(clause))
-  );
-}
-
-function findForbiddenClaims(text, claims) {
-  const matches = [];
-  for (const clause of splitClauses(text)) {
-    for (const claim of claims) {
-      const matched = claim.pattern.test(clause);
-      const nonNegated =
-        matched &&
-        !hasLocalNegation(clause) &&
-        (hasAffirmingVerb(clause) || hasAffirmingStatus(clause) || hasForbiddenStandaloneClaim(clause, claim));
-      if (nonNegated || hasContradictoryClaim(clause, claim)) {
-        matches.push({
-          matched: true,
-          blocker: claim.blocker,
-          excerpt: clause,
-          claimName: claim.name,
-        });
-      }
-    }
-  }
-  return matches;
-}
-
 function checkStaticHarnessPasses() {
   const result = spawnSync(process.execPath, [staticHarness], {
     cwd: repoRoot,
@@ -1373,18 +1432,21 @@ function checkGoldenDoc() {
 
 function checkInMemoryNegativeMutations() {
   assert(negativeMutations.length === 150, `expected exactly 150 negative mutations, found ${negativeMutations.length}`);
-  const mutationClaims = negativeMutations.map((mutation) => ({
-    name: mutation.name,
-    blocker: mutation.blocker,
-    pattern: mutation.expected,
-  }));
+  assert(
+    generalizedMutations.length === 60,
+    `expected exactly 60 generalized negative mutations, found ${generalizedMutations.length}`,
+  );
+  assert(
+    allNegativeMutations.length === 210,
+    `expected exactly 210 total negative mutations, found ${allNegativeMutations.length}`,
+  );
 
-  for (const mutation of negativeMutations) {
+  for (const mutation of allNegativeMutations) {
     const mutated = mutation.mutated;
     assert(Boolean(mutation.blocker), `${mutation.name} mutation must declare semantic blocker`);
     assert(mutated !== mutation.base, `${mutation.name} mutation must change text in memory`);
-    const mutatedMatches = findForbiddenClaims(mutated, mutationClaims);
-    const expectedMatch = mutatedMatches.find((match) => match.claimName === mutation.name);
+    const mutatedMatches = findForbiddenClaims(mutated);
+    const expectedMatch = mutatedMatches.find((match) => match.blocker === mutation.blocker);
     assert(
       Boolean(expectedMatch),
       `${mutation.name} should trigger ${mutation.blocker} through affirmative forbidden-claim detection`,
@@ -1395,14 +1457,15 @@ function checkInMemoryNegativeMutations() {
         `${mutation.name} detected blocker ${expectedMatch.blocker} but expected ${mutation.blocker}`,
       );
       assert(Boolean(expectedMatch.excerpt), `${mutation.name} must return a useful excerpt`);
+      assert(Boolean(expectedMatch.family), `${mutation.name} must return a semantic family`);
       assert(
         mutation.expected.test(expectedMatch.excerpt),
         `${mutation.name} excerpt must contain the prohibited action for ${mutation.blocker}`,
       );
     }
-    const baseMatches = findForbiddenClaims(mutation.base, mutationClaims);
+    const baseMatches = findForbiddenClaims(mutation.base);
     assert(
-      !baseMatches.some((match) => match.claimName === mutation.name),
+      !baseMatches.some((match) => match.blocker === mutation.blocker),
       `${mutation.name} base text should remain accepted as local negation for ${mutation.blocker}`,
     );
   }
