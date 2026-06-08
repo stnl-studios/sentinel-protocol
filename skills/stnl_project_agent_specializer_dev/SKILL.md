@@ -30,12 +30,13 @@ promoção documental controlada. O `coder_backend_kernel` também está promovi
 como `CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
 `validation_runner_kernel` também está promovido como
 `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental
-controlada.
+controlada. O `reviewer_kernel` também está promovido como
+`REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada.
 
-Há oito kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+Há nove kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, `designer_kernel`, `coder_frontend_kernel`
-`coder_backend_kernel` e `validation_runner_kernel`.
+`coder_backend_kernel`, `validation_runner_kernel` e `reviewer_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -115,6 +116,21 @@ não autoriza escrita em GitHub, não autoriza escrita em repo alvo, não
 autoriza generated reports, fixtures, target artifacts, active runtime
 adoption ou alteração em templates canônicos.
 
+O `reviewer_kernel` é clean pass documental exclusivo do kernel lab dev. Ele
+preserva `semantic-review`, `review-minimal`, revisão pós-implementação e
+pré-finalizer do artifact implementado e diff resultante dentro do recorte
+autorizado, classificação de review `required` ou `advisory`, foco em risco
+semântico/material, `PASS`, `FAIL` e exatamente um `CORRECTION PACK` como
+handoff não terminal e exclusivo. Ele mantém limites contra implementação,
+correção, execução de validação no lugar do `validation-runner`, closure,
+resync, durable docs, repo-wide review e opinião estética como blocker. Ele
+possui harness documental/textual endurecido de validação, não é runtime pass,
+não é materialization pass, não é target repo pass, não autoriza runtime
+loader, não autoriza materialization path, não autoriza produção, não autoriza
+skill produtiva, não autoriza materializer, não autoriza escrita em GitHub,
+não autoriza escrita em repo alvo, não autoriza generated reports, fixtures,
+target artifacts, active runtime adoption ou alteração em templates canônicos.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -158,12 +174,20 @@ adoption ou alteração em templates canônicos.
     em repo alvo, generated reports, fixtures, target artifacts, active runtime
     adoption, materializer, skill produtiva ou alteração em templates
     canônicos.
-11. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-12. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-13. Validar o pacote de agents como conjunto coerente.
-14. Avançar para Project Senior Profile somente depois dos agents kernelizados
+11. Preservar o `reviewer_kernel` promovido contra
+    `reference/agents/reviewer.agent.md`, snapshot dev local derivado
+    literalmente de `templates/agents/reviewer.agent.md`, com harness
+    documental/textual endurecido e sem runtime, runtime loader,
+    materialização, materialization path, produção, escrita em GitHub, escrita
+    em repo alvo, generated reports, fixtures, target artifacts, active runtime
+    adoption, materializer, skill produtiva ou alteração em templates
+    canônicos.
+12. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+13. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+14. Validar o pacote de agents como conjunto coerente.
+15. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-15. Reconstruir a skill/materialização completa somente depois de agents e
+16. Reconstruir a skill/materialização completa somente depois de agents e
     Profile estáveis.
 
 ## Famílias Sugeridas
@@ -310,6 +334,21 @@ Toda comparação deve validar que o kernel:
   `reference/coder_backend_kernel/validation/GOLDEN_TESTS.md`,
   `reference/coder_backend_kernel/validation/check-static.mjs` e
   `reference/coder_backend_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `reviewer`:
+  `reference/agents/reviewer.agent.md`
+- Kernel documental clean pass do `reviewer`:
+  `reference/reviewer_kernel/README.md`
+- Contratos documentais clean pass do `reviewer`:
+  `reference/reviewer_kernel/contracts/CONTRACT.md`,
+  `reference/reviewer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/reviewer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/reviewer_kernel/contracts/SEMANTIC_REVIEW_GATES.md`
+- Validação documental/textual read-only do `reviewer`, sem promoção
+  automática futura:
+  `reference/reviewer_kernel/validation/STATIC_CHECKS.md`,
+  `reference/reviewer_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/reviewer_kernel/validation/check-static.mjs` e
+  `reference/reviewer_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 

@@ -1,15 +1,15 @@
 # Reviewer Kernel Golden Tests
 
 Status: dev-only executable golden-test contract for
-`REVIEWER_KERNEL: INITIAL_DRAFT`.
+`REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 This file documents the current dev-only golden validation harness for the
-reviewer draft. `validation/check-golden.mjs` is part of the reviewer-kernel
+reviewer clean pass. `validation/check-golden.mjs` is part of the reviewer-kernel
 allowlist and executes scenario, mutation, and scoped-scanner checks for this
-document. These golden tests do not promote the kernel and do not authorize
-runtime, materialization, production, global docs updates, productive-skill
-changes, template changes, generated reports, fixtures, automatic promotion, or
-`CLEAN_EXCELLENT_PASS`.
+document. These golden tests do not authorize runtime, materialization,
+production, global docs updates, productive-skill changes, template changes,
+GitHub writes, target-repository writes, generated reports, fixtures, or
+automatic future promotion beyond this clean pass.
 
 `check-golden.mjs` imports `findForbiddenClaims` and
 `findForbiddenClaimsInGoldenTestsDoc` from `check-static.mjs`. Both scripts use

@@ -1,12 +1,12 @@
 # Reviewer Minimum Safe Bundle
 
-Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.
+Status: `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 This is the smallest non-optional documentary bundle that keeps `reviewer`
-acting as semantic reviewer in this initial draft. It is not a runtime bundle,
-materializer, fixture set, generated report, production skill path, runtime
-harness, or production harness. The validation scripts in `validation/` are
-dev-only documentation checks.
+acting as semantic reviewer in this clean dev-only pass. It is not a runtime
+bundle, materializer, fixture set, generated report, production skill path,
+runtime harness, or production harness. The validation scripts in `validation/`
+are dev-only documentation checks.
 
 ## Mandatory Source Chain
 
@@ -22,7 +22,7 @@ origin and is not a fallback when the snapshot is missing.
 
 ## Mandatory Files
 
-The minimum safe draft bundle requires:
+The minimum safe clean-pass bundle requires:
 
 1. `README.md` for status, source alignment, bundle, and scope limits.
 2. `CONTRACT.md` for identity, authority, inputs, outputs, verdicts,
@@ -81,7 +81,10 @@ This bundle is unsafe if it:
   correction output;
 - permits repo-wide review or broad discovery by default;
 - permits subjective preference as a blocker without concrete technical risk;
-- treats `INITIAL_DRAFT` as `CLEAN_EXCELLENT_PASS`;
+- treats `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS` as runtime, production,
+  materialization, target-repository, GitHub, productive-skill, materializer,
+  target-artifact, fixture, generated-report, or automatic future-promotion
+  authority;
 - creates runtime harnesses, production harnesses, fixtures, generated reports,
   runtime loading, materializer paths, target artifacts, global docs updates,
   template changes, productive-skill changes, GitHub writes, or target repo

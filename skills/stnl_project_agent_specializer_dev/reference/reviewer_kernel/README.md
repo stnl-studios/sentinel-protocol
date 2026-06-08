@@ -1,15 +1,15 @@
 # Reviewer Kernel
 
-Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.
+Status: `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-This is a documentary/dev-only initial draft for the base `reviewer` agent. It
-is not promoted, not `CLEAN_EXCELLENT_PASS`, not runtime, not production, and
-has no materialization path, no runtime loader, no materializer, no target
-artifact, no productive skill activation, and no template mutation. The
-validation scripts in `validation/` are dev-only documentation checks, not
-runtime or production entry points.
+This is a documentary/dev-only clean pass for the base `reviewer` agent. It is
+not runtime, not production, and has no materialization path, no runtime
+loader, no materializer, no target artifact, no productive skill activation,
+no GitHub write, no target repo write, and no template mutation. The validation
+scripts in `validation/` are dev-only documentation checks, not runtime or
+production entry points.
 
-This directory records the initial semantic kernel shape for the
+This directory records the clean semantic kernel shape for the
 `semantic-review` role. It preserves the reviewer as a post-implementation,
 pre-finalizer reviewer of the implemented artifact and resulting diff inside
 the authorized cut. It does not prove behavior, implement fixes, close the
@@ -53,7 +53,7 @@ The current 9-file reviewer-kernel allowlist is read in this order:
 
 No fixture, generated report, runtime loader, materializer, materialization
 path, target artifact, productive-skill activation path, GitHub write path, or
-target-repository write path is part of this phase.
+target-repository write path is part of this promoted dev-only phase.
 
 ## Scope Limits
 
@@ -73,6 +73,7 @@ exactly one formal `CORRECTION PACK` block. `CORRECTION PACK` is mutually
 exclusive with `PASS` and `FAIL`.
 
 This directory does not authorize runtime, materialization, repo-target writes,
-global docs updates, productive-skill changes, productive-template changes,
-automatic future promotion, status extension outside this initial draft, a
-materializer, a shared production path, or any runtime or production harness.
+productive-skill changes, productive-template changes, automatic future
+promotion beyond this clean pass, status extension outside this dev-only
+kernel-lab result, a materializer, a shared production path, or any runtime or
+production harness.

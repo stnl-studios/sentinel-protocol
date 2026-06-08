@@ -1,10 +1,12 @@
 # Reviewer Semantic Review Gates
 
-Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.
+Status: `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 These gates define the documentary semantic-review floor for `reviewer`. They
-are not executable harnesses and do not authorize promotion, runtime, or
-materialization.
+are not runtime harnesses and do not authorize runtime, production,
+materialization, productive-skill activation, GitHub write, target repo write,
+materializer, runtime loader, materialization path, fixture, generated report,
+or target artifact creation.
 
 ## Gate RV-GATE-001 - Entry Requires Concrete Implementation
 

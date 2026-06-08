@@ -711,11 +711,11 @@ const negativeMutations = Object.freeze([
     expected: /target artifact/i,
   },
   {
-    name: 'REVIEWER_KERNEL is CLEAN_EXCELLENT_PASS',
+    name: 'REVIEWER_KERNEL auto-promotes future status',
     blocker: 'BLOCKED_RV_STATUS_PROMOTION',
-    base: '`REVIEWER_KERNEL` is not `CLEAN_EXCELLENT_PASS`.',
-    mutated: '`REVIEWER_KERNEL` is `CLEAN_EXCELLENT_PASS`.',
-    expected: /CLEAN_EXCELLENT_PASS/i,
+    base: '`REVIEWER_KERNEL` does not authorize automatic future promotion.',
+    mutated: '`REVIEWER_KERNEL` authorizes automatic future promotion.',
+    expected: /automatic future promotion/i,
   },
   {
     name: 'productive template may be fallback when snapshot missing',
@@ -1467,7 +1467,7 @@ const expectedClaimsByBlocker = Object.freeze(
       'BLOCKED_RV_STATUS_PROMOTION',
       {
         expectedFamily: 'status-promotion',
-        expectedClaimName: 'CLEAN_EXCELLENT_PASS',
+        expectedClaimName: 'automatic future promotion',
       },
     ],
     [
@@ -1790,7 +1790,7 @@ function goldenDocFragment(body) {
   return `# Reviewer Kernel Golden Tests
 
 Status: planned textual golden-test contract for
-\`REVIEWER_KERNEL: INITIAL_DRAFT\`.
+\`REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS\`.
 
 ${body}
 `;

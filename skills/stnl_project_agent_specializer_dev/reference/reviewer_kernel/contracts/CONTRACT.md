@@ -1,11 +1,11 @@
 # Reviewer Kernel Contract
 
-Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.
+Status: `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
-This is the documentary contract draft for `reviewer`. It does not implement
-runtime loading, materialization, target-repository writes, fixtures, generated
-reports, executable harnesses, productive-skill behavior, or automatic future
-promotion.
+This is the documentary clean-pass contract for `reviewer`. It does not
+implement runtime loading, materialization, target-repository writes, GitHub
+writes, fixtures, generated reports, runtime harnesses, productive-skill
+behavior, or automatic future promotion beyond this dev-only kernel-lab result.
 
 ## Identity
 

@@ -597,8 +597,8 @@ const pairedForbiddenClaims = Object.freeze([
 ]);
 
 const patternForbiddenClaims = Object.freeze([
-  { claimName: 'CLEAN_EXCELLENT_PASS', family: 'status-promotion', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\bREVIEWER_KERNEL\b[\s\S]{0,80}\bCLEAN_EXCELLENT_PASS\b|\bCLEAN_EXCELLENT_PASS\b[\s\S]{0,80}\bREVIEWER_KERNEL\b/i },
-  { claimName: 'promotion', family: 'status-promotion', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\bREVIEWER_KERNEL\b[\s\S]{0,100}\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b|\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b[\s\S]{0,100}\bREVIEWER_KERNEL\b/i },
+  { claimName: 'automatic future promotion', family: 'status-promotion', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\bREVIEWER_KERNEL\b[\s\S]{0,120}\b(?:automatic\s+(?:future\s+)?promotion|future\s+promotion|promotes?\s+automatically|auto-promotes?)\b|\b(?:automatic\s+(?:future\s+)?promotion|future\s+promotion|promotes?\s+automatically|auto-promotes?)\b[\s\S]{0,120}\bREVIEWER_KERNEL\b/i },
+  { claimName: 'promotion grants runtime authority', family: 'status-promotion', blocker: 'BLOCKED_RV_STATUS_PROMOTION', pattern: /\bREVIEWER_KERNEL\b[\s\S]{0,160}\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b[\s\S]{0,160}\b(?:authori[sz]es?|grants?|enables?|allows?|permits?|activates?|creates?)\b[\s\S]{0,120}\b(?:runtime|production|materiali[sz]ation|productive\s+skill|github\s+writes?|target[-\s]repo\s+writes?)\b|\b(?:authori[sz]es?|grants?|enables?|allows?|permits?|activates?|creates?)\b[\s\S]{0,120}\b(?:runtime|production|materiali[sz]ation|productive\s+skill|github\s+writes?|target[-\s]repo\s+writes?)\b[\s\S]{0,160}\b(?:promotion|promoted|promote|promotes|promovido|promocao|promoção)\b[\s\S]{0,160}\bREVIEWER_KERNEL\b/i },
   { claimName: 'green proof overrides structure', family: 'output-shape', blocker: 'BLOCKED_RV_GREEN_PROOF_OVERRIDES_STRUCTURE', pattern: /\bgreen\s+(?:checks?|tests?|proof)\b[\s\S]{0,120}\b(?:allows?|forces?|is\s+enough|are\s+enough|sufficient|structural approval)\b|\bstructural approval\b[\s\S]{0,120}\bgreen\s+(?:checks?|tests?|proof)\b/i },
   { claimName: 'PASS without artifact or diff', family: 'output-shape', blocker: 'BLOCKED_RV_PASS_SHAPE_INVALID', pattern: /\bPASS\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|emitted|available)\b[\s\S]{0,120}\b(?:without|absent|missing|no)\b[\s\S]{0,80}\b(?:artifact|diff)\b|\bPASS\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|emitted|available)\b[\s\S]{0,120}\b(?:artifact|diff)\b[\s\S]{0,80}\b(?:absent|missing)\b/i },
   { claimName: 'PASS with unresolved material risk', family: 'output-shape', blocker: 'BLOCKED_RV_MATERIAL_RISK_NOT_FAIL', pattern: /\bPASS\b[\s\S]{0,80}\b(?:may|can|could|should|allowed|permitted|emitted)\b[\s\S]{0,120}\bunresolved\s+material\s+risk\b|\bunresolved\s+material\s+risk\b[\s\S]{0,120}\bPASS\b/i },
@@ -1064,8 +1064,8 @@ function checkSnapshotParity() {
 function checkDocumentStatus(docs) {
   for (const [relPath, text] of docs) {
     assert(
-      /REVIEWER_KERNEL:\s*INITIAL_DRAFT/.test(text),
-      `${relPath} must preserve REVIEWER_KERNEL: INITIAL_DRAFT`,
+      /REVIEWER_KERNEL:\s*CLEAN_EXCELLENT_PASS/.test(text),
+      `${relPath} must preserve REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`,
     );
     const matches =
       relPath === 'validation/GOLDEN_TESTS.md'

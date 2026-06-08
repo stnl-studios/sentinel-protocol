@@ -1,10 +1,11 @@
 # Reviewer Behavior Parity Spine
 
-Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.
+Status: `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 This spine records the behavior that must remain aligned with
 `reference/agents/reviewer.agent.md`. It is documentary only and has no
-runtime, materialization, promotion, or executable harness authority.
+runtime, materialization, production, productive-skill, GitHub write,
+target-repository write, materializer, or runtime harness authority.
 
 ## Snapshot Anchors
 
@@ -114,10 +115,11 @@ Green checks, green tests, or runner `PASS` can inform review context, but they
 do not force structural approval when the implementation violates scope,
 contract, ownership, boundary, or active guardrail expectations.
 
-## Draft Boundary
+## Clean Pass Boundary
 
-`INITIAL_DRAFT` means only an initial documentary/dev-only contract draft. It
-does not authorize `CLEAN_EXCELLENT_PASS`, runtime pass, materialization pass,
-target repo pass, production agent execution, productive skill authorization,
-materializer authorization, GitHub writes, target repo writes, durable docs,
-executable harnesses, automatic promotion, or template mutation.
+`REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS` means only a controlled
+documentary/dev-only kernel-lab pass. It does not authorize runtime pass,
+materialization pass, target repo pass, production agent execution, productive
+skill authorization, materializer authorization, GitHub writes, target repo
+writes, durable docs, runtime harnesses, automatic future promotion beyond this
+pass, or template mutation.

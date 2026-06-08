@@ -1,14 +1,15 @@
 # Reviewer Kernel Static Checks
 
 Status: dev-only executable static-check contract for
-`REVIEWER_KERNEL: INITIAL_DRAFT`.
+`REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`.
 
 This file documents the current dev-only static validation harness for the
-reviewer draft. `validation/check-static.mjs` is part of the reviewer-kernel
+reviewer clean pass. `validation/check-static.mjs` is part of the reviewer-kernel
 allowlist and executes these documentary checks. Passing the harness does not
 authorize runtime, materialization, production, global docs updates,
 productive-skill changes, template changes, generated reports, fixtures,
-automatic promotion, or `CLEAN_EXCELLENT_PASS`.
+GitHub writes, target-repository writes, automatic future promotion beyond this
+clean pass, or runtime harness authority.
 
 The static checks inspect only:
 
@@ -76,12 +77,13 @@ It detects prohibited affirmative claims through:
   clearly denied in the same local context;
 - semantic blockers that name the violated reviewer boundary.
 
-The engine preserves the status `REVIEWER_KERNEL: INITIAL_DRAFT` and rejects
-non-negated claims that would imply promotion, runtime, materialization,
-production, materializer authority, productive-skill activation, GitHub writes,
-target-repository writes, target artifacts, fixtures, generated reports,
-validation-runner replacement, finalizer replacement, resync replacement,
-coder/fixer replacement, cut redesign, or generic opinion-review drift.
+The engine preserves the status `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS` and
+rejects non-negated claims that would imply automatic future promotion beyond
+this pass, runtime, materialization, production, materializer authority,
+productive-skill activation, GitHub writes, target-repository writes, target
+artifacts, fixtures, generated reports, validation-runner replacement,
+finalizer replacement, resync replacement, coder/fixer replacement, cut
+redesign, or generic opinion-review drift.
 
 ## GOLDEN_TESTS.md Scanner
 
@@ -123,12 +125,13 @@ snapshot and audit point.
 Compare `templates/agents/reviewer.agent.md` and
 `reference/agents/reviewer.agent.md` byte-for-byte.
 
-### RV-CH-004 - Status remains initial draft
+### RV-CH-004 - Status remains clean excellent pass
 
-Validate all reviewer-kernel docs use `REVIEWER_KERNEL: INITIAL_DRAFT` and do
-not claim `CLEAN_EXCELLENT_PASS`, promotion, runtime, production, materializer,
-materialization path, executable harness, target artifact, productive-skill
-activation, template mutation, GitHub write, or target-repo write authority.
+Validate all reviewer-kernel docs use `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS`
+and do not claim automatic future promotion beyond this pass, runtime,
+production, materializer, materialization path, runtime harness, target
+artifact, productive-skill activation, template mutation, GitHub write, or
+target-repo write authority.
 
 ### RV-CH-005 - Identity and role preserved
 
