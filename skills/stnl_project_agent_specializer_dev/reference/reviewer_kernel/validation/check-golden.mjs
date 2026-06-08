@@ -1813,7 +1813,73 @@ function checkGoldenTestsScopedScanner() {
       '### Expected behavior\nScratchpads are source of truth.',
       'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
     ],
+    [
+      'input attempt authorize production remains scanned',
+      '### Input shape\nReviewer attempts to authorize production.',
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'input attempt enable materialization remains scanned',
+      '### Input shape\nReviewer attempts to enable materialization.',
+      'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION',
+    ],
+    [
+      'input attempt decide DONE remains scanned',
+      '### Input shape\nReviewer attempts to decide DONE.',
+      'BLOCKED_RV_REPLACES_FINALIZER',
+    ],
+    [
+      'input attempt run proof remains scanned',
+      '### Input shape\nReviewer attempts to run proof.',
+      'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    ],
+    [
+      'inline input attempt authorize production remains scanned',
+      'Input shape:\nReviewer attempts to authorize production.',
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'inline input attempt decide DONE remains scanned',
+      'Input shape:\nReviewer attempts to decide DONE.',
+      'BLOCKED_RV_REPLACES_FINALIZER',
+    ],
+    [
+      'isolated fenced production remains scanned',
+      '```\nReviewer authorizes production.\n```',
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'isolated fenced scratchpad truth remains scanned',
+      '```\nScratchpads are source of truth.\n```',
+      'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    ],
+    [
+      'isolated fenced template restore remains scanned',
+      '```\nTemplate restores missing snapshot.\n```',
+      'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    ],
+    [
+      'input fenced production remains scanned',
+      '### Input shape\n```\nReviewer authorizes production.\n```',
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'expected behavior fenced materialization remains scanned',
+      '### Expected behavior\n```\nReviewer enables materialization.\n```',
+      'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION',
+    ],
+    [
+      'input fenced attempt authorize production remains scanned',
+      '### Input shape\n```\nReviewer attempts to authorize production.\n```',
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    ],
+    [
+      'heading fail condition protects only first paragraph',
+      '### Fail condition\nReviewer runs proof.\n\nReviewer decides DONE.',
+      'BLOCKED_RV_REPLACES_FINALIZER',
+    ],
   ];
+  assert(normativeCases.length === 20, `expected exactly 20 scoped scanner forbidden cases, found ${normativeCases.length}`);
   for (const [name, body, expectedBlocker] of normativeCases) {
     const matches = findForbiddenClaimsInGoldenTestsDoc(goldenDocFragment(body));
     assert(
@@ -1829,7 +1895,14 @@ function checkGoldenTestsScopedScanner() {
     ['expected blocker template restore', 'Expected blocker: Template restores missing snapshot.'],
     ['fail condition block proof', '### Fail condition\nReviewer runs proof.'],
     ['expected blocker block DONE', '### Expected blocker\nReviewer decides DONE.'],
+    ['fail condition fenced proof', 'Fail condition:\n```\nReviewer runs proof.\n```'],
+    ['expected blocker fenced DONE', 'Expected blocker:\n```\nReviewer decides DONE.\n```'],
+    ['expected blocker fenced template restore', 'Expected blocker:\n```\nTemplate restores missing snapshot.\n```'],
   ];
+  assert(
+    validNegativeExamples.length === 9,
+    `expected exactly 9 scoped scanner negative examples, found ${validNegativeExamples.length}`,
+  );
   for (const [name, body] of validNegativeExamples) {
     const matches = findForbiddenClaimsInGoldenTestsDoc(goldenDocFragment(body));
     assert(matches.length === 0, `${name} should remain a valid negative example. actual=${formatMatches(matches)}`);

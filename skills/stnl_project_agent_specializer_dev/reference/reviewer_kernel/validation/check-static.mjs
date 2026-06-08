@@ -798,32 +798,103 @@ function isGoldenNegativeExampleLine(text) {
   return /^(?:Fail condition|Expected blocker):\s*\S/i.test(text.trim());
 }
 
-function isAllowedGoldenInputExample(match, sectionName) {
-  return (
-    sectionName === 'Input shape' &&
-    /\battempts?\b/i.test(match.excerpt) &&
-    /\breviewer\b/i.test(match.excerpt)
-  );
+function isGoldenNegativeExampleMarker(text) {
+  return /^(?:Fail condition|Expected blocker):\s*$/i.test(text.trim());
+}
+
+function normalizeGoldenBlockText(text) {
+  return text
+    .replace(/\r/g, '')
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .join(' ');
+}
+
+function collectGoldenScenarios(text) {
+  const scenarios = [];
+  let scenario = null;
+  let childSection = '';
+
+  for (const line of text.replace(/\r/g, '').split('\n')) {
+    const heading = headingMatch(line.trim());
+    if (heading && heading[1].length === 2 && /^Golden Test RV-GT-\d+\b/i.test(heading[2])) {
+      scenario = { sections: new Map() };
+      scenarios.push(scenario);
+      childSection = '';
+      continue;
+    }
+    if (!scenario) {
+      continue;
+    }
+    if (heading && heading[1].length === 3) {
+      childSection = normalizeGoldenSectionName(heading[2]);
+      scenario.sections.set(childSection, '');
+      continue;
+    }
+    if (heading && heading[1].length <= 2) {
+      scenario = null;
+      childSection = '';
+      continue;
+    }
+    if (childSection) {
+      const current = scenario.sections.get(childSection) ?? '';
+      scenario.sections.set(childSection, current ? `${current}\n${line}` : line);
+    }
+  }
+
+  return scenarios;
+}
+
+function findAllowedGoldenScenarioInputExamples(text) {
+  const allowed = new Set();
+  for (const scenario of collectGoldenScenarios(text)) {
+    const inputShape = normalizeGoldenBlockText(scenario.sections.get('Input shape') ?? '');
+    const expectedBlockerText = scenario.sections.get('Expected blocker') ?? '';
+    const expectedBlockers = new Set(
+      [...expectedBlockerText.matchAll(/\bBLOCKED_RV_[A-Z0-9_]+\b/g)].map((match) => match[0]),
+    );
+    if (!inputShape || expectedBlockers.size === 0) {
+      continue;
+    }
+    const inputMatches = findForbiddenClaims(inputShape);
+    if (inputMatches.length > 0 && inputMatches.every((match) => expectedBlockers.has(match.blocker))) {
+      allowed.add(inputShape);
+    }
+  }
+  return allowed;
 }
 
 export function findForbiddenClaimsInGoldenTestsDoc(text) {
   const matches = [];
+  const allowedGoldenScenarioInputExamples = findAllowedGoldenScenarioInputExamples(text);
   let sectionName = '';
   let paragraph = '';
+  let fenceText = '';
   let inFence = false;
+  let negativeSectionExampleAvailable = false;
+  let pendingNegativeExample = false;
 
   function scanParagraph(label, candidate, section) {
     const normalized = candidate.trim();
     if (!normalized) {
       return;
     }
-    if (GOLDEN_NEGATIVE_EXAMPLE_SECTIONS.has(section) || isGoldenNegativeExampleLine(normalized)) {
+    const protectedBySection = GOLDEN_NEGATIVE_EXAMPLE_SECTIONS.has(section) && negativeSectionExampleAvailable;
+    const protectedByInline = pendingNegativeExample || isGoldenNegativeExampleLine(normalized);
+    if (protectedBySection || protectedByInline) {
+      if (protectedBySection) {
+        negativeSectionExampleAvailable = false;
+      }
+      if (pendingNegativeExample) {
+        pendingNegativeExample = false;
+      }
+      return;
+    }
+    if (section === 'Input shape' && allowedGoldenScenarioInputExamples.has(normalized)) {
       return;
     }
     for (const match of findForbiddenClaims(normalized)) {
-      if (isAllowedGoldenInputExample(match, section)) {
-        continue;
-      }
       matches.push({ ...match, excerpt: `${label}: ${match.excerpt}` });
     }
   }
@@ -836,11 +907,18 @@ export function findForbiddenClaimsInGoldenTestsDoc(text) {
   for (const line of text.replace(/\r/g, '').split('\n')) {
     const trimmed = line.trim();
     if (/^```/.test(trimmed)) {
-      flushParagraph();
-      inFence = !inFence;
+      if (inFence) {
+        scanParagraph(sectionName || 'fence', fenceText, sectionName);
+        fenceText = '';
+        inFence = false;
+      } else {
+        flushParagraph();
+        inFence = true;
+      }
       continue;
     }
     if (inFence) {
+      fenceText = fenceText ? `${fenceText}\n${line}` : line;
       continue;
     }
     const heading = headingMatch(trimmed);
@@ -849,15 +927,26 @@ export function findForbiddenClaimsInGoldenTestsDoc(text) {
       const headingText = normalizeGoldenSectionName(heading[2]);
       scanParagraph('heading', headingText, '');
       sectionName = heading[1].length === 3 ? headingText : '';
+      negativeSectionExampleAvailable = GOLDEN_NEGATIVE_EXAMPLE_SECTIONS.has(sectionName);
+      pendingNegativeExample = false;
       continue;
     }
     if (!trimmed) {
       flushParagraph();
       continue;
     }
+    if (isGoldenNegativeExampleMarker(trimmed)) {
+      flushParagraph();
+      pendingNegativeExample = true;
+      continue;
+    }
     paragraph = paragraph ? `${paragraph} ${trimmed}` : trimmed;
   }
-  flushParagraph();
+  if (inFence) {
+    scanParagraph(sectionName || 'fence', fenceText, sectionName);
+  } else {
+    flushParagraph();
+  }
   return matches;
 }
 
