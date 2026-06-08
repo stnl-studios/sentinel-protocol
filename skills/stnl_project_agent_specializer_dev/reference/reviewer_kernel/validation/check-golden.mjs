@@ -1300,6 +1300,209 @@ const generalizedMutationGroups = Object.freeze([
   },
 ]);
 
+const expectedClaimsByBlocker = Object.freeze(
+  new Map([
+    [
+      'BLOCKED_RV_REPLACES_RESYNC',
+      {
+        expectedFamily: 'subject_action_object:durable-canon',
+        expectedClaimName: 'reviewer replaces resync',
+      },
+    ],
+    [
+      'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+      {
+        expectedFamily: 'untrusted_source:trusted-source-claim',
+        expectedClaimName: 'untrusted source of truth',
+      },
+    ],
+    [
+      'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+      {
+        expectedFamily: 'template_or_snapshot:fallback-recovery',
+        expectedClaimName: 'productive template fallback',
+      },
+    ],
+    [
+      'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+      {
+        expectedFamily: 'subject_action_object:validation-runner',
+        expectedClaimName: 'reviewer replaces validation-runner',
+      },
+    ],
+    [
+      'BLOCKED_RV_REPLACES_FINALIZER',
+      {
+        expectedFamily: 'subject_action_object:finalizer',
+        expectedClaimName: 'reviewer replaces finalizer',
+      },
+    ],
+    [
+      'BLOCKED_RV_REPLACES_CODER_FIXER',
+      {
+        expectedFamily: 'subject_action_object:coder-fixer',
+        expectedClaimName: 'reviewer replaces coder-fixer',
+      },
+    ],
+    [
+      'BLOCKED_RV_CREATES_TARGET_ARTIFACTS',
+      {
+        expectedFamily: 'subject_action_object:target-artifact-creation',
+        expectedClaimName: 'reviewer creates target artifacts',
+      },
+    ],
+    [
+      'BLOCKED_RV_REDESIGNS_PACKAGE',
+      {
+        expectedFamily: 'subject_action_object:execution-package-design',
+        expectedClaimName: 'reviewer redesigns package',
+      },
+    ],
+    [
+      'BLOCKED_RV_REDESIGNS_CUT',
+      {
+        expectedFamily: 'subject_action_object:cut-design',
+        expectedClaimName: 'reviewer redesigns cut',
+      },
+    ],
+    [
+      'BLOCKED_RV_REDESIGNS_PLAN',
+      {
+        expectedFamily: 'subject_action_object:plan-design',
+        expectedClaimName: 'reviewer redesigns plan',
+      },
+    ],
+    [
+      'BLOCKED_RV_REDESIGNS_BRIEF',
+      {
+        expectedFamily: 'subject_action_object:brief-design',
+        expectedClaimName: 'reviewer redesigns brief',
+      },
+    ],
+    [
+      'BLOCKED_RV_REDESIGNS_VALIDATION_DESIGN',
+      {
+        expectedFamily: 'subject_action_object:validation-design',
+        expectedClaimName: 'reviewer redesigns validation design',
+      },
+    ],
+    [
+      'BLOCKED_RV_RUNTIME_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:runtime-authorization',
+        expectedClaimName: 'reviewer authorizes runtime',
+      },
+    ],
+    [
+      'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:materialization-authorization',
+        expectedClaimName: 'reviewer authorizes materialization',
+      },
+    ],
+    [
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:production-authorization',
+        expectedClaimName: 'reviewer authorizes production',
+      },
+    ],
+    [
+      'BLOCKED_RV_MATERIALIZER_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:materializer-authorization',
+        expectedClaimName: 'reviewer authorizes materializer',
+      },
+    ],
+    [
+      'BLOCKED_RV_RUNTIME_LOADER_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:runtime-loader-authorization',
+        expectedClaimName: 'reviewer authorizes runtime loader',
+      },
+    ],
+    [
+      'BLOCKED_RV_PRODUCTIVE_SKILL_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:productive-skill-authorization',
+        expectedClaimName: 'reviewer authorizes productive skill',
+      },
+    ],
+    [
+      'BLOCKED_RV_FIXTURE_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:fixture-authorization',
+        expectedClaimName: 'reviewer authorizes fixture',
+      },
+    ],
+    [
+      'BLOCKED_RV_GENERATED_REPORT_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:generated-report-authorization',
+        expectedClaimName: 'reviewer authorizes generated report',
+      },
+    ],
+    [
+      'BLOCKED_RV_TARGET_ARTIFACT_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:target-artifact-authorization',
+        expectedClaimName: 'reviewer authorizes target artifact',
+      },
+    ],
+    [
+      'BLOCKED_RV_GITHUB_WRITE_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:github-write-authorization',
+        expectedClaimName: 'reviewer authorizes GitHub write',
+      },
+    ],
+    [
+      'BLOCKED_RV_TARGET_REPO_WRITE_AUTHORIZATION',
+      {
+        expectedFamily: 'subject_action_object:target-repo-authorization',
+        expectedClaimName: 'reviewer authorizes target repo write',
+      },
+    ],
+    [
+      'BLOCKED_RV_STATUS_PROMOTION',
+      {
+        expectedFamily: 'status-promotion',
+        expectedClaimName: 'CLEAN_EXCELLENT_PASS',
+      },
+    ],
+    [
+      'BLOCKED_RV_GREEN_PROOF_OVERRIDES_STRUCTURE',
+      {
+        expectedFamily: 'output-shape',
+        expectedClaimName: 'green proof overrides structure',
+      },
+    ],
+    [
+      'BLOCKED_RV_PASS_SHAPE_INVALID',
+      {
+        expectedFamily: 'output-shape',
+        expectedClaimName: 'PASS without artifact or diff',
+      },
+    ],
+    [
+      'BLOCKED_RV_MATERIAL_RISK_NOT_FAIL',
+      {
+        expectedFamily: 'output-shape',
+        expectedClaimName: 'PASS with unresolved material risk',
+      },
+    ],
+    ['BLOCKED_RV_CORRECTION_PACK_INVALID', { expectedFamily: 'output-shape' }],
+    ['BLOCKED_RV_OPINION_BLOCKS_CLOSURE', { expectedFamily: 'output-shape' }],
+    [
+      'BLOCKED_RV_REVIEW_MINIMAL_BROKEN',
+      {
+        expectedFamily: 'reading-scope',
+        expectedClaimName: 'review-minimal broken',
+      },
+    ],
+  ]),
+);
+
 const generalizedMutations = Object.freeze(
   generalizedMutationGroups.flatMap((group) =>
     group.cases.map(([name, base, mutated, blocker = group.blocker]) => ({
@@ -1308,11 +1511,58 @@ const generalizedMutations = Object.freeze(
       base,
       mutated,
       expected: group.expected,
+      expectedFamily: expectedClaimsByBlocker.get(blocker)?.expectedFamily,
+      expectedClaimName: expectedClaimsByBlocker.get(blocker)?.expectedClaimName,
     })),
   ),
 );
 
 const allNegativeMutations = Object.freeze([...negativeMutations, ...generalizedMutations]);
+
+const contextualHeadingMutations = Object.freeze([
+  {
+    name: 'contextual markdown heading input shape production',
+    blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    mutated: '### Input shape\nReviewer authorizes production.',
+    expected: /production/i,
+  },
+  {
+    name: 'contextual markdown heading expected behavior materialization',
+    blocker: 'BLOCKED_RV_MATERIALIZATION_AUTHORIZATION',
+    mutated: '### Expected behavior\nReviewer enables materialization.',
+    expected: /materialization/i,
+  },
+  {
+    name: 'contextual markdown heading fail condition source of truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    mutated: '### Fail condition\nScratchpads are source of truth.',
+    expected: /(?:Scratchpads.*source of truth|source of truth.*Scratchpads)/i,
+  },
+  {
+    name: 'contextual markdown heading expected blocker snapshot restore',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    mutated: '### Expected blocker\nTemplate restores missing snapshot.',
+    expected: /(?:Template.*restores missing snapshot|restores missing snapshot.*Template)/i,
+  },
+  {
+    name: 'contextual plain label input shape production',
+    blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    mutated: 'Input shape:\nReviewer authorizes production.',
+    expected: /production/i,
+  },
+  {
+    name: 'contextual plain label expected blocker production',
+    blocker: 'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+    mutated: 'Expected blocker:\nReviewer enables production.',
+    expected: /production/i,
+  },
+  {
+    name: 'contextual plain label fail condition trusted source',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    mutated: 'Fail condition:\nScratchpads are trusted source.',
+    expected: /(?:Scratchpads.*trusted source|trusted source.*Scratchpads)/i,
+  },
+]);
 
 function fail(message) {
   errors.push(message);
@@ -1430,6 +1680,83 @@ function checkGoldenDoc() {
   }
 }
 
+function inferExpectedClaimName(mutation) {
+  if (mutation.expectedClaimName) {
+    return mutation.expectedClaimName;
+  }
+  if (mutation.blocker === 'BLOCKED_RV_CORRECTION_PACK_INVALID') {
+    return /\bPASS\b/i.test(mutation.mutated) && /\bCORRECTION\s+PACK\b/i.test(mutation.mutated)
+      ? 'PASS with CORRECTION PACK'
+      : 'invalid CORRECTION PACK shape';
+  }
+  if (mutation.blocker === 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE') {
+    return /\bsubjective\s+style\s+preference\b/i.test(mutation.mutated)
+      ? 'subjective preference blocks closure'
+      : 'FAIL for aesthetic preference';
+  }
+  return expectedClaimsByBlocker.get(mutation.blocker)?.expectedClaimName;
+}
+
+function expectedMutationShape(mutation) {
+  const defaults = expectedClaimsByBlocker.get(mutation.blocker) ?? {};
+  return {
+    expectedFamily: mutation.expectedFamily ?? defaults.expectedFamily,
+    expectedClaimName: inferExpectedClaimName(mutation),
+  };
+}
+
+function matchExpectedMutation(match, mutation) {
+  const { expectedFamily, expectedClaimName } = expectedMutationShape(mutation);
+  return (
+    match.blocker === mutation.blocker &&
+    (!expectedFamily || match.family === expectedFamily) &&
+    (!expectedClaimName || match.claimName === expectedClaimName)
+  );
+}
+
+function formatMatches(matches) {
+  return matches
+    .map((match) => `${match.blocker}/${match.family}/${match.claimName}`)
+    .join(', ');
+}
+
+function assertMutationDetection(mutation) {
+  const mutated = mutation.mutated;
+  const { expectedFamily, expectedClaimName } = expectedMutationShape(mutation);
+  assert(Boolean(mutation.blocker), `${mutation.name} mutation must declare semantic blocker`);
+  assert(Boolean(expectedFamily), `${mutation.name} mutation must declare expected semantic family`);
+  assert(mutated !== mutation.base, `${mutation.name} mutation must change text in memory`);
+  const mutatedMatches = findForbiddenClaims(mutated);
+  const expectedMatch = mutatedMatches.find((match) => matchExpectedMutation(match, mutation));
+  assert(
+    Boolean(expectedMatch),
+    `${mutation.name} should trigger ${mutation.blocker}/${expectedFamily}${
+      expectedClaimName ? `/${expectedClaimName}` : ''
+    } through affirmative forbidden-claim detection. actual=${formatMatches(mutatedMatches)}`,
+  );
+  if (expectedMatch) {
+    assert(
+      expectedMatch.blocker === mutation.blocker,
+      `${mutation.name} detected blocker ${expectedMatch.blocker} but expected ${mutation.blocker}`,
+    );
+    assert(
+      expectedMatch.family === expectedFamily,
+      `${mutation.name} detected family ${expectedMatch.family} but expected ${expectedFamily}`,
+    );
+    if (expectedClaimName) {
+      assert(
+        expectedMatch.claimName === expectedClaimName,
+        `${mutation.name} detected claim ${expectedMatch.claimName} but expected ${expectedClaimName}`,
+      );
+    }
+    assert(Boolean(expectedMatch.excerpt), `${mutation.name} must return a useful excerpt`);
+    assert(
+      mutation.expected.test(expectedMatch.excerpt),
+      `${mutation.name} excerpt must contain the prohibited action for ${mutation.blocker}`,
+    );
+  }
+}
+
 function checkInMemoryNegativeMutations() {
   assert(negativeMutations.length === 150, `expected exactly 150 negative mutations, found ${negativeMutations.length}`);
   assert(
@@ -1442,32 +1769,20 @@ function checkInMemoryNegativeMutations() {
   );
 
   for (const mutation of allNegativeMutations) {
-    const mutated = mutation.mutated;
-    assert(Boolean(mutation.blocker), `${mutation.name} mutation must declare semantic blocker`);
-    assert(mutated !== mutation.base, `${mutation.name} mutation must change text in memory`);
-    const mutatedMatches = findForbiddenClaims(mutated);
-    const expectedMatch = mutatedMatches.find((match) => match.blocker === mutation.blocker);
-    assert(
-      Boolean(expectedMatch),
-      `${mutation.name} should trigger ${mutation.blocker} through affirmative forbidden-claim detection`,
-    );
-    if (expectedMatch) {
-      assert(
-        expectedMatch.blocker === mutation.blocker,
-        `${mutation.name} detected blocker ${expectedMatch.blocker} but expected ${mutation.blocker}`,
-      );
-      assert(Boolean(expectedMatch.excerpt), `${mutation.name} must return a useful excerpt`);
-      assert(Boolean(expectedMatch.family), `${mutation.name} must return a semantic family`);
-      assert(
-        mutation.expected.test(expectedMatch.excerpt),
-        `${mutation.name} excerpt must contain the prohibited action for ${mutation.blocker}`,
-      );
-    }
+    assertMutationDetection(mutation);
     const baseMatches = findForbiddenClaims(mutation.base);
     assert(
-      !baseMatches.some((match) => match.blocker === mutation.blocker),
+      !baseMatches.some((match) => matchExpectedMutation(match, mutation)),
       `${mutation.name} base text should remain accepted as local negation for ${mutation.blocker}`,
     );
+  }
+
+  assert(
+    contextualHeadingMutations.length === 7,
+    `expected exactly 7 contextual heading mutations, found ${contextualHeadingMutations.length}`,
+  );
+  for (const mutation of contextualHeadingMutations) {
+    assertMutationDetection({ base: '', ...mutation });
   }
 }
 

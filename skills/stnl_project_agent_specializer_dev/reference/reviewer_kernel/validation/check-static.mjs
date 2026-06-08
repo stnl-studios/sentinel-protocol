@@ -638,9 +638,7 @@ function splitClauses(text) {
     if (heading) {
       flushParagraph();
       const headingText = heading[2].trim();
-      contextGuard = /^(?:Input shape|Expected behavior|Fail condition|Expected blocker)$/i.test(headingText)
-        ? `Markdown ${headingText}: `
-        : '';
+      contextGuard = '';
       clauses.push(headingText);
       continue;
     }
@@ -856,7 +854,9 @@ function checkDocumentStatus(docs) {
       /REVIEWER_KERNEL:\s*INITIAL_DRAFT/.test(text),
       `${relPath} must preserve REVIEWER_KERNEL: INITIAL_DRAFT`,
     );
-    findAffirmativeClaims(text, relPath);
+    if (relPath !== 'validation/GOLDEN_TESTS.md') {
+      findAffirmativeClaims(text, relPath);
+    }
   }
 }
 
@@ -1085,6 +1085,10 @@ function main() {
   console.log('PASS reviewer_kernel static checks');
 }
 
-if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+function isMainModule() {
+  return Boolean(process.argv[1]) && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;
+}
+
+if (isMainModule()) {
   main();
 }
