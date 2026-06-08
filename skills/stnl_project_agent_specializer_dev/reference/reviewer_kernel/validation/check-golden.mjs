@@ -241,6 +241,13 @@ const negativeMutations = Object.freeze([
     expected: /Feature CONTEXT/i,
   },
   {
+    name: 'reviewer is accountable to update Feature CONTEXT',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer is not accountable to update Feature CONTEXT during semantic review.',
+    mutated: 'Reviewer is accountable to update Feature CONTEXT.',
+    expected: /Feature CONTEXT/i,
+  },
+  {
     name: 'reviewer may write ADRs',
     blocker: 'BLOCKED_RV_REPLACES_RESYNC',
     base: 'Reviewer does not write ADRs during semantic review.',
@@ -294,6 +301,13 @@ const negativeMutations = Object.freeze([
     blocker: 'BLOCKED_RV_REPLACES_RESYNC',
     base: 'Reviewer does not have authority about shared canon during semantic review.',
     mutated: 'Reviewer has authority about shared canon.',
+    expected: /shared canon/i,
+  },
+  {
+    name: 'reviewer has jurisdiction over shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not have jurisdiction over shared canon during semantic review.',
+    mutated: 'Reviewer has jurisdiction over shared canon.',
     expected: /shared canon/i,
   },
   {
@@ -591,6 +605,34 @@ const negativeMutations = Object.freeze([
     expected: /(?:Template.*fallback|fallback.*Template)/i,
   },
   {
+    name: 'template is fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not be fallback.',
+    mutated: 'Template is fallback.',
+    expected: /(?:Template.*fallback|fallback.*Template)/i,
+  },
+  {
+    name: 'template is the fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not be the fallback.',
+    mutated: 'Template is the fallback.',
+    expected: /(?:Template.*fallback|fallback.*Template)/i,
+  },
+  {
+    name: 'template becomes fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not become fallback.',
+    mutated: 'Template becomes fallback.',
+    expected: /(?:Template.*fallback|fallback.*Template)/i,
+  },
+  {
+    name: 'template operates as fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not operate as fallback.',
+    mutated: 'Template operates as fallback.',
+    expected: /(?:Template.*fallback|fallback.*Template)/i,
+  },
+  {
     name: 'productive template serves as fallback',
     blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
     base: 'Productive template must not serve as fallback.',
@@ -602,6 +644,20 @@ const negativeMutations = Object.freeze([
     blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
     base: 'Productive template must not act as fallback.',
     mutated: 'Productive template acts as fallback.',
+    expected: /(?:Productive template.*fallback|fallback.*Productive template)/i,
+  },
+  {
+    name: 'productive template is fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not be fallback.',
+    mutated: 'Productive template is fallback.',
+    expected: /(?:Productive template.*fallback|fallback.*Productive template)/i,
+  },
+  {
+    name: 'productive template becomes fallback',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not become fallback.',
+    mutated: 'Productive template becomes fallback.',
     expected: /(?:Productive template.*fallback|fallback.*Productive template)/i,
   },
   {
@@ -652,6 +708,27 @@ const negativeMutations = Object.freeze([
     base: 'Scratchpads must not act as canonical source.',
     mutated: 'Scratchpads act as canonical source.',
     expected: /(?:Scratchpads.*canonical source|canonical source.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are canonical source',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not canonical source.',
+    mutated: 'Scratchpads are canonical source.',
+    expected: /(?:Scratchpads.*canonical source|canonical source.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are a canonical source',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not a canonical source.',
+    mutated: 'Scratchpads are a canonical source.',
+    expected: /(?:Scratchpads.*canonical source|canonical source.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are canonical truth',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not canonical truth.',
+    mutated: 'Scratchpads are canonical truth.',
+    expected: /(?:Scratchpads.*canonical truth|canonical truth.*Scratchpads)/i,
   },
   {
     name: 'scratchpads are the source of truth',
@@ -882,7 +959,7 @@ function hasLocalNegation(clause) {
 }
 
 function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about)\b|\b(?:serve|serves|act|acts)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are)\s+accountable\s+for\b/i.test(
+  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted)\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about)\b|\b(?:has|have|with)\s+jurisdiction\s+(?:over|for)\b|\b(?:serve|serves|act|acts)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are)\s+(?:a\s+)?canonical\s+(?:source|truth)\b|\b(?:is|are|be|becomes?)\s+(?:the\s+)?fallback\b|\boperates?\s+as\s+fallback\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are|be)\s+accountable\s+(?:for|to)\b/i.test(
     clause,
   );
 }
@@ -952,7 +1029,7 @@ function checkGoldenDoc() {
 }
 
 function checkInMemoryNegativeMutations() {
-  assert(negativeMutations.length >= 90, `expected at least 90 negative mutations, found ${negativeMutations.length}`);
+  assert(negativeMutations.length === 101, `expected exactly 101 negative mutations, found ${negativeMutations.length}`);
   const mutationClaims = negativeMutations.map((mutation) => ({
     name: mutation.name,
     blocker: mutation.blocker,
