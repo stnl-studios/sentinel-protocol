@@ -1881,10 +1881,98 @@ The scenario must be blocked.
 BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
       'BLOCKED_RV_REPLACES_FINALIZER',
     ],
+    [
+      'duplicate expected blocker rejects later compatible blocker',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Expected behavior
+The scenario must be blocked.
+
+### Expected blocker
+BLOCKED_RV_REPLACES_FINALIZER
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+      'RV-GT-997',
+    ],
+    [
+      'expected blocker before input shape',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Expected behavior
+The scenario must be blocked.`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+      'RV-GT-996',
+    ],
+    [
+      'expected blocker inside fenced code',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Expected behavior
+The scenario must be blocked.
+
+### Expected blocker
+\`\`\`
+BLOCKED_RV_PRODUCTION_AUTHORIZATION
+\`\`\``,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+      'RV-GT-995',
+    ],
+    [
+      'duplicate input shape',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Input shape
+Reviewer attempts to decide DONE.
+
+### Expected behavior
+The scenario must be blocked.
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+      'RV-GT-994',
+    ],
+    [
+      'expected behavior before input shape',
+      `### Objective
+Confirm invalid reviewer action is rejected.
+
+### Expected behavior
+The scenario must be blocked.
+
+### Input shape
+Reviewer attempts to authorize production.
+
+### Expected blocker
+BLOCKED_RV_PRODUCTION_AUTHORIZATION`,
+      'BLOCKED_RV_PRODUCTION_AUTHORIZATION',
+      'RV-GT-993',
+    ],
   ];
   assert(
-    incompleteScenarioCases.length === 6,
-    `expected exactly 6 incomplete scenario scanner cases, found ${incompleteScenarioCases.length}`,
+    incompleteScenarioCases.length === 11,
+    `expected exactly 11 incomplete scenario scanner cases, found ${incompleteScenarioCases.length}`,
   );
   for (const [name, sections, expectedBlocker, id] of incompleteScenarioCases) {
     const matches = findForbiddenClaimsInGoldenTestsDoc(syntheticGoldenScenario(sections, id));

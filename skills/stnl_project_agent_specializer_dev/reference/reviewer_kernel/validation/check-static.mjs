@@ -821,13 +821,19 @@ function collectGoldenScenarios(text) {
   const scenarios = [];
   let scenario = null;
   let childSection = '';
+  let inFence = false;
 
   for (const line of text.replace(/\r/g, '').split('\n')) {
     const heading = headingMatch(line.trim());
     if (heading && heading[1].length === 2 && /^Golden Test RV-GT-\d+\b/i.test(heading[2])) {
-      scenario = { sections: new Map() };
+      scenario = {
+        sections: new Map(),
+        sectionOrder: [],
+        duplicateSections: new Set(),
+      };
       scenarios.push(scenario);
       childSection = '';
+      inFence = false;
       continue;
     }
     if (!scenario) {
@@ -835,31 +841,67 @@ function collectGoldenScenarios(text) {
     }
     if (heading && heading[1].length === 3) {
       childSection = normalizeGoldenSectionName(heading[2]);
-      scenario.sections.set(childSection, '');
+      if (scenario.sections.has(childSection)) {
+        scenario.duplicateSections.add(childSection);
+      } else {
+        scenario.sectionOrder.push(childSection);
+      }
+      scenario.sections.set(childSection, { text: '', normativeText: '' });
+      inFence = false;
       continue;
     }
     if (heading && heading[1].length <= 2) {
       scenario = null;
       childSection = '';
+      inFence = false;
       continue;
     }
     if (childSection) {
-      const current = scenario.sections.get(childSection) ?? '';
-      scenario.sections.set(childSection, current ? `${current}\n${line}` : line);
+      const section = scenario.sections.get(childSection) ?? { text: '', normativeText: '' };
+      const startsFence = /^```/.test(line.trim());
+      const nextText = section.text ? `${section.text}\n${line}` : line;
+      const nextNormativeText =
+        inFence || startsFence
+          ? section.normativeText
+          : section.normativeText
+            ? `${section.normativeText}\n${line}`
+            : line;
+      scenario.sections.set(childSection, {
+        text: nextText,
+        normativeText: nextNormativeText,
+      });
+      if (startsFence) {
+        inFence = !inFence;
+      }
     }
   }
 
   return scenarios;
 }
 
+function hasRequiredGoldenScenarioShape(scenario) {
+  let previousIndex = -1;
+  for (const section of REQUIRED_GOLDEN_SCENARIO_SECTIONS) {
+    if (!scenario.sections.has(section) || scenario.duplicateSections.has(section)) {
+      return false;
+    }
+    const index = scenario.sectionOrder.indexOf(section);
+    if (index <= previousIndex) {
+      return false;
+    }
+    previousIndex = index;
+  }
+  return true;
+}
+
 function findAllowedGoldenScenarioInputExamples(text) {
   const allowed = new Set();
   for (const scenario of collectGoldenScenarios(text)) {
-    if (!REQUIRED_GOLDEN_SCENARIO_SECTIONS.every((section) => scenario.sections.has(section))) {
+    if (!hasRequiredGoldenScenarioShape(scenario)) {
       continue;
     }
-    const inputShape = normalizeGoldenBlockText(scenario.sections.get('Input shape') ?? '');
-    const expectedBlockerText = scenario.sections.get('Expected blocker') ?? '';
+    const inputShape = normalizeGoldenBlockText(scenario.sections.get('Input shape')?.text ?? '');
+    const expectedBlockerText = scenario.sections.get('Expected blocker')?.normativeText ?? '';
     const expectedBlockers = new Set(
       [...expectedBlockerText.matchAll(/\bBLOCKED_RV_[A-Z0-9_]+\b/g)].map((match) => match[0]),
     );
