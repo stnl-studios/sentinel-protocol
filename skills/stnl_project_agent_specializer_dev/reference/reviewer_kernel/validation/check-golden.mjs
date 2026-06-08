@@ -409,6 +409,48 @@ const negativeMutations = Object.freeze([
     expected: /(?:Reviewer.*ownership.*shared canon|shared canon.*ownership.*Reviewer)/i,
   },
   {
+    name: 'reviewer is custodian of shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer is not custodian of shared canon during semantic review.',
+    mutated: 'Reviewer is custodian of shared canon.',
+    expected: /(?:Reviewer.*custodian.*shared canon|shared canon.*custodian.*Reviewer)/i,
+  },
+  {
+    name: 'reviewer has custody over shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer does not have custody over shared canon during semantic review.',
+    mutated: 'Reviewer has custody over shared canon.',
+    expected: /(?:Reviewer.*custody.*shared canon|shared canon.*custody.*Reviewer)/i,
+  },
+  {
+    name: 'reviewer is caretaker of shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer is not caretaker of shared canon during semantic review.',
+    mutated: 'Reviewer is caretaker of shared canon.',
+    expected: /(?:Reviewer.*caretaker.*shared canon|shared canon.*caretaker.*Reviewer)/i,
+  },
+  {
+    name: 'reviewer is responsible owner of shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer is not responsible owner of shared canon during semantic review.',
+    mutated: 'Reviewer is responsible owner of shared canon.',
+    expected: /(?:Reviewer.*responsible owner.*shared canon|shared canon.*responsible owner.*Reviewer)/i,
+  },
+  {
+    name: 'reviewer is source owner for shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer is not source owner for shared canon during semantic review.',
+    mutated: 'Reviewer is source owner for shared canon.',
+    expected: /(?:Reviewer.*source owner.*shared canon|shared canon.*source owner.*Reviewer)/i,
+  },
+  {
+    name: 'reviewer is doc owner for shared canon',
+    blocker: 'BLOCKED_RV_REPLACES_RESYNC',
+    base: 'Reviewer is not doc owner for shared canon during semantic review.',
+    mutated: 'Reviewer is doc owner for shared canon.',
+    expected: /(?:Reviewer.*doc owner.*shared canon|shared canon.*doc owner.*Reviewer)/i,
+  },
+  {
     name: 'reviewer may sync docs',
     blocker: 'BLOCKED_RV_REPLACES_RESYNC',
     base: 'Reviewer does not sync docs during semantic review.',
@@ -829,6 +871,62 @@ const negativeMutations = Object.freeze([
     expected: /(?:Productive template.*backup fallback|backup fallback.*Productive template)/i,
   },
   {
+    name: 'template restores missing snapshot',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not restore missing snapshot.',
+    mutated: 'Template restores missing snapshot.',
+    expected: /(?:Template.*restores missing snapshot|restores missing snapshot.*Template)/i,
+  },
+  {
+    name: 'template supplies missing snapshot',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not supply missing snapshot.',
+    mutated: 'Template supplies missing snapshot.',
+    expected: /(?:Template.*supplies missing snapshot|supplies missing snapshot.*Template)/i,
+  },
+  {
+    name: 'template substitutes missing snapshot',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not substitute missing snapshot.',
+    mutated: 'Template substitutes missing snapshot.',
+    expected: /(?:Template.*substitutes missing snapshot|substitutes missing snapshot.*Template)/i,
+  },
+  {
+    name: 'template is substitute for missing snapshot',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Template must not be substitute for missing snapshot.',
+    mutated: 'Template is substitute for missing snapshot.',
+    expected: /(?:Template.*substitute for missing snapshot|substitute for missing snapshot.*Template)/i,
+  },
+  {
+    name: 'productive template restores missing snapshot',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not restore missing snapshot.',
+    mutated: 'Productive template restores missing snapshot.',
+    expected: /(?:Productive template.*restores missing snapshot|restores missing snapshot.*Productive template)/i,
+  },
+  {
+    name: 'productive template supplies missing snapshot',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not supply missing snapshot.',
+    mutated: 'Productive template supplies missing snapshot.',
+    expected: /(?:Productive template.*supplies missing snapshot|supplies missing snapshot.*Productive template)/i,
+  },
+  {
+    name: 'productive template substitutes missing snapshot',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not substitute missing snapshot.',
+    mutated: 'Productive template substitutes missing snapshot.',
+    expected: /(?:Productive template.*substitutes missing snapshot|substitutes missing snapshot.*Productive template)/i,
+  },
+  {
+    name: 'productive template is substitute for missing snapshot',
+    blocker: 'BLOCKED_RV_PRODUCTIVE_TEMPLATE_FALLBACK',
+    base: 'Productive template must not be substitute for missing snapshot.',
+    mutated: 'Productive template is substitute for missing snapshot.',
+    expected: /(?:Productive template.*substitute for missing snapshot|substitute for missing snapshot.*Productive template)/i,
+  },
+  {
     name: 'scratchpads may be source of truth',
     blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
     base: 'Scratchpads must not be source of truth.',
@@ -960,6 +1058,27 @@ const negativeMutations = Object.freeze([
     base: 'Scratchpads are not accepted truth.',
     mutated: 'Scratchpads are accepted truth.',
     expected: /(?:Scratchpads.*accepted truth|accepted truth.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are valid source',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not valid source.',
+    mutated: 'Scratchpads are valid source.',
+    expected: /(?:Scratchpads.*valid source|valid source.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are approved source',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not approved source.',
+    mutated: 'Scratchpads are approved source.',
+    expected: /(?:Scratchpads.*approved source|approved source.*Scratchpads)/i,
+  },
+  {
+    name: 'scratchpads are accepted authority',
+    blocker: 'BLOCKED_RV_UNTRUSTED_SOURCE_OF_TRUTH',
+    base: 'Scratchpads are not accepted authority.',
+    mutated: 'Scratchpads are accepted authority.',
+    expected: /(?:Scratchpads.*accepted authority|accepted authority.*Scratchpads)/i,
   },
   {
     name: 'workspaceStorage may be source of truth',
@@ -1183,7 +1302,7 @@ function hasLocalNegation(clause) {
 }
 
 function hasAffirmingVerb(clause) {
-  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted|controls?|governs?|manages?|supervises?|administers?|maintains?)\b|\bbacks?\s+up\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about|around)\b|\b(?:has|have|with)\s+control\s+over\b|\b(?:has|have|with)\s+jurisdiction\s+(?:over|for|regarding|about)\b|\b(?:has|have|with)\s+(?:stewardship|ownership)\s+over\b|\b(?:is|are|be)\s+(?:steward|owner)\s+of\b|\b(?:serve|serves|act|acts|functions?|works?)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are)\s+(?:a\s+)?canonical\s+(?:source|truth)\b|\b(?:is|are|be)\s+(?:canonical|authoritative|authoritative\s+source|authoritative\s+truth|trusted|trusted\s+source|accepted\s+truth|accepted\s+source\s+of\s+truth)\b|\b(?:is|are|be|becomes?)\s+(?:the\s+)?fallback\b|\b(?:is|are|be)\s+backup\s+fallback\b|\boperates?\s+as\s+fallback\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are|be)\s+accountable\s+(?:for|to)\b/i.test(
+  return /\b(?:may|can|could|should|allows?|permits?|authori[sz](?:e|es|ed)|owns?|executes?|runs?|writes?|creates?|generates?|decides?|replaces?|restores?|supplies|supply|substitutes?|implements?|materiali[sz]es?|promotes?|activates?|emits?|emitted|controls?|governs?|manages?|supervises?|administers?|maintains?)\b|\bbacks?\s+up\b|\b(?:is|are|be)\s+(?:allowed|permitted|authori[sz]ed)\s+(?:to|as)\b|\b(?:has|have|with)\s+authority\s+(?:to|over|for|regarding|about|around)\b|\b(?:has|have|with)\s+control\s+over\b|\b(?:has|have|with)\s+jurisdiction\s+(?:over|for|regarding|about)\b|\b(?:has|have|with)\s+(?:stewardship|ownership|custody)\s+over\b|\b(?:is|are|be)\s+(?:steward|owner|custodian|caretaker)\s+of\b|\b(?:is|are|be)\s+(?:responsible\s+owner\s+of|(?:source|doc)\s+owner\s+for)\b|\b(?:serve|serves|act|acts|functions?|works?)\s+as\s+(?:(?:Sentinel\s+)?source\s+of\s+truth|canonical\s+source|fallback)\b|\b(?:is|are)\s+(?:the\s+)?(?:Sentinel\s+)?source\s+of\s+truth\b|\b(?:is|are)\s+(?:a\s+)?canonical\s+(?:source|truth)\b|\b(?:is|are|be)\s+(?:canonical|authoritative|authoritative\s+source|authoritative\s+truth|trusted|trusted\s+source|valid\s+source|approved\s+source|accepted\s+truth|accepted\s+authority|accepted\s+source\s+of\s+truth)\b|\b(?:is|are|be|becomes?)\s+(?:the\s+)?fallback\b|\b(?:is|are|be)\s+backup\s+fallback\b|\b(?:is|are|be)\s+substitute\s+for\s+missing\s+snapshot\b|\boperates?\s+as\s+fallback\b|\b(?:is|are|be)\s+responsible\s+(?:for|to)\b|\bowns\s+responsibility\s+for\b|\bhas\s+responsibility\s+for\b|\b(?:is|are|be)\s+accountable\s+(?:for|to)\b/i.test(
     clause,
   );
 }
@@ -1253,7 +1372,7 @@ function checkGoldenDoc() {
 }
 
 function checkInMemoryNegativeMutations() {
-  assert(negativeMutations.length === 133, `expected exactly 133 negative mutations, found ${negativeMutations.length}`);
+  assert(negativeMutations.length === 150, `expected exactly 150 negative mutations, found ${negativeMutations.length}`);
   const mutationClaims = negativeMutations.map((mutation) => ({
     name: mutation.name,
     blocker: mutation.blocker,
