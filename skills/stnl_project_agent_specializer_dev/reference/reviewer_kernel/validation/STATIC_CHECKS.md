@@ -1,16 +1,16 @@
 # Reviewer Kernel Static Checks
 
-Status: planned textual static-check contract for
+Status: dev-only executable static-check contract for
 `REVIEWER_KERNEL: INITIAL_DRAFT`.
 
-This file documents intended static checks for the reviewer draft. It is not an
-executable harness. No `check-static.mjs` exists or is authorized in this
-phase. Passing these documented expectations manually would not authorize
-runtime, materialization, production, global docs updates, productive-skill
-changes, template changes, generated reports, fixtures, automatic promotion, or
-`CLEAN_EXCELLENT_PASS`.
+This file documents the current dev-only static validation harness for the
+reviewer draft. `validation/check-static.mjs` is part of the reviewer-kernel
+allowlist and executes these documentary checks. Passing the harness does not
+authorize runtime, materialization, production, global docs updates,
+productive-skill changes, template changes, generated reports, fixtures,
+automatic promotion, or `CLEAN_EXCELLENT_PASS`.
 
-The planned static checks inspect only:
+The static checks inspect only:
 
 - local reviewer snapshot:
   `skills/stnl_project_agent_specializer_dev/reference/agents/reviewer.agent.md`;
@@ -22,12 +22,96 @@ The planned static checks inspect only:
 The productive template is only a copy origin for the snapshot comparison. It
 is not a fallback source for missing reviewer-kernel documentation.
 
-## Planned Checks
+## Harness File Allowlist
+
+The current reviewer-kernel allowlist contains exactly nine files:
+
+1. `README.md`
+2. `contracts/CONTRACT.md`
+3. `contracts/BEHAVIOR_PARITY_SPINE.md`
+4. `contracts/MINIMUM_SAFE_BUNDLE.md`
+5. `contracts/SEMANTIC_REVIEW_GATES.md`
+6. `validation/STATIC_CHECKS.md`
+7. `validation/GOLDEN_TESTS.md`
+8. `validation/check-static.mjs`
+9. `validation/check-golden.mjs`
+
+The two `.mjs` files are validation scripts only. They are not runtime loaders,
+materializers, fixtures, generated reports, target artifacts, productive-skill
+activation paths, GitHub write paths, or target-repository write paths.
+
+## Static Harness Behavior
+
+`validation/check-static.mjs` validates path safety, the nine-file allowlist,
+snapshot parity, document status, section anchors, output contracts, boundary
+contracts, reading contracts, and identifier coverage for `RV-CH-001` through
+`RV-CH-016`.
+
+The script is safe to import as a module. Its top-level exports include:
+
+- `findForbiddenClaims(text)`;
+- `findForbiddenClaimsInGoldenTestsDoc(text)`.
+
+Both exports return structured match objects with:
+
+- `blocker`;
+- `family`;
+- `claimName`;
+- `excerpt`.
+
+The import guard prevents the main check routine from running when the module
+is imported for scanner reuse.
+
+## Forbidden-Claim Engine
+
+The forbidden-claim scanner is semantic and heuristic. It is not a full NLP
+engine and is not limited to phrase-by-phrase regex checks.
+
+It detects prohibited affirmative claims through:
+
+- semantic families of subjects, actions, and objects;
+- paired-source claims such as untrusted sources treated as trusted;
+- explicit pattern claims for output shape and status promotion;
+- local negation handling, so prohibited examples remain accepted when they are
+  clearly denied in the same local context;
+- semantic blockers that name the violated reviewer boundary.
+
+The engine preserves the status `REVIEWER_KERNEL: INITIAL_DRAFT` and rejects
+non-negated claims that would imply promotion, runtime, materialization,
+production, materializer authority, productive-skill activation, GitHub writes,
+target-repository writes, target artifacts, fixtures, generated reports,
+validation-runner replacement, finalizer replacement, resync replacement,
+coder/fixer replacement, cut redesign, or generic opinion-review drift.
+
+## GOLDEN_TESTS.md Scanner
+
+`findForbiddenClaimsInGoldenTestsDoc(text)` applies a scoped scanner for
+`GOLDEN_TESTS.md`.
+
+Code fences are scanned by default. A fenced block is not automatically ignored
+just because it is inside Markdown.
+
+Negative examples are protected only in narrow contexts:
+
+- `Fail condition` and `Expected blocker` protect only the associated inline
+  example, paragraph, or fenced block;
+- the line or paragraph after a protected negative example is scanned again;
+- `Input shape` is allowed as a negative example only inside a complete,
+  compatible Golden Test scenario.
+
+For `Input shape` to be accepted as a negative example, the surrounding
+scenario must use heading `## Golden Test RV-GT-xxx`, include the critical
+sections in order, avoid duplicate critical sections, keep normative
+`Expected blocker` text outside fenced code, and cover every forbidden match in
+`Input shape` with an expected blocker.
+
+## Static Checks
 
 ### RV-CH-001 - Required reviewer-kernel files exist
 
-Validate that the initial seven Markdown files exist and that no executable
-harness files are required for this phase.
+Validate that the current nine-file reviewer-kernel allowlist exists exactly,
+including `validation/check-static.mjs` and `validation/check-golden.mjs`, with
+no extra files.
 
 ### RV-CH-002 - Snapshot local exists
 
@@ -111,6 +195,7 @@ inflated into structural risk.
 
 ### RV-CH-016 - Unexpected files remain absent
 
-Validate `reviewer_kernel` contains only the authorized Markdown files for this
-phase and no `.mjs`, `.js`, `.cjs`, fixture, generated output, report, runtime,
-loader, materializer, or materialization path.
+Validate `reviewer_kernel` contains only the nine allowlisted files for this
+phase and no unexpected `.js`, `.cjs`, fixture, generated output, report,
+runtime, loader, materializer, materialization path, target artifact, or other
+integration path.

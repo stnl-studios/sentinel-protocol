@@ -1,14 +1,84 @@
 # Reviewer Kernel Golden Tests
 
-Status: planned textual golden-test contract for
+Status: dev-only executable golden-test contract for
 `REVIEWER_KERNEL: INITIAL_DRAFT`.
 
-This file documents intended scenario coverage for the reviewer draft. It is
-not an executable harness. No `check-golden.mjs` exists or is authorized in
-this phase. These golden tests do not promote the kernel and do not authorize
+This file documents the current dev-only golden validation harness for the
+reviewer draft. `validation/check-golden.mjs` is part of the reviewer-kernel
+allowlist and executes scenario, mutation, and scoped-scanner checks for this
+document. These golden tests do not promote the kernel and do not authorize
 runtime, materialization, production, global docs updates, productive-skill
 changes, template changes, generated reports, fixtures, automatic promotion, or
 `CLEAN_EXCELLENT_PASS`.
+
+`check-golden.mjs` imports `findForbiddenClaims` and
+`findForbiddenClaimsInGoldenTestsDoc` from `check-static.mjs`. Both scripts use
+import guards so importing them for scanner reuse does not execute their main
+check routine.
+
+The harness is textual and heuristic. It validates structured Markdown and
+semantic forbidden-claim families, but it does not claim complete NLP coverage.
+
+## Harness Coverage
+
+The document contains exactly 10 golden scenarios: `RV-GT-001` through
+`RV-GT-010`.
+
+Each scenario must contain these sections:
+
+1. `Objective`
+2. `Input shape`
+3. `Expected behavior`
+4. `Fail condition`
+5. `Expected blocker`
+
+The scenario checks verify required blocker IDs and expected text patterns for
+each scenario. Mutation checks verify that forbidden affirmative claims return
+structured matches with:
+
+- `blocker`;
+- `family`;
+- `claimName`;
+- `excerpt`.
+
+Current mutation and scanner counts are fixed:
+
+- `negativeMutations.length === 150`;
+- `generalizedMutations.length === 60`;
+- `allNegativeMutations.length === 210`;
+- `contextualHeadingMutations.length === 7`;
+- `normativeCases.length === 20`;
+- `validNegativeExamples.length === 9`;
+- `incompleteScenarioCases.length === 11`;
+- `completeScenarioCases.length === 1`.
+
+## Scoped Scanner Rules
+
+`GOLDEN_TESTS.md` is scanned by a scoped wrapper around the forbidden-claim
+engine.
+
+Code fences are scanned by default. Fenced text remains subject to forbidden
+claim detection unless it is protected by one of the narrow negative-example
+rules below.
+
+Explicit negative examples are protected only in `Fail condition` and
+`Expected blocker`. The protection is limited to the associated inline example,
+single paragraph, or fenced block. Text after that protected block is scanned
+again.
+
+`Input shape` is allowed to contain a negative example only when the surrounding
+scenario is complete and compatible:
+
+1. the scenario heading is `## Golden Test RV-GT-xxx`;
+2. the critical sections appear in this order:
+   `Objective`, `Input shape`, `Expected behavior`, `Expected blocker`;
+3. no critical section is duplicated;
+4. normative `Expected blocker` text is outside fenced code blocks;
+5. every forbidden match in `Input shape` is covered by an expected blocker.
+
+Incomplete scenarios, duplicated critical sections, reordered critical
+sections, `Expected blocker` text only inside fenced code, or missing blocker
+coverage keep the `Input shape` text scannable and fail the scoped scanner.
 
 ## Golden Test RV-GT-001 - Structurally adherent artifact allows PASS
 

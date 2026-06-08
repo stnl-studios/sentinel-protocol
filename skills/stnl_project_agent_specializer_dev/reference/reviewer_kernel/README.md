@@ -4,9 +4,10 @@ Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.
 
 This is a documentary/dev-only initial draft for the base `reviewer` agent. It
 is not promoted, not `CLEAN_EXCELLENT_PASS`, not runtime, not production, and
-has no materialization path, no runtime loader, no materializer, no executable
-harness, no target artifact, no productive skill activation, and no template
-mutation.
+has no materialization path, no runtime loader, no materializer, no target
+artifact, no productive skill activation, and no template mutation. The
+validation scripts in `validation/` are dev-only documentation checks, not
+runtime or production entry points.
 
 This directory records the initial semantic kernel shape for the
 `semantic-review` role. It preserves the reviewer as a post-implementation,
@@ -30,7 +31,7 @@ snapshot is missing.
 
 ## Included Files
 
-The initial 7-file documentary bundle is read in this order:
+The current 9-file reviewer-kernel allowlist is read in this order:
 
 1. `README.md` - status, source alignment, bundle, and scope limits.
 2. `contracts/CONTRACT.md` - identity, entry, input, output, verdict,
@@ -41,11 +42,18 @@ The initial 7-file documentary bundle is read in this order:
    bundle for the role.
 5. `contracts/SEMANTIC_REVIEW_GATES.md` - entry, review, verdict, correction,
    and boundary gates for honest semantic review.
-6. `validation/STATIC_CHECKS.md` - planned textual static-check contract only.
-7. `validation/GOLDEN_TESTS.md` - planned textual golden-test contract only.
+6. `validation/STATIC_CHECKS.md` - static validation contract for the dev-only
+   harness.
+7. `validation/GOLDEN_TESTS.md` - golden validation contract for the dev-only
+   harness.
+8. `validation/check-static.mjs` - executable static documentation checks and
+   reusable forbidden-claim scanners.
+9. `validation/check-golden.mjs` - executable golden documentation checks that
+   import the static scanner.
 
-No `check-static.mjs`, `check-golden.mjs`, fixture, generated report, runtime
-loader, materializer, or materialization path is part of this phase.
+No fixture, generated report, runtime loader, materializer, materialization
+path, target artifact, productive-skill activation path, GitHub write path, or
+target-repository write path is part of this phase.
 
 ## Scope Limits
 
@@ -67,4 +75,4 @@ exclusive with `PASS` and `FAIL`.
 This directory does not authorize runtime, materialization, repo-target writes,
 global docs updates, productive-skill changes, productive-template changes,
 automatic future promotion, status extension outside this initial draft, a
-materializer, a shared production path, or any executable harness.
+materializer, a shared production path, or any runtime or production harness.

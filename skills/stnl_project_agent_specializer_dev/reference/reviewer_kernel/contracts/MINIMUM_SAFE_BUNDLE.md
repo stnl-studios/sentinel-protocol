@@ -4,8 +4,9 @@ Status: `REVIEWER_KERNEL: INITIAL_DRAFT`.
 
 This is the smallest non-optional documentary bundle that keeps `reviewer`
 acting as semantic reviewer in this initial draft. It is not a runtime bundle,
-materializer, fixture set, generated report, production skill path, or
-executable harness.
+materializer, fixture set, generated report, production skill path, runtime
+harness, or production harness. The validation scripts in `validation/` are
+dev-only documentation checks.
 
 ## Mandatory Source Chain
 
@@ -30,12 +31,17 @@ The minimum safe draft bundle requires:
 4. `SEMANTIC_REVIEW_GATES.md` for entry, review, verdict, correction, and
    boundary gates.
 5. `MINIMUM_SAFE_BUNDLE.md` for this non-optional file set.
-6. `STATIC_CHECKS.md` for planned read-only textual static-check expectations.
-7. `GOLDEN_TESTS.md` for planned read-only textual golden-test expectations.
+6. `STATIC_CHECKS.md` for static validation expectations.
+7. `GOLDEN_TESTS.md` for golden validation expectations.
+8. `check-static.mjs` for executable dev-only static documentation checks and
+   reusable forbidden-claim scanners.
+9. `check-golden.mjs` for executable dev-only golden documentation checks that
+   import the static scanner.
 
-No `check-static.mjs`, `check-golden.mjs`, `.js`, `.cjs`, executable fixture,
-generated report, runtime loader, materializer, materialization path, target
-artifact, or global integration file belongs to this draft phase.
+No unexpected `.js`, `.cjs`, executable fixture, generated report, runtime
+loader, materializer, materialization path, target artifact, productive-skill
+activation path, GitHub write path, target-repository write path, or global
+integration file belongs to this draft phase.
 
 ## Mandatory Semantic Floor
 
@@ -76,13 +82,15 @@ This bundle is unsafe if it:
 - permits repo-wide review or broad discovery by default;
 - permits subjective preference as a blocker without concrete technical risk;
 - treats `INITIAL_DRAFT` as `CLEAN_EXCELLENT_PASS`;
-- creates executable harnesses, fixtures, generated reports, runtime loading,
-  materializer paths, target artifacts, global docs updates, template changes,
-  productive-skill changes, GitHub writes, or target repo writes.
+- creates runtime harnesses, production harnesses, fixtures, generated reports,
+  runtime loading, materializer paths, target artifacts, global docs updates,
+  template changes, productive-skill changes, GitHub writes, or target repo
+  writes.
 
 ## Minimum Validation Story
 
-At this phase, validation is documentary only. `STATIC_CHECKS.md` and
-`GOLDEN_TESTS.md` describe the expected textual checks and scenario coverage
-for a future authorized harness phase. They do not execute and do not promote
-the kernel.
+At this phase, validation is dev-only and documentation-scoped.
+`STATIC_CHECKS.md` and `GOLDEN_TESTS.md` describe the checks and scenario
+coverage executed by `check-static.mjs` and `check-golden.mjs`. Those scripts
+do not promote the kernel and do not authorize runtime, materialization,
+production, productive-skill changes, GitHub writes, or target repo writes.
