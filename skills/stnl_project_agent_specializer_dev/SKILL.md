@@ -31,12 +31,15 @@ como `CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
 `validation_runner_kernel` também está promovido como
 `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental
 controlada. O `reviewer_kernel` também está promovido como
-`REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada.
+`REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
+`finalizer_kernel` também está promovido como
+`FINALIZER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada.
 
-Há nove kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+Há dez kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
-`execution_package_designer_kernel`, `designer_kernel`, `coder_frontend_kernel`
-`coder_backend_kernel`, `validation_runner_kernel` e `reviewer_kernel`.
+`execution_package_designer_kernel`, `designer_kernel`, `coder_frontend_kernel`,
+`coder_backend_kernel`, `validation_runner_kernel`, `reviewer_kernel` e
+`finalizer_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -131,6 +134,26 @@ skill produtiva, não autoriza materializer, não autoriza escrita em GitHub,
 não autoriza escrita em repo alvo, não autoriza generated reports, fixtures,
 target artifacts, active runtime adoption ou alteração em templates canônicos.
 
+O `finalizer_kernel` é clean pass documental exclusivo do kernel lab dev. Ele
+preserva `closure`, `minimal-verification`, consolidação pós-execução e
+pós-validação, entrada após `validation-runner`, após `reviewer` quando review
+foi roteado, ou diretamente do orchestrator quando execução bloqueou antes de
+validação honesta. Ele preserva runner verdict como input, execution-stage
+blockage sem inventar runner verdict, reviewer signal, residual correction
+pack, `Feature CONTEXT` mínimo, `DONE: yes/no`, `resync: yes/no`, closure
+ledger, QA checklist reconciliado somente por evidência do runner ou process
+gap, e post-slice closure record. Ele mantém limites contra implementação,
+correção, rerun de validação, substituição de runner/reviewer, replanning,
+redefinição de cut, redesign de prova, execução de resync, docs compartilhados
+diretos, `DONE` automático, QA success inventado, `PLAN.md` como documentação
+durável e busca em runtime/temp paths. Ele possui harness documental/textual
+endurecido de validação, não é runtime pass, não é materialization pass, não é
+target repo pass, não autoriza runtime loader, não autoriza materialization
+path, não autoriza produção, não autoriza skill produtiva, não autoriza
+materializer, não autoriza escrita em GitHub, não autoriza escrita em repo
+alvo, não autoriza generated reports, fixtures, target artifacts, active
+runtime adoption ou alteração em templates canônicos.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -182,12 +205,22 @@ target artifacts, active runtime adoption ou alteração em templates canônicos
     em repo alvo, generated reports, fixtures, target artifacts, active runtime
     adoption, materializer, skill produtiva ou alteração em templates
     canônicos.
-12. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-13. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-14. Validar o pacote de agents como conjunto coerente.
-15. Avançar para Project Senior Profile somente depois dos agents kernelizados
+12. Preservar o `finalizer_kernel` promovido contra
+    `reference/agents/finalizer.agent.md`, snapshot dev local derivado
+    literalmente de `templates/agents/finalizer.agent.md`, com harness
+    documental/textual endurecido e sem runtime, runtime loader,
+    materialização, materialization path, produção, escrita em GitHub, escrita
+    em repo alvo, generated reports, fixtures, target artifacts, active runtime
+    adoption, materializer, skill produtiva, alteração em templates canônicos,
+    execução de resync ou substituição de runner/reviewer.
+13. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+14. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+15. Manter `resync_kernel` como próximo possível da família
+    fechamento/sincronização, sem criar nem promover `resync_kernel` nesta rota.
+16. Validar o pacote de agents como conjunto coerente.
+17. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-16. Reconstruir a skill/materialização completa somente depois de agents e
+18. Reconstruir a skill/materialização completa somente depois de agents e
     Profile estáveis.
 
 ## Famílias Sugeridas
@@ -349,6 +382,21 @@ Toda comparação deve validar que o kernel:
   `reference/reviewer_kernel/validation/GOLDEN_TESTS.md`,
   `reference/reviewer_kernel/validation/check-static.mjs` e
   `reference/reviewer_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `finalizer`:
+  `reference/agents/finalizer.agent.md`
+- Kernel documental clean pass do `finalizer`:
+  `reference/finalizer_kernel/README.md`
+- Contratos documentais clean pass do `finalizer`:
+  `reference/finalizer_kernel/contracts/CONTRACT.md`,
+  `reference/finalizer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/finalizer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/finalizer_kernel/contracts/CLOSURE_GATES.md`
+- Validação documental/textual read-only do `finalizer`, sem promoção
+  automática futura:
+  `reference/finalizer_kernel/validation/STATIC_CHECKS.md`,
+  `reference/finalizer_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/finalizer_kernel/validation/check-static.mjs` e
+  `reference/finalizer_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 

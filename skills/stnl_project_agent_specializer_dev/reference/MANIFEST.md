@@ -8,7 +8,7 @@ Skill: `stnl_project_agent_specializer_dev`
 - `planner_kernel` is frozen as `CLEAN_EXCELLENT_PASS` for the documentary,
   contractual, and semantic kernel lab after the separately authorized human
   audit.
-- All nine passes are dev kernel-lab results only. They do not authorize runtime,
+- All ten passes are dev kernel-lab results only. They do not authorize runtime,
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
 - `planner_kernel` has read-only executable validation harnesses as blocking
@@ -88,6 +88,18 @@ Skill: `stnl_project_agent_specializer_dev`
   canonical-template write authorization.
 - `reference/agents/reviewer.agent.md` is the local dev snapshot derived
   literally from `templates/agents/reviewer.agent.md`.
+- `finalizer_kernel` is frozen as
+  `FINALIZER_KERNEL: CLEAN_EXCELLENT_PASS` after controlled documentary
+  promotion. This pass is limited to the documentary, contractual,
+  minimum-semantic dev kernel lab with a hardened executable textual harness
+  and final human authorization. It grants no runtime loading,
+  materialization path, target-repository write authorization,
+  productive-skill authorization, GitHub write authorization, production use,
+  generated reports, fixtures, target artifacts, active runtime adoption,
+  materializer authorization, runtime loader authorization, resync execution,
+  runner/reviewer substitution, or canonical-template write authorization.
+- `reference/agents/finalizer.agent.md` is the local dev snapshot derived
+  literally from `templates/agents/finalizer.agent.md`.
 
 Required files:
 - `reference/agents/orchestrator.agent.md`
@@ -181,6 +193,16 @@ Required files:
 - `reference/reviewer_kernel/validation/GOLDEN_TESTS.md`
 - `reference/reviewer_kernel/validation/check-static.mjs`
 - `reference/reviewer_kernel/validation/check-golden.mjs`
+- `reference/agents/finalizer.agent.md`
+- `reference/finalizer_kernel/README.md`
+- `reference/finalizer_kernel/contracts/CONTRACT.md`
+- `reference/finalizer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`
+- `reference/finalizer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+- `reference/finalizer_kernel/contracts/CLOSURE_GATES.md`
+- `reference/finalizer_kernel/validation/STATIC_CHECKS.md`
+- `reference/finalizer_kernel/validation/GOLDEN_TESTS.md`
+- `reference/finalizer_kernel/validation/check-static.mjs`
+- `reference/finalizer_kernel/validation/check-golden.mjs`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 
@@ -213,6 +235,12 @@ Not active in this dev bundle:
   adoption, GitHub writer, production use, target artifacts, productive-skill
   activation, canonical-template mutation, or target-writer flow is part of
   this bundle
+- no `finalizer` runtime, materializer, fixture, generated report, automatic
+  future promotion, runtime loader, materialization path, active runtime
+  adoption, GitHub writer, production use, target artifacts, productive-skill
+  activation, canonical-template mutation, resync execution,
+  runner/reviewer-substitution flow, or target-writer flow is part of this
+  bundle
 
 Not included as canonical dev references:
 - no full reference/agents/** bundle is present; only copied base snapshots

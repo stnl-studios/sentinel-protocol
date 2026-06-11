@@ -54,6 +54,7 @@ const PROMOTED_KERNELS = Object.freeze([
   'coder_backend_kernel',
   'validation_runner_kernel',
   'reviewer_kernel',
+  'finalizer_kernel',
 ]);
 
 const TEMPLATE_AGENT = 'templates/agents/validation-runner.agent.md';
@@ -666,7 +667,8 @@ function validateGlobalDocsCoherent() {
     const content = buffer ? buffer.toString('utf8') : '';
     const context = `global doc ${relPath}`;
 
-    assert(/\b(?:nine|nove)\b/i.test(content), `${context} must state the nine/nove promoted kernels`);
+    assert(/\b(?:ten|dez)\b/i.test(content), `${context} must state the ten/dez promoted kernels`);
+    assert(!/\b(?:nine|nove)\b/i.test(content), `${context} contains stale nine/nove promoted-kernel status`);
     assert(!/\b(?:all\s+seven|seven\s+frozen\s+pass|seven\s+passes|sete\s+kernels|sete\s+passes)\b/i.test(content), `${context} contains stale seven-kernel status`);
 
     for (const kernel of PROMOTED_KERNELS) {
@@ -676,6 +678,10 @@ function validateGlobalDocsCoherent() {
     assert(
       /VALIDATION_RUNNER_KERNEL:\s*CLEAN_EXCELLENT_PASS/.test(content),
       `${context} missing validation runner clean pass status`,
+    );
+    assert(
+      /FINALIZER_KERNEL:\s*CLEAN_EXCELLENT_PASS/.test(content),
+      `${context} missing finalizer clean pass status`,
     );
     assert(/dev kernel lab|kernel lab dev/i.test(content), `${context} missing dev kernel lab limit`);
     assert(/document(?:ary|al)|documental/i.test(content), `${context} missing documentary promotion scope`);

@@ -16,6 +16,7 @@ materialization flow.
 | `coder_backend_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human audit authorization. |
 | `validation_runner_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human authorization. |
 | `reviewer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human authorization. |
+| `finalizer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human authorization. |
 
 ## Objective
 
@@ -79,18 +80,28 @@ generated reports, fixtures, target artifacts, active runtime adoption,
 materializer authorization, runtime loader authorization, or
 canonical-template write authorization.
 
+The tenth authorized case study is the frozen `finalizer_kernel`, anchored to
+the local snapshot `reference/agents/finalizer.agent.md`. Its current status is
+`FINALIZER_KERNEL: CLEAN_EXCELLENT_PASS` after controlled documentary promotion
+with hardened executable textual harness support, no runtime loading,
+materialization path, target-repository write authorization,
+productive-skill authorization, GitHub write authorization, production use,
+generated reports, fixtures, target artifacts, active runtime adoption,
+materializer authorization, runtime loader authorization, resync execution,
+runner/reviewer substitution, or canonical-template write authorization.
+
 The planner harnesses are
 `reference/planner_kernel/validation/check-static.mjs` and
 `reference/planner_kernel/validation/check-golden.mjs`. They are executable
 read-only blocking validation support only; they do not grant automatic
 promotion for this or any future kernel.
 
-The nine frozen pass statuses are kernel-lab dev results only. The
+The ten frozen pass statuses are kernel-lab dev results only. The
 `validation_eval_designer_kernel`, `execution_package_designer_kernel`,
 `designer_kernel`, `coder_frontend_kernel`, `coder_backend_kernel`,
-`validation_runner_kernel`, and `reviewer_kernel` passes are documentary,
-contractual, minimum semantic, and backed by hardened executable textual
-harnesses. These states do
+`validation_runner_kernel`, `reviewer_kernel`, and `finalizer_kernel` passes
+are documentary, contractual, minimum semantic, and backed by hardened
+executable textual harnesses. These states do
 not authorize runtime pass, materialization pass, target repo pass,
 target-repository writes, productive-skill changes, a materializer, GitHub
 writes, target repo writes, generated reports, fixtures, target artifacts,
@@ -140,14 +151,24 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
    writes, generated reports, fixtures, target artifacts, active runtime
    adoption, materializer authorization, skill productive-skill authorization,
    or canonical-template mutation;
-10. kernelize agents by responsibility family, one authorized agent kernel at a
+10. preserve the frozen `finalizer_kernel` as the first closure case study
+    against its copied local snapshot, with hardened documentary/textual
+    blocking harness support and without runtime, runtime loader,
+    materialization, materialization path, production, GitHub writes, target repo
+    writes, generated reports, fixtures, target artifacts, active runtime
+    adoption, materializer authorization, skill productive-skill authorization,
+    canonical-template mutation, resync execution, or runner/reviewer
+    substitution;
+11. keep `resync_kernel` as the next possible closure/synchronization family
+    case study, without creating or promoting `resync_kernel` in this route;
+12. kernelize agents by responsibility family, one authorized agent kernel at a
    time;
-11. keep every future kernel subject to its own authorization and human audit;
-12. extract reusable principles without forcing every agent into one mold;
-13. validate the agent package as a coherent set only after future authorized
+13. keep every future kernel subject to its own authorization and human audit;
+14. extract reusable principles without forcing every agent into one mold;
+15. validate the agent package as a coherent set only after future authorized
    rounds;
-14. advance to Project Senior Profile only after agents are stable;
-15. rebuild the skill and any complete materialization flow only after agents and
+16. advance to Project Senior Profile only after agents are stable;
+17. rebuild the skill and any complete materialization flow only after agents and
     Profile are stable.
 
 ## Validation Criteria
