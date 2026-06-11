@@ -275,6 +275,7 @@ function result(id, failures, success) {
 
 let ok = true;
 const staticResult = spawnSync(process.execPath, [staticHarnessPath], { cwd: repoRoot, encoding: "utf8" });
+const staticOutput = `${staticResult.stdout || ""}${staticResult.stderr || ""}`;
 if (staticResult.stdout) process.stdout.write(staticResult.stdout);
 if (staticResult.stderr) process.stderr.write(staticResult.stderr);
 if (staticResult.status !== 0) {
@@ -282,6 +283,18 @@ if (staticResult.status !== 0) {
   process.exit(1);
 }
 console.log("EPD-GT-000 PASS check-static.mjs passed");
+
+{
+  const failures = [];
+  for (const marker of ["EPD-CH-009A PASS", "negative and positive claims"]) {
+    if (!staticOutput.includes(marker)) {
+      failures.push(`static polarity fixture output missing ${marker}`);
+    }
+  }
+  ok =
+    result("EPD-GT-019", failures, "claim polarity fixtures are covered by check-static") &&
+    ok;
+}
 
 const goldenDoc = readText(goldenDocPath);
 for (const [id, blocker, phrases] of goldenTests) {

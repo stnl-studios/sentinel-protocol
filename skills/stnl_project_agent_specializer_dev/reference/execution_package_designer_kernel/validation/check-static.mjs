@@ -99,40 +99,63 @@ const goldenScenarioRequirements = [
   ["EPD-GT-018", "BLOCKED_EPD_REQUEST_REGEN_FROM_OWNER", ["HANDOFF_STATUS: REQUEST_REGEN_FROM_OWNER", "REQUEST:", "NEXT_OWNER: orchestrator", "REASON:"]],
 ];
 
-const safePolarityTerms = [
-  "must not",
-  "prohibited",
-  "reject",
-  "refuses",
-  "refuse",
-  "fail when",
-  "fail if",
-  "blocks",
-  "blocked",
-  "not a substitute",
-  "does not",
-  "do not",
-  "cannot",
-  "unsafe",
-  "negative space",
-  "dangerous",
-  "forbidden",
-  "drift",
-  "out of scope",
-  "not included",
-  "not active",
-  "not authorize",
-  "not durable",
-  "not persisted",
-  "not a",
-  "grants no",
-  "não autoriza",
-  "não é",
-  "não há",
-  "prohibitive",
-  "blocking",
-  "wrongly",
-  "unsafe if",
+const prohibitedClaimPatterns = [
+  ["runtime pass", /\bruntime\s+pass\b/i],
+  ["materialization pass", /\bmateriali[sz]ation\s+pass\b/i],
+  ["target pass", /\btarget\s+pass\b/i],
+  ["target repo pass", /\btarget\s+repo\s+pass\b/i],
+  ["productive-skill authorization", /\b(?:skill\s+)?productive[-\s]skill\s+authorization\b/i],
+  ["productive-skill authorization", /\bauthori[sz](?:e|es|ed|ing)\s+(?:a\s+|the\s+)?(?:skill\s+)?productive[-\s]skill\b/i],
+  ["materializer authorization", /\bmaterializer\s+authorization\b/i],
+  ["materializer authorization", /\bauthori[sz](?:e|es|ed|ing)\s+(?:a\s+|the\s+)?materializer\b/i],
+  ["production-agent execution", /\bproduction-agent\s+execution\b/i],
+  ["skill produtiva autorizada", /\bskill\s+produtiva\s+autorizada\b/i],
+  ["materializer autorizado", /\bmaterializer\s+autorizado\b/i],
+  [
+    "runtime/materialization/production enablement",
+    /\b(?:runtime|production|materiali[sz]ation)(?:\s*\/\s*(?:runtime|production|materiali[sz]ation))+\b/i,
+  ],
+  [
+    "runtime/materialization/production authorization",
+    /\bauthori[sz](?:e|es|ed|ing)\s+(?:runtime|production|materiali[sz]ation)(?:\s*\/\s*(?:runtime|production|materiali[sz]ation))*\b/i,
+  ],
+  [
+    "runtime/materialization/production enablement",
+    /\b(?:runtime|production|materiali[sz]ation)\s+(?:is|are|be|being|been|becomes?|become|remains?|remain)?\s*(?:authorized|authorised|allowed|permitted|active|enabled|available|granted|executed|loaded|materialized|materialised)\b/i,
+  ],
+];
+
+const claimPolarityFixtures = [
+  {
+    id: "safe-without-materializer-and-productive-skill-authorization",
+    safe: true,
+    text: "without runtime, runtime loader, materialization, materialization path, production, GitHub writes, target repo writes, generated reports, fixtures, target artifacts, active runtime adoption, materializer authorization, skill productive-skill authorization, or canonical-template mutation",
+  },
+  {
+    id: "blocks-authorizes-materializer",
+    safe: false,
+    text: "This kernel authorizes materializer.",
+  },
+  {
+    id: "blocks-materializer-authorization-allowed",
+    safe: false,
+    text: "Materializer authorization is allowed.",
+  },
+  {
+    id: "blocks-productive-skill-authorization-granted",
+    safe: false,
+    text: "Productive skill authorization is granted.",
+  },
+  {
+    id: "blocks-runtime-materialization-production-enabled",
+    safe: false,
+    text: "Production/runtime/materialization is enabled.",
+  },
+  {
+    id: "blocks-authorizes-runtime-materialization-production",
+    safe: false,
+    text: "This kernel authorizes runtime/materialization/production.",
+  },
 ];
 
 function isInside(childPath, parentPath) {
@@ -227,30 +250,209 @@ function hasAll(text, phrases) {
   );
 }
 
-function occurrences(text, term) {
-  const indexes = [];
-  const lowerText = text.toLowerCase();
-  const lowerTerm = term.toLowerCase();
-  let cursor = 0;
-  while ((cursor = lowerText.indexOf(lowerTerm, cursor)) !== -1) {
-    indexes.push(cursor);
-    cursor += lowerTerm.length;
-  }
-  return indexes;
+function splitSentences(source) {
+  return source
+    .split(/(?<=[.!?;])\s+|(?<=:)\s+(?=[A-Z`])/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
 }
 
-function hasSafePolarity(text, term) {
-  return occurrences(text, term).every((index) => {
-    const paragraphStart = text.lastIndexOf("\n\n", index);
-    const paragraphEnd = text.indexOf("\n\n", index + term.length);
-    const paragraph = text
-      .slice(
-        paragraphStart === -1 ? 0 : paragraphStart + 2,
-        paragraphEnd === -1 ? text.length : paragraphEnd,
-      )
-      .toLowerCase();
-    return safePolarityTerms.some((marker) => paragraph.includes(marker));
-  });
+function previousMeaningfulLine(lines, startIndex) {
+  for (let index = startIndex - 1; index >= 0; index -= 1) {
+    const line = lines[index].trim();
+    if (line.length > 0) return line;
+  }
+  return "";
+}
+
+function sentenceClaimSegments(text) {
+  const lines = text.split(/\r?\n/);
+  const segments = [];
+  let paragraph = "";
+  let paragraphContext = "";
+  let activeListContext = "";
+  let listItem = "";
+  let listItemContext = "";
+
+  function addSentences(source, context) {
+    for (const sentence of splitSentences(source)) {
+      segments.push({ text: sentence, context });
+    }
+  }
+
+  function flushParagraph() {
+    if (paragraph.trim().length > 0) {
+      addSentences(paragraph, paragraphContext);
+      paragraph = "";
+      paragraphContext = "";
+    }
+  }
+
+  function flushListItem() {
+    if (listItem.trim().length > 0) {
+      addSentences(listItem, listItemContext);
+      listItem = "";
+      listItemContext = "";
+    }
+  }
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const line = lines[index];
+    const trimmed = line.trim();
+
+    if (trimmed.length === 0) {
+      flushListItem();
+      flushParagraph();
+      continue;
+    }
+
+    if (/^\s*[-*]\s+/.test(line)) {
+      flushListItem();
+      flushParagraph();
+      const context = activeListContext || previousMeaningfulLine(lines, index);
+      listItem = trimmed;
+      listItemContext = context;
+      continue;
+    }
+
+    if (listItem.length > 0 && /^\s+/.test(line)) {
+      listItem = `${listItem} ${trimmed}`;
+      continue;
+    }
+
+    flushListItem();
+
+    if (/^#{1,6}\s+/.test(trimmed)) {
+      flushParagraph();
+      activeListContext = trimmed;
+      addSentences(line, previousMeaningfulLine(lines, index));
+      continue;
+    }
+
+    if (trimmed.endsWith(":")) {
+      flushParagraph();
+      activeListContext = trimmed;
+      addSentences(line, previousMeaningfulLine(lines, index));
+      continue;
+    }
+
+    if (paragraph.length === 0) {
+      paragraphContext = previousMeaningfulLine(lines, index);
+    }
+    paragraph = paragraph.length === 0 ? trimmed : `${paragraph} ${trimmed}`;
+  }
+
+  flushListItem();
+  flushParagraph();
+  return segments;
+}
+
+function isListItem(sentence) {
+  return /^\s*[-*]\s+/.test(sentence);
+}
+
+function isProhibitiveListContext(context) {
+  return /\b(prohibits?|prohibited|prohibitions?|forbidden|blocks?|blocked|rejects?|rejected|invalid|excluded|exclusions?|must not|does not authorize|do not authorize|not authorized|not allowed|not permitted|without|no)\b/i.test(
+    context,
+  );
+}
+
+function hasPositiveActivationVerb(sentence) {
+  return /\b(is|are|be|being|been|becomes?|become|remains?|remain)\s+(authorized|authorised|allowed|permitted|active|enabled|available|produced|created|generated|executed|loaded|materialized|materialised|written|ready|granted)\b/i.test(
+    sentence,
+  ) ||
+    /\b(authori[sz]es?|allows?|permits?|produces?|creates?|generates?|executes?|loads?|materiali[sz]es?|enables?|grants?)\b/i.test(
+      sentence,
+    );
+}
+
+function lastContrastBoundary(text) {
+  const boundary = /\b(?:but|however|though|although|except(?:\s+that)?|unless)\b|[;.!?]/gi;
+  let last = null;
+  let match = boundary.exec(text);
+  while (match) {
+    last = match;
+    match = boundary.exec(text);
+  }
+  return last ? last.index + last[0].length : 0;
+}
+
+function firstContrastBoundary(text) {
+  const match = /\b(?:but|however|though|although|except(?:\s+that)?|unless)\b|[;.!?]/i.exec(text);
+  return match ? match.index : text.length;
+}
+
+function localBeforeClaim(sentence, index) {
+  const before = sentence.slice(0, index).replace(/\bnot\s+only\b/gi, "not-only");
+  return before.slice(lastContrastBoundary(before));
+}
+
+function localAfterClaim(sentence, index, length) {
+  const after = sentence.slice(index + length);
+  return after.slice(0, firstContrastBoundary(after));
+}
+
+function hasLocalNegativeScope(before) {
+  return /\b(?:without|no|not|never|cannot|can't|must\s+not|does\s+not|do\s+not|did\s+not|may\s+not|can\s+not|should\s+not|doesn't|don't|grants\s+no|sem|não)\b/i.test(
+    before,
+  ) ||
+    /\b(?:prohibits?|prohibited|forbids?|forbidden|blocks?|blocked|rejects?|rejected|invalidates?|invalid|unsafe|absent|excluded|out of scope)\b/i.test(
+      before,
+    );
+}
+
+function hasPositiveActivationAfter(after) {
+  return /^\s*(?:is|are|be|being|been|becomes?|become|remains?|remain|must\s+be|should\s+be)?\s*(?:authorized|authorised|allowed|permitted|active|enabled|available|produced|created|generated|executed|loaded|materialized|materialised|written|ready|granted)\b/i.test(
+    after,
+  );
+}
+
+function hasSafeStateAfter(after) {
+  return /^\s*(?:is|are|be|being|been|becomes?|become|remains?|remain|must\s+be|should\s+be)?\s*(?:not\s+(?:authorized|authorised|allowed|permitted|active|enabled|available|granted)|prohibited|forbidden|blocked|rejected|invalid|unsafe|absent|excluded|out of scope)\b/i.test(
+    after,
+  );
+}
+
+function claimOccurrenceIsSafe(sentence, context, match) {
+  const before = localBeforeClaim(sentence, match.index);
+  const after = localAfterClaim(sentence, match.index, match[0].length);
+
+  if (hasPositiveActivationAfter(after)) {
+    return false;
+  }
+  if (hasLocalNegativeScope(before)) {
+    return true;
+  }
+  if (hasSafeStateAfter(after) && !hasPositiveActivationVerb(before)) {
+    return true;
+  }
+  return (
+    isListItem(sentence) &&
+    isProhibitiveListContext(context) &&
+    !hasPositiveActivationVerb(sentence)
+  );
+}
+
+function globalPattern(pattern) {
+  const flags = pattern.flags.includes("g") ? pattern.flags : `${pattern.flags}g`;
+  return new RegExp(pattern.source, flags);
+}
+
+function findUnsafeProhibitedClaims(text) {
+  const matches = [];
+  for (const segment of sentenceClaimSegments(text)) {
+    for (const [label, sourcePattern] of prohibitedClaimPatterns) {
+      const pattern = globalPattern(sourcePattern);
+      let match = pattern.exec(segment.text);
+      while (match) {
+        if (!claimOccurrenceIsSafe(segment.text, segment.context, match)) {
+          matches.push({ label, sentence: segment.text });
+        }
+        match = pattern.exec(segment.text);
+      }
+    }
+  }
+  return matches;
 }
 
 function sectionFor(text, id) {
@@ -545,25 +747,28 @@ let ok = true;
   }
   for (const relativePath of claimCheckPaths) {
     const text = readText(relativePath);
-    const prohibitedClaims = [
-      "runtime pass",
-      "materialization pass",
-      "target pass",
-      "target repo pass",
-      "productive-skill authorization",
-      "materializer authorization",
-      "production-agent execution",
-      "skill produtiva autorizada",
-      "materializer autorizado",
-    ];
-    for (const claim of prohibitedClaims) {
-      if (text.toLowerCase().includes(claim) && !hasSafePolarity(text, claim)) {
-        failures.push(`${relativePath} contains unsafe claim ${claim}`);
-      }
+    for (const match of findUnsafeProhibitedClaims(text)) {
+      failures.push(`${relativePath} contains unsafe claim ${match.label}: ${match.sentence}`);
     }
   }
   ok =
     result("EPD-CH-009", failures, "clean bundle has no stale status or operational pass") &&
+    ok;
+}
+
+{
+  const failures = [];
+  for (const fixture of claimPolarityFixtures) {
+    const matches = findUnsafeProhibitedClaims(fixture.text);
+    if (fixture.safe && matches.length > 0) {
+      failures.push(`${fixture.id} should be accepted as explicitly negative`);
+    }
+    if (!fixture.safe && matches.length === 0) {
+      failures.push(`${fixture.id} should be blocked as a positive unsafe claim`);
+    }
+  }
+  ok =
+    result("EPD-CH-009A", failures, "forbidden claim polarity fixtures distinguish negative and positive claims") &&
     ok;
 }
 

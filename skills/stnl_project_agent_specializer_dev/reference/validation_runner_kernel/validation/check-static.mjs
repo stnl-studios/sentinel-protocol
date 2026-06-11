@@ -53,6 +53,7 @@ const PROMOTED_KERNELS = Object.freeze([
   'coder_frontend_kernel',
   'coder_backend_kernel',
   'validation_runner_kernel',
+  'reviewer_kernel',
 ]);
 
 const TEMPLATE_AGENT = 'templates/agents/validation-runner.agent.md';
@@ -665,7 +666,7 @@ function validateGlobalDocsCoherent() {
     const content = buffer ? buffer.toString('utf8') : '';
     const context = `global doc ${relPath}`;
 
-    assert(/\b(?:eight|oito)\b/i.test(content), `${context} must state the eight promoted kernels`);
+    assert(/\b(?:nine|nove)\b/i.test(content), `${context} must state the nine/nove promoted kernels`);
     assert(!/\b(?:all\s+seven|seven\s+frozen\s+pass|seven\s+passes|sete\s+kernels|sete\s+passes)\b/i.test(content), `${context} contains stale seven-kernel status`);
 
     for (const kernel of PROMOTED_KERNELS) {
