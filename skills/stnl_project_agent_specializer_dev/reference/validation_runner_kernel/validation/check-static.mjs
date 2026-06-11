@@ -669,6 +669,7 @@ function validateGlobalDocsCoherent() {
 
     assert(/\b(?:ten|dez)\b/i.test(content), `${context} must state the ten/dez promoted kernels`);
     assert(!/\b(?:nine|nove)\b/i.test(content), `${context} contains stale nine/nove promoted-kernel status`);
+    assert(!/\b(?:eight|oito)\b/i.test(content), `${context} contains stale eight/oito promoted-kernel status`);
     assert(!/\b(?:all\s+seven|seven\s+frozen\s+pass|seven\s+passes|sete\s+kernels|sete\s+passes)\b/i.test(content), `${context} contains stale seven-kernel status`);
 
     for (const kernel of PROMOTED_KERNELS) {
