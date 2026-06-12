@@ -9,14 +9,14 @@ materialização da skill. O kernel lab contém `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, o kernel congelado `designer_kernel` e o
 kernel promovido `coder_frontend_kernel` e o kernel promovido
-`coder_backend_kernel`, além dos kernels promovidos `validation_runner_kernel`
-e `reviewer_kernel`, e agora os kernels promovidos `finalizer_kernel` e
-`resync_kernel`.
+`coder_backend_kernel`, o kernel promovido `coder_ios_kernel`, além dos
+kernels promovidos `validation_runner_kernel` e `reviewer_kernel`, e agora os
+kernels promovidos `finalizer_kernel` e `resync_kernel`.
 
-Há onze kernels congelados como `CLEAN_EXCELLENT_PASS`:
+Há doze kernels congelados como `CLEAN_EXCELLENT_PASS`:
 `orchestrator_kernel`, `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, `designer_kernel`,
-`coder_frontend_kernel`, `coder_backend_kernel` e
+`coder_frontend_kernel`, `coder_backend_kernel`, `coder_ios_kernel`,
 `validation_runner_kernel`, `reviewer_kernel`, `finalizer_kernel` e
 `resync_kernel`. Esses passes são resultados exclusivos do kernel lab dev.
 
@@ -65,6 +65,23 @@ autoriza produção, não autoriza skill produtiva, não autoriza materializer, 
 autoriza escrita em GitHub, não autoriza escrita em repo alvo, não autoriza
 generated reports, fixtures, target artifacts, active runtime adoption ou
 alteração em templates canônicos.
+
+O `coder_ios_kernel` foi promovido para
+`CODER_IOS_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada
+com snapshot byte-a-byte preservado e harness documental/textual endurecido.
+Esse pass vale somente para o kernel lab dev documental, contratual, semântico
+mínimo e com harness textual executável endurecido; não é runtime pass, não é
+materialization pass, não é target repo pass, não autoriza runtime loader, não
+autoriza materialization path, não autoriza produção, não autoriza skill
+produtiva, não autoriza materializer, não autoriza escrita em GitHub, não
+autoriza escrita em repo alvo, não autoriza generated reports, fixtures, target
+artifacts, active runtime adoption ou alteração em templates canônicos. Ele
+preserva executor nativo iOS Swift/SwiftUI-first, UIKit apenas condicional,
+`EXECUTION PACKAGE`, `WORK_PACKAGE_ID`, `EXECUTION BRIEF`, `VALIDATION PACK`,
+`READY/BLOCKED`, `targeted-local`, `stnl_mobile_ios_swift_quality`, evidência
+de implementação aplicada e limites contra planner/designer/package-designer,
+validation-runner, reviewer, finalizer, resync, durable docs, `DONE`, decisão
+`resync: yes/no`, runtime/temp paths, frontend web genérico e backend.
 
 O `validation_runner_kernel` foi promovido para
 `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental
@@ -169,6 +186,15 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   path, produção, escrita em GitHub, escrita em repo alvo, generated reports,
   fixtures, target artifacts, active runtime adoption, skill produtiva ou
   alteração em templates canônicos;
+- preservar o `coder_ios_kernel` promovido contra o snapshot dev local
+  `reference/agents/coder-ios.agent.md`, derivado literalmente de
+  `templates/agents/coder-ios.agent.md`, com harness documental/textual
+  endurecido e sem runtime, runtime loader, materialização, materialization
+  path, produção, escrita em GitHub, escrita em repo alvo, generated reports,
+  fixtures, target artifacts, active runtime adoption, skill produtiva,
+  alteração em templates canônicos, durable docs, `DONE`, decisão
+  `resync: yes/no`, validation-runner/reviewer/finalizer/resync substitution,
+  frontend web genérico, backend ou runtime/temp paths;
 - preservar o `validation_runner_kernel` promovido contra o snapshot dev local
   `reference/agents/validation-runner.agent.md`, derivado literalmente de
   `templates/agents/validation-runner.agent.md`, com harness
@@ -232,6 +258,13 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   loader, materialização, materialization path, produção, GitHub, repo alvo,
   generated reports, fixtures, target artifacts, active runtime adoption ou
   skill produtiva;
+- tratar `reference/coder_ios_kernel/**` como clean pass documental dev-only
+  com harness textual bloqueante, sem autorizar runtime, runtime loader,
+  materialização, materialization path, produção, GitHub, repo alvo, generated
+  reports, fixtures, target artifacts, active runtime adoption, materializer,
+  skill produtiva, alteração em templates canônicos, durable docs, `DONE`,
+  decisão `resync: yes/no`, validation-runner/reviewer/finalizer/resync
+  substitution, frontend web genérico, backend ou runtime/temp paths;
 - tratar `reference/validation_runner_kernel/**` como clean pass documental
   dev-only com harness textual bloqueante, sem autorizar runtime, runtime
   loader, materialização, materialization path, produção, GitHub, repo alvo,

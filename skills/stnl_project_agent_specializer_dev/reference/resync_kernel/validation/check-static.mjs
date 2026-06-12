@@ -58,6 +58,7 @@ const PROMOTED_KERNELS = Object.freeze([
   'designer_kernel',
   'coder_frontend_kernel',
   'coder_backend_kernel',
+  'coder_ios_kernel',
   'validation_runner_kernel',
   'reviewer_kernel',
   'finalizer_kernel',
@@ -598,15 +599,6 @@ function validateFilesystem(errors) {
     safeFile(resolve(kernelRoot, relPath), kernelRoot, relPath, errors);
   }
 
-  const forbiddenFuturePaths = [
-    'skills/stnl_project_agent_specializer_dev/reference/coder_ios_kernel',
-    'skills/stnl_project_agent_specializer_dev/reference/agents/coder-ios.agent.md',
-  ];
-  for (const relPath of forbiddenFuturePaths) {
-    if (existsSync(repoPath(relPath))) {
-      errors.push(`coder_ios must remain absent in this round: ${relPath}`);
-    }
-  }
 }
 
 function validateSnapshot(errors) {
@@ -767,6 +759,7 @@ function validateGlobalDocs(errors) {
   }
 
   const staleCurrentCountPatterns = [
+    [/\b(?:eleven|onze)\b/i, 'eleven/onze promoted kernels'],
     [/\bAll\s+ten\s+passes\b/i, 'All ten passes'],
     [/\bthe\s+ten\s+frozen\s+pass\s+statuses\b/i, 'the ten frozen pass statuses'],
     [/\bthere\s+are\s+ten\s+(?:frozen|prepared|promoted)\s+kernels\b/i, 'there are ten promoted kernels'],
@@ -781,19 +774,22 @@ function validateGlobalDocs(errors) {
   ];
 
   for (const [relPath, text] of Object.entries(docs)) {
-    if (!/eleven|onze/i.test(text)) {
-      errors.push(`${relPath} must declare the current prepared-kernel count as eleven/onze after resync promotion`);
+    if (!/twelve|doze/i.test(text)) {
+      errors.push(`${relPath} must declare the current prepared-kernel count as twelve/doze after coder_ios promotion`);
     }
     if (!text.includes('resync_kernel')) {
       errors.push(`${relPath} must list resync_kernel after resync promotion`);
+    }
+    if (!text.includes('coder_ios_kernel')) {
+      errors.push(`${relPath} must list coder_ios_kernel after coder_ios promotion`);
+    }
+    if (!/CODER_IOS_KERNEL:\s*CLEAN_EXCELLENT_PASS/.test(text)) {
+      errors.push(`${relPath} must declare CODER_IOS_KERNEL: CLEAN_EXCELLENT_PASS after coder_ios promotion`);
     }
     for (const [pattern, label] of staleCurrentCountPatterns) {
       if (pattern.test(text)) {
         errors.push(`${relPath} contains stale current-count claim: ${label}`);
       }
-    }
-    if (/coder_ios_kernel[\s\S]{0,120}(?:CLEAN_EXCELLENT_PASS|frozen|prepared|promoted)/i.test(text)) {
-      errors.push(`${relPath} must not promote coder_ios_kernel`);
     }
   }
 
@@ -816,7 +812,8 @@ function validateHarnessSource(errors) {
     ['local polarity', /isProhibitiveLocal[\s\S]{0,80}localClaimContext/],
     ['code fences not skipped', /splitClaimUnits/],
     ['status mode', /RESYNC_KERNEL_STATUS_MODE/],
-    ['global docs eleven enforcement', /manifestListsResync[\s\S]{0,120}eleven|onze/i],
+    ['global docs twelve enforcement', /manifestListsResync[\s\S]{0,220}twelve|doze/i],
+    ['global docs stale eleven enforcement', /eleven\/onze promoted kernels/i],
   ];
   const goldenAnchors = [
     ['static preflight', /runStaticChecks/],

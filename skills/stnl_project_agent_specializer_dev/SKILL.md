@@ -28,6 +28,8 @@ executável endurecido. O `designer_kernel` também está congelado como
 `coder_frontend_kernel` também está promovido como `CLEAN_EXCELLENT_PASS` após
 promoção documental controlada. O `coder_backend_kernel` também está promovido
 como `CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
+`coder_ios_kernel` também está promovido como
+`CODER_IOS_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
 `validation_runner_kernel` também está promovido como
 `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental
 controlada. O `reviewer_kernel` também está promovido como
@@ -37,11 +39,11 @@ controlada. O `reviewer_kernel` também está promovido como
 `resync_kernel` também está promovido como
 `RESYNC_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada.
 
-Há onze kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+Há doze kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, `designer_kernel`, `coder_frontend_kernel`,
-`coder_backend_kernel`, `validation_runner_kernel`, `reviewer_kernel` e
-`finalizer_kernel` e `resync_kernel`.
+`coder_backend_kernel`, `coder_ios_kernel`, `validation_runner_kernel`,
+`reviewer_kernel`, `finalizer_kernel` e `resync_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -105,6 +107,25 @@ autoriza materialization path, não autoriza produção, não autoriza skill
 produtiva, não autoriza materializer, não autoriza escrita em GitHub, não
 autoriza escrita em repo alvo, não autoriza generated reports, fixtures, target
 artifacts, active runtime adoption ou alteração em templates canônicos.
+
+O `coder_ios_kernel` é clean pass documental exclusivo do kernel lab dev. Ele
+preserva `executor`, `targeted-local`, execução de pacote iOS nativo autorizado,
+Swift e SwiftUI como default, UIKit interop apenas quando evidenciado ou
+materialmente exigido pelo corte, `EXECUTION PACKAGE`, `WORK_PACKAGE_ID`,
+`EXECUTION BRIEF`, `VALIDATION PACK`, guardrails requeridos quando presentes,
+`stnl_mobile_ios_swift_quality`, contexto técnico mínimo iOS, outputs com
+implementação, delta conciso, paths/evidência, checks, risco residual e
+blocker exato quando `BLOCKED`, além dos status `READY` e `BLOCKED`. Ele
+possui harness documental/textual endurecido de validação, não é runtime pass,
+não é materialization pass, não é target repo pass, não autoriza runtime
+loader, não autoriza materialization path, não autoriza produção, não autoriza
+skill produtiva, não autoriza materializer, não autoriza escrita em GitHub,
+não autoriza escrita em repo alvo, não autoriza generated reports, fixtures,
+target artifacts, active runtime adoption ou alteração em templates canônicos.
+Ele mantém limites contra planner, designer, execution-package-designer,
+validation-runner, reviewer, finalizer, resync, durable docs, `DONE`, decisão
+`resync: yes/no`, QA success inventado, runtime/temp paths, frontend web
+genérico e backend.
 
 O `validation_runner_kernel` é clean pass documental exclusivo do kernel lab
 dev. Ele preserva `proof-execution`, `minimal-verification`, validação
@@ -210,7 +231,16 @@ canônicos.
    materialization path, produção, escrita em GitHub, escrita em repo alvo,
    generated reports, fixtures, target artifacts, active runtime adoption, skill
    produtiva ou alteração em templates canônicos.
-10. Preservar o `validation_runner_kernel` promovido contra
+10. Preservar o `coder_ios_kernel` promovido contra
+    `reference/agents/coder-ios.agent.md`, snapshot dev local derivado
+    literalmente de `templates/agents/coder-ios.agent.md`, com harness
+    documental/textual endurecido e sem runtime, runtime loader, materialização,
+    materialization path, produção, escrita em GitHub, escrita em repo alvo,
+    generated reports, fixtures, target artifacts, active runtime adoption,
+    skill produtiva, alteração em templates canônicos, durable docs, `DONE`,
+    decisão `resync: yes/no`, validation-runner/reviewer/finalizer/resync
+    substitution, frontend web genérico, backend ou runtime/temp paths.
+11. Preservar o `validation_runner_kernel` promovido contra
     `reference/agents/validation-runner.agent.md`, snapshot dev local derivado
     literalmente de `templates/agents/validation-runner.agent.md`, com harness
     documental/textual endurecido e sem runtime, runtime loader,
@@ -218,7 +248,7 @@ canônicos.
     em repo alvo, generated reports, fixtures, target artifacts, active runtime
     adoption, materializer, skill produtiva ou alteração em templates
     canônicos.
-11. Preservar o `reviewer_kernel` promovido contra
+12. Preservar o `reviewer_kernel` promovido contra
     `reference/agents/reviewer.agent.md`, snapshot dev local derivado
     literalmente de `templates/agents/reviewer.agent.md`, com harness
     documental/textual endurecido e sem runtime, runtime loader,
@@ -226,7 +256,7 @@ canônicos.
     em repo alvo, generated reports, fixtures, target artifacts, active runtime
     adoption, materializer, skill produtiva ou alteração em templates
     canônicos.
-12. Preservar o `finalizer_kernel` promovido contra
+13. Preservar o `finalizer_kernel` promovido contra
     `reference/agents/finalizer.agent.md`, snapshot dev local derivado
     literalmente de `templates/agents/finalizer.agent.md`, com harness
     documental/textual endurecido e sem runtime, runtime loader,
@@ -234,7 +264,7 @@ canônicos.
     em repo alvo, generated reports, fixtures, target artifacts, active runtime
     adoption, materializer, skill produtiva, alteração em templates canônicos,
     execução de resync ou substituição de runner/reviewer.
-13. Preservar o `resync_kernel` promovido contra
+14. Preservar o `resync_kernel` promovido contra
     `reference/agents/resync.agent.md`, snapshot dev local derivado literalmente
     de `templates/agents/resync.agent.md`, com harness documental/textual
     endurecido e sem runtime, runtime loader, materialização, materialization
@@ -243,12 +273,12 @@ canônicos.
     produtiva, alteração em templates canônicos, closure, `DONE`,
     implementação, validation-runner/reviewer/planner/coder substitution ou
     mudança normativa silenciosa.
-14. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-15. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-16. Validar o pacote de agents como conjunto coerente.
-17. Avançar para Project Senior Profile somente depois dos agents kernelizados
+15. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+16. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
+17. Validar o pacote de agents como conjunto coerente.
+18. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
-18. Reconstruir a skill/materialização completa somente depois de agents e
+19. Reconstruir a skill/materialização completa somente depois de agents e
     Profile estáveis.
 
 ## Famílias Sugeridas
@@ -258,7 +288,7 @@ canônicos.
 - desenho de prova e validation pack: `validation-eval-designer`
 - empacotamento executável efêmero e execution package:
   `execution-package-designer`
-- execução: `designer`, `coder-frontend`, `coder-backend`
+- execução: `designer`, `coder-frontend`, `coder-backend`, `coder-ios`
 - validação: `validation-runner`, `reviewer`
 - fechamento/sincronização: `finalizer`, `resync`
 
@@ -395,6 +425,21 @@ Toda comparação deve validar que o kernel:
   `reference/coder_backend_kernel/validation/GOLDEN_TESTS.md`,
   `reference/coder_backend_kernel/validation/check-static.mjs` e
   `reference/coder_backend_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `coder-ios`:
+  `reference/agents/coder-ios.agent.md`
+- Kernel documental clean pass do `coder-ios`:
+  `reference/coder_ios_kernel/README.md`
+- Contratos documentais clean pass do `coder-ios`:
+  `reference/coder_ios_kernel/contracts/CONTRACT.md`,
+  `reference/coder_ios_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/coder_ios_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/coder_ios_kernel/contracts/CODER_IOS_GATES.md`
+- Validação documental/textual read-only do `coder-ios`, sem promoção
+  automática futura:
+  `reference/coder_ios_kernel/validation/STATIC_CHECKS.md`,
+  `reference/coder_ios_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/coder_ios_kernel/validation/check-static.mjs` e
+  `reference/coder_ios_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `reviewer`:
   `reference/agents/reviewer.agent.md`
 - Kernel documental clean pass do `reviewer`:

@@ -14,6 +14,7 @@ materialization flow.
 | `designer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human audit authorization. |
 | `coder_frontend_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human audit authorization. |
 | `coder_backend_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human audit authorization. |
+| `coder_ios_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human audit authorization. |
 | `validation_runner_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human authorization. |
 | `reviewer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human authorization. |
 | `finalizer_kernel` | `CLEAN_EXCELLENT_PASS` | Frozen after controlled documentary promotion for the documentary, contractual, minimum-semantic dev kernel lab with a hardened executable textual harness and final human authorization. |
@@ -61,7 +62,19 @@ authorization, GitHub write authorization, production use, generated reports,
 fixtures, target artifacts, active runtime adoption, or canonical-template
 write authorization.
 
-The eighth authorized case study is the frozen `validation_runner_kernel`,
+The eighth authorized case study is the frozen `coder_ios_kernel`, anchored to
+the local snapshot `reference/agents/coder-ios.agent.md`. Its current status is
+`CODER_IOS_KERNEL: CLEAN_EXCELLENT_PASS` after controlled documentary promotion
+with hardened executable textual harness support, no runtime loading,
+materialization path, target-repository write authorization, productive-skill
+authorization, GitHub write authorization, production use, generated reports,
+fixtures, target artifacts, active runtime adoption, durable documentation
+ownership, `DONE`, resync decision ownership, validation-runner/reviewer/
+finalizer/resync substitution, frontend-web substitution, backend
+substitution, runtime/temp source-of-truth recovery, materializer
+authorization, or canonical-template write authorization.
+
+The ninth authorized case study is the frozen `validation_runner_kernel`,
 anchored to the local snapshot `reference/agents/validation-runner.agent.md`.
 Its current status is `VALIDATION_RUNNER_KERNEL: CLEAN_EXCELLENT_PASS` after
 controlled documentary promotion with hardened executable textual harness
@@ -71,7 +84,7 @@ production use, generated reports, fixtures, target artifacts, active runtime
 adoption, materializer authorization, or canonical-template write
 authorization.
 
-The ninth authorized case study is the frozen `reviewer_kernel`, anchored to
+The tenth authorized case study is the frozen `reviewer_kernel`, anchored to
 the local snapshot `reference/agents/reviewer.agent.md`. Its current status is
 `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS` after controlled documentary promotion
 with hardened executable textual harness support, no runtime loading,
@@ -81,7 +94,7 @@ generated reports, fixtures, target artifacts, active runtime adoption,
 materializer authorization, runtime loader authorization, or
 canonical-template write authorization.
 
-The tenth authorized case study is the frozen `finalizer_kernel`, anchored to
+Authorized case study 11 is the frozen `finalizer_kernel`, anchored to
 the local snapshot `reference/agents/finalizer.agent.md`. Its current status is
 `FINALIZER_KERNEL: CLEAN_EXCELLENT_PASS` after controlled documentary promotion
 with hardened executable textual harness support, no runtime loading,
@@ -91,7 +104,7 @@ generated reports, fixtures, target artifacts, active runtime adoption,
 materializer authorization, runtime loader authorization, resync execution,
 runner/reviewer substitution, or canonical-template write authorization.
 
-The eleventh authorized case study is the frozen `resync_kernel`, anchored to
+The twelfth authorized case study is the frozen `resync_kernel`, anchored to
 the local snapshot `reference/agents/resync.agent.md`. Its current status is
 `RESYNC_KERNEL: CLEAN_EXCELLENT_PASS` after controlled documentary promotion
 with hardened executable textual harness support, no runtime loading,
@@ -108,11 +121,12 @@ The planner harnesses are
 read-only blocking validation support only; they do not grant automatic
 promotion for this or any future kernel.
 
-The eleven frozen pass statuses are kernel-lab dev results only. The
+The twelve frozen pass statuses are kernel-lab dev results only. The
 `validation_eval_designer_kernel`, `execution_package_designer_kernel`,
 `designer_kernel`, `coder_frontend_kernel`, `coder_backend_kernel`,
-`validation_runner_kernel`, `reviewer_kernel`, `finalizer_kernel`, and
-`resync_kernel` passes are documentary, contractual, minimum semantic, and
+`coder_ios_kernel`, `validation_runner_kernel`, `reviewer_kernel`,
+`finalizer_kernel`, and `resync_kernel` passes are documentary, contractual,
+minimum semantic, and
 backed by hardened executable textual harnesses. These states do
 not authorize runtime pass, materialization pass, target repo pass,
 target-repository writes, productive-skill changes, a materializer, GitHub
@@ -149,21 +163,31 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
    loader, materialization, materialization path, production, GitHub writes,
    target repo writes, generated reports, fixtures, target artifacts, active
    runtime adoption, or skill productive-skill authorization;
-8. preserve the frozen `validation_runner_kernel` as the first
+8. preserve the frozen `coder_ios_kernel` as the first native iOS executor
+   case study against its copied local snapshot, with hardened
+   documentary/textual blocking harness support and without runtime, runtime
+   loader, materialization, materialization path, production, GitHub writes,
+   target repo writes, generated reports, fixtures, target artifacts, active
+   runtime adoption, materializer authorization, skill productive-skill
+   authorization, canonical-template mutation, durable docs, `DONE`, resync
+   decision ownership, validation-runner/reviewer/finalizer/resync
+   substitution, frontend-web substitution, backend substitution, or
+   runtime/temp source-of-truth recovery;
+9. preserve the frozen `validation_runner_kernel` as the first
    proof-execution validation case study against its copied local snapshot,
    with hardened documentary/textual blocking harness support and without
    runtime, runtime loader, materialization, materialization path, production,
    GitHub writes, target repo writes, generated reports, fixtures, target
    artifacts, active runtime adoption, materializer authorization, skill
    productive-skill authorization, or canonical-template mutation;
-9. preserve the frozen `reviewer_kernel` as the first semantic-review case
+10. preserve the frozen `reviewer_kernel` as the first semantic-review case
    study against its copied local snapshot, with hardened documentary/textual
    blocking harness support and without runtime, runtime loader,
    materialization, materialization path, production, GitHub writes, target repo
    writes, generated reports, fixtures, target artifacts, active runtime
    adoption, materializer authorization, skill productive-skill authorization,
    or canonical-template mutation;
-10. preserve the frozen `finalizer_kernel` as the first closure case study
+11. preserve the frozen `finalizer_kernel` as the first closure case study
     against its copied local snapshot, with hardened documentary/textual
     blocking harness support and without runtime, runtime loader,
     materialization, materialization path, production, GitHub writes, target repo
@@ -171,7 +195,7 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
     adoption, materializer authorization, skill productive-skill authorization,
     canonical-template mutation, resync execution, or runner/reviewer
     substitution;
-11. preserve the frozen `resync_kernel` as the first synchronization case study
+12. preserve the frozen `resync_kernel` as the first synchronization case study
     against its copied local snapshot, with hardened documentary/textual
     blocking harness support and without runtime, runtime loader,
     materialization, materialization path, production, GitHub writes, target
@@ -180,14 +204,14 @@ The immediate focus is not rebuilding the dev skill materializer. The route is:
     canonical-template mutation, closure ownership, `DONE`, implementation,
     validation-runner/reviewer/planner/coder substitution, or normative-rule
     rewrite;
-12. kernelize agents by responsibility family, one authorized agent kernel at a
+13. kernelize agents by responsibility family, one authorized agent kernel at a
    time;
-13. keep every future kernel subject to its own authorization and human audit;
-14. extract reusable principles without forcing every agent into one mold;
-15. validate the agent package as a coherent set only after future authorized
+14. keep every future kernel subject to its own authorization and human audit;
+15. extract reusable principles without forcing every agent into one mold;
+16. validate the agent package as a coherent set only after future authorized
    rounds;
-16. advance to Project Senior Profile only after agents are stable;
-17. rebuild the skill and any complete materialization flow only after agents and
+17. advance to Project Senior Profile only after agents are stable;
+18. rebuild the skill and any complete materialization flow only after agents and
     Profile are stable.
 
 ## Validation Criteria
@@ -215,7 +239,7 @@ Suggested ordering by family:
 - validation pack and proof design: `validation-eval-designer`
 - ephemeral executable packaging and execution package:
   `execution-package-designer`
-- execution: `designer`, `coder-frontend`, `coder-backend`
+- execution: `designer`, `coder-frontend`, `coder-backend`, `coder-ios`
 - validation: `validation-runner`, `reviewer`
 - closure/synchronization: `finalizer`, `resync`
 
