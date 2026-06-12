@@ -33,13 +33,15 @@ como `CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
 controlada. O `reviewer_kernel` também está promovido como
 `REVIEWER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
 `finalizer_kernel` também está promovido como
-`FINALIZER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada.
+`FINALIZER_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada. O
+`resync_kernel` também está promovido como
+`RESYNC_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada.
 
-Há dez kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
+Há onze kernels congelados como `CLEAN_EXCELLENT_PASS`: `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, `designer_kernel`, `coder_frontend_kernel`,
 `coder_backend_kernel`, `validation_runner_kernel`, `reviewer_kernel` e
-`finalizer_kernel`.
+`finalizer_kernel` e `resync_kernel`.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -154,6 +156,25 @@ materializer, não autoriza escrita em GitHub, não autoriza escrita em repo
 alvo, não autoriza generated reports, fixtures, target artifacts, active
 runtime adoption ou alteração em templates canônicos.
 
+O `resync_kernel` é clean pass documental exclusivo do kernel lab dev. Ele
+preserva `sync`, `targeted-local`, entrada somente por pedido explícito do
+`finalizer`, consumo de delta factual já estabelecido, escolha do menor alvo
+canônico compartilhado, atualização factual mínima fora da feature, alvos
+duráveis permitidos, `Feature CONTEXT` como leitura salvo autorização explícita,
+`READY` com target aplicado e sync notes, e `BLOCKED` honesto quando delta,
+target, evidência, ownership ou boundary deixam de ser seguros. Ele mantém
+limites contra closure, `DONE`, decisão `resync: yes/no`, implementação,
+replanning, proof redesign, execução ou julgamento de validação, substituição
+de validation-runner/reviewer/planner/coder, doc sprawl, runtime/temp paths,
+ADR ou `RULES` normativo por default, QA success inventado e mudança normativa
+silenciosa. Ele possui harness documental/textual endurecido de validação, não
+é runtime pass, não é materialization pass, não é target repo pass, não autoriza
+runtime loader, não autoriza materialization path, não autoriza produção, não
+autoriza skill produtiva, não autoriza materializer, não autoriza escrita em
+GitHub, não autoriza escrita em repo alvo, não autoriza generated reports,
+fixtures, target artifacts, active runtime adoption ou alteração em templates
+canônicos.
+
 ## Rota Atual
 
 1. Validar o `orchestrator` kernel contra
@@ -213,10 +234,17 @@ runtime adoption ou alteração em templates canônicos.
     em repo alvo, generated reports, fixtures, target artifacts, active runtime
     adoption, materializer, skill produtiva, alteração em templates canônicos,
     execução de resync ou substituição de runner/reviewer.
-13. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
-14. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
-15. Manter `resync_kernel` como próximo possível da família
-    fechamento/sincronização, sem criar nem promover `resync_kernel` nesta rota.
+13. Preservar o `resync_kernel` promovido contra
+    `reference/agents/resync.agent.md`, snapshot dev local derivado literalmente
+    de `templates/agents/resync.agent.md`, com harness documental/textual
+    endurecido e sem runtime, runtime loader, materialização, materialization
+    path, produção, escrita em GitHub, escrita em repo alvo, generated reports,
+    fixtures, target artifacts, active runtime adoption, materializer, skill
+    produtiva, alteração em templates canônicos, closure, `DONE`,
+    implementação, validation-runner/reviewer/planner/coder substitution ou
+    mudança normativa silenciosa.
+14. Extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde.
+15. Kernelizar agentes futuros somente em rodadas autorizadas próprias.
 16. Validar o pacote de agents como conjunto coerente.
 17. Avançar para Project Senior Profile somente depois dos agents kernelizados
    e validados.
@@ -397,6 +425,21 @@ Toda comparação deve validar que o kernel:
   `reference/finalizer_kernel/validation/GOLDEN_TESTS.md`,
   `reference/finalizer_kernel/validation/check-static.mjs` e
   `reference/finalizer_kernel/validation/check-golden.mjs`
+- Snapshot dev local do `resync`:
+  `reference/agents/resync.agent.md`
+- Kernel documental clean pass do `resync`:
+  `reference/resync_kernel/README.md`
+- Contratos documentais clean pass do `resync`:
+  `reference/resync_kernel/contracts/CONTRACT.md`,
+  `reference/resync_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/resync_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/resync_kernel/contracts/RESYNC_GATES.md`
+- Validação documental/textual read-only do `resync`, sem promoção automática
+  futura:
+  `reference/resync_kernel/validation/STATIC_CHECKS.md`,
+  `reference/resync_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/resync_kernel/validation/check-static.mjs` e
+  `reference/resync_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 

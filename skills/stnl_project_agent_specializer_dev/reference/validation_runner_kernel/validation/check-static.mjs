@@ -55,6 +55,7 @@ const PROMOTED_KERNELS = Object.freeze([
   'validation_runner_kernel',
   'reviewer_kernel',
   'finalizer_kernel',
+  'resync_kernel',
 ]);
 
 const TEMPLATE_AGENT = 'templates/agents/validation-runner.agent.md';
@@ -667,7 +668,8 @@ function validateGlobalDocsCoherent() {
     const content = buffer ? buffer.toString('utf8') : '';
     const context = `global doc ${relPath}`;
 
-    assert(/\b(?:ten|dez)\b/i.test(content), `${context} must state the ten/dez promoted kernels`);
+    assert(/\b(?:eleven|onze)\b/i.test(content), `${context} must state the eleven/onze promoted kernels`);
+    assert(!/\b(?:all\s+ten|ten\s+frozen\s+pass|ten\s+passes|ten\s+prepared|ten\s+promoted|dez\s+kernels|dez\s+passes)\b/i.test(content), `${context} contains stale ten/dez promoted-kernel status`);
     assert(!/\b(?:nine|nove)\b/i.test(content), `${context} contains stale nine/nove promoted-kernel status`);
     assert(!/\b(?:eight|oito)\b/i.test(content), `${context} contains stale eight/oito promoted-kernel status`);
     assert(!/\b(?:all\s+seven|seven\s+frozen\s+pass|seven\s+passes|sete\s+kernels|sete\s+passes)\b/i.test(content), `${context} contains stale seven-kernel status`);
@@ -684,6 +686,11 @@ function validateGlobalDocsCoherent() {
       /FINALIZER_KERNEL:\s*CLEAN_EXCELLENT_PASS/.test(content),
       `${context} missing finalizer clean pass status`,
     );
+    assert(
+      /RESYNC_KERNEL:\s*CLEAN_EXCELLENT_PASS/.test(content),
+      `${context} missing resync clean pass status`,
+    );
+    assert(!/coder_ios_kernel[\s\S]{0,160}(?:CLEAN_EXCELLENT_PASS|frozen|prepared|promoted)/i.test(content), `${context} must not promote coder_ios_kernel`);
     assert(/dev kernel lab|kernel lab dev/i.test(content), `${context} missing dev kernel lab limit`);
     assert(/document(?:ary|al)|documental/i.test(content), `${context} missing documentary promotion scope`);
     assert(/runtime/i.test(content), `${context} missing runtime prohibition`);

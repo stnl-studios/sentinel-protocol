@@ -10,14 +10,15 @@ materialização da skill. O kernel lab contém `orchestrator_kernel`,
 `execution_package_designer_kernel`, o kernel congelado `designer_kernel` e o
 kernel promovido `coder_frontend_kernel` e o kernel promovido
 `coder_backend_kernel`, além dos kernels promovidos `validation_runner_kernel`
-e `reviewer_kernel`, e agora o kernel promovido `finalizer_kernel`.
+e `reviewer_kernel`, e agora os kernels promovidos `finalizer_kernel` e
+`resync_kernel`.
 
-Há dez kernels congelados como `CLEAN_EXCELLENT_PASS`:
+Há onze kernels congelados como `CLEAN_EXCELLENT_PASS`:
 `orchestrator_kernel`, `planner_kernel`, `validation_eval_designer_kernel`,
 `execution_package_designer_kernel`, `designer_kernel`,
 `coder_frontend_kernel`, `coder_backend_kernel` e
-`validation_runner_kernel`, `reviewer_kernel` e `finalizer_kernel`. Esses
-passes são resultados exclusivos do kernel lab dev.
+`validation_runner_kernel`, `reviewer_kernel`, `finalizer_kernel` e
+`resync_kernel`. Esses passes são resultados exclusivos do kernel lab dev.
 
 O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
@@ -102,6 +103,22 @@ Ele preserva closure, `READY/BLOCKED`, runner verdict como input, reviewer
 signal, residual correction pack, `DONE: yes/no`, `resync: yes/no`, ledger de
 fechamento e limite explícito contra execução de resync.
 
+O `resync_kernel` foi promovido para
+`RESYNC_KERNEL: CLEAN_EXCELLENT_PASS` após promoção documental controlada com
+snapshot byte-a-byte preservado e harness documental/textual endurecido. Esse
+pass vale somente para o kernel lab dev documental, contratual, semântico
+mínimo e com harness textual executável endurecido; não é runtime pass, não é
+materialization pass, não é target repo pass, não autoriza runtime loader, não
+autoriza materialization path, não autoriza produção, não autoriza skill
+produtiva, não autoriza materializer, não autoriza escrita em GitHub, não
+autoriza escrita em repo alvo, não autoriza generated reports, fixtures,
+target artifacts, active runtime adoption ou alteração em templates canônicos.
+Ele preserva sincronização factual estreita fora da feature, entrada somente
+por pedido explícito do `finalizer`, consumo de delta factual já estabelecido,
+alvos duráveis permitidos, `READY/BLOCKED`, `targeted-local`, e limites contra
+closure, `DONE`, implementação, planning, validação, review, runtime/temp paths,
+doc sprawl e mudança normativa silenciosa.
+
 A skill dev continua experimental. Não há runtime real, materializer ativo,
 target materialization, generated artifact, autorização para skill produtiva ou
 promoção automática de kernels autorizados nesta área. Os harnesses do planner
@@ -174,11 +191,18 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   fixtures, target artifacts, active runtime adoption, materializer, skill
   produtiva, alteração em templates canônicos, execução de resync ou
   substituição de runner/reviewer;
+- preservar o `resync_kernel` promovido contra o snapshot dev local
+  `reference/agents/resync.agent.md`, derivado literalmente de
+  `templates/agents/resync.agent.md`, com harness documental/textual
+  endurecido e sem runtime, runtime loader, materialização, materialization
+  path, produção, escrita em GitHub, escrita em repo alvo, generated reports,
+  fixtures, target artifacts, active runtime adoption, materializer, skill
+  produtiva, alteração em templates canônicos, closure, `DONE`, implementação,
+  validation-runner/reviewer/planner/coder substitution ou mudança normativa
+  silenciosa;
 - extrair princípios reaproveitáveis sem forçar todos os agents ao mesmo molde
   interno;
 - manter qualquer kernel futuro sujeito a autorização e auditoria próprias;
-- manter `resync_kernel` como próximo possível da família
-  fechamento/sincronização, sem criar nem promover `resync_kernel` nesta rota;
 - validar o pacote de agents;
 - avançar para Project Senior Profile apenas depois dos agents estabilizados;
 - reconstruir a skill/materialização completa apenas no final.
@@ -224,6 +248,13 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   reports, fixtures, target artifacts, active runtime adoption, materializer,
   skill produtiva, alteração em templates canônicos, execução de resync ou
   substituição de runner/reviewer;
+- tratar `reference/resync_kernel/**` como clean pass documental dev-only com
+  harness textual bloqueante, sem autorizar runtime, runtime loader,
+  materialização, materialization path, produção, GitHub, repo alvo, generated
+  reports, fixtures, target artifacts, active runtime adoption, materializer,
+  skill produtiva, alteração em templates canônicos, closure, `DONE`,
+  implementação, validation-runner/reviewer/planner/coder substitution ou
+  mudança normativa silenciosa;
 - não recorrer à skill produtiva, `templates/**`, `~/.agents/**` ou filesystem
   externo como substituto de referência;
 - não tocar na skill produtiva, templates produtivos, installer, smoke,
