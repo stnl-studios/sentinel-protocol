@@ -146,8 +146,8 @@ O `reviewer_kernel` é clean pass documental exclusivo do kernel lab dev. Ele
 preserva `semantic-review`, `review-minimal`, revisão pós-implementação e
 pré-finalizer do artifact implementado e diff resultante dentro do recorte
 autorizado, classificação de review `required` ou `advisory`, foco em risco
-semântico/material, `PASS`, `FAIL` e exatamente um `CORRECTION PACK` como
-handoff não terminal e exclusivo. Ele mantém limites contra implementação,
+semântico/material, sinais `REVIEW_CLEAR` e `REVIEW_RISK`, e exatamente um
+`CORRECTION PACK` como handoff não terminal e exclusivo. Ele mantém limites contra implementação,
 correção, execução de validação no lugar do `validation-runner`, closure,
 resync, durable docs, repo-wide review e opinião estética como blocker. Ele
 possui harness documental/textual endurecido de validação, não é runtime pass,

@@ -53,31 +53,32 @@ checks, collect proof, issue runner verdicts, or replace `validation-runner`.
 Green proof does not force structural approval. Irrelevant green output is
 limited signal when it does not address the structural question.
 
-## Gate RV-GATE-006 - PASS Requires Structural Adherence
+## Gate RV-GATE-006 - REVIEW_CLEAR Requires Structural Adherence
 
-`PASS` is allowed only when the reviewer can honestly confirm sufficient
+`REVIEW_CLEAR` is allowed only when the reviewer can honestly confirm sufficient
 structural adherence for the cut, no unresolved material structural risk
 remains, and no correction pack is being routed.
 
-Non-blocking recommendations may accompany `PASS` only when they are clearly
-not closure blockers.
+Non-blocking recommendations may accompany `REVIEW_CLEAR` only when they are
+clearly not closure blockers.
 
-## Gate RV-GATE-007 - FAIL Requires Material Risk Or Honest Inability
+## Gate RV-GATE-007 - REVIEW_RISK Requires Material Risk Or Honest Inability
 
-`FAIL` is required when unresolved material structural risk remains, the
+`REVIEW_RISK` is required when unresolved material structural risk remains, the
 implemented artifact materially violates scope or contract, the artifact leaks
 unauthorized product decisions, or the reviewer cannot judge the cut honestly
 from the minimum required basis.
 
-`FAIL` must not be used for subjective preference alone.
+`REVIEW_RISK` must not be used for subjective preference alone.
 
 ## Gate RV-GATE-008 - Correction Pack Is Narrow And Exclusive
 
 Exactly one `CORRECTION PACK` block may be emitted only when the correction
 appears minimal, in-scope, surgical, and within remaining budget.
 
-The correction block is mutually exclusive with `PASS` and `FAIL`. It must not
-be broad, vague, repo-wide, stylistic, or redesign-oriented.
+The correction block is mutually exclusive with `REVIEW_CLEAR` and
+`REVIEW_RISK`. It must not be broad, vague, repo-wide, stylistic, or
+redesign-oriented.
 
 ## Gate RV-GATE-009 - Finalizer Boundary Holds
 

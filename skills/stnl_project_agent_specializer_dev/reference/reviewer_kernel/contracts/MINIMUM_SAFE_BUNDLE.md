@@ -25,10 +25,10 @@ origin and is not a fallback when the snapshot is missing.
 The minimum safe clean-pass bundle requires:
 
 1. `README.md` for status, source alignment, bundle, and scope limits.
-2. `CONTRACT.md` for identity, authority, inputs, outputs, verdicts,
+2. `CONTRACT.md` for identity, authority, inputs, outputs, review signals,
    correction, reading, and role boundaries.
 3. `BEHAVIOR_PARITY_SPINE.md` for irreducible base-agent behavior.
-4. `SEMANTIC_REVIEW_GATES.md` for entry, review, verdict, correction, and
+4. `SEMANTIC_REVIEW_GATES.md` for entry, review, signal, correction, and
    boundary gates.
 5. `MINIMUM_SAFE_BUNDLE.md` for this non-optional file set.
 6. `STATIC_CHECKS.md` for static validation expectations.
@@ -65,8 +65,8 @@ A safe reviewer draft must preserve:
 - no finalization;
 - no resync;
 - short delta-only output;
-- `PASS`, `FAIL`, or exactly one formal `CORRECTION PACK`;
-- mutual exclusion between `CORRECTION PACK` and terminal verdicts.
+- `REVIEW_CLEAR`, `REVIEW_RISK`, or exactly one formal `CORRECTION PACK`;
+- mutual exclusion between `CORRECTION PACK` and terminal review signals.
 
 ## Mandatory Negative Space
 

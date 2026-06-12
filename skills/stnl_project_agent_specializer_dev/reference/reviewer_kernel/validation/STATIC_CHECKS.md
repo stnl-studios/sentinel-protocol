@@ -72,7 +72,7 @@ It detects prohibited affirmative claims through:
 
 - semantic families of subjects, actions, and objects;
 - paired-source claims such as untrusted sources treated as trusted;
-- explicit pattern claims for output shape and status promotion;
+- explicit pattern claims for output shape, review signals, and status promotion;
 - local negation handling, so prohibited examples remain accepted when they are
   clearly denied in the same local context;
 - semantic blockers that name the violated reviewer boundary.
@@ -165,17 +165,17 @@ execution, broad refactor, and cut redesign by reviewer.
 Validate the docs prohibit reviewer from deciding `DONE`, closing the round,
 performing resync, deciding factual sync, or writing shared canon.
 
-### RV-CH-011 - Output shape preserved
+### RV-CH-011 - Review signal shape preserved
 
-Validate the docs allow only `PASS`, `FAIL`, or exactly one formal
+Validate the docs allow only `REVIEW_CLEAR`, `REVIEW_RISK`, or exactly one formal
 `CORRECTION PACK` block, and require `CORRECTION PACK` to be mutually exclusive
-with terminal verdicts.
+with terminal review signals.
 
-### RV-CH-012 - PASS and FAIL semantics preserved
+### RV-CH-012 - REVIEW_CLEAR and REVIEW_RISK semantics preserved
 
-Validate `PASS` requires sufficient structural adherence and no unresolved
-material structural risk, while `FAIL` requires unresolved material structural
-risk or honest inability to judge.
+Validate `REVIEW_CLEAR` requires sufficient structural adherence and no
+unresolved material structural risk, while `REVIEW_RISK` requires unresolved
+material structural risk or honest inability to judge.
 
 ### RV-CH-013 - Correction pack gate preserved
 

@@ -92,22 +92,23 @@ approved scope.
 
 The reviewer output is short and delta-only.
 
-Allowed terminal outputs:
+Allowed review-specific terminal signals:
 
-- `PASS`;
-- `FAIL`.
+- `REVIEW_CLEAR`;
+- `REVIEW_RISK`.
 
 Allowed non-terminal output:
 
 - exactly one formal block headed `CORRECTION PACK`.
 
-`CORRECTION PACK` is mutually exclusive with `PASS` and `FAIL`. The reviewer
-must not mix a correction block with a terminal verdict in the same handoff.
+`CORRECTION PACK` is mutually exclusive with `REVIEW_CLEAR` and `REVIEW_RISK`.
+The reviewer must not mix a correction block with a terminal review signal in
+the same handoff.
 
-`PASS` requires sufficient structural adherence for the cut, with no unresolved
-material structural risk and no correction pack being routed.
+`REVIEW_CLEAR` requires sufficient structural adherence for the cut, with no
+unresolved material structural risk and no correction pack being routed.
 
-`FAIL` requires unresolved material structural risk, material boundary or
+`REVIEW_RISK` requires unresolved material structural risk, material boundary or
 contract drift, material unauthorized inference, material product-decision
 leakage, material scope expansion, or an honest inability to judge the cut from
 the minimum required basis.
@@ -143,6 +144,8 @@ Against `validation-runner`:
 
 - runner owns proof, check execution, evidence, and verdicts `PASS`,
   `PARTIAL`, `FAIL`, and `BLOCKED`;
+- reviewer emits only `REVIEW_CLEAR` or `REVIEW_RISK` as review-specific
+  signals, not validation verdicts;
 - reviewer does not run validation instead of runner;
 - reviewer does not transform green tests into structural approval;
 - reviewer treats irrelevant green proof as limited signal.
@@ -189,5 +192,5 @@ Against generic reviewer or opinion agent:
   `content.txt`, runtime temp paths, or runtime temporary files as Sentinel
   source of truth.
 
-If bounded reading cannot support honest semantic review, emit `FAIL` rather
-than guessing.
+If bounded reading cannot support honest semantic review, emit `REVIEW_RISK`
+rather than guessing.

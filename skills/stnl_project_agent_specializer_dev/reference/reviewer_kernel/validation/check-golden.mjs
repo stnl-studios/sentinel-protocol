@@ -28,21 +28,21 @@ const errors = [];
 const scenarios = Object.freeze([
   {
     id: 'RV-GT-001',
-    blocker: 'BLOCKED_RV_PASS_SHAPE_INVALID',
+    blocker: 'BLOCKED_RV_REVIEW_CLEAR_SHAPE_INVALID',
     sections: {
       Objective: [/positive semantic review|honest positive/i],
       'Input shape': [/required.*advisory|advisory.*required/i, /concrete implemented artifact|trustworthy applied diff/i, /no\s+material structural risk remains/i],
-      'Expected behavior': [/PASS/i, /short delta-only rationale|non-blocking/i],
-      'Fail condition': [/PASS.*unavailable/i, /simultaneous `?CORRECTION PACK`?/i],
+      'Expected behavior': [/REVIEW_CLEAR/i, /short delta-only rationale|non-blocking/i],
+      'Fail condition': [/REVIEW_CLEAR.*unavailable/i, /simultaneous `?CORRECTION PACK`?/i],
     },
   },
   {
     id: 'RV-GT-002',
-    blocker: 'BLOCKED_RV_MATERIAL_RISK_NOT_FAIL',
+    blocker: 'BLOCKED_RV_MATERIAL_RISK_NOT_REVIEW_RISK',
     sections: {
-      Objective: [/FAIL/i, /material semantic or architectural risk/i],
+      Objective: [/REVIEW_RISK/i, /material semantic or architectural risk/i],
       'Input shape': [/boundary drift/i, /improper coupling/i, /contract drift/i, /scope expansion/i],
-      'Expected behavior': [/FAIL/i, /material risk/i, /objective evidence|evidence/i],
+      'Expected behavior': [/REVIEW_RISK/i, /material risk/i, /objective evidence|evidence/i],
       'Fail condition': [/softened into a recommendation/i, /green proof|green/i, /cosmetic/i],
     },
   },
@@ -53,7 +53,7 @@ const scenarios = Object.freeze([
       Objective: [/non-terminal correction routing/i],
       'Input shape': [/minimal/i, /in-scope/i, /surgical/i, /corrigible/i],
       'Expected behavior': [/exactly one block headed `?CORRECTION PACK`?/i, /issue id|issue_id/i, /expected correction/i],
-      'Fail condition': [/broad/i, /vague/i, /repo-wide/i, /mixed with terminal\s+verdict|terminal\s+verdict/i, /executed by reviewer/i],
+      'Fail condition': [/broad/i, /vague/i, /repo-wide/i, /mixed with terminal\s+review signal|terminal\s+review signal/i, /executed by reviewer/i],
     },
   },
   {
@@ -62,7 +62,7 @@ const scenarios = Object.freeze([
     sections: {
       Objective: [/Prevent review of intent/i],
       'Input shape': [/No concrete implemented artifact|no concrete implemented artifact/i, /plan text/i, /pseudo-implementation/i],
-      'Expected behavior': [/FAIL/i, /cannot judge/i],
+      'Expected behavior': [/REVIEW_RISK/i, /cannot judge/i],
       'Fail condition': [/approves/i, /guesses/i, /broad discovery/i],
     },
   },
@@ -72,8 +72,8 @@ const scenarios = Object.freeze([
     sections: {
       Objective: [/proof execution separate|separate from semantic review/i],
       'Input shape': [/green/i, /violates/i, /scope/i, /contract/i],
-      'Expected behavior': [/limited context/i, /FAIL|CORRECTION PACK/i],
-      'Fail condition': [/green validation forces reviewer `?PASS`?/i],
+      'Expected behavior': [/limited context/i, /REVIEW_RISK|CORRECTION PACK/i],
+      'Fail condition': [/green validation forces reviewer `?REVIEW_CLEAR`?/i],
     },
   },
   {
@@ -83,7 +83,7 @@ const scenarios = Object.freeze([
       Objective: [/validation-runner/i],
       'Input shape': [/attempts to run\s+checks/i, /gather proof/i, /runner verdicts/i],
       'Expected behavior': [/must not run validation/i, /proof ownership remains with\s+runner/i],
-      'Fail condition': [/executes proof/i, /PARTIAL/i, /BLOCKED/i],
+      'Fail condition': [/executes proof/i, /PASS/i, /PARTIAL/i, /FAIL/i, /BLOCKED/i],
     },
   },
   {
@@ -144,6 +144,13 @@ const negativeMutations = Object.freeze([
     expected: /run validation/i,
   },
   {
+    name: 'reviewer may emit PASS',
+    blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    base: 'Reviewer must not emit `PASS`; that verdict is owned by validation-runner.',
+    mutated: 'Reviewer may emit `PASS` as a validation verdict.',
+    expected: /PASS/i,
+  },
+  {
     name: 'reviewer may emit PARTIAL',
     blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
     base: 'Reviewer must not emit `PARTIAL`; that verdict is owned by validation-runner.',
@@ -156,6 +163,13 @@ const negativeMutations = Object.freeze([
     base: 'Reviewer must not emit `PARTIAL`; that verdict is owned by validation-runner.',
     mutated: 'Reviewer is allowed to emit `PARTIAL`.',
     expected: /PARTIAL/i,
+  },
+  {
+    name: 'reviewer may emit FAIL',
+    blocker: 'BLOCKED_RV_REPLACES_VALIDATION_RUNNER',
+    base: 'Reviewer must not emit `FAIL`; that verdict is owned by validation-runner.',
+    mutated: 'Reviewer may emit `FAIL` as a validation verdict.',
+    expected: /FAIL/i,
   },
   {
     name: 'reviewer may emit BLOCKED',
@@ -182,7 +196,7 @@ const negativeMutations = Object.freeze([
     name: 'reviewer may close the round',
     blocker: 'BLOCKED_RV_REPLACES_FINALIZER',
     base: 'Reviewer does not close the round; finalizer owns closure.',
-    mutated: 'Reviewer may close the round after PASS.',
+    mutated: 'Reviewer may close the round after REVIEW_CLEAR.',
     expected: /close the round/i,
   },
   {
@@ -557,32 +571,32 @@ const negativeMutations = Object.freeze([
     expected: /(?:subjective style preference.*blocker|blocker.*subjective style preference)/i,
   },
   {
-    name: 'PASS may be emitted without artifact or diff',
-    blocker: 'BLOCKED_RV_PASS_SHAPE_INVALID',
-    base: '`PASS` must not be emitted when artifact or diff is absent.',
-    mutated: '`PASS` may be emitted when artifact or diff is absent.',
-    expected: /(?:PASS.*(?:artifact|diff)|(?:artifact|diff).*PASS)/i,
+    name: 'REVIEW_CLEAR may be emitted without artifact or diff',
+    blocker: 'BLOCKED_RV_REVIEW_CLEAR_SHAPE_INVALID',
+    base: '`REVIEW_CLEAR` must not be emitted when artifact or diff is absent.',
+    mutated: '`REVIEW_CLEAR` may be emitted when artifact or diff is absent.',
+    expected: /(?:REVIEW_CLEAR.*(?:artifact|diff)|(?:artifact|diff).*REVIEW_CLEAR)/i,
   },
   {
-    name: 'PASS may be emitted with unresolved material risk',
-    blocker: 'BLOCKED_RV_MATERIAL_RISK_NOT_FAIL',
-    base: '`PASS` must not be emitted with unresolved material risk.',
-    mutated: '`PASS` may be emitted with unresolved material risk.',
-    expected: /(?:PASS.*unresolved material risk|unresolved material risk.*PASS)/i,
+    name: 'REVIEW_CLEAR may be emitted with unresolved material risk',
+    blocker: 'BLOCKED_RV_MATERIAL_RISK_NOT_REVIEW_RISK',
+    base: '`REVIEW_CLEAR` must not be emitted with unresolved material risk.',
+    mutated: '`REVIEW_CLEAR` may be emitted with unresolved material risk.',
+    expected: /(?:REVIEW_CLEAR.*unresolved material risk|unresolved material risk.*REVIEW_CLEAR)/i,
   },
   {
-    name: 'PASS may be emitted with CORRECTION PACK',
+    name: 'REVIEW_CLEAR may be emitted with CORRECTION PACK',
     blocker: 'BLOCKED_RV_CORRECTION_PACK_INVALID',
-    base: '`PASS` is not emitted with `CORRECTION PACK`.',
-    mutated: '`PASS` may be emitted with `CORRECTION PACK`.',
-    expected: /(?:PASS.*CORRECTION PACK|CORRECTION PACK.*PASS)/i,
+    base: '`REVIEW_CLEAR` is not emitted with `CORRECTION PACK`.',
+    mutated: '`REVIEW_CLEAR` may be emitted with `CORRECTION PACK`.',
+    expected: /(?:REVIEW_CLEAR.*CORRECTION PACK|CORRECTION PACK.*REVIEW_CLEAR)/i,
   },
   {
-    name: 'FAIL may be used for aesthetic preference alone',
+    name: 'REVIEW_RISK may be used for aesthetic preference alone',
     blocker: 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE',
-    base: '`FAIL` must not be used for aesthetic preference alone.',
-    mutated: '`FAIL` may be used for aesthetic preference alone.',
-    expected: /(?:FAIL.*aesthetic preference|aesthetic preference.*FAIL)/i,
+    base: '`REVIEW_RISK` must not be used for aesthetic preference alone.',
+    mutated: '`REVIEW_RISK` may be used for aesthetic preference alone.',
+    expected: /(?:REVIEW_RISK.*aesthetic preference|aesthetic preference.*REVIEW_RISK)/i,
   },
   {
     name: 'CORRECTION PACK may be broad',
@@ -1478,17 +1492,17 @@ const expectedClaimsByBlocker = Object.freeze(
       },
     ],
     [
-      'BLOCKED_RV_PASS_SHAPE_INVALID',
+      'BLOCKED_RV_REVIEW_CLEAR_SHAPE_INVALID',
       {
         expectedFamily: 'output-shape',
-        expectedClaimName: 'PASS without artifact or diff',
+        expectedClaimName: 'REVIEW_CLEAR without artifact or diff',
       },
     ],
     [
-      'BLOCKED_RV_MATERIAL_RISK_NOT_FAIL',
+      'BLOCKED_RV_MATERIAL_RISK_NOT_REVIEW_RISK',
       {
         expectedFamily: 'output-shape',
-        expectedClaimName: 'PASS with unresolved material risk',
+        expectedClaimName: 'REVIEW_CLEAR with unresolved material risk',
       },
     ],
     ['BLOCKED_RV_CORRECTION_PACK_INVALID', { expectedFamily: 'output-shape' }],
@@ -1685,14 +1699,14 @@ function inferExpectedClaimName(mutation) {
     return mutation.expectedClaimName;
   }
   if (mutation.blocker === 'BLOCKED_RV_CORRECTION_PACK_INVALID') {
-    return /\bPASS\b/i.test(mutation.mutated) && /\bCORRECTION\s+PACK\b/i.test(mutation.mutated)
-      ? 'PASS with CORRECTION PACK'
+    return /\bREVIEW_CLEAR\b/i.test(mutation.mutated) && /\bCORRECTION\s+PACK\b/i.test(mutation.mutated)
+      ? 'REVIEW_CLEAR with CORRECTION PACK'
       : 'invalid CORRECTION PACK shape';
   }
   if (mutation.blocker === 'BLOCKED_RV_OPINION_BLOCKS_CLOSURE') {
     return /\bsubjective\s+style\s+preference\b/i.test(mutation.mutated)
       ? 'subjective preference blocks closure'
-      : 'FAIL for aesthetic preference';
+      : 'REVIEW_RISK for aesthetic preference';
   }
   return expectedClaimsByBlocker.get(mutation.blocker)?.expectedClaimName;
 }
@@ -1758,14 +1772,14 @@ function assertMutationDetection(mutation) {
 }
 
 function checkInMemoryNegativeMutations() {
-  assert(negativeMutations.length === 150, `expected exactly 150 negative mutations, found ${negativeMutations.length}`);
+  assert(negativeMutations.length === 152, `expected exactly 152 negative mutations, found ${negativeMutations.length}`);
   assert(
     generalizedMutations.length === 60,
     `expected exactly 60 generalized negative mutations, found ${generalizedMutations.length}`,
   );
   assert(
-    allNegativeMutations.length === 210,
-    `expected exactly 210 total negative mutations, found ${allNegativeMutations.length}`,
+    allNegativeMutations.length === 212,
+    `expected exactly 212 total negative mutations, found ${allNegativeMutations.length}`,
   );
 
   for (const mutation of allNegativeMutations) {

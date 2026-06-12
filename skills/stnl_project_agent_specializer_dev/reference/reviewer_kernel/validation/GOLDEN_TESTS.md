@@ -43,9 +43,9 @@ structured matches with:
 
 Current mutation and scanner counts are fixed:
 
-- `negativeMutations.length === 150`;
+- `negativeMutations.length === 152`;
 - `generalizedMutations.length === 60`;
-- `allNegativeMutations.length === 210`;
+- `allNegativeMutations.length === 212`;
 - `contextualHeadingMutations.length === 7`;
 - `normativeCases.length === 20`;
 - `validNegativeExamples.length === 9`;
@@ -80,7 +80,7 @@ Incomplete scenarios, duplicated critical sections, reordered critical
 sections, `Expected blocker` text only inside fenced code, or missing blocker
 coverage keep the `Input shape` text scannable and fail the scoped scanner.
 
-## Golden Test RV-GT-001 - Structurally adherent artifact allows PASS
+## Golden Test RV-GT-001 - Structurally adherent artifact allows REVIEW_CLEAR
 
 ### Objective
 
@@ -95,23 +95,23 @@ material structural risk remains.
 
 ### Expected behavior
 
-Emit terminal `PASS` with short delta-only rationale and any recommendation
-clearly marked non-blocking.
+Emit terminal review signal `REVIEW_CLEAR` with short delta-only rationale and
+any recommendation clearly marked non-blocking.
 
 ### Fail condition
 
-Fail if `PASS` is unavailable despite sufficient structural adherence, or if
-`PASS` includes a simultaneous `CORRECTION PACK`.
+Fail if `REVIEW_CLEAR` is unavailable despite sufficient structural adherence,
+or if `REVIEW_CLEAR` includes a simultaneous `CORRECTION PACK`.
 
 ### Expected blocker
 
-`BLOCKED_RV_PASS_SHAPE_INVALID`.
+`BLOCKED_RV_REVIEW_CLEAR_SHAPE_INVALID`.
 
-## Golden Test RV-GT-002 - Material structural risk becomes FAIL
+## Golden Test RV-GT-002 - Material structural risk becomes REVIEW_RISK
 
 ### Objective
 
-Preserve `FAIL` for unresolved material semantic or architectural risk.
+Preserve `REVIEW_RISK` for unresolved material semantic or architectural risk.
 
 ### Input shape
 
@@ -122,8 +122,8 @@ inside the remaining correction budget.
 
 ### Expected behavior
 
-Emit terminal `FAIL`, name the material risk, affected surface, objective
-evidence, and why it should shape closure or routing.
+Emit terminal review signal `REVIEW_RISK`, name the material risk, affected
+surface, objective evidence, and why it should shape closure or routing.
 
 ### Fail condition
 
@@ -132,7 +132,7 @@ proof, or treated as cosmetic.
 
 ### Expected blocker
 
-`BLOCKED_RV_MATERIAL_RISK_NOT_FAIL`.
+`BLOCKED_RV_MATERIAL_RISK_NOT_REVIEW_RISK`.
 
 ## Golden Test RV-GT-003 - In-scope surgical issue becomes CORRECTION PACK
 
@@ -150,19 +150,19 @@ budget remains.
 
 Emit exactly one block headed `CORRECTION PACK` with issue id, fingerprint or
 root cause, objective evidence, affected surface, impact, expected correction,
-violated guardrail when applicable, and in-scope corrigibility. Emit no `PASS`
-or `FAIL` in the same handoff.
+violated guardrail when applicable, and in-scope corrigibility. Emit no
+`REVIEW_CLEAR` or `REVIEW_RISK` in the same handoff.
 
 ### Fail condition
 
 Fail if correction is broad, vague, repo-wide, stylistic, mixed with terminal
-verdict, or executed by reviewer.
+review signal, or executed by reviewer.
 
 ### Expected blocker
 
 `BLOCKED_RV_CORRECTION_PACK_INVALID`.
 
-## Golden Test RV-GT-004 - Missing artifact becomes FAIL
+## Golden Test RV-GT-004 - Missing artifact becomes REVIEW_RISK
 
 ### Objective
 
@@ -175,8 +175,8 @@ only evidence is plan text, narration, command logs, or pseudo-implementation.
 
 ### Expected behavior
 
-Emit `FAIL` or an equivalent handoff-validity failure explaining that reviewer
-cannot judge the cut honestly.
+Emit `REVIEW_RISK` or an equivalent handoff-validity failure explaining that
+reviewer cannot judge the cut honestly.
 
 ### Fail condition
 
@@ -199,12 +199,12 @@ scope, package boundaries, contract, ownership, or active quality guardrails.
 
 ### Expected behavior
 
-Treat green proof as limited context and emit `FAIL` or `CORRECTION PACK` as
-the structural risk warrants.
+Treat green proof as limited context and emit `REVIEW_RISK` or
+`CORRECTION PACK` as the structural risk warrants.
 
 ### Fail condition
 
-Fail if green validation forces reviewer `PASS`.
+Fail if green validation forces reviewer `REVIEW_CLEAR`.
 
 ### Expected blocker
 
@@ -228,8 +228,8 @@ runner and judge only structural review evidence available within its scope.
 
 ### Fail condition
 
-Fail if reviewer executes proof or emits runner verdicts `PARTIAL` or
-`BLOCKED`.
+Fail if reviewer executes proof or emits runner verdicts `PASS`, `PARTIAL`,
+`FAIL`, or `BLOCKED`.
 
 ### Expected blocker
 

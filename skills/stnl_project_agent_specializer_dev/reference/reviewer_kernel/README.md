@@ -34,13 +34,13 @@ snapshot is missing.
 The current 9-file reviewer-kernel allowlist is read in this order:
 
 1. `README.md` - status, source alignment, bundle, and scope limits.
-2. `contracts/CONTRACT.md` - identity, entry, input, output, verdict,
+2. `contracts/CONTRACT.md` - identity, entry, input, output, review signal,
    correction, reading, and boundary contract.
 3. `contracts/BEHAVIOR_PARITY_SPINE.md` - irreducible behavior preserved from
    the base `reviewer`.
 4. `contracts/MINIMUM_SAFE_BUNDLE.md` - smallest non-optional documentary
    bundle for the role.
-5. `contracts/SEMANTIC_REVIEW_GATES.md` - entry, review, verdict, correction,
+5. `contracts/SEMANTIC_REVIEW_GATES.md` - entry, review, signal, correction,
    and boundary gates for honest semantic review.
 6. `validation/STATIC_CHECKS.md` - static validation contract for the dev-only
    harness.
@@ -68,9 +68,9 @@ for semantic risk, architectural risk, boundary drift, maintainability,
 complexity, improper coupling, unauthorized inference, contract drift,
 product-decision leakage, and scope expansion.
 
-The reviewer emits short delta-only output. It may emit `PASS`, `FAIL`, or
-exactly one formal `CORRECTION PACK` block. `CORRECTION PACK` is mutually
-exclusive with `PASS` and `FAIL`.
+The reviewer emits short delta-only output. It may emit review-specific signals
+`REVIEW_CLEAR`, `REVIEW_RISK`, or exactly one formal `CORRECTION PACK` block.
+`CORRECTION PACK` is mutually exclusive with `REVIEW_CLEAR` and `REVIEW_RISK`.
 
 This directory does not authorize runtime, materialization, repo-target writes,
 productive-skill changes, productive-template changes, automatic future

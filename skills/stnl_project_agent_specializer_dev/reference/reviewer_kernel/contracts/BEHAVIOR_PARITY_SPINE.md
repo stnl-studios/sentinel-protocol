@@ -18,7 +18,7 @@ The local snapshot must preserve these anchors from the source template:
 - entry after concrete implementation and before finalization;
 - role class `semantic-review`;
 - review classification from orchestrator: `required` or `advisory`;
-- allowed terminal statuses `PASS` and `FAIL`;
+- allowed review-specific terminal signals `REVIEW_CLEAR` and `REVIEW_RISK`;
 - exactly one formal `CORRECTION PACK` block as the only non-terminal
   correction output;
 - no implementation ownership;
@@ -61,16 +61,16 @@ opinion a blocker without concrete technical risk.
 
 The output remains short and delta-only.
 
-`PASS` means the artifact shows sufficient structural adherence for the cut and
-has no unresolved material structural risk.
+`REVIEW_CLEAR` means the artifact shows sufficient structural adherence for the
+cut and has no unresolved material structural risk.
 
-`FAIL` means unresolved material structural risk remains or the reviewer cannot
-judge honestly from the minimum required basis.
+`REVIEW_RISK` means unresolved material structural risk remains or the reviewer
+cannot judge honestly from the minimum required basis.
 
 `CORRECTION PACK` is a formal non-terminal block used only when a material
 semantic, architectural, boundary, or active-guardrail issue appears minimal,
-in-scope, corrigible, and within budget. It is mutually exclusive with `PASS`
-and `FAIL`.
+in-scope, corrigible, and within budget. It is mutually exclusive with
+`REVIEW_CLEAR` and `REVIEW_RISK`.
 
 ## Required vs Advisory
 
