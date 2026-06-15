@@ -8,9 +8,10 @@ next materialization phase. It also defines the explicit template and output
 shape contract for the canonical targets, plus the render-context composition
 contract for combining base agents, Senior Agent Profiles, and explicit
 templates. It also defines the dry-run output-plan and write-boundary contract
-for future artifact planning. It does not authorize runtime materialization,
-target-repository writes, productive-skill changes, GitHub writes, or changes
-to productive templates.
+for future artifact planning. It also defines the validation harness contract
+for future pre-materialization validation and dry-run smoke reporting. It does
+not authorize runtime materialization, target-repository writes,
+productive-skill changes, GitHub writes, or changes to productive templates.
 
 ## Canonical Scope
 
@@ -25,6 +26,10 @@ to productive templates.
 - `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`: documentary/dev-only
   dry-run output-plan, drift classification, managed-artifact, path-safety, and
   write-boundary contract for future planned artifacts.
+- `contracts/VALIDATION_HARNESS_CONTRACT.md`: documentary/dev-only validation
+  harness and dry-run smoke contract for future pre-materialization checks,
+  structured reporting, no-write enforcement, matrix completeness, and
+  productive-skill immutability.
 - `validation/STATIC_CHECKS.md`: required static checks for this contract
   phase.
 - `validation/GOLDEN_SCENARIOS.md`: minimum positive and negative scenarios
@@ -90,3 +95,23 @@ manual-file collisions block with `BLOCKED_UNMANAGED_COLLISION`; invalid
 managed notices block with `BLOCKED_INVALID_MANAGED_NOTICE`; and any attempted
 write without an approved dry-run output plan blocks with
 `BLOCKED_DRY_RUN_REQUIRED`.
+
+Validation harness planning is also contract-only in this phase. A future
+validation harness must run before any real materialization and must validate
+source inventory, target normalization, template coverage, placeholders, render
+safety, dry-run output plans, write boundaries, absence of target writes, and
+absence of productive-skill changes. The minimum future matrix is 12 agents x
+`copilot`, 12 agents x `codex`, `codex` config, and `codex` root instructions.
+The future report must include `validation_id`, `status`, `checked_contracts`,
+`agent_matrix`, `target_matrix`, `planned_artifacts`, `blocked_artifacts`,
+`write_attempts`, `productive_skill_changes`, `target_file_changes`, and
+`block_codes`.
+
+The only validation statuses are `VALIDATION_PASS`, `VALIDATION_BLOCKED`, and
+`VALIDATION_FAILED`. Validation writes block with
+`BLOCKED_VALIDATION_WRITE_ATTEMPT`; productive-skill mutations block with
+`BLOCKED_PRODUCTIVE_SKILL_MUTATION`; target file mutations in `.github/**`,
+`.codex/**`, or `AGENTS.md` outside a later explicitly authorized fixture block
+with `BLOCKED_TARGET_FILE_MUTATION`; incomplete matrix coverage blocks with
+`BLOCKED_MATRIX_INCOMPLETE`; and unknown block codes block with
+`BLOCKED_UNKNOWN_BLOCK_CODE`.

@@ -13,8 +13,9 @@ The canonical documentary/dev-only reference bundle is organized as:
 - `reference/materialization_lab/`: documentary/dev-only contracts for the
   future senior-agent materialization rewrite, including the canonical target
   IDs, explicit template and output-shape contract, missing-template blocking
-  rules, rendering/composition contract, dry-run/write-boundary contract, and
-  validation expectations. This is not a runtime materializer.
+  rules, rendering/composition contract, dry-run/write-boundary contract,
+  validation harness contract, and validation expectations. This is not a
+  runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
   `contracts/` layer, and integrated seniorization validations.
 - `reference/templates/`: reference/template material only; it is not
@@ -37,11 +38,13 @@ The canonical documentary/dev-only reference bundle is organized as:
   documentary render-context composition contract for deterministic composition
   from base agents, Senior Agent Profiles, explicit templates, and
   target/template contracts, plus the documentary dry-run output-plan and
-  write-boundary contract for future planned artifacts. This phase does not
-  authorize runtime materialization, target-repository writes,
-  productive-skill changes, productive-template changes, GitHub writes,
-  inferred templates, inferred senior profiles, generated outputs, runtime
-  scripts, target project mutation, overwrite of manual files, or a final
+  write-boundary contract for future planned artifacts, plus the documentary
+  validation harness contract for future pre-materialization validation and
+  dry-run smoke reporting. This phase does not authorize runtime
+  materialization, target-repository writes, productive-skill changes,
+  productive-template changes, GitHub writes, inferred templates, inferred
+  senior profiles, generated outputs, runtime scripts, fixtures, target project
+  mutation, overwrite of manual files, validation writes, or a final
   materializer.
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
   inventories the explicit templates currently present under
@@ -67,6 +70,17 @@ The canonical documentary/dev-only reference bundle is organized as:
   `BLOCKED_UNMANAGED_COLLISION`, `BLOCKED_INVALID_MANAGED_NOTICE`, and
   `BLOCKED_DRY_RUN_REQUIRED`, while preserving the earlier source, template,
   placeholder, render-safety, and composition block codes.
+- `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
+  defines the documentary/dev-only validation harness and dry-run smoke layer
+  for future pre-materialization validation. It requires validation before real
+  materialization; covers source inventory, target normalization, template
+  coverage, placeholder, render safety, dry-run output plan, write-boundary,
+  no-target-write, and productive-skill untouched layers; requires a minimum
+  matrix of 12 agents x `copilot`, 12 agents x `codex`, `codex` config, and
+  `codex` root instructions; defines structured report fields and statuses
+  `VALIDATION_PASS`, `VALIDATION_BLOCKED`, and `VALIDATION_FAILED`; and blocks
+  write attempts, productive-skill mutation, target-file mutation, incomplete
+  matrix coverage, and unknown block codes.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -310,6 +324,8 @@ Required files:
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
+- `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
+- `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`

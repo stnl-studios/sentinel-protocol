@@ -201,6 +201,62 @@ Expected result:
 - operation is planned only
 - no `AGENTS.md` output is written during this contract phase
 
+### Validate Full `copilot` Agent Matrix Without Writing
+
+Input:
+
+- requested validation target: `copilot`
+- requested agents: all 12 canonical agents
+- validation layers: source inventory, target normalization, template coverage,
+  placeholder validation, render safety, dry-run output plan, write-boundary,
+  no-target-write, and productive-skill untouched
+
+Expected result:
+
+- validation covers 12 agents x `copilot`
+- every planned `copilot` artifact remains a dry-run plan entry only
+- `write_attempts` is empty
+- no `.github/**` output is written during this contract phase
+- report status may be `VALIDATION_PASS` only if all validation layers pass
+
+### Validate Full `codex` Agent Matrix Without Writing
+
+Input:
+
+- requested validation target: `codex`
+- requested agents: all 12 canonical agents
+- validation layers: source inventory, target normalization, template coverage,
+  placeholder validation, render safety, dry-run output plan, write-boundary,
+  no-target-write, and productive-skill untouched
+
+Expected result:
+
+- validation covers 12 agents x `codex`
+- every planned `codex` agent artifact remains a dry-run plan entry only
+- `write_attempts` is empty
+- no `.codex/**` output and no `AGENTS.md` output are written during this
+  contract phase
+- report status may be `VALIDATION_PASS` only if all validation layers pass
+
+### Validate Codex Target-Level Artifacts Without Writing
+
+Input:
+
+- requested target: `codex`
+- requested target-level artifacts: `.codex/config.toml` and `AGENTS.md`
+- explicit templates:
+  `reference/templates/codex/config.toml` and
+  `reference/templates/codex/AGENTS.md`
+
+Expected result:
+
+- validation includes planned `codex` config and `AGENTS.md` artifacts
+- planned artifacts include `.codex/config.toml`
+- planned artifacts include `AGENTS.md`
+- `write_attempts` is empty
+- no `.codex/config.toml` output and no `AGENTS.md` output are written during
+  this contract phase
+
 ## Negative Scenarios
 
 ### Missing Explicit Template
@@ -429,3 +485,72 @@ Expected result:
 
 - block before writing
 - return `BLOCKED_DRY_RUN_REQUIRED`
+
+### Write Attempt During Validation
+
+Input:
+
+- future validation harness attempts to create, update, delete, repair, clean,
+  or mutate any file while running validation
+
+Expected result:
+
+- validation blocks
+- report status is `VALIDATION_BLOCKED`
+- return `BLOCKED_VALIDATION_WRITE_ATTEMPT`
+
+### Productive Skill Mutation During Validation
+
+Input:
+
+- future validation harness detects a change under
+  `skills/stnl_project_agent_specializer/`
+
+Expected result:
+
+- validation blocks
+- report status is `VALIDATION_BLOCKED`
+- return `BLOCKED_PRODUCTIVE_SKILL_MUTATION`
+
+### Target File Mutation Outside Authorized Fixture
+
+Input:
+
+- future validation detects mutation of `.github/**`, `.codex/**`, or
+  `AGENTS.md`
+- no later explicitly authorized fixture scope covers the mutation
+
+Expected result:
+
+- validation blocks
+- report status is `VALIDATION_BLOCKED`
+- return `BLOCKED_TARGET_FILE_MUTATION`
+
+### Incomplete Validation Matrix
+
+Input:
+
+- validation covers only 11 agents for `copilot`
+- or validation omits any `codex` agent
+- or validation omits `codex` config
+- or validation omits `codex` root instructions
+
+Expected result:
+
+- validation blocks
+- report status is `VALIDATION_BLOCKED`
+- return `BLOCKED_MATRIX_INCOMPLETE`
+
+### Unknown Block Code In Validation Report
+
+Input:
+
+- future validation report, planned artifact, blocked artifact, or validation
+  layer output contains a block code not declared by the materialization lab
+  contracts
+
+Expected result:
+
+- validation blocks
+- report status is `VALIDATION_BLOCKED`
+- return `BLOCKED_UNKNOWN_BLOCK_CODE`

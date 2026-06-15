@@ -21,9 +21,14 @@ The verdict
 declared only when the dry-run output-plan, drift, managed-artifact,
 path-safety, and write-boundary criteria below are also satisfied.
 
+The verdict
+`MATERIALIZATION_VALIDATION_HARNESS_CONTRACT: EXCELLENT PASS` may be declared
+only when the validation harness, dry-run smoke, matrix completeness, no-write,
+and mutation-boundary criteria below are also satisfied.
+
 ## Required Criteria
 
-- The eight materialization lab files exist in
+- The nine materialization lab files exist in
   `reference/materialization_lab/`.
 - `TARGETS_CONTRACT.md` declares `copilot` and `codex` as the only canonical
   target IDs for the new version.
@@ -33,6 +38,12 @@ path-safety, and write-boundary criteria below are also satisfied.
   documentary/dev-only.
 - `DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` exists and is classified as
   documentary/dev-only.
+- `VALIDATION_HARNESS_CONTRACT.md` exists and is classified as
+  documentary/dev-only.
+- `VALIDATION_HARNESS_CONTRACT.md` states that it does not create runtime
+  scripts.
+- `VALIDATION_HARNESS_CONTRACT.md` requires validation before any real
+  materialization.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
 - Historical references in audits, profiles, and old contracts are protected
@@ -144,6 +155,39 @@ path-safety, and write-boundary criteria below are also satisfied.
 - The dry-run/write-boundary contract denies runtime scripts, writes, generated
   outputs, target project mutation, productive skill changes, GitHub writes,
   inferred templates, inferred senior profiles, and overwrite of manual files.
+- The validation harness contract declares all validation layers: source
+  inventory validation, target normalization validation, template coverage
+  validation, placeholder validation, render safety validation, dry-run output
+  plan validation, write-boundary validation, no-target-write validation, and
+  productive-skill untouched validation.
+- The validation harness contract declares the minimum future matrix: 12 agents
+  x `copilot`, 12 agents x `codex`, `codex` config, and `codex` root
+  instructions.
+- The validation harness contract declares the same 12 canonical agent IDs used
+  by the rendering/composition contract.
+- The validation harness contract requires a structured report containing
+  `validation_id`, `status`, `checked_contracts`, `agent_matrix`,
+  `target_matrix`, `planned_artifacts`, `blocked_artifacts`, `write_attempts`,
+  `productive_skill_changes`, `target_file_changes`, and `block_codes`.
+- The validation harness contract declares the only validation statuses:
+  `VALIDATION_PASS`, `VALIDATION_BLOCKED`, and `VALIDATION_FAILED`.
+- The validation harness contract blocks any write attempt during validation
+  with `BLOCKED_VALIDATION_WRITE_ATTEMPT`.
+- The validation harness contract blocks any change to
+  `skills/stnl_project_agent_specializer/` with
+  `BLOCKED_PRODUCTIVE_SKILL_MUTATION`.
+- The validation harness contract blocks any mutation of `.github/**`,
+  `.codex/**`, or `AGENTS.md` outside a later explicitly authorized fixture
+  with `BLOCKED_TARGET_FILE_MUTATION`.
+- The validation harness contract blocks incomplete matrix coverage with
+  `BLOCKED_MATRIX_INCOMPLETE`.
+- The validation harness contract blocks unknown block codes with
+  `BLOCKED_UNKNOWN_BLOCK_CODE`.
+- The validation harness contract states that fixtures may exist only in a
+  later explicitly authorized step.
+- The validation harness contract denies runtime scripts, target writes,
+  generated outputs, fixtures, productive skill changes, GitHub writes, and
+  real materialization.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -182,3 +226,12 @@ destinations, unmanaged overwrites, invalid managed notices, inferred
 templates, inferred sources, productive-skill edits, GitHub writes, or mutation
 of `.github/**`, `.codex/**`, or `AGENTS.md` in this repo root or any target
 project.
+
+Do not declare
+`MATERIALIZATION_VALIDATION_HARNESS_CONTRACT: EXCELLENT PASS` if any check
+depends on runtime scripts, target writes, generated outputs, fixtures,
+productive-skill edits, GitHub writes, real materialization, incomplete
+12-agent coverage for `copilot` or `codex`, missing `codex` config/root
+instruction validation, ignored write attempts, ignored target-file mutations,
+ignored productive-skill mutations, unknown block codes, or undocumented
+assumptions.

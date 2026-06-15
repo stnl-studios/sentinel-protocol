@@ -1,18 +1,20 @@
 # Static Checks
 
 These checks validate only the documentary/dev-only materialization target,
-template, output, rendering, and composition contracts. Passing them does not
-authorize runtime materialization or writes to target projects.
+template, output, rendering, composition, dry-run/write-boundary, and
+validation harness contracts. Passing them does not authorize runtime
+materialization or writes to target projects.
 
 ## Required Files
 
-Confirm the eight materialization lab files exist:
+Confirm the nine materialization lab files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
+- `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
@@ -153,6 +155,93 @@ artifact policy:
 - invalid managed notices block with `BLOCKED_INVALID_MANAGED_NOTICE`;
 - managed status is not inferred from path shape alone.
 
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` exists and is classified as
+documentary/dev-only.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` states that it does not
+create runtime scripts.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` requires validation before
+any real materialization.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` contains all validation
+layers:
+
+- source inventory validation;
+- target normalization validation;
+- template coverage validation;
+- placeholder validation;
+- render safety validation;
+- dry-run output plan validation;
+- write-boundary validation;
+- no-target-write validation;
+- productive-skill untouched validation.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` declares the minimum future
+matrix:
+
+- 12 agents x `copilot`;
+- 12 agents x `codex`;
+- `codex` config;
+- `codex` root instructions.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` contains all 12 canonical
+agent IDs:
+
+- `orchestrator`
+- `planner`
+- `validation-eval-designer`
+- `execution-package-designer`
+- `designer`
+- `coder-frontend`
+- `coder-backend`
+- `coder-ios`
+- `validation-runner`
+- `reviewer`
+- `finalizer`
+- `resync`
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` declares the required
+structured report fields:
+
+- `validation_id`
+- `status`
+- `checked_contracts`
+- `agent_matrix`
+- `target_matrix`
+- `planned_artifacts`
+- `blocked_artifacts`
+- `write_attempts`
+- `productive_skill_changes`
+- `target_file_changes`
+- `block_codes`
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` declares the only validation
+statuses:
+
+- `VALIDATION_PASS`
+- `VALIDATION_BLOCKED`
+- `VALIDATION_FAILED`
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` contains all five
+validation-harness block codes:
+
+- `BLOCKED_VALIDATION_WRITE_ATTEMPT`
+- `BLOCKED_PRODUCTIVE_SKILL_MUTATION`
+- `BLOCKED_TARGET_FILE_MUTATION`
+- `BLOCKED_MATRIX_INCOMPLETE`
+- `BLOCKED_UNKNOWN_BLOCK_CODE`
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` states that unknown block
+codes block with `BLOCKED_UNKNOWN_BLOCK_CODE`.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` states that fixtures may
+exist only in a later explicitly authorized step.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` does not authorize runtime
+scripts, fixtures, target writes, generated outputs, productive skill changes,
+GitHub writes, or real materialization.
+
 ## Template Placeholder Checks
 
 Confirm `reference/templates/copilot/agent.md` contains all required
@@ -226,6 +315,10 @@ not authorize runtime scripts, target writes, generated outputs, target project
 mutation, productive skill changes, GitHub writes, inferred templates, or
 overwrite of manual files.
 
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` states that it does not
+authorize runtime scripts, fixtures, target writes, generated outputs,
+productive skill changes, GitHub writes, or real materialization.
+
 ## Rendering Safety Checks
 
 Confirm `contracts/RENDERING_AND_COMPOSITION_CONTRACT.md` requires:
@@ -266,6 +359,23 @@ runtime scripts or target writes.
 Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` requires a dry-run
 output plan before any future write and blocks any write attempted without an
 approved dry-run output plan with `BLOCKED_DRY_RUN_REQUIRED`.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` blocks any write attempt
+during validation with `BLOCKED_VALIDATION_WRITE_ATTEMPT`.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` blocks productive skill
+mutation with `BLOCKED_PRODUCTIVE_SKILL_MUTATION`.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` blocks mutation of
+`.github/**`, `.codex/**`, or `AGENTS.md` outside a later explicitly
+authorized fixture with `BLOCKED_TARGET_FILE_MUTATION`.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` blocks incomplete 12 agents
+x `copilot` / 12 agents x `codex` coverage with
+`BLOCKED_MATRIX_INCOMPLETE`.
+
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` blocks unknown block codes
+with `BLOCKED_UNKNOWN_BLOCK_CODE`.
 
 ## Legacy Rewrite Guard
 
