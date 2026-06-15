@@ -133,6 +133,74 @@ Expected result:
   string for its target location
 - no target write is performed during this contract phase
 
+### Plan `planner` Copilot Artifact Without Writing
+
+Input:
+
+- requested agent: `planner`
+- requested target: `copilot`
+- explicit template: `reference/templates/copilot/agent.md`
+- planned path: `.github/agents/planner.agent.md`
+
+Expected result:
+
+- dry-run output plan contains one planned artifact entry
+- `target_id` is `copilot`
+- `agent_id` is `planner`
+- `planned_path` is `.github/agents/planner.agent.md`
+- operation is `CREATE_PLANNED`, `UPDATE_PLANNED`, or
+  `UNCHANGED_PLANNED` according to drift state
+- no `.github/**` output is written during this contract phase
+
+### Plan `reviewer` Codex Agent Without Writing
+
+Input:
+
+- requested agent: `reviewer`
+- requested target: `codex`
+- explicit template: `reference/templates/codex/agent.toml`
+- planned path: `.codex/agents/reviewer.toml`
+
+Expected result:
+
+- dry-run output plan contains one planned artifact entry
+- `target_id` is `codex`
+- `agent_id` is `reviewer`
+- `planned_path` is `.codex/agents/reviewer.toml`
+- operation is `CREATE_PLANNED`, `UPDATE_PLANNED`, or
+  `UNCHANGED_PLANNED` according to drift state
+- no `.codex/**` output and no `AGENTS.md` output are written during this
+  contract phase
+
+### Plan Codex Config Without Writing
+
+Input:
+
+- requested target: `codex`
+- requested output shape: `.codex/config.toml`
+- explicit template: `reference/templates/codex/config.toml`
+
+Expected result:
+
+- dry-run output plan contains a planned artifact entry for
+  `.codex/config.toml`
+- operation is planned only
+- no `.codex/config.toml` output is written during this contract phase
+
+### Plan Codex Root Instructions Without Writing
+
+Input:
+
+- requested target: `codex`
+- requested output shape: `AGENTS.md`
+- explicit template: `reference/templates/codex/AGENTS.md`
+
+Expected result:
+
+- dry-run output plan contains a planned artifact entry for `AGENTS.md`
+- operation is planned only
+- no `AGENTS.md` output is written during this contract phase
+
 ## Negative Scenarios
 
 ### Missing Explicit Template
@@ -290,3 +358,74 @@ Expected result:
   resolver
 - preserve historical references in audits, profiles, and old contracts unless
   separately authorized and justified
+
+### Invalid Target Root
+
+Input:
+
+- requested target: `codex`
+- target project root is missing, not a directory, inaccessible, or otherwise
+  invalid for safe path resolution
+
+Expected result:
+
+- dry-run output plan blocks before writing
+- operation is `BLOCKED_PLANNED`
+- return `BLOCKED_TARGET_ROOT_INVALID`
+
+### Path Traversal Destination
+
+Input:
+
+- requested target: `copilot`
+- requested agent: `planner`
+- planned path resolves to `../.github/agents/planner.agent.md` or another
+  destination outside the target project root
+
+Expected result:
+
+- dry-run output plan blocks before writing
+- operation is `BLOCKED_PLANNED`
+- return `BLOCKED_PATH_UNSAFE`
+
+### Existing Manual File Collision
+
+Input:
+
+- requested target: `codex`
+- requested agent: `reviewer`
+- planned path `.codex/agents/reviewer.toml` already exists without a valid
+  Sentinel managed notice
+
+Expected result:
+
+- dry-run output plan blocks before writing
+- operation is `BLOCKED_PLANNED`
+- return `BLOCKED_UNMANAGED_COLLISION`
+
+### Invalid Managed Notice
+
+Input:
+
+- requested target: `codex`
+- requested output shape: `AGENTS.md`
+- existing `AGENTS.md` contains a malformed, contradictory, ambiguous, or
+  unverifiable managed notice
+
+Expected result:
+
+- dry-run output plan blocks before writing
+- operation is `BLOCKED_PLANNED`
+- return `BLOCKED_INVALID_MANAGED_NOTICE`
+
+### Write Without Approved Dry Run
+
+Input:
+
+- implementation attempts to create, update, delete, repair, clean, or mutate
+  any target artifact before an approved dry-run output plan exists
+
+Expected result:
+
+- block before writing
+- return `BLOCKED_DRY_RUN_REQUIRED`

@@ -16,15 +16,22 @@ The verdict
 declared only when the render-context composition criteria below are also
 satisfied.
 
+The verdict
+`MATERIALIZATION_DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT: EXCELLENT PASS` may be
+declared only when the dry-run output-plan, drift, managed-artifact,
+path-safety, and write-boundary criteria below are also satisfied.
+
 ## Required Criteria
 
-- The seven materialization lab files exist in
+- The eight materialization lab files exist in
   `reference/materialization_lab/`.
 - `TARGETS_CONTRACT.md` declares `copilot` and `codex` as the only canonical
   target IDs for the new version.
 - `TEMPLATES_AND_OUTPUTS_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - `RENDERING_AND_COMPOSITION_CONTRACT.md` exists and is classified as
+  documentary/dev-only.
+- `DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
@@ -104,6 +111,39 @@ satisfied.
 - The rendering/composition contract denies target writes, runtime scripts,
   generated outputs, productive skill changes, GitHub writes, inferred
   templates, and inferred senior profiles.
+- The dry-run/write-boundary contract requires a dry-run output plan before any
+  future target write, generated artifact write, repair, delete, or cleanup.
+- The dry-run output plan requires `target_id`, `agent_id`, `output_shape`,
+  `planned_path`, `template_source`, `base_agent_source`,
+  `senior_profile_source`, `operation`, `managed_artifact`,
+  `existing_file_state`, `drift_status`, `blocking_status`, and `block_code`
+  for each planned artifact.
+- The dry-run/write-boundary contract declares the only planned operations:
+  `CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and
+  `BLOCKED_PLANNED`.
+- The dry-run/write-boundary contract states that all planned operations are
+  dry-run only in this documentary/dev-only phase and write nothing.
+- The dry-run/write-boundary contract declares target-root-relative output
+  paths for `copilot` `.github/agents/<agent>.agent.md`, `codex`
+  `.codex/agents/<agent>.toml`, `codex` `.codex/config.toml`, and `codex`
+  `AGENTS.md`.
+- The dry-run/write-boundary contract blocks invalid target roots, unsafe
+  paths, unmanaged collisions, invalid managed notices, and writes attempted
+  without an approved dry-run output plan.
+- The dry-run/write-boundary contract declares the block codes
+  `BLOCKED_TARGET_ROOT_INVALID`, `BLOCKED_PATH_UNSAFE`,
+  `BLOCKED_UNMANAGED_COLLISION`, `BLOCKED_INVALID_MANAGED_NOTICE`, and
+  `BLOCKED_DRY_RUN_REQUIRED`.
+- The dry-run/write-boundary contract preserves
+  `BLOCKED_SOURCE_MISSING`, `BLOCKED_TEMPLATE_MISSING`,
+  `BLOCKED_PLACEHOLDER_MISSING`, `BLOCKED_UNSAFE_RENDER`, and
+  `BLOCKED_COMPOSITION_CONFLICT`.
+- The dry-run/write-boundary contract requires generated artifacts to contain a
+  Sentinel managed notice, forbids automatic overwrite of artifacts without a
+  valid managed notice, and blocks conflicts with manual files.
+- The dry-run/write-boundary contract denies runtime scripts, writes, generated
+  outputs, target project mutation, productive skill changes, GitHub writes,
+  inferred templates, inferred senior profiles, and overwrite of manual files.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -133,3 +173,12 @@ check depends on inferred sources, inferred templates, inferred senior
 profiles, unsafe YAML/TOML rendering, target writes, runtime scripts, generated
 outputs, productive-skill edits, GitHub writes, or silent conflict resolution
 between base agents and Senior Agent Profiles.
+
+Do not declare
+`MATERIALIZATION_DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT: EXCELLENT PASS` if any
+check depends on target writes, generated outputs, runtime scripts, missing
+dry-run plans, unapproved writes, path traversal, absolute paths, symlink-unsafe
+destinations, unmanaged overwrites, invalid managed notices, inferred
+templates, inferred sources, productive-skill edits, GitHub writes, or mutation
+of `.github/**`, `.codex/**`, or `AGENTS.md` in this repo root or any target
+project.

@@ -7,9 +7,10 @@ It defines the canonical target contract and validation expectations for the
 next materialization phase. It also defines the explicit template and output
 shape contract for the canonical targets, plus the render-context composition
 contract for combining base agents, Senior Agent Profiles, and explicit
-templates. It does not authorize runtime materialization, target-repository
-writes, productive-skill changes, GitHub writes, or changes to productive
-templates.
+templates. It also defines the dry-run output-plan and write-boundary contract
+for future artifact planning. It does not authorize runtime materialization,
+target-repository writes, productive-skill changes, GitHub writes, or changes
+to productive templates.
 
 ## Canonical Scope
 
@@ -21,6 +22,9 @@ templates.
 - `contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`: documentary/dev-only
   render-context contract for deterministic composition from base agents,
   Senior Agent Profiles, target/template contracts, and explicit templates.
+- `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`: documentary/dev-only
+  dry-run output-plan, drift classification, managed-artifact, path-safety, and
+  write-boundary contract for future planned artifacts.
 - `validation/STATIC_CHECKS.md`: required static checks for this contract
   phase.
 - `validation/GOLDEN_SCENARIOS.md`: minimum positive and negative scenarios
@@ -38,6 +42,15 @@ Rendering and composition are also contract-only in this phase. A future
 renderer must derive a render context per `agent+target` pair from explicit
 sources, but this phase does not produce generated outputs or materialize in a
 target project.
+
+Dry-run/write-boundary planning is also contract-only in this phase. A future
+materialization flow must produce a dry-run output plan before any write, and
+each planned artifact must record target, agent, output shape, planned path,
+template source, base-agent source, senior-profile source, operation,
+managed-artifact state, existing-file state, drift status, blocking status, and
+block code. During this documentary/dev-only phase, all operations are only
+planned: `CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and
+`BLOCKED_PLANNED` write nothing.
 
 Templates must be explicit. A target, target-agent pair, or output shape
 without an explicit template blocks with `BLOCKED_TEMPLATE_MISSING`; no
@@ -67,3 +80,13 @@ Missing sources block with `BLOCKED_SOURCE_MISSING`; missing placeholders block
 with `BLOCKED_PLACEHOLDER_MISSING`; unsafe YAML/TOML rendering blocks with
 `BLOCKED_UNSAFE_RENDER`; conflicts between base agents and Senior Agent
 Profiles block with `BLOCKED_COMPOSITION_CONFLICT`.
+
+Future output paths must be relative to the target project root: `copilot`
+agents plan to `.github/agents/<agent>.agent.md`, `codex` agents plan to
+`.codex/agents/<agent>.toml`, Codex config plans to `.codex/config.toml`, and
+Codex root instructions plan to `AGENTS.md`. Invalid target roots block with
+`BLOCKED_TARGET_ROOT_INVALID`; unsafe paths block with `BLOCKED_PATH_UNSAFE`;
+manual-file collisions block with `BLOCKED_UNMANAGED_COLLISION`; invalid
+managed notices block with `BLOCKED_INVALID_MANAGED_NOTICE`; and any attempted
+write without an approved dry-run output plan blocks with
+`BLOCKED_DRY_RUN_REQUIRED`.

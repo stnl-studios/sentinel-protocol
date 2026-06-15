@@ -6,12 +6,13 @@ authorize runtime materialization or writes to target projects.
 
 ## Required Files
 
-Confirm the seven materialization lab files exist:
+Confirm the eight materialization lab files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
+- `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
@@ -91,6 +92,67 @@ composition sources:
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains all four
+planned operations:
+
+- `CREATE_PLANNED`
+- `UPDATE_PLANNED`
+- `UNCHANGED_PLANNED`
+- `BLOCKED_PLANNED`
+
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains the
+required dry-run output-plan fields:
+
+- `target_id`
+- `agent_id`
+- `output_shape`
+- `planned_path`
+- `template_source`
+- `base_agent_source`
+- `senior_profile_source`
+- `operation`
+- `managed_artifact`
+- `existing_file_state`
+- `drift_status`
+- `blocking_status`
+- `block_code`
+
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains the
+canonical target-root-relative output paths:
+
+- `.github/agents/<agent>.agent.md`
+- `.codex/agents/<agent>.toml`
+- `.codex/config.toml`
+- `AGENTS.md`
+
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains all five
+dry-run/write-boundary block codes:
+
+- `BLOCKED_TARGET_ROOT_INVALID`
+- `BLOCKED_PATH_UNSAFE`
+- `BLOCKED_UNMANAGED_COLLISION`
+- `BLOCKED_INVALID_MANAGED_NOTICE`
+- `BLOCKED_DRY_RUN_REQUIRED`
+
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` preserves the
+earlier rendering/composition block codes:
+
+- `BLOCKED_SOURCE_MISSING`
+- `BLOCKED_TEMPLATE_MISSING`
+- `BLOCKED_PLACEHOLDER_MISSING`
+- `BLOCKED_UNSAFE_RENDER`
+- `BLOCKED_COMPOSITION_CONFLICT`
+
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` declares the managed
+artifact policy:
+
+- generated artifacts must contain a Sentinel managed notice;
+- artifacts without a valid managed notice must not be overwritten
+  automatically;
+- manual-file collisions block with `BLOCKED_UNMANAGED_COLLISION`;
+- invalid managed notices block with `BLOCKED_INVALID_MANAGED_NOTICE`;
+- managed status is not inferred from path shape alone.
+
 ## Template Placeholder Checks
 
 Confirm `reference/templates/copilot/agent.md` contains all required
@@ -159,6 +221,11 @@ Confirm both explicit agent templates and
 authorize runtime materialization, runtime scripts, target-project writes,
 GitHub writes, or writes to `.github/**`, `.codex/**`, or `AGENTS.md`.
 
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` states that it does
+not authorize runtime scripts, target writes, generated outputs, target project
+mutation, productive skill changes, GitHub writes, inferred templates, or
+overwrite of manual files.
+
 ## Rendering Safety Checks
 
 Confirm `contracts/RENDERING_AND_COMPOSITION_CONTRACT.md` requires:
@@ -195,6 +262,10 @@ Confirm the materialization lab does not authorize:
 
 Confirm `contracts/RENDERING_AND_COMPOSITION_CONTRACT.md` does not authorize
 runtime scripts or target writes.
+
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` requires a dry-run
+output plan before any future write and blocks any write attempted without an
+approved dry-run output plan with `BLOCKED_DRY_RUN_REQUIRED`.
 
 ## Legacy Rewrite Guard
 

@@ -13,8 +13,8 @@ The canonical documentary/dev-only reference bundle is organized as:
 - `reference/materialization_lab/`: documentary/dev-only contracts for the
   future senior-agent materialization rewrite, including the canonical target
   IDs, explicit template and output-shape contract, missing-template blocking
-  rules, rendering/composition contract, and validation expectations. This is
-  not a runtime materializer.
+  rules, rendering/composition contract, dry-run/write-boundary contract, and
+  validation expectations. This is not a runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
   `contracts/` layer, and integrated seniorization validations.
 - `reference/templates/`: reference/template material only; it is not
@@ -36,10 +36,13 @@ The canonical documentary/dev-only reference bundle is organized as:
   contract for canonical `copilot` and `codex` outputs. It also defines the
   documentary render-context composition contract for deterministic composition
   from base agents, Senior Agent Profiles, explicit templates, and
-  target/template contracts. This phase does not authorize runtime
-  materialization, target-repository writes, productive-skill changes,
-  productive-template changes, GitHub writes, inferred templates, inferred
-  senior profiles, generated outputs, runtime scripts, or a final materializer.
+  target/template contracts, plus the documentary dry-run output-plan and
+  write-boundary contract for future planned artifacts. This phase does not
+  authorize runtime materialization, target-repository writes,
+  productive-skill changes, productive-template changes, GitHub writes,
+  inferred templates, inferred senior profiles, generated outputs, runtime
+  scripts, target project mutation, overwrite of manual files, or a final
+  materializer.
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
   inventories the explicit templates currently present under
   `reference/templates/`, records that the canonical `copilot` agent and
@@ -54,6 +57,16 @@ The canonical documentary/dev-only reference bundle is organized as:
   and fail-closed blocking via `BLOCKED_SOURCE_MISSING`,
   `BLOCKED_TEMPLATE_MISSING`, `BLOCKED_PLACEHOLDER_MISSING`,
   `BLOCKED_UNSAFE_RENDER`, and `BLOCKED_COMPOSITION_CONFLICT`.
+- `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
+  defines the documentary/dev-only dry-run output-plan and write-boundary layer
+  for future planned artifacts. It requires planned operations only
+  (`CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`,
+  `BLOCKED_PLANNED`), target-root-relative paths for `copilot` and `codex`,
+  managed-artifact notice checks, drift classification, and fail-closed
+  blocking via `BLOCKED_TARGET_ROOT_INVALID`, `BLOCKED_PATH_UNSAFE`,
+  `BLOCKED_UNMANAGED_COLLISION`, `BLOCKED_INVALID_MANAGED_NOTICE`, and
+  `BLOCKED_DRY_RUN_REQUIRED`, while preserving the earlier source, template,
+  placeholder, render-safety, and composition block codes.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
