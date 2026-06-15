@@ -56,6 +56,16 @@ writing a target project, creating fixtures, creating generated outputs,
 writing GitHub, changing the productive skill, or performing real
 materialization.
 
+The validator output
+`MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS` may be accepted only when
+`scripts/materialization_lab/check-render-context.mjs` exists in the
+authorized materialization-lab script path and the render-context
+planner/checker validates the abstract render-context matrix without accepting
+a target project path, reading a target project, writing a target project,
+creating fixtures, creating generated outputs, creating persistent reports,
+writing GitHub, changing the productive skill, or performing real
+materialization.
+
 ## Required Criteria
 
 - The ten materialization lab files exist in
@@ -180,6 +190,69 @@ materialization.
   `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS` when the template coverage
   bundle passes, or `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: FAIL` with a
   clear failure list when it does not.
+- `scripts/materialization_lab/check-render-context.mjs` exists as the
+  separately authorized dev-only render-context planner/checker implementation.
+- `scripts/materialization_lab/check-render-context.mjs` is read-only, uses
+  Node.js ESM, has no external package dependency, ignores `__MACOSX` and
+  `.DS_Store`, rejects target project path arguments, and reads only inside
+  `skills/stnl_project_agent_specializer_dev/`.
+- `scripts/materialization_lab/check-render-context.mjs` validates exactly the
+  12 canonical agent IDs, exactly the canonical targets `copilot` and `codex`,
+  the explicit kebab-case agent ID to underscore profile directory mapping,
+  and the existence of the three earlier materialization-lab validators.
+- `scripts/materialization_lab/check-render-context.mjs` validates every
+  `agent+target` pair has a base agent source, Senior Agent Profile source,
+  explicit template source, target contract source, template/output contract
+  source, and rendering/composition contract source.
+- `scripts/materialization_lab/check-render-context.mjs` validates
+  `reference/templates/copilot/agent.md` for `copilot` and
+  `reference/templates/codex/agent.toml` for `codex`.
+- `scripts/materialization_lab/check-render-context.mjs` validates common
+  placeholder values for `{{AGENT_ID}}`, `{{AGENT_NAME}}`,
+  `{{AGENT_DESCRIPTION}}`, `{{AGENT_BODY}}`, `{{TARGET_ID}}`,
+  `{{GENERATED_NOTICE}}`, and `{{SOURCE_VERSION}}` for every `agent+target`
+  pair.
+- `scripts/materialization_lab/check-render-context.mjs` validates Copilot
+  target-specific placeholder values for `{{AGENT_TOOLS}}`,
+  `{{AGENT_MODEL}}`, `{{SPECIALIZATION_REVISION}}`,
+  `{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}`, and
+  `{{READING_SCOPE_CLASS_BLOCK}}`, and validates Codex target-specific
+  placeholder values for `{{AGENT_MODEL}}`,
+  `{{MODEL_REASONING_EFFORT}}`, and `{{SANDBOX_MODE}}`.
+- `scripts/materialization_lab/check-render-context.mjs` validates every
+  abstract render context includes `agent_id`, `target_id`,
+  `base_agent_source`, `senior_profile_source`, `template_source`,
+  `target_contract_source`, `template_contract_source`,
+  `rendering_contract_source`, `required_placeholder_values`,
+  `target_specific_placeholder_values`, `escaping_mode`, `safety_verdict`,
+  `source_version_input`, `generated_notice_representation`, and
+  `composition_conflict_verdict`.
+- `scripts/materialization_lab/check-render-context.mjs` validates
+  `orchestrator+copilot` requires
+  `{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}`, while non-orchestrator `copilot`
+  contexts permit `{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}` as an empty valid
+  string.
+- `scripts/materialization_lab/check-render-context.mjs` validates YAML-safe
+  mode for `copilot` render contexts and TOML-safe mode for `codex` render
+  contexts.
+- `scripts/materialization_lab/check-render-context.mjs` recognizes
+  `BLOCKED_SOURCE_MISSING`, `BLOCKED_TEMPLATE_MISSING`,
+  `BLOCKED_PLACEHOLDER_MISSING`, `BLOCKED_UNSAFE_RENDER`, and
+  `BLOCKED_COMPOSITION_CONFLICT`.
+- `scripts/materialization_lab/check-render-context.mjs` validates its own
+  registration in `reference/MANIFEST.md`,
+  `reference/materialization_lab/validation/STATIC_CHECKS.md`, and
+  `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`.
+- `scripts/materialization_lab/check-render-context.mjs` does not authorize
+  target reads, target writes, fixtures, generated outputs, persistent reports,
+  GitHub writes, productive skill changes, changes to
+  `skills/stnl_project_agent_specializer/`, productive-template changes,
+  historical-audit changes, runtime materializer behavior, target read/write,
+  or real materialization.
+- `scripts/materialization_lab/check-render-context.mjs` prints
+  `MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS` when the abstract render-context
+  matrix passes, or `MATERIALIZATION_RENDER_CONTEXT_CHECK: FAIL` with a clear
+  failure list when it does not.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
 - Historical references in audits, profiles, and old contracts are protected
@@ -362,6 +435,12 @@ materialization.
   dry-run output correctness, target safety against a real repo, fixture
   readiness, generated output readiness, GitHub write readiness, productive
   skill readiness, or real materialization readiness.
+- `MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS` is valid only as evidence that
+  the dev-only abstract render-context matrix and checker registration passed;
+  it is not evidence of materialized render output, dry-run output correctness,
+  target safety against a real repo, fixture readiness, generated output
+  readiness, report readiness, GitHub write readiness, productive skill
+  readiness, or real materialization readiness.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -441,3 +520,13 @@ GitHub writes, real materialization, runtime materializer behavior, external
 packages, undocumented assumptions, target project path arguments, reading
 outside `skills/stnl_project_agent_specializer_dev/`, target read/write, or
 mutation of `.github/**`, `.codex/**`, or `AGENTS.md`.
+
+Do not accept `MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS` if the checker
+depends on target reads, target writes, fixtures, generated outputs,
+persistent reports, productive-skill edits, productive-template edits,
+historical-audit edits, GitHub writes, real materialization, runtime
+materializer behavior, external packages, undocumented assumptions, target
+project path arguments, reading outside
+`skills/stnl_project_agent_specializer_dev/`, target read/write, mutation of
+`.github/**`, `.codex/**`, or `AGENTS.md`, or changes to
+`skills/stnl_project_agent_specializer/`.

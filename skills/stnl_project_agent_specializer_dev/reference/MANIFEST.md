@@ -119,6 +119,16 @@ The canonical documentary/dev-only reference bundle is organized as:
   productive skill changes, productive-template changes, historical-audit
   changes, runtime materializer behavior, target read/write, or real
   materialization.
+- `scripts/materialization_lab/check-render-context.mjs` is the separately
+  authorized dev-only render-context planner/checker for the materialization
+  lab. It is read-only, has no external package dependency, validates only the
+  dev skill abstract render-context matrix and registrations, ignores
+  `__MACOSX` and `.DS_Store`, rejects target project path arguments, and does
+  not authorize target reads, target writes, fixtures, generated outputs,
+  persistent reports, GitHub writes, productive skill changes, changes to
+  `skills/stnl_project_agent_specializer/`, productive-template changes,
+  historical-audit changes, runtime materializer behavior, target read/write,
+  or real materialization.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -371,6 +381,7 @@ Required files:
 - `scripts/materialization_lab/check-static.mjs`
 - `scripts/materialization_lab/check-source-inventory.mjs`
 - `scripts/materialization_lab/check-template-coverage.mjs`
+- `scripts/materialization_lab/check-render-context.mjs`
 - `reference/templates/copilot/agent.md`
 - `reference/templates/codex/agent.toml`
 - `reference/templates/codex/AGENTS.md`

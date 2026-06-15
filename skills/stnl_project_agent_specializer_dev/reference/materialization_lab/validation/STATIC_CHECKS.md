@@ -90,6 +90,33 @@ Confirm the expected successful validator output is exactly:
 
 - `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS`
 
+Confirm the separately authorized dev-only render-context planner/checker
+exists:
+
+- `scripts/materialization_lab/check-render-context.mjs`
+
+Confirm `scripts/materialization_lab/check-render-context.mjs` is a read-only
+Node.js ESM render-context planner/checker with no external package
+dependency.
+
+Confirm the render-context planner/checker ignores `__MACOSX` and `.DS_Store`.
+
+Confirm the render-context planner/checker rejects target project path
+arguments, does not read outside
+`skills/stnl_project_agent_specializer_dev/`, does not perform target
+read/write, does not create fixtures, does not generate final artifacts, and
+does not create persistent reports.
+
+Confirm the render-context planner/checker does not authorize target reads,
+target writes, fixtures, generated outputs, reports, GitHub writes,
+productive skill changes, changes to `skills/stnl_project_agent_specializer/`,
+productive-template changes, historical-audit changes, runtime materializer
+behavior, target read/write, or real materialization.
+
+Confirm the expected successful validator output is exactly:
+
+- `MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS`
+
 ## Contract Anchors
 
 Confirm `contracts/TARGETS_CONTRACT.md` contains all required anchors:
@@ -380,7 +407,9 @@ Confirm the current separately authorized implementation is limited to
 and `scripts/materialization_lab/check-source-inventory.mjs` as a source
 inventory validator, plus
 `scripts/materialization_lab/check-template-coverage.mjs` as a template
-coverage validator.
+coverage validator, plus
+`scripts/materialization_lab/check-render-context.mjs` as a render-context
+planner/checker.
 
 Confirm that this implementation remains dev-only and read-only and does not
 create reports, fixtures, generated artifacts, target artifacts, `.github/**`,
@@ -490,6 +519,117 @@ for `.github/agents/<agent>.agent.md`, `.codex/agents/<agent>.toml`,
 Confirm the template coverage validator validates that `reference/MANIFEST.md`
 lists the four templates and
 `scripts/materialization_lab/check-template-coverage.mjs`.
+
+## Render Context Planner/Checker Checks
+
+Confirm `scripts/materialization_lab/check-render-context.mjs` validates
+exactly the 12 canonical agent IDs:
+
+- `orchestrator`
+- `planner`
+- `validation-eval-designer`
+- `execution-package-designer`
+- `designer`
+- `coder-frontend`
+- `coder-backend`
+- `coder-ios`
+- `validation-runner`
+- `reviewer`
+- `finalizer`
+- `resync`
+
+Confirm the render-context planner/checker validates exactly the two canonical
+targets:
+
+- `copilot`
+- `codex`
+
+Confirm the render-context planner/checker validates every `agent+target` pair
+has explicit sources for:
+
+- base agent source;
+- Senior Agent Profile source;
+- explicit template source;
+- target contract source;
+- template/output contract source;
+- rendering/composition contract source.
+
+Confirm the render-context planner/checker validates the explicit agent
+template source for each target:
+
+- `copilot`: `reference/templates/copilot/agent.md`
+- `codex`: `reference/templates/codex/agent.toml`
+
+Confirm the render-context planner/checker validates common placeholder values
+for every `agent+target` pair:
+
+- `{{AGENT_ID}}`
+- `{{AGENT_NAME}}`
+- `{{AGENT_DESCRIPTION}}`
+- `{{AGENT_BODY}}`
+- `{{TARGET_ID}}`
+- `{{GENERATED_NOTICE}}`
+- `{{SOURCE_VERSION}}`
+
+Confirm the render-context planner/checker validates target-specific
+placeholder values:
+
+- `copilot`: `{{AGENT_TOOLS}}`, `{{AGENT_MODEL}}`,
+  `{{SPECIALIZATION_REVISION}}`,
+  `{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}`, and
+  `{{READING_SCOPE_CLASS_BLOCK}}`
+- `codex`: `{{AGENT_MODEL}}`, `{{MODEL_REASONING_EFFORT}}`, and
+  `{{SANDBOX_MODE}}`
+
+Confirm the render-context planner/checker validates that every abstract render
+context contains:
+
+- `agent_id`
+- `target_id`
+- `base_agent_source`
+- `senior_profile_source`
+- `template_source`
+- `target_contract_source`
+- `template_contract_source`
+- `rendering_contract_source`
+- `required_placeholder_values`
+- `target_specific_placeholder_values`
+- `escaping_mode`
+- `safety_verdict`
+- `source_version_input`
+- `generated_notice_representation`
+- `composition_conflict_verdict`
+
+Confirm the render-context planner/checker validates that
+`orchestrator+copilot` requires
+`{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}`.
+
+Confirm the render-context planner/checker validates that non-orchestrator
+`copilot` contexts permit `{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}` as an empty
+valid string.
+
+Confirm the render-context planner/checker validates that `copilot` contexts
+use YAML-safe mode and `codex` contexts use TOML-safe mode.
+
+Confirm the render-context planner/checker recognizes these rendering and
+composition block codes:
+
+- `BLOCKED_SOURCE_MISSING`
+- `BLOCKED_TEMPLATE_MISSING`
+- `BLOCKED_PLACEHOLDER_MISSING`
+- `BLOCKED_UNSAFE_RENDER`
+- `BLOCKED_COMPOSITION_CONFLICT`
+
+Confirm the render-context planner/checker validates that
+`reference/MANIFEST.md` lists
+`scripts/materialization_lab/check-render-context.mjs`.
+
+Confirm the render-context planner/checker validates that the three earlier
+materialization-lab scripts still exist:
+
+- `scripts/materialization_lab/check-static.mjs`
+- `scripts/materialization_lab/check-source-inventory.mjs`
+- `scripts/materialization_lab/check-template-coverage.mjs`
 
 ## Template Placeholder Checks
 
