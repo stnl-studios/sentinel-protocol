@@ -32,6 +32,20 @@ Expected result:
   `.codex/config.toml`, and `AGENTS.md`
 - no target write is performed during this contract phase
 
+### Target With Explicit Template
+
+Input:
+
+- requested target: `codex`
+- requested output shape: `AGENTS.md`
+- explicit template: `reference/templates/codex/AGENTS.md`
+
+Expected result:
+
+- template source is accepted as explicit
+- output shape is recognized as `codex`: `AGENTS.md`
+- no target write is performed during this contract phase
+
 ## Negative Scenarios
 
 ### Missing Explicit Template
@@ -46,6 +60,49 @@ Expected result:
 
 - block before writing
 - return `BLOCKED_TEMPLATE_MISSING`
+
+### Copilot Without Explicit Template
+
+Input:
+
+- requested target: `copilot`
+- requested output shape: `.github/agents/*.agent.md`
+- no explicit `copilot` template exists in the dev skill
+
+Expected result:
+
+- block before writing
+- return `BLOCKED_TEMPLATE_MISSING`
+
+### Productive Template Reuse Attempt
+
+Input:
+
+- requested target: `copilot` or `codex`
+- requested output shape has no explicit dev-skill template
+- implementation attempts to reuse a productive
+  `skills/stnl_project_agent_specializer/` template automatically
+
+Expected result:
+
+- block before writing
+- return `BLOCKED_TEMPLATE_MISSING`
+- explain that productive templates may be read only as conceptual reference
+  in this phase, never as an automatic source of writing
+
+### Infer Template By Path
+
+Input:
+
+- requested output path: `.github/agents/planner.agent.md` or
+  `.codex/agents/planner.toml`
+- no explicit template is declared for the corresponding output shape
+
+Expected result:
+
+- block before writing
+- return `BLOCKED_TEMPLATE_MISSING`
+- explain that output paths do not imply template availability
 
 ### Productive Skill Mutation
 
