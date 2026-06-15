@@ -292,6 +292,40 @@ Expected result:
 - no generated output, fixture, productive skill change, GitHub write, or real
   materialization is performed
 
+### Future Fixture Root Inside Authorized Path
+
+Input:
+
+- future fixture root:
+  `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/example-target/`
+- authorization status: later step explicitly authorizes fixture creation
+
+Expected result:
+
+- fixture root is eligible for a later dev-only fixture step
+- fixture represents a simulated target project root
+- no fixture is created during this contract phase
+- no target real read/write, GitHub write, productive skill change, runtime
+  materializer, or real materialization is performed
+
+### Future Fixture Target Artifacts Inside Authorized Root
+
+Input:
+
+- future fixture root:
+  `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/example-target/`
+- future fixture files: `.github/**`, `.codex/**`, and `AGENTS.md`
+- authorization status: later step explicitly authorizes fixture creation
+
+Expected result:
+
+- `.github/**`, `.codex/**`, and `AGENTS.md` are eligible only because they
+  are inside the authorized fixture root
+- those paths remain prohibited outside the authorized fixture root
+- no fixture is created during this contract phase
+- no target real read/write, GitHub write, productive skill change, runtime
+  materializer, or real materialization is performed
+
 ## Negative Scenarios
 
 ### Missing Explicit Template
@@ -654,3 +688,65 @@ Expected result:
 
 - block script creation under the documentary implementation boundary
 - return `BLOCKED_IMPLEMENTATION_SCOPE_INVALID`
+
+### Fixture Outside Authorized Path
+
+Input:
+
+- requested fixture root:
+  `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/tmp-fixtures/example-target/`
+- authorization status: later fixture step is not scoped to this path
+
+Expected result:
+
+- block before fixture creation or fixture validation
+- return `BLOCKED_FIXTURE_PATH_UNAUTHORIZED`
+
+### Real Target Used As Fixture
+
+Input:
+
+- requested fixture root: a real target project root
+- fixture mode attempts to treat the real project as fixture data
+
+Expected result:
+
+- block before target read/write
+- return `BLOCKED_FIXTURE_TARGET_REAL`
+
+### Fixture Write Outside Fixture Root
+
+Input:
+
+- requested fixture root:
+  `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/example-target/`
+- future fixture setup attempts to write `../outside-fixture/AGENTS.md`
+
+Expected result:
+
+- block before writing
+- return `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`
+
+### Unauthorized Fixture Output
+
+Input:
+
+- future fixture checker attempts to create a persistent report or generated
+  output not explicitly authorized by the later fixture step
+
+Expected result:
+
+- block before output creation
+- return `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`
+
+### Fixture Escapes Dev Skill
+
+Input:
+
+- requested fixture path resolves outside
+  `skills/stnl_project_agent_specializer_dev/`
+
+Expected result:
+
+- block before fixture creation, fixture validation, or output planning
+- return `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`

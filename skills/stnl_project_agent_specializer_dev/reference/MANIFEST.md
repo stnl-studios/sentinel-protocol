@@ -14,8 +14,9 @@ The canonical documentary/dev-only reference bundle is organized as:
   future senior-agent materialization rewrite, including the canonical target
   IDs, explicit template and output-shape contract, missing-template blocking
   rules, rendering/composition contract, dry-run/write-boundary contract,
-  validation harness contract, implementation-boundary contract, and validation
-  expectations. This is not a runtime materializer.
+  validation harness contract, implementation-boundary contract,
+  fixture-boundary contract, and validation expectations. This is not a
+  runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
   `contracts/` layer, and integrated seniorization validations.
 - `reference/templates/`: reference/template material only; it is not
@@ -41,8 +42,10 @@ The canonical documentary/dev-only reference bundle is organized as:
   write-boundary contract for future planned artifacts, plus the documentary
   validation harness contract for future pre-materialization validation and
   dry-run smoke reporting, plus the documentary implementation-boundary
-  contract for a later separately authorized dev-only script layer. This phase
-  does not authorize runtime materialization, runtime script creation,
+  contract for a later separately authorized dev-only script layer, plus the
+  documentary fixture-boundary contract for a later separately authorized
+  controlled fixture layer. This phase does not authorize runtime
+  materialization, runtime script creation,
   target-repository writes, productive-skill changes, productive-template
   changes, GitHub writes, inferred templates, inferred senior profiles,
   generated outputs, runtime scripts, fixtures, target project mutation,
@@ -94,6 +97,22 @@ The canonical documentary/dev-only reference bundle is organized as:
   target dry-run access; forbids target, productive-skill, productive-template,
   historical-audit, and GitHub writes; and blocks unauthorized scope, paths,
   write capability, target mutation, productive mutation, and outputs.
+- `reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md`
+  defines the documentary/dev-only fixture boundary for possible future
+  controlled fixtures. It states that this task does not create fixtures; that
+  fixture creation may occur only in a later explicitly authorized step; that
+  the only future fixture root currently eligible for authorization is
+  `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`;
+  that future fixtures must simulate controlled target project roots and never
+  use real target project roots; that `.github/**`, `.codex/**`, and
+  `AGENTS.md` may appear only inside an authorized fixture root and remain
+  prohibited outside it; that future fixture scripts/checkers must accept only
+  paths inside the authorized fixture root; and that fixtures do not authorize
+  target real read/write, GitHub writes, productive-skill changes, real
+  materialization, runtime materializer, or overwrite of manual files outside a
+  fixture. It blocks invalid scope, unauthorized fixture paths, real target
+  roots, writes outside root, unauthorized outputs, and paths escaping the dev
+  skill.
 - `scripts/materialization_lab/check-static.mjs` is the first separately
   authorized dev-only static contract validator for the materialization lab. It
   is read-only, has no external package dependency, validates only the dev
@@ -386,6 +405,7 @@ Required files:
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
+- `reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`

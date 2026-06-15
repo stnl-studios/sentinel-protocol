@@ -32,6 +32,13 @@ declared only when the documentary implementation boundary, future dev-only
 script scope, authorized script path, read boundary, write prohibition, output
 authorization, and block-code criteria below are also satisfied.
 
+The verdict
+`MATERIALIZATION_FIXTURE_BOUNDARY_CONTRACT: EXCELLENT PASS` may be declared
+only when the documentary fixture boundary, future fixture root, fixture
+target-artifact containment, real-target prohibition, future fixture
+script/checker path restriction, non-authorization limits, and block-code
+criteria below are also satisfied.
+
 The validator output
 `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` may be accepted only when
 `scripts/materialization_lab/check-static.mjs` exists in the authorized
@@ -78,7 +85,7 @@ performing real materialization.
 
 ## Required Criteria
 
-- The ten materialization lab files exist in
+- The eleven materialization lab files exist in
   `reference/materialization_lab/`.
 - `TARGETS_CONTRACT.md` declares `copilot` and `codex` as the only canonical
   target IDs for the new version.
@@ -133,6 +140,35 @@ performing real materialization.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` denies script creation, runtime
   execution, fixtures, target writes, generated outputs, productive skill
   changes, GitHub writes, and real materialization.
+- `FIXTURE_BOUNDARY_CONTRACT.md` exists and is classified as
+  documentary/dev-only.
+- `FIXTURE_BOUNDARY_CONTRACT.md` states that this task does not create
+  fixtures.
+- `FIXTURE_BOUNDARY_CONTRACT.md` states that fixture creation may occur only in
+  a later explicitly authorized step.
+- `FIXTURE_BOUNDARY_CONTRACT.md` declares
+  `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`
+  as the only future fixture root currently eligible for authorization.
+- `FIXTURE_BOUNDARY_CONTRACT.md` requires future fixtures to simulate
+  controlled target project roots and never use a real target project root.
+- `FIXTURE_BOUNDARY_CONTRACT.md` allows `.github/**`, `.codex/**`, and
+  `AGENTS.md` only inside an authorized fixture root and keeps those paths
+  prohibited outside that root.
+- `FIXTURE_BOUNDARY_CONTRACT.md` requires future fixture scripts/checkers to
+  accept only fixture paths inside the authorized fixture root.
+- `FIXTURE_BOUNDARY_CONTRACT.md` limits future fixture tests to controlled
+  checks such as path safety, managed notice detection, unmanaged collision,
+  invalid managed notice, drift classification, dry-run report shape, and
+  no-write enforcement.
+- `FIXTURE_BOUNDARY_CONTRACT.md` does not authorize target real read/write,
+  GitHub writes, productive skill changes, real materialization, runtime
+  materializer, or overwrite of manual files outside a fixture.
+- `FIXTURE_BOUNDARY_CONTRACT.md` declares
+  `BLOCKED_FIXTURE_SCOPE_INVALID`,
+  `BLOCKED_FIXTURE_PATH_UNAUTHORIZED`, `BLOCKED_FIXTURE_TARGET_REAL`,
+  `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`,
+  `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`, and
+  `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`.
 - `scripts/materialization_lab/check-static.mjs` exists as the first
   separately authorized dev-only static contract validator implementation.
 - `scripts/materialization_lab/check-static.mjs` is read-only, uses Node.js ESM,
@@ -482,6 +518,20 @@ performing real materialization.
 - The implementation-boundary contract blocks attempts to create scripts in
   this documentary phase unless a later implementation step has explicitly
   authorized script creation.
+- The fixture-boundary contract blocks invalid fixture scope with
+  `BLOCKED_FIXTURE_SCOPE_INVALID`.
+- The fixture-boundary contract blocks fixture paths outside
+  `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`
+  with `BLOCKED_FIXTURE_PATH_UNAUTHORIZED`.
+- The fixture-boundary contract blocks real target project roots used as
+  fixtures with `BLOCKED_FIXTURE_TARGET_REAL`.
+- The fixture-boundary contract blocks writes outside the authorized fixture
+  root with `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`.
+- The fixture-boundary contract blocks unauthorized fixture outputs with
+  `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`.
+- The fixture-boundary contract blocks fixture paths, scripts, checkers, or
+  outputs that escape `skills/stnl_project_agent_specializer_dev/` with
+  `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`.
 - The current separately authorized implementation step is limited to
   `scripts/materialization_lab/check-static.mjs` as a read-only static contract
   validator.
@@ -569,6 +619,17 @@ template edits, historical-audit edits, GitHub writes, real materialization,
 runtime materializer, unauthorized script paths, unauthorized write capability,
 non-read-only target access, unauthorized outputs, unknown script categories,
 or undocumented assumptions.
+
+Do not declare
+`MATERIALIZATION_FIXTURE_BOUNDARY_CONTRACT: EXCELLENT PASS` if any check
+depends on fixture creation in this task, fixture paths outside
+`skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`,
+real target project roots, target real read/write, `.github/**`, `.codex/**`,
+or `AGENTS.md` outside an authorized fixture root, GitHub writes,
+productive-skill edits, real materialization, runtime materializer behavior,
+overwrite of manual files outside a fixture, unauthorized fixture outputs,
+paths escaping `skills/stnl_project_agent_specializer_dev/`, or undocumented
+assumptions.
 
 Do not accept `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` if the checker
 depends on target reads, target writes, fixtures, generated outputs,

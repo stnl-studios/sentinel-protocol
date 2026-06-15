@@ -8,7 +8,7 @@ projects.
 
 ## Required Files
 
-Confirm the ten materialization lab files exist:
+Confirm the eleven materialization lab files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
@@ -17,6 +17,7 @@ Confirm the ten materialization lab files exist:
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
+- `reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
@@ -428,6 +429,52 @@ Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` does not authorize
 script creation, runtime execution, fixtures, target writes, generated outputs,
 productive skill changes, GitHub writes, real materialization, runtime
 materializer, or fixture creation.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` exists and is classified as
+documentary/dev-only.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that this task does
+not create fixtures.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that fixture creation
+may occur only in a later explicitly authorized step.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` declares the only future
+fixture root currently eligible for authorization:
+
+- `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that future fixtures
+must simulate controlled target project roots and must never use a real target
+project root.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that `.github/**`,
+`.codex/**`, and `AGENTS.md` may appear only inside an authorized fixture root
+and remain prohibited outside that root.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that future fixture
+scripts/checkers must accept only fixture paths inside the authorized fixture
+root.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that future fixture
+tests may validate path safety, managed notice detection, unmanaged collision,
+invalid managed notice, drift classification, dry-run report shape, and
+no-write enforcement.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that future fixtures do
+not authorize target real read/write, GitHub writes, productive skill changes,
+real materialization, runtime materializer, or overwrite of manual files
+outside a fixture.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` contains all six
+fixture-boundary block codes:
+
+- `BLOCKED_FIXTURE_SCOPE_INVALID`
+- `BLOCKED_FIXTURE_PATH_UNAUTHORIZED`
+- `BLOCKED_FIXTURE_TARGET_REAL`
+- `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`
+- `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`
+- `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`
 
 Confirm the current separately authorized implementation is limited to
 `scripts/materialization_lab/check-static.mjs` as a static contract validator
@@ -920,6 +967,27 @@ productive-skill or productive-template mutation with
 
 Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` blocks future outputs
 that are not explicitly authorized with `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` blocks invalid fixture scope
+with `BLOCKED_FIXTURE_SCOPE_INVALID`.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` blocks fixture paths outside
+`skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`
+with `BLOCKED_FIXTURE_PATH_UNAUTHORIZED`.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` blocks any real target
+project root used as a fixture with `BLOCKED_FIXTURE_TARGET_REAL`.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` blocks any write outside the
+authorized fixture root with `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` blocks unauthorized fixture
+outputs with `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`.
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` blocks fixture paths, scripts,
+checkers, or outputs that escape
+`skills/stnl_project_agent_specializer_dev/` with
+`BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`.
 
 ## Legacy Rewrite Guard
 

@@ -14,6 +14,8 @@ defines the documentary implementation boundary for a later, separately
 authorized dev-only script layer. It does not authorize runtime
 materialization, runtime script creation, target-repository writes,
 productive-skill changes, GitHub writes, or changes to productive templates.
+It also defines the fixture-boundary contract for possible future controlled
+fixtures inside the dev skill, without creating fixtures in this task.
 
 ## Canonical Scope
 
@@ -37,6 +39,12 @@ productive-skill changes, GitHub writes, or changes to productive templates.
   layer. It lists allowed future script categories, script locations, read
   sources, write prohibitions, output limits, and implementation-boundary block
   codes, but does not create or authorize scripts in this phase.
+- `contracts/FIXTURE_BOUNDARY_CONTRACT.md`: documentary/dev-only fixture
+  boundary for a later, separately authorized fixture step. It declares the
+  only future fixture root, limits fixture target-artifact paths to that root,
+  and preserves the prohibition on real target read/write, GitHub writes,
+  productive-skill changes, real materialization, runtime materializer
+  behavior, and overwrites of manual files outside fixtures.
 - `validation/STATIC_CHECKS.md`: required static checks for this contract
   phase.
 - `validation/GOLDEN_SCENARIOS.md`: minimum positive and negative scenarios
@@ -139,3 +147,20 @@ Implementation-boundary failures block with
 `BLOCKED_SCRIPT_PATH_UNAUTHORIZED`, `BLOCKED_SCRIPT_WRITE_CAPABILITY`,
 `BLOCKED_SCRIPT_TARGET_MUTATION`, `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`, or
 `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
+
+Fixture-boundary planning is also contract-only in this phase. This task does
+not create fixtures. Fixture creation may occur only in a later explicitly
+authorized step, and the only future fixture root currently eligible for that
+authorization is
+`skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`.
+Future fixtures must simulate controlled target project roots and must never
+use a real target project root. Future fixture scripts/checkers must accept
+only paths inside the authorized fixture root. `.github/**`, `.codex/**`, and
+`AGENTS.md` may appear only inside an authorized fixture root; those paths
+remain prohibited outside that root.
+
+Fixture-boundary failures block with `BLOCKED_FIXTURE_SCOPE_INVALID`,
+`BLOCKED_FIXTURE_PATH_UNAUTHORIZED`, `BLOCKED_FIXTURE_TARGET_REAL`,
+`BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`,
+`BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`, or
+`BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`.
