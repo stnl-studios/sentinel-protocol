@@ -8,6 +8,19 @@ description: Area experimental para validar kernelizacao documental de agents Se
 > Experimental: esta skill dev é uma área isolada para evolução controlada e
 > não substitui `stnl_project_agent_specializer`.
 
+## Organização Da Reference
+
+A referência canônica dev está em `reference/` e deve ser tratada como
+documental/dev-only:
+
+- `reference/agents/`: base agents canônicos usados como snapshots dev locais.
+- `reference/kernel_lab/`: lab canônica dos 12 kernels documentais/dev-only.
+- `reference/seniorization_lab/`: lab canônica dos 12 Senior Agent Profiles.
+- `reference/seniorization_lab/contracts/`: contratos compartilhados
+  documentais/dev-only da seniorization lab.
+- `reference/templates/`: material de referência/template, não materialização.
+- `reference/MANIFEST.md`: índice canônico do bundle dev.
+
 ## Foco Atual
 
 Esta skill dev não é o caminho ativo para materializar agents em repo alvo.

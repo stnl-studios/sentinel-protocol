@@ -62,6 +62,5 @@ This directory is not:
 - a target repository output;
 - a generated agent pack;
 - a replacement for `reference/agents/*.agent.md`;
-- a replacement for `reference/*_kernel/**`;
+- a replacement for `reference/kernel_lab/*_kernel/**`;
 - a shortcut for testing fewer than all 12 profiles.
-

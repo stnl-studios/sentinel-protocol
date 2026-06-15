@@ -27,7 +27,7 @@ Nao foram encontrados blockers materiais.
 Auditado:
 
 - `skills/stnl_project_agent_specializer_dev/reference/seniorization_lab/`
-- `skills/stnl_project_agent_specializer_dev/reference/*_kernel/README.md`
+- `skills/stnl_project_agent_specializer_dev/reference/kernel_lab/*_kernel/README.md`
 - `skills/stnl_project_agent_specializer_dev/reference/agents/*.agent.md`
 
 Usado apenas para ancora/boundary quando necessario:

@@ -4,6 +4,17 @@ Esta skill dev é uma área experimental isolada. Ela não substitui
 `stnl_project_agent_specializer` e não é, neste momento, o caminho ativo para
 materializar agents em um repo alvo.
 
+## Organização Da Reference
+
+A referência canônica dev está em `reference/` e é documental/dev-only:
+
+- `reference/agents/`: base agents canônicos usados como snapshots dev locais.
+- `reference/kernel_lab/`: lab canônica dos 12 kernels documentais/dev-only.
+- `reference/seniorization_lab/`: lab canônica dos 12 Senior Agent Profiles,
+  incluindo `contracts/` e validações integradas.
+- `reference/templates/`: material de referência/template, não materialização.
+- `reference/MANIFEST.md`: índice canônico do bundle dev.
+
 O foco imediato mudou para validação de kernelização de agents fora do fluxo de
 materialização da skill. O kernel lab contém `orchestrator_kernel`,
 `planner_kernel`, `validation_eval_designer_kernel`,

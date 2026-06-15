@@ -2,6 +2,21 @@
 
 Skill: `stnl_project_agent_specializer_dev`
 
+## Canonical reference organization
+
+The canonical documentary/dev-only reference bundle is organized as:
+
+- `reference/agents/`: canonical base agents used as local dev snapshots for
+  comparison and anchoring.
+- `reference/kernel_lab/`: the 12 documentary/dev-only kernels and their
+  contracts, validations, and read-only harnesses.
+- `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
+  `contracts/` layer, and integrated seniorization validations.
+- `reference/templates/`: reference/template material only; it is not
+  materialization, a generated artifact target, or a runtime output path.
+- `reference/MANIFEST.md`: this manifest, the canonical index for the dev
+  reference bundle.
+
 ## Current status
 
 - `orchestrator_kernel` is frozen as `CLEAN_EXCELLENT_PASS`.

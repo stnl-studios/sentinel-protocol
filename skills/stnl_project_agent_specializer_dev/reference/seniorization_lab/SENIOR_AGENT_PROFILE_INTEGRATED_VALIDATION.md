@@ -33,7 +33,7 @@ Audited and aligned:
 
 Used as documentary anchors only:
 
-- corresponding `reference/*_kernel/**` bundles;
+- corresponding `reference/kernel_lab/*_kernel/**` bundles;
 - corresponding `reference/agents/*.agent.md` base agents.
 
 Out of scope and not altered:
@@ -186,4 +186,3 @@ None.
 ## Final Verdict
 
 `SENIOR_AGENT_PROFILE_INTEGRATED_VALIDATION: EXCELLENT PASS`
-
