@@ -117,6 +117,33 @@ Confirm the expected successful validator output is exactly:
 
 - `MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS`
 
+Confirm the separately authorized dev-only dry-run output plan checker exists:
+
+- `scripts/materialization_lab/check-dry-run-plan.mjs`
+
+Confirm `scripts/materialization_lab/check-dry-run-plan.mjs` is a read-only
+Node.js ESM dry-run output plan checker with no external package dependency.
+
+Confirm the dry-run output plan checker ignores `__MACOSX` and `.DS_Store`.
+
+Confirm the dry-run output plan checker rejects target project path arguments,
+does not read outside `skills/stnl_project_agent_specializer_dev/`, does not
+perform target read/write, does not create fixtures, does not generate final
+artifacts, and does not create persistent reports.
+
+Confirm the dry-run output plan checker does not authorize target reads,
+target writes, fixtures, generated outputs, reports, GitHub writes,
+productive skill changes, changes to `skills/stnl_project_agent_specializer/`,
+productive-template changes, historical-audit changes, runtime materializer
+behavior, target read/write, or real materialization.
+
+Confirm the dry-run output plan checker validates only abstract planned
+artifacts and does not calculate drift against real target files.
+
+Confirm the expected successful validator output is exactly:
+
+- `MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS`
+
 ## Contract Anchors
 
 Confirm `contracts/TARGETS_CONTRACT.md` contains all required anchors:
@@ -409,7 +436,9 @@ inventory validator, plus
 `scripts/materialization_lab/check-template-coverage.mjs` as a template
 coverage validator, plus
 `scripts/materialization_lab/check-render-context.mjs` as a render-context
-planner/checker.
+planner/checker, plus
+`scripts/materialization_lab/check-dry-run-plan.mjs` as a dry-run output plan
+checker.
 
 Confirm that this implementation remains dev-only and read-only and does not
 create reports, fixtures, generated artifacts, target artifacts, `.github/**`,
@@ -630,6 +659,111 @@ materialization-lab scripts still exist:
 - `scripts/materialization_lab/check-static.mjs`
 - `scripts/materialization_lab/check-source-inventory.mjs`
 - `scripts/materialization_lab/check-template-coverage.mjs`
+
+## Dry-Run Output Plan Checker Checks
+
+Confirm `scripts/materialization_lab/check-dry-run-plan.mjs` validates exactly
+the 12 canonical agent IDs:
+
+- `orchestrator`
+- `planner`
+- `validation-eval-designer`
+- `execution-package-designer`
+- `designer`
+- `coder-frontend`
+- `coder-backend`
+- `coder-ios`
+- `validation-runner`
+- `reviewer`
+- `finalizer`
+- `resync`
+
+Confirm the dry-run output plan checker validates exactly the two canonical
+targets:
+
+- `copilot`
+- `codex`
+
+Confirm the dry-run output plan checker validates this abstract
+planned-artifact matrix:
+
+- 12 `copilot` agent artifacts;
+- 12 `codex` agent artifacts;
+- 1 `codex` config artifact;
+- 1 `codex` root instructions artifact.
+
+Confirm every abstract planned artifact contains:
+
+- `target_id`
+- `agent_id`
+- `output_shape`
+- `planned_path`
+- `template_source`
+- `base_agent_source`
+- `senior_profile_source`
+- `operation`
+- `managed_artifact`
+- `existing_file_state`
+- `drift_status`
+- `blocking_status`
+- `block_code`
+
+Confirm the dry-run output plan checker validates these planned paths:
+
+- `copilot`: `.github/agents/<agent>.agent.md`
+- `codex` agents: `.codex/agents/<agent>.toml`
+- `codex` config: `.codex/config.toml`
+- `codex` root instructions: `AGENTS.md`
+
+Confirm the dry-run output plan checker validates that planned paths are
+relative, are not absolute, and do not contain traversal.
+
+Confirm the dry-run output plan checker validates operations are limited to:
+
+- `CREATE_PLANNED`
+- `UPDATE_PLANNED`
+- `UNCHANGED_PLANNED`
+- `BLOCKED_PLANNED`
+
+Confirm the dry-run output plan checker validates that, because target read is
+not authorized in this implementation, target-dependent state remains
+abstract/unavailable and does not authorize write:
+
+- `existing_file_state` remains unavailable;
+- `managed_artifact` remains unavailable;
+- `drift_status` is not calculated against real target files;
+- `blocking_status` remains blocked/no-write.
+
+Confirm the dry-run output plan checker validates
+`contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains planned
+operations, required planned-artifact fields, path mappings, managed artifact
+policy, drift policy, and block codes.
+
+Confirm the dry-run output plan checker recognizes these dry-run,
+write-boundary, rendering, and composition block codes:
+
+- `BLOCKED_TARGET_ROOT_INVALID`
+- `BLOCKED_PATH_UNSAFE`
+- `BLOCKED_UNMANAGED_COLLISION`
+- `BLOCKED_INVALID_MANAGED_NOTICE`
+- `BLOCKED_DRY_RUN_REQUIRED`
+- `BLOCKED_SOURCE_MISSING`
+- `BLOCKED_TEMPLATE_MISSING`
+- `BLOCKED_PLACEHOLDER_MISSING`
+- `BLOCKED_UNSAFE_RENDER`
+- `BLOCKED_COMPOSITION_CONFLICT`
+
+Confirm the dry-run output plan checker validates that
+`reference/MANIFEST.md` lists
+`scripts/materialization_lab/check-dry-run-plan.mjs`.
+
+Confirm the dry-run output plan checker validates that the four earlier
+materialization-lab scripts still exist:
+
+- `scripts/materialization_lab/check-static.mjs`
+- `scripts/materialization_lab/check-source-inventory.mjs`
+- `scripts/materialization_lab/check-template-coverage.mjs`
+- `scripts/materialization_lab/check-render-context.mjs`
 
 ## Template Placeholder Checks
 

@@ -66,6 +66,16 @@ creating fixtures, creating generated outputs, creating persistent reports,
 writing GitHub, changing the productive skill, or performing real
 materialization.
 
+The validator output
+`MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS` may be accepted only when
+`scripts/materialization_lab/check-dry-run-plan.mjs` exists in the authorized
+materialization-lab script path and the dry-run output plan checker validates
+the abstract planned-artifact matrix without accepting a target project path,
+reading a target project, writing a target project, calculating drift against
+real target files, creating fixtures, creating generated outputs, creating
+persistent reports, writing GitHub, changing the productive skill, or
+performing real materialization.
+
 ## Required Criteria
 
 - The ten materialization lab files exist in
@@ -252,6 +262,62 @@ materialization.
 - `scripts/materialization_lab/check-render-context.mjs` prints
   `MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS` when the abstract render-context
   matrix passes, or `MATERIALIZATION_RENDER_CONTEXT_CHECK: FAIL` with a clear
+  failure list when it does not.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` exists as the
+  separately authorized dev-only dry-run output plan checker implementation.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` is read-only, uses
+  Node.js ESM, has no external package dependency, ignores `__MACOSX` and
+  `.DS_Store`, rejects target project path arguments, and reads only inside
+  `skills/stnl_project_agent_specializer_dev/`.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates exactly the
+  12 canonical agent IDs, exactly the canonical targets `copilot` and `codex`,
+  the explicit kebab-case agent ID to underscore profile directory mapping,
+  and the existence of the four earlier materialization-lab validators.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates the abstract
+  planned-artifact matrix: 12 `copilot` agent artifacts, 12 `codex` agent
+  artifacts, 1 `codex` config artifact, and 1 `codex` root instructions
+  artifact.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates every
+  abstract planned artifact includes `target_id`, `agent_id`, `output_shape`,
+  `planned_path`, `template_source`, `base_agent_source`,
+  `senior_profile_source`, `operation`, `managed_artifact`,
+  `existing_file_state`, `drift_status`, `blocking_status`, and `block_code`.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates planned paths
+  for `copilot` `.github/agents/<agent>.agent.md`, `codex` agents
+  `.codex/agents/<agent>.toml`, `codex` config `.codex/config.toml`, and
+  `codex` root instructions `AGENTS.md`.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates planned paths
+  are relative, not absolute, and contain no traversal.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates planned
+  operations are limited to `CREATE_PLANNED`, `UPDATE_PLANNED`,
+  `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates that, because
+  target read is not authorized in this implementation, target-dependent state
+  remains abstract/unavailable, drift is not calculated against real target
+  files, and no write is authorized.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates
+  `DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains planned operations,
+  required planned-artifact fields, path mappings, managed artifact policy,
+  drift policy, and block codes.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` recognizes
+  `BLOCKED_TARGET_ROOT_INVALID`, `BLOCKED_PATH_UNSAFE`,
+  `BLOCKED_UNMANAGED_COLLISION`, `BLOCKED_INVALID_MANAGED_NOTICE`,
+  `BLOCKED_DRY_RUN_REQUIRED`, `BLOCKED_SOURCE_MISSING`,
+  `BLOCKED_TEMPLATE_MISSING`, `BLOCKED_PLACEHOLDER_MISSING`,
+  `BLOCKED_UNSAFE_RENDER`, and `BLOCKED_COMPOSITION_CONFLICT`.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` validates its own
+  registration in `reference/MANIFEST.md`,
+  `reference/materialization_lab/validation/STATIC_CHECKS.md`, and
+  `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` does not authorize
+  target reads, target writes, fixtures, generated outputs, persistent reports,
+  GitHub writes, productive skill changes, changes to
+  `skills/stnl_project_agent_specializer/`, productive-template changes,
+  historical-audit changes, runtime materializer behavior, target read/write,
+  drift calculation against real target files, or real materialization.
+- `scripts/materialization_lab/check-dry-run-plan.mjs` prints
+  `MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS` when the abstract dry-run plan
+  matrix passes, or `MATERIALIZATION_DRY_RUN_PLAN_CHECK: FAIL` with a clear
   failure list when it does not.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
@@ -441,6 +507,12 @@ materialization.
   target safety against a real repo, fixture readiness, generated output
   readiness, report readiness, GitHub write readiness, productive skill
   readiness, or real materialization readiness.
+- `MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS` is valid only as evidence that
+  the dev-only abstract dry-run planned-artifact matrix and checker
+  registration passed; it is not evidence of target-state correctness, real
+  drift correctness, write readiness, fixture readiness, generated output
+  readiness, report readiness, GitHub write readiness, productive skill
+  readiness, or real materialization readiness.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -530,3 +602,13 @@ project path arguments, reading outside
 `skills/stnl_project_agent_specializer_dev/`, target read/write, mutation of
 `.github/**`, `.codex/**`, or `AGENTS.md`, or changes to
 `skills/stnl_project_agent_specializer/`.
+
+Do not accept `MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS` if the checker
+depends on target reads, target writes, fixtures, generated outputs,
+persistent reports, productive-skill edits, productive-template edits,
+historical-audit edits, GitHub writes, real materialization, runtime
+materializer behavior, external packages, undocumented assumptions, target
+project path arguments, reading outside
+`skills/stnl_project_agent_specializer_dev/`, target read/write, drift
+calculation against real target files, mutation of `.github/**`, `.codex/**`,
+or `AGENTS.md`, or changes to `skills/stnl_project_agent_specializer/`.
