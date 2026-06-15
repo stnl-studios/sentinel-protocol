@@ -26,9 +26,15 @@ The verdict
 only when the validation harness, dry-run smoke, matrix completeness, no-write,
 and mutation-boundary criteria below are also satisfied.
 
+The verdict
+`MATERIALIZATION_IMPLEMENTATION_BOUNDARY_CONTRACT: EXCELLENT PASS` may be
+declared only when the documentary implementation boundary, future dev-only
+script scope, authorized script path, read boundary, write prohibition, output
+authorization, and block-code criteria below are also satisfied.
+
 ## Required Criteria
 
-- The nine materialization lab files exist in
+- The ten materialization lab files exist in
   `reference/materialization_lab/`.
 - `TARGETS_CONTRACT.md` declares `copilot` and `codex` as the only canonical
   target IDs for the new version.
@@ -44,6 +50,45 @@ and mutation-boundary criteria below are also satisfied.
   scripts.
 - `VALIDATION_HARNESS_CONTRACT.md` requires validation before any real
   materialization.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` exists and is classified as
+  documentary/dev-only.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it does not create scripts.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` prepares only a later separately
+  authorized dev-only implementation step.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` allows only these future script
+  categories: static contract validator, source inventory validator, template
+  coverage validator, render-context planner, dry-run output planner, and
+  validation report generator.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` authorizes future scripts only inside
+  `skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/`, or
+  another dev-only path explicitly registered in that contract.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` limits future script reads to
+  `skills/stnl_project_agent_specializer_dev/reference/**`,
+  `skills/stnl_project_agent_specializer_dev/README.md`,
+  `skills/stnl_project_agent_specializer_dev/SKILL.md`,
+  `skills/stnl_project_agent_specializer_dev/openai.yaml`, and read-only
+  target-project access only when a later step authorizes dry-run against a
+  target.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` forbids future scripts from writing a
+  target project, `.github/**`, `.codex/**`, `AGENTS.md`,
+  `skills/stnl_project_agent_specializer/`, GitHub, productive templates, or
+  historical audits.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that future outputs initially
+  permitted may be only dev-only reports in a path explicitly authorized by
+  that contract, and that this task does not authorize those outputs.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that any future script with
+  write capability outside an explicitly authorized dev-only report output
+  must block.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` declares
+  `BLOCKED_IMPLEMENTATION_SCOPE_INVALID`,
+  `BLOCKED_SCRIPT_PATH_UNAUTHORIZED`, `BLOCKED_SCRIPT_WRITE_CAPABILITY`,
+  `BLOCKED_SCRIPT_TARGET_MUTATION`, `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`, and
+  `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that runtime materializer,
+  fixture creation, and target write remain out of scope.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` denies script creation, runtime
+  execution, fixtures, target writes, generated outputs, productive skill
+  changes, GitHub writes, and real materialization.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
 - Historical references in audits, profiles, and old contracts are protected
@@ -188,6 +233,25 @@ and mutation-boundary criteria below are also satisfied.
 - The validation harness contract denies runtime scripts, target writes,
   generated outputs, fixtures, productive skill changes, GitHub writes, and
   real materialization.
+- The implementation-boundary contract allows future static contract validator
+  scripts only in a later explicitly authorized step and only in an authorized
+  dev-only path.
+- The implementation-boundary contract allows future dry-run output planner
+  scripts only when target access remains read-only and a later step explicitly
+  authorizes dry-run against a target.
+- The implementation-boundary contract blocks future script paths outside
+  `skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/` or
+  another explicitly registered dev-only path with
+  `BLOCKED_SCRIPT_PATH_UNAUTHORIZED`.
+- The implementation-boundary contract blocks future script target mutation
+  with `BLOCKED_SCRIPT_TARGET_MUTATION`.
+- The implementation-boundary contract blocks future productive-skill or
+  productive-template mutation with `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`.
+- The implementation-boundary contract blocks unauthorized future outputs with
+  `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
+- The implementation-boundary contract blocks attempts to create scripts in
+  this documentary phase unless a later implementation step has explicitly
+  authorized script creation.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -235,3 +299,12 @@ productive-skill edits, GitHub writes, real materialization, incomplete
 instruction validation, ignored write attempts, ignored target-file mutations,
 ignored productive-skill mutations, unknown block codes, or undocumented
 assumptions.
+
+Do not declare
+`MATERIALIZATION_IMPLEMENTATION_BOUNDARY_CONTRACT: EXCELLENT PASS` if any check
+depends on script creation in this task, runtime execution, fixtures,
+target-project writes, generated outputs, productive-skill edits, productive
+template edits, historical-audit edits, GitHub writes, real materialization,
+runtime materializer, unauthorized script paths, unauthorized write capability,
+non-read-only target access, unauthorized outputs, unknown script categories,
+or undocumented assumptions.

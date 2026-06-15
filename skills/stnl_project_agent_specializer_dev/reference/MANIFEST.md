@@ -14,8 +14,8 @@ The canonical documentary/dev-only reference bundle is organized as:
   future senior-agent materialization rewrite, including the canonical target
   IDs, explicit template and output-shape contract, missing-template blocking
   rules, rendering/composition contract, dry-run/write-boundary contract,
-  validation harness contract, and validation expectations. This is not a
-  runtime materializer.
+  validation harness contract, implementation-boundary contract, and validation
+  expectations. This is not a runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
   `contracts/` layer, and integrated seniorization validations.
 - `reference/templates/`: reference/template material only; it is not
@@ -40,12 +40,13 @@ The canonical documentary/dev-only reference bundle is organized as:
   target/template contracts, plus the documentary dry-run output-plan and
   write-boundary contract for future planned artifacts, plus the documentary
   validation harness contract for future pre-materialization validation and
-  dry-run smoke reporting. This phase does not authorize runtime
-  materialization, target-repository writes, productive-skill changes,
-  productive-template changes, GitHub writes, inferred templates, inferred
-  senior profiles, generated outputs, runtime scripts, fixtures, target project
-  mutation, overwrite of manual files, validation writes, or a final
-  materializer.
+  dry-run smoke reporting, plus the documentary implementation-boundary
+  contract for a later separately authorized dev-only script layer. This phase
+  does not authorize runtime materialization, runtime script creation,
+  target-repository writes, productive-skill changes, productive-template
+  changes, GitHub writes, inferred templates, inferred senior profiles,
+  generated outputs, runtime scripts, fixtures, target project mutation,
+  overwrite of manual files, validation writes, or a final materializer.
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
   inventories the explicit templates currently present under
   `reference/templates/`, records that the canonical `copilot` agent and
@@ -81,6 +82,26 @@ The canonical documentary/dev-only reference bundle is organized as:
   `VALIDATION_PASS`, `VALIDATION_BLOCKED`, and `VALIDATION_FAILED`; and blocks
   write attempts, productive-skill mutation, target-file mutation, incomplete
   matrix coverage, and unknown block codes.
+- `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
+  defines the documentary/dev-only implementation boundary for a later,
+  separately authorized script layer. It permits only future static contract
+  validator, source inventory validator, template coverage validator,
+  render-context planner, dry-run output planner, and validation report
+  generator script categories; limits future script paths to
+  `skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/` or
+  another explicitly registered dev-only path; limits reads to the dev skill
+  reference bundle, dev skill root metadata, and later-authorized read-only
+  target dry-run access; forbids target, productive-skill, productive-template,
+  historical-audit, and GitHub writes; and blocks unauthorized scope, paths,
+  write capability, target mutation, productive mutation, and outputs.
+- `scripts/materialization_lab/check-static.mjs` is the first separately
+  authorized dev-only static contract validator for the materialization lab. It
+  is read-only, has no external package dependency, validates only the dev
+  reference bundle and registrations, ignores `__MACOSX` and `.DS_Store`, and
+  does not authorize target writes, fixtures, generated outputs, GitHub writes,
+  productive skill changes, productive-template changes, historical-audit
+  changes, runtime materializer behavior, target reads, or real
+  materialization.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -326,9 +347,11 @@ Required files:
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
+- `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `scripts/materialization_lab/check-static.mjs`
 - `reference/templates/copilot/agent.md`
 - `reference/templates/codex/agent.toml`
 - `reference/templates/codex/AGENTS.md`

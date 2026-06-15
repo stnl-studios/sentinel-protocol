@@ -257,6 +257,41 @@ Expected result:
 - no `.codex/config.toml` output and no `AGENTS.md` output are written during
   this contract phase
 
+### Future Static Contract Validator In Authorized Path
+
+Input:
+
+- future implementation category: static contract validator
+- future script path:
+  `skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/`
+- authorization status: later step explicitly authorizes script creation
+
+Expected result:
+
+- category is eligible for a later dev-only implementation step
+- path is eligible for a later dev-only implementation step
+- no script is created during this contract phase
+- no runtime execution, target write, fixture, generated output, productive
+  skill change, GitHub write, or real materialization is performed
+
+### Future Dry-Run Planner Read-Only Against Target
+
+Input:
+
+- future implementation category: dry-run output planner
+- target project access: read-only
+- authorization status: later step explicitly authorizes dry-run against a
+  target
+
+Expected result:
+
+- category is eligible for a later dev-only implementation step
+- target access remains read-only
+- any target write remains blocked
+- no script is created during this contract phase
+- no generated output, fixture, productive skill change, GitHub write, or real
+  materialization is performed
+
 ## Negative Scenarios
 
 ### Missing Explicit Template
@@ -554,3 +589,68 @@ Expected result:
 - validation blocks
 - report status is `VALIDATION_BLOCKED`
 - return `BLOCKED_UNKNOWN_BLOCK_CODE`
+
+### Script Outside Authorized Materialization Lab Path
+
+Input:
+
+- future script path:
+  `skills/stnl_project_agent_specializer_dev/scripts/other/check-static.mjs`
+- no other dev-only path is explicitly registered by
+  `IMPLEMENTATION_BOUNDARY_CONTRACT.md`
+
+Expected result:
+
+- block before script creation
+- return `BLOCKED_SCRIPT_PATH_UNAUTHORIZED`
+
+### Script With Target Write Capability
+
+Input:
+
+- future script category: dry-run output planner
+- script can create, update, delete, repair, clean, or mutate a target project
+  file
+
+Expected result:
+
+- block before script creation or execution
+- return `BLOCKED_SCRIPT_TARGET_MUTATION`
+
+### Script Alters Productive Skill
+
+Input:
+
+- future script category: source inventory validator
+- script can alter `skills/stnl_project_agent_specializer/` or productive
+  templates
+
+Expected result:
+
+- block before script creation or execution
+- return `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`
+
+### Unauthorized Script Output
+
+Input:
+
+- future script category: validation report generator
+- script writes an output path not explicitly authorized by
+  `IMPLEMENTATION_BOUNDARY_CONTRACT.md`
+
+Expected result:
+
+- block before output creation
+- return `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`
+
+### Script Creation During This Documentary Phase
+
+Input:
+
+- request attempts to create a materialization-lab script in this task
+- no later implementation step has explicitly authorized script creation
+
+Expected result:
+
+- block script creation under the documentary implementation boundary
+- return `BLOCKED_IMPLEMENTATION_SCOPE_INVALID`

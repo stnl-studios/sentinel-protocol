@@ -1,13 +1,14 @@
 # Static Checks
 
 These checks validate only the documentary/dev-only materialization target,
-template, output, rendering, composition, dry-run/write-boundary, and
-validation harness contracts. Passing them does not authorize runtime
-materialization or writes to target projects.
+template, output, rendering, composition, dry-run/write-boundary, validation
+harness, and implementation-boundary contracts. Passing them does not
+authorize runtime materialization, runtime scripts, or writes to target
+projects.
 
 ## Required Files
 
-Confirm the nine materialization lab files exist:
+Confirm the ten materialization lab files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
@@ -15,6 +16,7 @@ Confirm the nine materialization lab files exist:
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
+- `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
@@ -25,6 +27,24 @@ Confirm the four explicit canonical templates exist:
 - `reference/templates/codex/agent.toml`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
+
+Confirm the separately authorized dev-only static contract validator exists:
+
+- `scripts/materialization_lab/check-static.mjs`
+
+Confirm `scripts/materialization_lab/check-static.mjs` is a read-only Node.js
+ESM static contract validator with no external package dependency.
+
+Confirm the static validator ignores `__MACOSX` and `.DS_Store`.
+
+Confirm the static validator does not authorize target reads, target writes,
+fixtures, generated outputs, GitHub writes, productive skill changes,
+productive-template changes, historical-audit changes, runtime materializer
+behavior, or real materialization.
+
+Confirm the expected successful validator output is exactly:
+
+- `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS`
 
 ## Contract Anchors
 
@@ -242,6 +262,82 @@ Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` does not authorize runtime
 scripts, fixtures, target writes, generated outputs, productive skill changes,
 GitHub writes, or real materialization.
 
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` exists and is
+classified as documentary/dev-only.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it does
+not create scripts.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it
+prepares only a later separately authorized dev-only implementation step.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` allows only these
+future script categories:
+
+- static contract validator;
+- source inventory validator;
+- template coverage validator;
+- render-context planner;
+- dry-run output planner;
+- validation report generator.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` authorizes the future
+script path:
+
+- `skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/`
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` declares the future
+read boundary:
+
+- `skills/stnl_project_agent_specializer_dev/reference/**`
+- `skills/stnl_project_agent_specializer_dev/README.md`
+- `skills/stnl_project_agent_specializer_dev/SKILL.md`
+- `skills/stnl_project_agent_specializer_dev/openai.yaml`
+- target project read-only access only when a later step authorizes dry-run
+  against a target.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` declares that future
+scripts must not write:
+
+- target project;
+- `.github/**`;
+- `.codex/**`;
+- `AGENTS.md`;
+- `skills/stnl_project_agent_specializer/`;
+- GitHub;
+- productive templates;
+- historical audits.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` contains all six
+implementation-boundary block codes:
+
+- `BLOCKED_IMPLEMENTATION_SCOPE_INVALID`
+- `BLOCKED_SCRIPT_PATH_UNAUTHORIZED`
+- `BLOCKED_SCRIPT_WRITE_CAPABILITY`
+- `BLOCKED_SCRIPT_TARGET_MUTATION`
+- `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`
+- `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that future
+outputs initially permitted may be only dev-only reports in an explicitly
+authorized path, and that this task does not authorize those outputs.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that any future
+script with write capability outside an authorized dev-only report output must
+block.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` does not authorize
+script creation, runtime execution, fixtures, target writes, generated outputs,
+productive skill changes, GitHub writes, real materialization, runtime
+materializer, or fixture creation.
+
+Confirm the current separately authorized implementation is limited to
+`scripts/materialization_lab/check-static.mjs` as a static contract validator.
+
+Confirm that this implementation remains dev-only and read-only and does not
+create reports, fixtures, generated artifacts, target artifacts, `.github/**`,
+`.codex/**`, or `AGENTS.md`.
+
 ## Template Placeholder Checks
 
 Confirm `reference/templates/copilot/agent.md` contains all required
@@ -376,6 +472,27 @@ x `copilot` / 12 agents x `codex` coverage with
 
 Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` blocks unknown block codes
 with `BLOCKED_UNKNOWN_BLOCK_CODE`.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` blocks invalid future
+implementation scope with `BLOCKED_IMPLEMENTATION_SCOPE_INVALID`.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` blocks future scripts
+outside `skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/`
+or another explicitly registered dev-only path with
+`BLOCKED_SCRIPT_PATH_UNAUTHORIZED`.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` blocks future scripts
+with unauthorized write capability with `BLOCKED_SCRIPT_WRITE_CAPABILITY`.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` blocks future target
+mutation with `BLOCKED_SCRIPT_TARGET_MUTATION`.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` blocks future
+productive-skill or productive-template mutation with
+`BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`.
+
+Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` blocks future outputs
+that are not explicitly authorized with `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
 
 ## Legacy Rewrite Guard
 

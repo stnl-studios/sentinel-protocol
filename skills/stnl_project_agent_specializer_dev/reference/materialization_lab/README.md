@@ -9,8 +9,10 @@ shape contract for the canonical targets, plus the render-context composition
 contract for combining base agents, Senior Agent Profiles, and explicit
 templates. It also defines the dry-run output-plan and write-boundary contract
 for future artifact planning. It also defines the validation harness contract
-for future pre-materialization validation and dry-run smoke reporting. It does
-not authorize runtime materialization, target-repository writes,
+for future pre-materialization validation and dry-run smoke reporting. It also
+defines the documentary implementation boundary for a later, separately
+authorized dev-only script layer. It does not authorize runtime
+materialization, runtime script creation, target-repository writes,
 productive-skill changes, GitHub writes, or changes to productive templates.
 
 ## Canonical Scope
@@ -30,6 +32,11 @@ productive-skill changes, GitHub writes, or changes to productive templates.
   harness and dry-run smoke contract for future pre-materialization checks,
   structured reporting, no-write enforcement, matrix completeness, and
   productive-skill immutability.
+- `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`: documentary/dev-only
+  implementation boundary for a later, separately authorized dev-only script
+  layer. It lists allowed future script categories, script locations, read
+  sources, write prohibitions, output limits, and implementation-boundary block
+  codes, but does not create or authorize scripts in this phase.
 - `validation/STATIC_CHECKS.md`: required static checks for this contract
   phase.
 - `validation/GOLDEN_SCENARIOS.md`: minimum positive and negative scenarios
@@ -115,3 +122,20 @@ The only validation statuses are `VALIDATION_PASS`, `VALIDATION_BLOCKED`, and
 with `BLOCKED_TARGET_FILE_MUTATION`; incomplete matrix coverage blocks with
 `BLOCKED_MATRIX_INCOMPLETE`; and unknown block codes block with
 `BLOCKED_UNKNOWN_BLOCK_CODE`.
+
+Implementation-boundary planning is also contract-only in this phase. A later
+step may authorize only dev-only scripts for static contract validation, source
+inventory validation, template coverage validation, render-context planning,
+dry-run output planning, and validation report generation. Future scripts may
+live only in
+`skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/`, or
+another dev-only path explicitly registered by
+`IMPLEMENTATION_BOUNDARY_CONTRACT.md`. This phase does not create scripts,
+runtime execution, fixtures, target writes, generated outputs, productive-skill
+changes, GitHub writes, or real materialization.
+
+Implementation-boundary failures block with
+`BLOCKED_IMPLEMENTATION_SCOPE_INVALID`,
+`BLOCKED_SCRIPT_PATH_UNAUTHORIZED`, `BLOCKED_SCRIPT_WRITE_CAPABILITY`,
+`BLOCKED_SCRIPT_TARGET_MUTATION`, `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`, or
+`BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
