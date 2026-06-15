@@ -67,6 +67,29 @@ Confirm the expected successful validator output is exactly:
 
 - `MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS`
 
+Confirm the separately authorized dev-only template coverage validator exists:
+
+- `scripts/materialization_lab/check-template-coverage.mjs`
+
+Confirm `scripts/materialization_lab/check-template-coverage.mjs` is a
+read-only Node.js ESM template coverage validator with no external package
+dependency.
+
+Confirm the template coverage validator ignores `__MACOSX` and `.DS_Store`.
+
+Confirm the template coverage validator rejects target project path arguments,
+does not read outside `skills/stnl_project_agent_specializer_dev/`, and does
+not perform target read/write.
+
+Confirm the template coverage validator does not authorize target reads, target
+writes, fixtures, generated outputs, GitHub writes, productive skill changes,
+productive-template changes, historical-audit changes, runtime materializer
+behavior, or real materialization.
+
+Confirm the expected successful validator output is exactly:
+
+- `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS`
+
 ## Contract Anchors
 
 Confirm `contracts/TARGETS_CONTRACT.md` contains all required anchors:
@@ -355,7 +378,9 @@ materializer, or fixture creation.
 Confirm the current separately authorized implementation is limited to
 `scripts/materialization_lab/check-static.mjs` as a static contract validator
 and `scripts/materialization_lab/check-source-inventory.mjs` as a source
-inventory validator.
+inventory validator, plus
+`scripts/materialization_lab/check-template-coverage.mjs` as a template
+coverage validator.
 
 Confirm that this implementation remains dev-only and read-only and does not
 create reports, fixtures, generated artifacts, target artifacts, `.github/**`,
@@ -417,6 +442,54 @@ target-output/write-boundary anchors.
 Confirm the source inventory validator checks the four explicit templates,
 `reference/MANIFEST.md`, `scripts/materialization_lab/check-static.mjs`, and
 its own manifest registration.
+
+## Template Coverage Validator Checks
+
+Confirm `scripts/materialization_lab/check-template-coverage.mjs` validates the
+existence of the four explicit templates:
+
+- `reference/templates/copilot/agent.md`
+- `reference/templates/codex/agent.toml`
+- `reference/templates/codex/config.toml`
+- `reference/templates/codex/AGENTS.md`
+
+Confirm the template coverage validator validates that
+`contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md` registers the four explicit
+templates and output shapes:
+
+- `copilot`: `.github/agents/*.agent.md`
+- `codex`: `.codex/agents/*.toml`
+- `codex`: `.codex/config.toml`
+- `codex`: `AGENTS.md`
+
+Confirm the template coverage validator validates that no canonical expected
+output shape is listed as missing.
+
+Confirm the template coverage validator validates required placeholders for
+`reference/templates/copilot/agent.md` and
+`reference/templates/codex/agent.toml`, including common placeholders and
+target-specific placeholders.
+
+Confirm the template coverage validator validates the required Codex TOML
+fields: `name`, `description`, `model`, `model_reasoning_effort`,
+`sandbox_mode`, and `developer_instructions`.
+
+Confirm the template coverage validator validates that
+`reference/templates/copilot/agent.md` contains frontmatter delimited by `---`
+and places `{{AGENT_BODY}}` after the frontmatter.
+
+Confirm the template coverage validator validates that templates document
+`runtime_materialization_authorized: false` or equivalent non-authorization and
+do not mention `vscode` as a canonical target.
+
+Confirm the template coverage validator validates that
+`contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains the path mappings
+for `.github/agents/<agent>.agent.md`, `.codex/agents/<agent>.toml`,
+`.codex/config.toml`, and `AGENTS.md`.
+
+Confirm the template coverage validator validates that `reference/MANIFEST.md`
+lists the four templates and
+`scripts/materialization_lab/check-template-coverage.mjs`.
 
 ## Template Placeholder Checks
 

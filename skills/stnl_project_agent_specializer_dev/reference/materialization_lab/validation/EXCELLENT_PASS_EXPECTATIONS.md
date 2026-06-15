@@ -47,6 +47,15 @@ target project, writing a target project, creating fixtures, creating generated
 outputs, writing GitHub, changing the productive skill, or performing real
 materialization.
 
+The validator output
+`MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS` may be accepted only when
+`scripts/materialization_lab/check-template-coverage.mjs` exists in the
+authorized materialization-lab script path and the checker validates template
+coverage without accepting a target project path, reading a target project,
+writing a target project, creating fixtures, creating generated outputs,
+writing GitHub, changing the productive skill, or performing real
+materialization.
+
 ## Required Criteria
 
 - The ten materialization lab files exist in
@@ -151,6 +160,26 @@ materialization.
   `MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS` when the source inventory
   bundle passes, or `MATERIALIZATION_SOURCE_INVENTORY_CHECK: FAIL` with a clear
   failure list when it does not.
+- `scripts/materialization_lab/check-template-coverage.mjs` exists as the
+  separately authorized dev-only template coverage validator implementation.
+- `scripts/materialization_lab/check-template-coverage.mjs` is read-only, uses
+  Node.js ESM, has no external package dependency, ignores `__MACOSX` and
+  `.DS_Store`, rejects target project path arguments, and reads only inside
+  `skills/stnl_project_agent_specializer_dev/`.
+- `scripts/materialization_lab/check-template-coverage.mjs` validates the four
+  explicit templates, their registered output shapes, absence of missing
+  canonical output shapes, required placeholders, required Codex TOML fields,
+  Copilot frontmatter/body placement, template non-authorization, absence of
+  `vscode` as a canonical target in templates, dry-run path mappings,
+  `reference/MANIFEST.md`, and the existing materialization-lab validators.
+- `scripts/materialization_lab/check-template-coverage.mjs` does not authorize
+  target reads, target writes, fixtures, generated outputs, GitHub writes,
+  productive skill changes, productive-template changes, historical-audit
+  changes, runtime materializer behavior, or real materialization.
+- `scripts/materialization_lab/check-template-coverage.mjs` prints
+  `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS` when the template coverage
+  bundle passes, or `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: FAIL` with a
+  clear failure list when it does not.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
 - Historical references in audits, profiles, and old contracts are protected
@@ -327,6 +356,12 @@ materialization.
   not evidence of render correctness, template rendering correctness, dry-run
   output correctness, target safety against a real repo, fixture readiness,
   generated output readiness, or real materialization readiness.
+- `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS` is valid only as evidence
+  that the dev-only template coverage bundle and checker registration passed;
+  it is not evidence of render correctness, template rendering correctness,
+  dry-run output correctness, target safety against a real repo, fixture
+  readiness, generated output readiness, GitHub write readiness, productive
+  skill readiness, or real materialization readiness.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -398,3 +433,11 @@ GitHub writes, real materialization, runtime materializer behavior, external
 packages, undocumented assumptions, target project path arguments, reading
 outside `skills/stnl_project_agent_specializer_dev/`, or mutation of
 `.github/**`, `.codex/**`, or `AGENTS.md`.
+
+Do not accept `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS` if the checker
+depends on target reads, target writes, fixtures, generated outputs,
+productive-skill edits, productive-template edits, historical-audit edits,
+GitHub writes, real materialization, runtime materializer behavior, external
+packages, undocumented assumptions, target project path arguments, reading
+outside `skills/stnl_project_agent_specializer_dev/`, target read/write, or
+mutation of `.github/**`, `.codex/**`, or `AGENTS.md`.

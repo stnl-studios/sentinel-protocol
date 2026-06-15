@@ -1,6 +1,13 @@
 # Sentinel managed artifact: true
 # target: codex
 # source_template: stnl_project_agent_specializer_dev/reference/templates/codex/config.toml
+# template_status: documentary/dev-only explicit source template
+# output_shape: .codex/config.toml
+# runtime_materialization_authorized: false
+#
+# This source template is not a materializer. Its presence does not authorize
+# runtime scripts, target-project writes, GitHub writes, or writes to
+# `.codex/**` or `AGENTS.md`.
 
 [agents]
 max_threads = 6

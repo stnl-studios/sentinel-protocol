@@ -4,8 +4,15 @@
 managed_artifact: true
 target: codex
 source_template: stnl_project_agent_specializer_dev/reference/templates/codex/AGENTS.md
+template_status: documentary/dev-only explicit source template
+output_shape: AGENTS.md
+runtime_materialization_authorized: false
 This file is generated in the target repository. Do not edit it directly when the
 Sentinel-managed agent system is being regenerated.
+
+This source template is not a materializer. Its presence does not authorize
+runtime scripts, target-project writes, GitHub writes, or writes to `.codex/**`
+or `AGENTS.md`.
 -->
 
 ## File Purpose Header
