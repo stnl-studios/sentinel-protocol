@@ -11,13 +11,20 @@ The verdict `MATERIALIZATION_EXPLICIT_TEMPLATES: EXCELLENT PASS` may be
 declared only when the explicit agent-template criteria below are also
 satisfied.
 
+The verdict
+`MATERIALIZATION_RENDERING_AND_COMPOSITION_CONTRACT: EXCELLENT PASS` may be
+declared only when the render-context composition criteria below are also
+satisfied.
+
 ## Required Criteria
 
-- The six materialization lab files exist in
+- The seven materialization lab files exist in
   `reference/materialization_lab/`.
 - `TARGETS_CONTRACT.md` declares `copilot` and `codex` as the only canonical
   target IDs for the new version.
 - `TEMPLATES_AND_OUTPUTS_CONTRACT.md` exists and is classified as
+  documentary/dev-only.
+- `RENDERING_AND_COMPOSITION_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
@@ -60,6 +67,43 @@ satisfied.
   template, existing target-project artifact, or naming symmetry.
 - Productive templates are allowed only as read-only conceptual reference in
   this phase and never as automatic write sources.
+- Rendering/composition sources are explicit: base agent, Senior Agent Profile,
+  target template, `TARGETS_CONTRACT.md`, and
+  `TEMPLATES_AND_OUTPUTS_CONTRACT.md`.
+- The rendering/composition contract declares all 12 canonical agent IDs:
+  `orchestrator`, `planner`, `validation-eval-designer`,
+  `execution-package-designer`, `designer`, `coder-frontend`,
+  `coder-backend`, `coder-ios`, `validation-runner`, `reviewer`, `finalizer`,
+  and `resync`.
+- A future renderer is required to produce a deterministic render context per
+  `agent+target` pair before any output decision, while this phase writes no
+  generated artifacts.
+- The rendering/composition contract declares the common placeholders
+  `{{AGENT_ID}}`, `{{AGENT_NAME}}`, `{{AGENT_DESCRIPTION}}`,
+  `{{AGENT_BODY}}`, `{{TARGET_ID}}`, `{{GENERATED_NOTICE}}`, and
+  `{{SOURCE_VERSION}}`.
+- The rendering/composition contract declares Copilot-specific placeholders
+  `{{AGENT_TOOLS}}`, `{{AGENT_MODEL}}`, `{{SPECIALIZATION_REVISION}}`,
+  `{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}`, and
+  `{{READING_SCOPE_CLASS_BLOCK}}`.
+- The rendering/composition contract declares Codex-specific placeholders
+  `{{AGENT_MODEL}}`, `{{MODEL_REASONING_EFFORT}}`, and `{{SANDBOX_MODE}}`.
+- The rendering/composition contract requires YAML-safe Copilot frontmatter,
+  valid Copilot YAML block placeholders or valid empty strings, TOML-safe Codex
+  output, and TOML-aware rendering of Codex `{{AGENT_BODY}}`.
+- The rendering/composition contract defines generated notice rules for
+  Copilot Markdown and Codex TOML comments and blocks unsafe notices.
+- The rendering/composition contract requires `{{AGENT_BODY}}` to preserve
+  base-agent mission, boundaries, handoff, role class, status, invariants, and
+  operating rules while incorporating seniorization without erasing base
+  contracts.
+- The rendering/composition contract declares
+  `BLOCKED_SOURCE_MISSING`, `BLOCKED_TEMPLATE_MISSING`,
+  `BLOCKED_PLACEHOLDER_MISSING`, `BLOCKED_UNSAFE_RENDER`, and
+  `BLOCKED_COMPOSITION_CONFLICT`.
+- The rendering/composition contract denies target writes, runtime scripts,
+  generated outputs, productive skill changes, GitHub writes, inferred
+  templates, and inferred senior profiles.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -82,3 +126,10 @@ explicit agent template is absent, lacks required placeholders, omits the
 target-specific output shape, authorizes runtime materialization, treats
 productive templates as an automatic source, or reintroduces `vscode` as a
 canonical target.
+
+Do not declare
+`MATERIALIZATION_RENDERING_AND_COMPOSITION_CONTRACT: EXCELLENT PASS` if any
+check depends on inferred sources, inferred templates, inferred senior
+profiles, unsafe YAML/TOML rendering, target writes, runtime scripts, generated
+outputs, productive-skill edits, GitHub writes, or silent conflict resolution
+between base agents and Senior Agent Profiles.

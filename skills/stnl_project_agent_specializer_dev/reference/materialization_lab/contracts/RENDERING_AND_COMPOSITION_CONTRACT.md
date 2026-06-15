@@ -1,0 +1,207 @@
+# Rendering And Composition Contract
+
+Status: documentary/dev-only contract.
+
+This contract defines the future rendering and composition boundary for turning
+explicit base agents, Senior Agent Profiles, and explicit target templates into
+a render-context plan. It is not a runtime materializer and does not authorize
+writing generated artifacts.
+
+## Non-Runtime Boundary
+
+This contract is a planning contract only. It defines source requirements,
+placeholder requirements, escaping requirements, composition blockers, and the
+expected shape of a future render context per agent and target.
+
+This phase must not write `.github/**`, `.codex/**`, `AGENTS.md`, generated
+agent files, generated config files, reports, fixtures, or target-project
+artifacts.
+
+## Composition Sources
+
+Every future render context must be deterministically derived from explicit
+sources only:
+
+- base agent slot: `reference/agents/<agent>.md`
+- base agent physical dev snapshot in this bundle:
+  `reference/agents/<agent>.agent.md`
+- senior profile:
+  `reference/seniorization_lab/<agent>_profile/SENIOR_AGENT_PROFILE.md`
+- template: `reference/templates/<target>/...`
+- target contract:
+  `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
+- template contract:
+  `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
+
+No source may be inferred from output path, legacy runtime naming, generated
+artifact shape, nearby file naming, productive skill files, or historical audit
+text.
+
+## Canonical Agent IDs
+
+The expected agent IDs are exactly:
+
+- `orchestrator`
+- `planner`
+- `validation-eval-designer`
+- `execution-package-designer`
+- `designer`
+- `coder-frontend`
+- `coder-backend`
+- `coder-ios`
+- `validation-runner`
+- `reviewer`
+- `finalizer`
+- `resync`
+
+The physical base-agent files in this dev bundle use `.agent.md`. The physical
+senior profile directory uses underscore profile names, but the logical agent
+ID remains the kebab-case ID. A future renderer must resolve those mappings
+explicitly; it must not invent base agents or senior profiles.
+
+## Render Context
+
+A future renderer must build one render context for each requested
+`agent+target` pair before any output decision. This documentary phase only
+defines the render context requirement; it does not write artifacts.
+
+The render context must include at least:
+
+- canonical `agent_id`;
+- target `target_id`;
+- resolved base-agent source path;
+- resolved Senior Agent Profile source path;
+- resolved explicit template source path;
+- target contract source path;
+- template contract source path;
+- required placeholder values;
+- target-specific placeholder values;
+- escaping mode and safety verdict;
+- source version input;
+- generated notice representation;
+- composition conflict verdict.
+
+The context must be reproducible from the explicit inputs above. If two runs
+receive the same explicit inputs and policy, they must derive the same render
+context.
+
+## Common Required Placeholders
+
+Every explicit agent template used by this composition contract must provide
+and consume these common placeholders:
+
+- `{{AGENT_ID}}`
+- `{{AGENT_NAME}}`
+- `{{AGENT_DESCRIPTION}}`
+- `{{AGENT_BODY}}`
+- `{{TARGET_ID}}`
+- `{{GENERATED_NOTICE}}`
+- `{{SOURCE_VERSION}}`
+
+If a required common placeholder is absent from the explicit template or cannot
+be populated from explicit sources, the future renderer must block with
+`BLOCKED_PLACEHOLDER_MISSING`.
+
+## Target-Specific Placeholders
+
+For `copilot`, the explicit agent template must provide and consume:
+
+- `{{AGENT_TOOLS}}`
+- `{{AGENT_MODEL}}`
+- `{{SPECIALIZATION_REVISION}}`
+- `{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}`
+- `{{READING_SCOPE_CLASS_BLOCK}}`
+
+For `codex`, the explicit agent template must provide and consume:
+
+- `{{AGENT_MODEL}}`
+- `{{MODEL_REASONING_EFFORT}}`
+- `{{SANDBOX_MODE}}`
+
+Any target-specific placeholder required by the target contract, template
+contract, or explicit template must be populated from explicit inputs. Missing
+target-specific placeholders block with `BLOCKED_PLACEHOLDER_MISSING`.
+
+## Escaping And Render Safety
+
+Copilot frontmatter must be YAML-safe. String placeholders in the Copilot
+frontmatter must be escaped so the result remains valid YAML. Copilot block
+placeholders, including `{{AGENT_TOOLS}}`,
+`{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}`, and
+`{{READING_SCOPE_CLASS_BLOCK}}`, must render either valid YAML for their target
+location or a valid empty string for that location.
+
+Codex output must be TOML-safe. All string placeholders in Codex TOML must be
+escaped so the result remains valid TOML. `{{AGENT_BODY}}` in Codex must be
+emitted by a TOML-aware renderer as a valid TOML string value; ad hoc quoting,
+raw interpolation, or unsafe multiline construction is not acceptable.
+
+If any rendered value cannot be represented safely in the target format, the
+future renderer must block with `BLOCKED_UNSAFE_RENDER`.
+
+## Generated Notice
+
+`{{GENERATED_NOTICE}}` must be represented safely for the target template:
+
+- in `reference/templates/copilot/agent.md`, it must render as a Markdown
+  comment or Markdown-safe text;
+- in `reference/templates/codex/agent.toml`, it must render as TOML comment
+  text without breaking the `#` comment prefix;
+- if the notice cannot be represented in the target format, rendering must
+  block with `BLOCKED_UNSAFE_RENDER`.
+
+The notice must not authorize runtime materialization, target writes, GitHub
+writes, productive skill changes, or inferred templates.
+
+## Agent Body Composition
+
+`{{AGENT_BODY}}` must preserve the base agent's mission, boundaries, handoff,
+role class, status semantics, invariants, and operating rules.
+
+The composed body must incorporate the Senior Agent Profile without deleting,
+weakening, or silently replacing the base-agent contracts. Seniorization may
+sharpen judgment, explicitness, and operational quality, but it must remain
+compatible with the base agent's canonical role and protocol obligations.
+
+If the base agent and Senior Agent Profile conflict on mission, ownership,
+role class, status semantics, handoff validity, target safety, or other
+protocol-significant behavior, the future renderer must block with
+`BLOCKED_COMPOSITION_CONFLICT`. It must not choose one source by preference or
+merge conflicting instructions silently.
+
+## Blocking Rules
+
+The future renderer must fail closed before any target write or generated
+artifact write when a required source, template, placeholder, escaping rule, or
+composition invariant is missing or unsafe.
+
+Use these block codes exactly:
+
+- `BLOCKED_SOURCE_MISSING`: a required base agent, Senior Agent Profile, target
+  contract, template contract, or other declared source is absent.
+- `BLOCKED_TEMPLATE_MISSING`: an explicit template is absent for the requested
+  target, target-agent pair, or output shape.
+- `BLOCKED_PLACEHOLDER_MISSING`: a common or target-specific required
+  placeholder is absent from the template or cannot be populated from explicit
+  sources.
+- `BLOCKED_UNSAFE_RENDER`: a placeholder value, generated notice, YAML render,
+  TOML render, or block render cannot be represented safely for the target.
+- `BLOCKED_COMPOSITION_CONFLICT`: explicit composition sources conflict in a
+  way that would weaken, contradict, or ambiguate the base-agent contract or
+  senior profile.
+
+## Explicit Non-Authorization
+
+This contract does not authorize:
+
+- target writes;
+- runtime scripts;
+- generated outputs;
+- productive skill changes;
+- GitHub writes;
+- inferred templates;
+- inferred senior profiles;
+- changes to `skills/stnl_project_agent_specializer/`;
+- creation or alteration of `.github/**`, `.codex/**`, or `AGENTS.md` in this
+  repo root or any target project;
+- materialization in any project target.

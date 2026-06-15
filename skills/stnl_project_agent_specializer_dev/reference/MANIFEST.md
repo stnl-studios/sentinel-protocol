@@ -13,7 +13,8 @@ The canonical documentary/dev-only reference bundle is organized as:
 - `reference/materialization_lab/`: documentary/dev-only contracts for the
   future senior-agent materialization rewrite, including the canonical target
   IDs, explicit template and output-shape contract, missing-template blocking
-  rules, and validation expectations. This is not a runtime materializer.
+  rules, rendering/composition contract, and validation expectations. This is
+  not a runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
   `contracts/` layer, and integrated seniorization validations.
 - `reference/templates/`: reference/template material only; it is not
@@ -32,16 +33,27 @@ The canonical documentary/dev-only reference bundle is organized as:
   materializer.
 - `reference/materialization_lab/` defines the dev-only target contract for
   future senior-agent materialization and the dev-only templates and outputs
-  contract for canonical `copilot` and `codex` outputs. This phase does not
-  authorize runtime materialization, target-repository writes,
-  productive-skill changes, productive-template changes, GitHub writes,
-  inferred templates, runtime scripts, or a final materializer.
+  contract for canonical `copilot` and `codex` outputs. It also defines the
+  documentary render-context composition contract for deterministic composition
+  from base agents, Senior Agent Profiles, explicit templates, and
+  target/template contracts. This phase does not authorize runtime
+  materialization, target-repository writes, productive-skill changes,
+  productive-template changes, GitHub writes, inferred templates, inferred
+  senior profiles, generated outputs, runtime scripts, or a final materializer.
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
   inventories the explicit templates currently present under
   `reference/templates/`, records that the canonical `copilot` agent and
   `codex` agent templates are present, and requires
   `BLOCKED_TEMPLATE_MISSING` whenever a target, target-agent pair, or output
   shape lacks an explicit template.
+- `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
+  defines the documentary/dev-only render-context composition layer for the 12
+  canonical agents and canonical targets. It requires explicit base agents,
+  Senior Agent Profiles, explicit templates, target/template contracts,
+  YAML-safe and TOML-safe rendering, common and target-specific placeholders,
+  and fail-closed blocking via `BLOCKED_SOURCE_MISSING`,
+  `BLOCKED_TEMPLATE_MISSING`, `BLOCKED_PLACEHOLDER_MISSING`,
+  `BLOCKED_UNSAFE_RENDER`, and `BLOCKED_COMPOSITION_CONFLICT`.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -284,6 +296,7 @@ Required files:
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
+- `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`

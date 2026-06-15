@@ -1,8 +1,8 @@
 # Golden Scenarios
 
 These scenarios define the minimum behavior expected from a future
-materialization target resolver. They are documentary/dev-only scenarios and do
-not authorize writing target artifacts.
+materialization target resolver and future render-context composer. They are
+documentary/dev-only scenarios and do not authorize writing target artifacts.
 
 ## Positive Scenarios
 
@@ -76,6 +76,63 @@ Expected result:
 - required TOML fields and placeholders are present before rendering
 - no target write is performed during this contract phase
 
+### Compose `planner` Render Context For `copilot`
+
+Input:
+
+- requested agent: `planner`
+- requested target: `copilot`
+- base agent: `reference/agents/planner.agent.md`
+- senior profile:
+  `reference/seniorization_lab/planner_profile/SENIOR_AGENT_PROFILE.md`
+- explicit template: `reference/templates/copilot/agent.md`
+
+Expected result:
+
+- a deterministic render context is produced for `planner+copilot`
+- common placeholders and Copilot-specific placeholders are populated from
+  explicit sources
+- YAML-safe render requirements are checked
+- no `.github/**` output is written during this contract phase
+
+### Compose `reviewer` Render Context For `codex`
+
+Input:
+
+- requested agent: `reviewer`
+- requested target: `codex`
+- base agent: `reference/agents/reviewer.agent.md`
+- senior profile:
+  `reference/seniorization_lab/reviewer_profile/SENIOR_AGENT_PROFILE.md`
+- explicit template: `reference/templates/codex/agent.toml`
+
+Expected result:
+
+- a deterministic render context is produced for `reviewer+codex`
+- common placeholders and Codex-specific placeholders are populated from
+  explicit sources
+- TOML-safe render requirements are checked
+- `{{AGENT_BODY}}` is represented as a TOML-aware string value in the render
+  context plan
+- no `.codex/**` output and no `AGENTS.md` output are written during this
+  contract phase
+
+### Compose `orchestrator` Copilot Agents Block
+
+Input:
+
+- requested agent: `orchestrator`
+- requested target: `copilot`
+- explicit template: `reference/templates/copilot/agent.md`
+
+Expected result:
+
+- render context requires `{{COPILOT_ORCHESTRATOR_AGENTS_BLOCK}}`
+- the block renders valid YAML or blocks before writing
+- non-orchestrator agents may render the same placeholder as a valid empty
+  string for its target location
+- no target write is performed during this contract phase
+
 ## Negative Scenarios
 
 ### Missing Explicit Template
@@ -90,6 +147,34 @@ Expected result:
 
 - block before writing
 - return `BLOCKED_TEMPLATE_MISSING`
+
+### Missing Base Agent Source
+
+Input:
+
+- requested target: `copilot`
+- requested agent: a canonical agent ID
+- matching `reference/agents/<agent>.agent.md` is absent
+
+Expected result:
+
+- block before composing render context
+- return `BLOCKED_SOURCE_MISSING`
+
+### Missing Senior Profile Source
+
+Input:
+
+- requested target: `codex`
+- requested agent: a canonical agent ID
+- matching
+  `reference/seniorization_lab/<agent>_profile/SENIOR_AGENT_PROFILE.md` is
+  absent
+
+Expected result:
+
+- block before composing render context
+- return `BLOCKED_SOURCE_MISSING`
 
 ### Unknown Target Without Explicit Template
 
@@ -116,8 +201,38 @@ Input:
 Expected result:
 
 - block before writing
-- return `BLOCKED_TEMPLATE_MISSING`
+- return `BLOCKED_PLACEHOLDER_MISSING`
 - explain that the explicit template is structurally incomplete
+
+### TOML Unsafe Body
+
+Input:
+
+- requested target: `codex`
+- requested agent: `reviewer`
+- composed `{{AGENT_BODY}}` cannot be represented as a safe TOML string value
+
+Expected result:
+
+- block before writing
+- return `BLOCKED_UNSAFE_RENDER`
+- explain that Codex output must be TOML-safe
+
+### Base Agent And Senior Profile Conflict
+
+Input:
+
+- requested target: `copilot` or `codex`
+- requested agent: any canonical agent ID
+- base agent and Senior Agent Profile conflict on role class, mission,
+  handoff, status semantics, or other protocol-significant behavior
+
+Expected result:
+
+- block before writing
+- return `BLOCKED_COMPOSITION_CONFLICT`
+- explain that seniorization cannot erase or contradict the base-agent
+  contract
 
 ### Productive Template Reuse Attempt
 
