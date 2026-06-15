@@ -1,0 +1,66 @@
+# Planner Kernel Contracts
+
+Status: `CLEAN_EXCELLENT_PASS` documentation index for the kernel-lab route in
+`stnl_project_agent_specializer_dev`.
+
+This directory is a documentation-focused, read-only kernel lab for the base
+`planner` agent with two local executable validation harnesses. It does not
+implement runtime loading, module execution, materialization, target artifact
+generation, fixtures, generated reports, automatic pass, or production skill
+behavior.
+
+## Source alignment
+
+- productive/base origin: `templates/agents/planner.agent.md`;
+- integrated dev snapshot: `reference/agents/planner.agent.md`;
+- documentary kernel: `reference/kernel_lab/planner_kernel/**`.
+
+The planner snapshot is the local audit point for this dev kernel lab. The
+productive template may be cited as the copy origin, but it is not a fallback
+outside the manifest.
+
+This is not a `planning_kernel`, family kernel, shared planning layer, or merged
+planning-agent bundle. The current mapping is intentionally one base agent to
+one future kernel:
+
+`templates/agents/planner.agent.md -> reference/agents/planner.agent.md -> reference/kernel_lab/planner_kernel/`
+
+## Included files
+
+Read in this order:
+
+1. `contracts/CONTRACT.md` - planner-kernel identity, authority, handoff,
+   reading, status, and role-drift contract.
+2. `contracts/MINIMUM_SAFE_BUNDLE.md` - smallest non-optional contract set that
+   keeps the planner acting as planner.
+3. `contracts/BEHAVIOR_PARITY_SPINE.md` - behavior that must remain
+   semantically aligned with the base `planner`.
+4. `validation/STATIC_CHECKS.md` - read-only executable structural check
+   contract for this documentation bundle.
+5. `validation/GOLDEN_TESTS.md` - semantic golden-test scenarios covered by the
+   read-only executable harness.
+6. `validation/check-static.mjs` - read-only static harness.
+7. `validation/check-golden.mjs` - read-only golden harness that runs the
+   static harness as a precondition.
+
+## Scope limits
+
+This directory does not authorize:
+
+- changes to `templates/agents/planner.agent.md`;
+- changes to `reference/agents/**` except the already authorized literal
+  planner snapshot copy;
+- changes to `reference/kernel_lab/orchestrator_kernel/**`;
+- changes to the productive skill or productive templates;
+- changes to global README, SKILL, MANIFEST, installer, smoke, or runtime files;
+- creation of `MODULE_INDEX.md`, `ACTIVATION_GATES.md`,
+  `EXPERIMENTAL_MATERIALIZATION.md`, fixtures, generated reports, or harness
+  `.mjs` files beyond `validation/check-static.mjs` and
+  `validation/check-golden.mjs` for `planner_kernel`;
+- creation of any `planning_kernel`;
+- creation of durable planning artifacts such as `PLAN.md` or
+  `execution_brief.md`.
+
+The productive/base planner remains the source of truth for the planner role
+until a separately authorized contract changes that status. Inside this dev
+bundle, review uses the local snapshot declared in `reference/MANIFEST.md`.

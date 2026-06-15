@@ -6,7 +6,7 @@ This Senior Agent Profile is documentary/dev-only and non-runtime.
 
 It is derived from the canonical `finalizer` role in
 `reference/agents/finalizer.agent.md` and from the documentary
-`reference/finalizer_kernel/**` bundle. It is not a replacement for the kernel,
+`reference/kernel_lab/finalizer_kernel/**` bundle. It is not a replacement for the kernel,
 not a replacement for the canonical base agent, and not a materialized agent
 prompt.
 

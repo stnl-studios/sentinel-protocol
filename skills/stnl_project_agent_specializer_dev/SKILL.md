@@ -49,8 +49,8 @@ O `orchestrator_kernel` está congelado como `CLEAN_EXCELLENT_PASS`. O
 `planner_kernel` também está congelado como `CLEAN_EXCELLENT_PASS` para o kernel
 lab documental, contratual e semântico mínimo. Ele possui harnesses executáveis
 read-only próprios em
-`reference/planner_kernel/validation/check-static.mjs` e
-`reference/planner_kernel/validation/check-golden.mjs`, mas isso não muda o
+`reference/kernel_lab/planner_kernel/validation/check-static.mjs` e
+`reference/kernel_lab/planner_kernel/validation/check-golden.mjs`, mas isso não muda o
 comportamento produtivo, não cria runtime, não autoriza materialização real,
 não cria fallback para `templates/**` e não concede promoção automática para
 qualquer kernel futuro. Ambos os passes são resultados exclusivos do kernel lab
@@ -319,172 +319,172 @@ Toda comparação deve validar que o kernel:
 - Snapshot dev do `planner` copiado literalmente do template produtivo:
   `reference/agents/planner.agent.md`
 - Contrato do orchestrator kernel:
-  `reference/orchestrator_kernel/contracts/CONTRACT.md`
+  `reference/kernel_lab/orchestrator_kernel/contracts/CONTRACT.md`
 - Minimum safe bundle:
-  `reference/orchestrator_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+  `reference/kernel_lab/orchestrator_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
 - Module index:
-  `reference/orchestrator_kernel/contracts/MODULE_INDEX.md`
+  `reference/kernel_lab/orchestrator_kernel/contracts/MODULE_INDEX.md`
 - Activation gates:
-  `reference/orchestrator_kernel/contracts/ACTIVATION_GATES.md`
+  `reference/kernel_lab/orchestrator_kernel/contracts/ACTIVATION_GATES.md`
 - Congelamento da rota de materialização experimental:
-  `reference/orchestrator_kernel/contracts/EXPERIMENTAL_MATERIALIZATION.md`
+  `reference/kernel_lab/orchestrator_kernel/contracts/EXPERIMENTAL_MATERIALIZATION.md`
 - Static checks estruturais:
-  `reference/orchestrator_kernel/validation/STATIC_CHECKS.md`
+  `reference/kernel_lab/orchestrator_kernel/validation/STATIC_CHECKS.md`
 - Golden tests estruturais:
-  `reference/orchestrator_kernel/validation/GOLDEN_TESTS.md`
+  `reference/kernel_lab/orchestrator_kernel/validation/GOLDEN_TESTS.md`
 - Harness read-only de static checks:
-  `reference/orchestrator_kernel/validation/check-static.mjs`
+  `reference/kernel_lab/orchestrator_kernel/validation/check-static.mjs`
 - Harness read-only de golden tests:
-  `reference/orchestrator_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/orchestrator_kernel/validation/check-golden.mjs`
 - Kernel documental do planner:
-  `reference/planner_kernel/README.md`
+  `reference/kernel_lab/planner_kernel/README.md`
 - Contratos documentais do planner:
-  `reference/planner_kernel/contracts/CONTRACT.md`,
-  `reference/planner_kernel/contracts/BEHAVIOR_PARITY_SPINE.md` e
-  `reference/planner_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+  `reference/kernel_lab/planner_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/planner_kernel/contracts/BEHAVIOR_PARITY_SPINE.md` e
+  `reference/kernel_lab/planner_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
 - Validação documental e harnesses read-only do planner, sem runtime de agente:
-  `reference/planner_kernel/validation/STATIC_CHECKS.md` e
-  `reference/planner_kernel/validation/GOLDEN_TESTS.md`
+  `reference/kernel_lab/planner_kernel/validation/STATIC_CHECKS.md` e
+  `reference/kernel_lab/planner_kernel/validation/GOLDEN_TESTS.md`
 - Harness read-only de static checks do planner:
-  `reference/planner_kernel/validation/check-static.mjs`
+  `reference/kernel_lab/planner_kernel/validation/check-static.mjs`
 - Harness read-only de golden checks do planner:
-  `reference/planner_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/planner_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `execution-package-designer`:
   `reference/agents/execution-package-designer.agent.md`
 - Kernel documental do `execution-package-designer`:
-  `reference/execution_package_designer_kernel/README.md`
+  `reference/kernel_lab/execution_package_designer_kernel/README.md`
 - Contratos documentais do `execution-package-designer`:
-  `reference/execution_package_designer_kernel/contracts/CONTRACT.md`,
-  `reference/execution_package_designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/execution_package_designer_kernel/contracts/PACKAGE_READINESS_GATES.md` e
-  `reference/execution_package_designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+  `reference/kernel_lab/execution_package_designer_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/execution_package_designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/execution_package_designer_kernel/contracts/PACKAGE_READINESS_GATES.md` e
+  `reference/kernel_lab/execution_package_designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
 - Validação documental e harnesses read-only do `execution-package-designer`,
   sem runtime de agente:
-  `reference/execution_package_designer_kernel/validation/STATIC_CHECKS.md` e
-  `reference/execution_package_designer_kernel/validation/GOLDEN_TESTS.md`
+  `reference/kernel_lab/execution_package_designer_kernel/validation/STATIC_CHECKS.md` e
+  `reference/kernel_lab/execution_package_designer_kernel/validation/GOLDEN_TESTS.md`
 - Harness read-only de static checks do `execution-package-designer`:
-  `reference/execution_package_designer_kernel/validation/check-static.mjs`
+  `reference/kernel_lab/execution_package_designer_kernel/validation/check-static.mjs`
 - Harness read-only de golden checks do `execution-package-designer`:
-  `reference/execution_package_designer_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/execution_package_designer_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `validation-eval-designer`:
   `reference/agents/validation-eval-designer.agent.md`
 - Kernel documental do `validation-eval-designer`:
-  `reference/validation_eval_designer_kernel/README.md`
+  `reference/kernel_lab/validation_eval_designer_kernel/README.md`
 - Contratos documentais do `validation-eval-designer`:
-  `reference/validation_eval_designer_kernel/contracts/CONTRACT.md`,
-  `reference/validation_eval_designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/validation_eval_designer_kernel/contracts/HARNESS_DECISION_GATES.md`
+  `reference/kernel_lab/validation_eval_designer_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/validation_eval_designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/validation_eval_designer_kernel/contracts/HARNESS_DECISION_GATES.md`
   e
-  `reference/validation_eval_designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+  `reference/kernel_lab/validation_eval_designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
 - Validação documental e harnesses read-only do `validation-eval-designer`:
-  `reference/validation_eval_designer_kernel/validation/STATIC_CHECKS.md`,
-  `reference/validation_eval_designer_kernel/validation/GOLDEN_TESTS.md`,
-  `reference/validation_eval_designer_kernel/validation/check-static.mjs` e
-  `reference/validation_eval_designer_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/validation_eval_designer_kernel/validation/STATIC_CHECKS.md`,
+  `reference/kernel_lab/validation_eval_designer_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/kernel_lab/validation_eval_designer_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/validation_eval_designer_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `designer`:
   `reference/agents/designer.agent.md`
 - Kernel documental do `designer`:
-  `reference/designer_kernel/README.md`
+  `reference/kernel_lab/designer_kernel/README.md`
 - Contratos documentais do `designer`:
-  `reference/designer_kernel/contracts/CONTRACT.md`,
-  `reference/designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/designer_kernel/contracts/DESIGN_CONTRIBUTION_GATES.md` e
-  `reference/designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
+  `reference/kernel_lab/designer_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/designer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/designer_kernel/contracts/DESIGN_CONTRIBUTION_GATES.md` e
+  `reference/kernel_lab/designer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md`
 - Validação documental e harnesses read-only do `designer`:
-  `reference/designer_kernel/validation/STATIC_CHECKS.md`,
-  `reference/designer_kernel/validation/GOLDEN_TESTS.md`,
-  `reference/designer_kernel/validation/check-static.mjs` e
-  `reference/designer_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/designer_kernel/validation/STATIC_CHECKS.md`,
+  `reference/kernel_lab/designer_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/kernel_lab/designer_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/designer_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `coder-frontend`:
   `reference/agents/coder-frontend.agent.md`
 - Kernel documental clean pass do `coder-frontend`:
-  `reference/coder_frontend_kernel/README.md`
+  `reference/kernel_lab/coder_frontend_kernel/README.md`
 - Contratos documentais clean pass do `coder-frontend`:
-  `reference/coder_frontend_kernel/contracts/CONTRACT.md`,
-  `reference/coder_frontend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/coder_frontend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
-  `reference/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`
+  `reference/kernel_lab/coder_frontend_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/coder_frontend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/coder_frontend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/kernel_lab/coder_frontend_kernel/contracts/FRONTEND_EXECUTION_GATES.md`
 - Validação documental/textual read-only do `coder-frontend`, sem promoção
   automática futura:
-  `reference/coder_frontend_kernel/validation/STATIC_CHECKS.md`,
-  `reference/coder_frontend_kernel/validation/GOLDEN_TESTS.md`,
-  `reference/coder_frontend_kernel/validation/check-static.mjs` e
-  `reference/coder_frontend_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/coder_frontend_kernel/validation/STATIC_CHECKS.md`,
+  `reference/kernel_lab/coder_frontend_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/kernel_lab/coder_frontend_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/coder_frontend_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `coder-backend`:
   `reference/agents/coder-backend.agent.md`
 - Kernel documental clean pass do `coder-backend`:
-  `reference/coder_backend_kernel/README.md`
+  `reference/kernel_lab/coder_backend_kernel/README.md`
 - Contratos documentais clean pass do `coder-backend`:
-  `reference/coder_backend_kernel/contracts/CONTRACT.md`,
-  `reference/coder_backend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/coder_backend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
-  `reference/coder_backend_kernel/contracts/BACKEND_EXECUTION_GATES.md`
+  `reference/kernel_lab/coder_backend_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/coder_backend_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/coder_backend_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/kernel_lab/coder_backend_kernel/contracts/BACKEND_EXECUTION_GATES.md`
 - Validação documental/textual read-only do `coder-backend`, sem promoção
   automática futura:
-  `reference/coder_backend_kernel/validation/STATIC_CHECKS.md`,
-  `reference/coder_backend_kernel/validation/GOLDEN_TESTS.md`,
-  `reference/coder_backend_kernel/validation/check-static.mjs` e
-  `reference/coder_backend_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/coder_backend_kernel/validation/STATIC_CHECKS.md`,
+  `reference/kernel_lab/coder_backend_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/kernel_lab/coder_backend_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/coder_backend_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `coder-ios`:
   `reference/agents/coder-ios.agent.md`
 - Kernel documental clean pass do `coder-ios`:
-  `reference/coder_ios_kernel/README.md`
+  `reference/kernel_lab/coder_ios_kernel/README.md`
 - Contratos documentais clean pass do `coder-ios`:
-  `reference/coder_ios_kernel/contracts/CONTRACT.md`,
-  `reference/coder_ios_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/coder_ios_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
-  `reference/coder_ios_kernel/contracts/CODER_IOS_GATES.md`
+  `reference/kernel_lab/coder_ios_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/coder_ios_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/coder_ios_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/kernel_lab/coder_ios_kernel/contracts/CODER_IOS_GATES.md`
 - Validação documental/textual read-only do `coder-ios`, sem promoção
   automática futura:
-  `reference/coder_ios_kernel/validation/STATIC_CHECKS.md`,
-  `reference/coder_ios_kernel/validation/GOLDEN_TESTS.md`,
-  `reference/coder_ios_kernel/validation/check-static.mjs` e
-  `reference/coder_ios_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/coder_ios_kernel/validation/STATIC_CHECKS.md`,
+  `reference/kernel_lab/coder_ios_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/kernel_lab/coder_ios_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/coder_ios_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `reviewer`:
   `reference/agents/reviewer.agent.md`
 - Kernel documental clean pass do `reviewer`:
-  `reference/reviewer_kernel/README.md`
+  `reference/kernel_lab/reviewer_kernel/README.md`
 - Contratos documentais clean pass do `reviewer`:
-  `reference/reviewer_kernel/contracts/CONTRACT.md`,
-  `reference/reviewer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/reviewer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
-  `reference/reviewer_kernel/contracts/SEMANTIC_REVIEW_GATES.md`
+  `reference/kernel_lab/reviewer_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/reviewer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/reviewer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/kernel_lab/reviewer_kernel/contracts/SEMANTIC_REVIEW_GATES.md`
 - Validação documental/textual read-only do `reviewer`, sem promoção
   automática futura:
-  `reference/reviewer_kernel/validation/STATIC_CHECKS.md`,
-  `reference/reviewer_kernel/validation/GOLDEN_TESTS.md`,
-  `reference/reviewer_kernel/validation/check-static.mjs` e
-  `reference/reviewer_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/reviewer_kernel/validation/STATIC_CHECKS.md`,
+  `reference/kernel_lab/reviewer_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/kernel_lab/reviewer_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/reviewer_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `finalizer`:
   `reference/agents/finalizer.agent.md`
 - Kernel documental clean pass do `finalizer`:
-  `reference/finalizer_kernel/README.md`
+  `reference/kernel_lab/finalizer_kernel/README.md`
 - Contratos documentais clean pass do `finalizer`:
-  `reference/finalizer_kernel/contracts/CONTRACT.md`,
-  `reference/finalizer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/finalizer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
-  `reference/finalizer_kernel/contracts/CLOSURE_GATES.md`
+  `reference/kernel_lab/finalizer_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/finalizer_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/finalizer_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/kernel_lab/finalizer_kernel/contracts/CLOSURE_GATES.md`
 - Validação documental/textual read-only do `finalizer`, sem promoção
   automática futura:
-  `reference/finalizer_kernel/validation/STATIC_CHECKS.md`,
-  `reference/finalizer_kernel/validation/GOLDEN_TESTS.md`,
-  `reference/finalizer_kernel/validation/check-static.mjs` e
-  `reference/finalizer_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/finalizer_kernel/validation/STATIC_CHECKS.md`,
+  `reference/kernel_lab/finalizer_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/kernel_lab/finalizer_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/finalizer_kernel/validation/check-golden.mjs`
 - Snapshot dev local do `resync`:
   `reference/agents/resync.agent.md`
 - Kernel documental clean pass do `resync`:
-  `reference/resync_kernel/README.md`
+  `reference/kernel_lab/resync_kernel/README.md`
 - Contratos documentais clean pass do `resync`:
-  `reference/resync_kernel/contracts/CONTRACT.md`,
-  `reference/resync_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
-  `reference/resync_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
-  `reference/resync_kernel/contracts/RESYNC_GATES.md`
+  `reference/kernel_lab/resync_kernel/contracts/CONTRACT.md`,
+  `reference/kernel_lab/resync_kernel/contracts/BEHAVIOR_PARITY_SPINE.md`,
+  `reference/kernel_lab/resync_kernel/contracts/MINIMUM_SAFE_BUNDLE.md` e
+  `reference/kernel_lab/resync_kernel/contracts/RESYNC_GATES.md`
 - Validação documental/textual read-only do `resync`, sem promoção automática
   futura:
-  `reference/resync_kernel/validation/STATIC_CHECKS.md`,
-  `reference/resync_kernel/validation/GOLDEN_TESTS.md`,
-  `reference/resync_kernel/validation/check-static.mjs` e
-  `reference/resync_kernel/validation/check-golden.mjs`
+  `reference/kernel_lab/resync_kernel/validation/STATIC_CHECKS.md`,
+  `reference/kernel_lab/resync_kernel/validation/GOLDEN_TESTS.md`,
+  `reference/kernel_lab/resync_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/resync_kernel/validation/check-golden.mjs`
 
 ## Regras De Uso
 
@@ -524,27 +524,27 @@ produtivo. O pass registrado para cada kernel lab não altera esses limites.
 
 Comandos executados da raiz do repo:
 
-- `node --check skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-static.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-golden.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-static.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-golden.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-static.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-golden.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-static.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-static.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-golden.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/validation/check-static.mjs`
-- `node --check skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/validation/check-golden.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-static.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/orchestrator_kernel/validation/check-golden.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-static.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/planner_kernel/validation/check-golden.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-static.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/validation_eval_designer_kernel/validation/check-golden.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-static.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/execution_package_designer_kernel/validation/check-golden.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-static.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/designer_kernel/validation/check-golden.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/validation/check-static.mjs`
-- `node skills/stnl_project_agent_specializer_dev/reference/coder_frontend_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/orchestrator_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/orchestrator_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/planner_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/planner_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/validation_eval_designer_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/validation_eval_designer_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/execution_package_designer_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/execution_package_designer_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/designer_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/designer_kernel/validation/check-golden.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/coder_frontend_kernel/validation/check-static.mjs`
+- `node --check skills/stnl_project_agent_specializer_dev/reference/kernel_lab/coder_frontend_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/orchestrator_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/orchestrator_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/planner_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/planner_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/validation_eval_designer_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/validation_eval_designer_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/execution_package_designer_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/execution_package_designer_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/designer_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/designer_kernel/validation/check-golden.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/coder_frontend_kernel/validation/check-static.mjs`
+- `node skills/stnl_project_agent_specializer_dev/reference/kernel_lab/coder_frontend_kernel/validation/check-golden.mjs`

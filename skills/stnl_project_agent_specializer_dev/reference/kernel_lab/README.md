@@ -116,8 +116,8 @@ materializer authorization, runtime loader authorization, closure ownership,
 normative-rule rewrite, or canonical-template write authorization.
 
 The planner harnesses are
-`reference/planner_kernel/validation/check-static.mjs` and
-`reference/planner_kernel/validation/check-golden.mjs`. They are executable
+`reference/kernel_lab/planner_kernel/validation/check-static.mjs` and
+`reference/kernel_lab/planner_kernel/validation/check-golden.mjs`. They are executable
 read-only blocking validation support only; they do not grant automatic
 promotion for this or any future kernel.
 

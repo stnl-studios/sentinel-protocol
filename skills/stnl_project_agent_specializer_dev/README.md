@@ -150,29 +150,29 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
   `reference/agents/planner.agent.md`, derivado literalmente de
   `templates/agents/planner.agent.md`;
 - executar, quando necessário, os harnesses read-only
-  `reference/planner_kernel/validation/check-static.mjs` e
-  `reference/planner_kernel/validation/check-golden.mjs` sem promover
+  `reference/kernel_lab/planner_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/planner_kernel/validation/check-golden.mjs` sem promover
   automaticamente qualquer kernel;
 - preservar o `validation_eval_designer_kernel` contra o snapshot dev
   local `reference/agents/validation-eval-designer.agent.md`, derivado
   literalmente de `templates/agents/validation-eval-designer.agent.md`;
 - executar os harnesses read-only
-  `reference/validation_eval_designer_kernel/validation/check-static.mjs` e
-  `reference/validation_eval_designer_kernel/validation/check-golden.mjs` como
+  `reference/kernel_lab/validation_eval_designer_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/validation_eval_designer_kernel/validation/check-golden.mjs` como
   apoio bloqueante, sem promoção automática;
 - preservar o `execution_package_designer_kernel` congelado contra o
   snapshot dev local `reference/agents/execution-package-designer.agent.md`,
   derivado literalmente de `templates/agents/execution-package-designer.agent.md`;
 - executar os harnesses read-only
-  `reference/execution_package_designer_kernel/validation/check-static.mjs` e
-  `reference/execution_package_designer_kernel/validation/check-golden.mjs` como
+  `reference/kernel_lab/execution_package_designer_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/execution_package_designer_kernel/validation/check-golden.mjs` como
   apoio bloqueante, sem promoção automática;
 - preservar o `designer_kernel` congelado contra o snapshot dev local
   `reference/agents/designer.agent.md`, derivado literalmente de
   `templates/agents/designer.agent.md`;
 - executar os harnesses read-only
-  `reference/designer_kernel/validation/check-static.mjs` e
-  `reference/designer_kernel/validation/check-golden.mjs` como apoio
+  `reference/kernel_lab/designer_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/designer_kernel/validation/check-golden.mjs` como apoio
   bloqueante, sem promoção automática;
 - preservar o `coder_frontend_kernel` promovido contra o snapshot dev local
   `reference/agents/coder-frontend.agent.md`, derivado literalmente de
@@ -241,47 +241,47 @@ autoritativa e não autoriza runtime, materialização ou repo alvo.
 - manter `reference/kernel_lab/README.md` como entrada curta para o recomeço;
 - manter contratos/checks do orchestrator kernel apenas como apoio estrutural e
   conceitual;
-- manter os harnesses `reference/orchestrator_kernel/validation/check-static.mjs`,
-  `reference/orchestrator_kernel/validation/check-golden.mjs`,
-  `reference/planner_kernel/validation/check-static.mjs` e
-  `reference/planner_kernel/validation/check-golden.mjs`, além dos harnesses
+- manter os harnesses `reference/kernel_lab/orchestrator_kernel/validation/check-static.mjs`,
+  `reference/kernel_lab/orchestrator_kernel/validation/check-golden.mjs`,
+  `reference/kernel_lab/planner_kernel/validation/check-static.mjs` e
+  `reference/kernel_lab/planner_kernel/validation/check-golden.mjs`, além dos harnesses
   equivalentes do `validation_eval_designer_kernel` e do
   `execution_package_designer_kernel` e do `designer_kernel`, read-only, sem
   autorizar materialização ou promoção automática;
 - tratar `reference/agents/**` como o único local autorizado para snapshots dev
   de base agents usados pelo kernel lab;
-- tratar `reference/coder_frontend_kernel/**` como clean pass documental
+- tratar `reference/kernel_lab/coder_frontend_kernel/**` como clean pass documental
   dev-only com harness textual bloqueante, sem autorizar runtime,
   materialização, produção, GitHub, repo alvo ou skill produtiva;
-- tratar `reference/coder_backend_kernel/**` como clean pass documental
+- tratar `reference/kernel_lab/coder_backend_kernel/**` como clean pass documental
   dev-only com harness textual bloqueante, sem autorizar runtime, runtime
   loader, materialização, materialization path, produção, GitHub, repo alvo,
   generated reports, fixtures, target artifacts, active runtime adoption ou
   skill produtiva;
-- tratar `reference/coder_ios_kernel/**` como clean pass documental dev-only
+- tratar `reference/kernel_lab/coder_ios_kernel/**` como clean pass documental dev-only
   com harness textual bloqueante, sem autorizar runtime, runtime loader,
   materialização, materialization path, produção, GitHub, repo alvo, generated
   reports, fixtures, target artifacts, active runtime adoption, materializer,
   skill produtiva, alteração em templates canônicos, durable docs, `DONE`,
   decisão `resync: yes/no`, validation-runner/reviewer/finalizer/resync
   substitution, frontend web genérico, backend ou runtime/temp paths;
-- tratar `reference/validation_runner_kernel/**` como clean pass documental
+- tratar `reference/kernel_lab/validation_runner_kernel/**` como clean pass documental
   dev-only com harness textual bloqueante, sem autorizar runtime, runtime
   loader, materialização, materialization path, produção, GitHub, repo alvo,
   generated reports, fixtures, target artifacts, active runtime adoption,
   materializer, skill produtiva ou alteração em templates canônicos;
-- tratar `reference/reviewer_kernel/**` como clean pass documental dev-only com
+- tratar `reference/kernel_lab/reviewer_kernel/**` como clean pass documental dev-only com
   harness textual bloqueante, sem autorizar runtime, runtime loader,
   materialização, materialization path, produção, GitHub, repo alvo, generated
   reports, fixtures, target artifacts, active runtime adoption, materializer,
   skill produtiva ou alteração em templates canônicos;
-- tratar `reference/finalizer_kernel/**` como clean pass documental dev-only
+- tratar `reference/kernel_lab/finalizer_kernel/**` como clean pass documental dev-only
   com harness textual bloqueante, sem autorizar runtime, runtime loader,
   materialização, materialization path, produção, GitHub, repo alvo, generated
   reports, fixtures, target artifacts, active runtime adoption, materializer,
   skill produtiva, alteração em templates canônicos, execução de resync ou
   substituição de runner/reviewer;
-- tratar `reference/resync_kernel/**` como clean pass documental dev-only com
+- tratar `reference/kernel_lab/resync_kernel/**` como clean pass documental dev-only com
   harness textual bloqueante, sem autorizar runtime, runtime loader,
   materialização, materialization path, produção, GitHub, repo alvo, generated
   reports, fixtures, target artifacts, active runtime adoption, materializer,
