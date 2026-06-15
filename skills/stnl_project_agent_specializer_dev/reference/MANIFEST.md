@@ -102,6 +102,14 @@ The canonical documentary/dev-only reference bundle is organized as:
   productive skill changes, productive-template changes, historical-audit
   changes, runtime materializer behavior, target reads, or real
   materialization.
+- `scripts/materialization_lab/check-source-inventory.mjs` is the separately
+  authorized dev-only source inventory validator for the materialization lab.
+  It is read-only, has no external package dependency, validates only the dev
+  skill source inventory and registrations, ignores `__MACOSX` and `.DS_Store`,
+  rejects target project path arguments, and does not authorize target reads,
+  target writes, fixtures, generated outputs, GitHub writes, productive skill
+  changes, productive-template changes, historical-audit changes, runtime
+  materializer behavior, or real materialization.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -352,6 +360,7 @@ Required files:
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
 - `scripts/materialization_lab/check-static.mjs`
+- `scripts/materialization_lab/check-source-inventory.mjs`
 - `reference/templates/copilot/agent.md`
 - `reference/templates/codex/agent.toml`
 - `reference/templates/codex/AGENTS.md`

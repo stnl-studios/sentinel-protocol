@@ -38,6 +38,15 @@ The validator output
 materialization-lab script path and the checker validates the static contract
 bundle without reading or writing any target project.
 
+The validator output
+`MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS` may be accepted only when
+`scripts/materialization_lab/check-source-inventory.mjs` exists in the
+authorized materialization-lab script path and the checker validates the
+source inventory bundle without accepting a target project path, reading a
+target project, writing a target project, creating fixtures, creating generated
+outputs, writing GitHub, changing the productive skill, or performing real
+materialization.
+
 ## Required Criteria
 
 - The ten materialization lab files exist in
@@ -111,6 +120,37 @@ bundle without reading or writing any target project.
   `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` when the static contract bundle
   passes, or `MATERIALIZATION_STATIC_CONTRACT_CHECK: FAIL` with a clear failure
   list when it does not.
+- `scripts/materialization_lab/check-source-inventory.mjs` exists as the
+  separately authorized dev-only source inventory validator implementation.
+- `scripts/materialization_lab/check-source-inventory.mjs` is read-only, uses
+  Node.js ESM, has no external package dependency, ignores `__MACOSX` and
+  `.DS_Store`, rejects target project path arguments, and reads only inside
+  `skills/stnl_project_agent_specializer_dev/`.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates exactly
+  the 12 canonical base agents in `reference/agents/`, exactly the 12 Senior
+  Agent Profiles in `reference/seniorization_lab/`, the explicit kebab-case
+  agent ID to underscore profile directory mapping, absence of non-ignored
+  extra base agents, and absence of non-ignored extra profile directories
+  outside known canonical/global seniorization items.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates base-agent
+  identity, mission, required output, status/role signal, and handoff or
+  boundary anchors.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates Senior
+  Agent Profile identity, profile status, canonical role boundary,
+  documentary/dev-only or non-runtime boundary, materialization/runtime
+  non-authorization, and target-output/write-boundary anchors.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates the four
+  explicit templates, `reference/MANIFEST.md`,
+  `scripts/materialization_lab/check-static.mjs`, and its own manifest
+  registration.
+- `scripts/materialization_lab/check-source-inventory.mjs` does not authorize
+  target reads, target writes, fixtures, generated outputs, GitHub writes,
+  productive skill changes, productive-template changes, historical-audit
+  changes, runtime materializer behavior, or real materialization.
+- `scripts/materialization_lab/check-source-inventory.mjs` prints
+  `MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS` when the source inventory
+  bundle passes, or `MATERIALIZATION_SOURCE_INVENTORY_CHECK: FAIL` with a clear
+  failure list when it does not.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
 - Historical references in audits, profiles, and old contracts are protected
@@ -282,6 +322,11 @@ bundle without reading or writing any target project.
   passed; it is not evidence of render correctness, dry-run output correctness,
   target safety against a real repo, fixture readiness, generated output
   readiness, or real materialization readiness.
+- `MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS` is valid only as evidence that
+  the dev-only source inventory bundle and checker registration passed; it is
+  not evidence of render correctness, template rendering correctness, dry-run
+  output correctness, target safety against a real repo, fixture readiness,
+  generated output readiness, or real materialization readiness.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -345,3 +390,11 @@ productive-skill edits, productive-template edits, historical-audit edits,
 GitHub writes, real materialization, runtime materializer behavior, external
 packages, undocumented assumptions, or mutation of `.github/**`, `.codex/**`,
 or `AGENTS.md`.
+
+Do not accept `MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS` if the checker
+depends on target reads, target writes, fixtures, generated outputs,
+productive-skill edits, productive-template edits, historical-audit edits,
+GitHub writes, real materialization, runtime materializer behavior, external
+packages, undocumented assumptions, target project path arguments, reading
+outside `skills/stnl_project_agent_specializer_dev/`, or mutation of
+`.github/**`, `.codex/**`, or `AGENTS.md`.

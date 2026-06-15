@@ -46,6 +46,27 @@ Confirm the expected successful validator output is exactly:
 
 - `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS`
 
+Confirm the separately authorized dev-only source inventory validator exists:
+
+- `scripts/materialization_lab/check-source-inventory.mjs`
+
+Confirm `scripts/materialization_lab/check-source-inventory.mjs` is a read-only
+Node.js ESM source inventory validator with no external package dependency.
+
+Confirm the source inventory validator ignores `__MACOSX` and `.DS_Store`.
+
+Confirm the source inventory validator does not accept a target project path and
+does not read outside `skills/stnl_project_agent_specializer_dev/`.
+
+Confirm the source inventory validator does not authorize target reads, target
+writes, fixtures, generated outputs, GitHub writes, productive skill changes,
+productive-template changes, historical-audit changes, runtime materializer
+behavior, or real materialization.
+
+Confirm the expected successful validator output is exactly:
+
+- `MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS`
+
 ## Contract Anchors
 
 Confirm `contracts/TARGETS_CONTRACT.md` contains all required anchors:
@@ -332,11 +353,70 @@ productive skill changes, GitHub writes, real materialization, runtime
 materializer, or fixture creation.
 
 Confirm the current separately authorized implementation is limited to
-`scripts/materialization_lab/check-static.mjs` as a static contract validator.
+`scripts/materialization_lab/check-static.mjs` as a static contract validator
+and `scripts/materialization_lab/check-source-inventory.mjs` as a source
+inventory validator.
 
 Confirm that this implementation remains dev-only and read-only and does not
 create reports, fixtures, generated artifacts, target artifacts, `.github/**`,
 `.codex/**`, or `AGENTS.md`.
+
+## Source Inventory Validator Checks
+
+Confirm `scripts/materialization_lab/check-source-inventory.mjs` validates
+exactly the 12 canonical base agents under `reference/agents/`:
+
+- `orchestrator.agent.md`
+- `planner.agent.md`
+- `validation-eval-designer.agent.md`
+- `execution-package-designer.agent.md`
+- `designer.agent.md`
+- `coder-frontend.agent.md`
+- `coder-backend.agent.md`
+- `coder-ios.agent.md`
+- `validation-runner.agent.md`
+- `reviewer.agent.md`
+- `finalizer.agent.md`
+- `resync.agent.md`
+
+Confirm `scripts/materialization_lab/check-source-inventory.mjs` validates
+exactly the 12 Senior Agent Profiles under `reference/seniorization_lab/`:
+
+- `orchestrator_profile/SENIOR_AGENT_PROFILE.md`
+- `planner_profile/SENIOR_AGENT_PROFILE.md`
+- `validation_eval_designer_profile/SENIOR_AGENT_PROFILE.md`
+- `execution_package_designer_profile/SENIOR_AGENT_PROFILE.md`
+- `designer_profile/SENIOR_AGENT_PROFILE.md`
+- `coder_frontend_profile/SENIOR_AGENT_PROFILE.md`
+- `coder_backend_profile/SENIOR_AGENT_PROFILE.md`
+- `coder_ios_profile/SENIOR_AGENT_PROFILE.md`
+- `validation_runner_profile/SENIOR_AGENT_PROFILE.md`
+- `reviewer_profile/SENIOR_AGENT_PROFILE.md`
+- `finalizer_profile/SENIOR_AGENT_PROFILE.md`
+- `resync_profile/SENIOR_AGENT_PROFILE.md`
+
+Confirm the source inventory validator enforces the explicit kebab-case agent
+ID to underscore profile directory mapping.
+
+Confirm the source inventory validator fails when `reference/agents/` contains
+an extra non-ignored agent item.
+
+Confirm the source inventory validator fails when
+`reference/seniorization_lab/` contains an extra non-ignored profile directory
+outside the 12 expected profile directories, `contracts/`, the known global
+audit/validation files, or canonical global items.
+
+Confirm the source inventory validator checks each base agent for identity,
+mission, required output, status/role signal, and handoff or boundary anchors.
+
+Confirm the source inventory validator checks each Senior Agent Profile for
+identity, profile status, canonical role boundary, documentary/dev-only or
+non-runtime boundary, materialization/runtime non-authorization, and
+target-output/write-boundary anchors.
+
+Confirm the source inventory validator checks the four explicit templates,
+`reference/MANIFEST.md`, `scripts/materialization_lab/check-static.mjs`, and
+its own manifest registration.
 
 ## Template Placeholder Checks
 
