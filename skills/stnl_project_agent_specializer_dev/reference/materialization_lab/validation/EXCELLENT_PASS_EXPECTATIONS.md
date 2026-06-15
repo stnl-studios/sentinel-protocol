@@ -32,6 +32,12 @@ declared only when the documentary implementation boundary, future dev-only
 script scope, authorized script path, read boundary, write prohibition, output
 authorization, and block-code criteria below are also satisfied.
 
+The validator output
+`MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` may be accepted only when
+`scripts/materialization_lab/check-static.mjs` exists in the authorized
+materialization-lab script path and the checker validates the static contract
+bundle without reading or writing any target project.
+
 ## Required Criteria
 
 - The ten materialization lab files exist in
@@ -89,6 +95,22 @@ authorization, and block-code criteria below are also satisfied.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` denies script creation, runtime
   execution, fixtures, target writes, generated outputs, productive skill
   changes, GitHub writes, and real materialization.
+- `scripts/materialization_lab/check-static.mjs` exists as the first
+  separately authorized dev-only static contract validator implementation.
+- `scripts/materialization_lab/check-static.mjs` is read-only, uses Node.js ESM,
+  has no external package dependency, and ignores `__MACOSX` and `.DS_Store`.
+- `scripts/materialization_lab/check-static.mjs` validates required contracts,
+  validation files, explicit templates, 12 base agents, 12 Senior Agent
+  Profiles, target/path anchors, placeholders, planned operations, validation
+  statuses, and declared block codes.
+- `scripts/materialization_lab/check-static.mjs` does not authorize target
+  reads, target writes, fixtures, generated outputs, GitHub writes, productive
+  skill changes, productive-template changes, historical-audit changes,
+  runtime materializer behavior, or real materialization.
+- `scripts/materialization_lab/check-static.mjs` prints
+  `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` when the static contract bundle
+  passes, or `MATERIALIZATION_STATIC_CONTRACT_CHECK: FAIL` with a clear failure
+  list when it does not.
 - Legacy runtime target terms `vscode`, `VS Code`, `VS Code/GitHub`, and
   `GitHub Agents` normalize to `copilot` only in target-runtime context.
 - Historical references in audits, profiles, and old contracts are protected
@@ -252,6 +274,14 @@ authorization, and block-code criteria below are also satisfied.
 - The implementation-boundary contract blocks attempts to create scripts in
   this documentary phase unless a later implementation step has explicitly
   authorized script creation.
+- The current separately authorized implementation step is limited to
+  `scripts/materialization_lab/check-static.mjs` as a read-only static contract
+  validator.
+- `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` is valid only as evidence that
+  the static documentary/dev-only contract bundle and checker registration
+  passed; it is not evidence of render correctness, dry-run output correctness,
+  target safety against a real repo, fixture readiness, generated output
+  readiness, or real materialization readiness.
 - `openai.yaml` describes targets as `copilot` or `codex`.
 - `reference/MANIFEST.md` records `reference/materialization_lab/` as a
   dev-only contract area, not a final runtime materializer.
@@ -308,3 +338,10 @@ template edits, historical-audit edits, GitHub writes, real materialization,
 runtime materializer, unauthorized script paths, unauthorized write capability,
 non-read-only target access, unauthorized outputs, unknown script categories,
 or undocumented assumptions.
+
+Do not accept `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` if the checker
+depends on target reads, target writes, fixtures, generated outputs,
+productive-skill edits, productive-template edits, historical-audit edits,
+GitHub writes, real materialization, runtime materializer behavior, external
+packages, undocumented assumptions, or mutation of `.github/**`, `.codex/**`,
+or `AGENTS.md`.
