@@ -33,6 +33,12 @@ creation, update, or deletion of target-project files during this phase.
 The dev skill currently contains these explicit templates under
 `reference/templates/`:
 
+- `reference/templates/copilot/agent.md`
+  - target: `copilot`
+  - output shape covered: `.github/agents/*.agent.md`
+- `reference/templates/codex/agent.toml`
+  - target: `codex`
+  - output shape covered: `.codex/agents/*.toml`
 - `reference/templates/codex/AGENTS.md`
   - target: `codex`
   - output shape covered: `AGENTS.md`
@@ -40,16 +46,17 @@ The dev skill currently contains these explicit templates under
   - target: `codex`
   - output shape covered: `.codex/config.toml`
 
-No explicit template was found for `copilot` output. No explicit template was
-found for `codex` agent TOML output.
-
-## Explicit Templates Still Missing
-
-The following expected output shapes do not currently have explicit templates
-in the dev skill:
+Together these templates cover the currently expected canonical output shapes:
 
 - `copilot`: `.github/agents/*.agent.md`
 - `codex`: `.codex/agents/*.toml`
+- `codex`: `.codex/config.toml`
+- `codex`: `AGENTS.md`
+
+## Explicit Templates Still Missing
+
+No expected canonical output shape is currently listed as missing in this
+dev-only contract.
 
 Future materialization for any missing template must block before writing.
 

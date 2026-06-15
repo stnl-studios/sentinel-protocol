@@ -38,9 +38,10 @@ The canonical documentary/dev-only reference bundle is organized as:
   inferred templates, runtime scripts, or a final materializer.
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
   inventories the explicit templates currently present under
-  `reference/templates/`, records missing `copilot` agent and `codex` agent
-  templates, and requires `BLOCKED_TEMPLATE_MISSING` whenever a target,
-  target-agent pair, or output shape lacks an explicit template.
+  `reference/templates/`, records that the canonical `copilot` agent and
+  `codex` agent templates are present, and requires
+  `BLOCKED_TEMPLATE_MISSING` whenever a target, target-agent pair, or output
+  shape lacks an explicit template.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -286,6 +287,8 @@ Required files:
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/templates/copilot/agent.md`
+- `reference/templates/codex/agent.toml`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 

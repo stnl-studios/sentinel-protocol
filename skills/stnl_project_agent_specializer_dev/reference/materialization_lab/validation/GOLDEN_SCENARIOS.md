@@ -46,6 +46,36 @@ Expected result:
 - output shape is recognized as `codex`: `AGENTS.md`
 - no target write is performed during this contract phase
 
+### Resolve `copilot` Agent Template
+
+Input:
+
+- requested target: `copilot`
+- requested output shape: `.github/agents/*.agent.md`
+- explicit template: `reference/templates/copilot/agent.md`
+
+Expected result:
+
+- template source is accepted as explicit
+- output shape is recognized as `copilot`: `.github/agents/*.agent.md`
+- required placeholders are present before rendering
+- no target write is performed during this contract phase
+
+### Resolve `codex` Agent TOML Template
+
+Input:
+
+- requested target: `codex`
+- requested output shape: `.codex/agents/*.toml`
+- explicit template: `reference/templates/codex/agent.toml`
+
+Expected result:
+
+- template source is accepted as explicit
+- output shape is recognized as `codex`: `.codex/agents/*.toml`
+- required TOML fields and placeholders are present before rendering
+- no target write is performed during this contract phase
+
 ## Negative Scenarios
 
 ### Missing Explicit Template
@@ -61,18 +91,33 @@ Expected result:
 - block before writing
 - return `BLOCKED_TEMPLATE_MISSING`
 
-### Copilot Without Explicit Template
+### Unknown Target Without Explicit Template
 
 Input:
 
-- requested target: `copilot`
-- requested output shape: `.github/agents/*.agent.md`
-- no explicit `copilot` template exists in the dev skill
+- requested target: any non-canonical target
+- requested output shape: any output shape
+- no explicit template exists in the dev skill for that target/output pair
 
 Expected result:
 
 - block before writing
 - return `BLOCKED_TEMPLATE_MISSING`
+
+### Required Placeholder Missing
+
+Input:
+
+- requested target: `copilot` or `codex`
+- requested output shape has an explicit dev-skill template
+- the explicit template is missing a required placeholder such as
+  `{{AGENT_BODY}}`, `{{AGENT_ID}}`, or `{{TARGET_ID}}`
+
+Expected result:
+
+- block before writing
+- return `BLOCKED_TEMPLATE_MISSING`
+- explain that the explicit template is structurally incomplete
 
 ### Productive Template Reuse Attempt
 

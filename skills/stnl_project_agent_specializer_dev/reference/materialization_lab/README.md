@@ -14,7 +14,7 @@ writes, or changes to productive templates.
 - `contracts/TARGETS_CONTRACT.md`: canonical target IDs, legacy-term
   normalization rules, expected future output paths, and blocking rules.
 - `contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`: explicit template inventory,
-  expected output shapes, missing template gaps, and
+  expected output shapes, current missing-template status, and
   `BLOCKED_TEMPLATE_MISSING` rules for the canonical targets.
 - `validation/STATIC_CHECKS.md`: required static checks for this contract
   phase.
@@ -33,3 +33,17 @@ Templates must be explicit. A target, target-agent pair, or output shape
 without an explicit template blocks with `BLOCKED_TEMPLATE_MISSING`; no
 template may be inferred from output path, legacy naming, or the productive
 skill.
+
+The current explicit template set covers the canonical output shapes:
+
+- `reference/templates/copilot/agent.md` for `copilot`
+  `.github/agents/*.agent.md`
+- `reference/templates/codex/agent.toml` for `codex`
+  `.codex/agents/*.toml`
+- `reference/templates/codex/config.toml` for `codex`
+  `.codex/config.toml`
+- `reference/templates/codex/AGENTS.md` for `codex` `AGENTS.md`
+
+These templates are source references only. Their presence does not authorize
+runtime scripts, target-repository writes, productive-skill changes, GitHub
+writes, or materialization in `.github/**`, `.codex/**`, or `AGENTS.md`.

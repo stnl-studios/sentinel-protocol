@@ -1,0 +1,38 @@
+# {{GENERATED_NOTICE}}
+# Sentinel managed artifact: true
+# target: {{TARGET_ID}}
+# source_template: stnl_project_agent_specializer_dev/reference/templates/codex/agent.toml
+# source_version: {{SOURCE_VERSION}}
+#
+# Template status: documentary/dev-only explicit source template.
+# Output shape: .codex/agents/*.toml.
+# Runtime materialization authorized: false.
+#
+# Required placeholders:
+# - {{AGENT_ID}}: canonical kebab-case agent ID; also the generated file basename.
+# - {{AGENT_NAME}}: human-readable agent label for the developer instructions.
+# - {{AGENT_DESCRIPTION}}: target-ready one-line role description.
+# - {{AGENT_BODY}}: valid TOML string value containing the fully specialized
+#   Markdown instructions/body. It must preserve mission, boundaries, handoff,
+#   role class, status, protocol-fixed invariants, and operating rules.
+# - {{TARGET_ID}}: must resolve to the canonical target `codex`.
+# - {{GENERATED_NOTICE}}: managed generated-artifact notice for the target file.
+# - {{SOURCE_VERSION}}: source base-agent version or equivalent explicit version.
+# - {{AGENT_MODEL}}: resolved model string allowed by the active model policy.
+# - {{MODEL_REASONING_EFFORT}}: role-class-derived Codex effort value.
+# - {{SANDBOX_MODE}}: role/capability-derived Codex sandbox mode.
+#
+# String placeholders must be rendered with TOML-safe escaping. `{{AGENT_BODY}}`
+# must be emitted by a TOML-aware renderer as a valid string value; if the body
+# cannot be represented safely, materialization must block before writing.
+#
+# This source template is not a materializer. Its presence does not authorize
+# runtime scripts, target-project writes, GitHub writes, or writes to `.codex/**`
+# or `AGENTS.md`.
+
+name = "{{AGENT_ID}}"
+description = "{{AGENT_DESCRIPTION}}"
+model = "{{AGENT_MODEL}}"
+model_reasoning_effort = "{{MODEL_REASONING_EFFORT}}"
+sandbox_mode = "{{SANDBOX_MODE}}"
+developer_instructions = {{AGENT_BODY}}
