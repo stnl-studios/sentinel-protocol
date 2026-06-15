@@ -4,6 +4,6 @@ interface:
   version: "2026.5.1-alpha.1"
   protocol_release: "2026.5"
   status: "experimental"
-  short_description: "Especializa o conjunto minimo util de agents locais para targets vscode ou codex a partir do contexto factual consolidado do projeto."
+  short_description: "Especializa o conjunto minimo util de agents locais para targets copilot ou codex a partir do contexto factual consolidado do projeto."
 policy:
   allow_implicit_invocation: false

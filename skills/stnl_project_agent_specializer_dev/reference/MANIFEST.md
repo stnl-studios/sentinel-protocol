@@ -10,6 +10,9 @@ The canonical documentary/dev-only reference bundle is organized as:
   comparison and anchoring.
 - `reference/kernel_lab/`: the 12 documentary/dev-only kernels and their
   contracts, validations, and read-only harnesses.
+- `reference/materialization_lab/`: documentary/dev-only contracts for the
+  future senior-agent materialization rewrite, including the canonical target
+  IDs and validation expectations. This is not a runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
   `contracts/` layer, and integrated seniorization validations.
 - `reference/templates/`: reference/template material only; it is not
@@ -26,6 +29,10 @@ The canonical documentary/dev-only reference bundle is organized as:
 - All twelve passes are dev kernel-lab results only. They do not authorize runtime,
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
+- `reference/materialization_lab/` defines the dev-only target contract for
+  future senior-agent materialization. This phase does not authorize runtime
+  materialization, target-repository writes, productive-skill changes,
+  productive-template changes, GitHub writes, or a final materializer.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -265,11 +272,17 @@ Required files:
 - `reference/kernel_lab/resync_kernel/validation/GOLDEN_TESTS.md`
 - `reference/kernel_lab/resync_kernel/validation/check-static.mjs`
 - `reference/kernel_lab/resync_kernel/validation/check-golden.mjs`
+- `reference/materialization_lab/README.md`
+- `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
+- `reference/materialization_lab/validation/STATIC_CHECKS.md`
+- `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
+- `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
 - `reference/templates/codex/AGENTS.md`
 - `reference/templates/codex/config.toml`
 
 Not active in this dev bundle:
 - no standalone orchestrator-kernel materializer is part of the active flow
+- no materialization-lab runtime materializer is part of the active flow
 - no generated orchestrator-kernel artifact is a required or expected output
 - no target repository materialization is authorized from this experimental area
 - no planner runtime, planner materializer, planner fixture, generated report,
