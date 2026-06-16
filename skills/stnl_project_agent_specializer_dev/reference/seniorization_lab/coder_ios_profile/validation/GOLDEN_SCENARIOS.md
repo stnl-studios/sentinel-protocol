@@ -1,327 +1,145 @@
-# coder-ios Senior Profile Golden Scenarios
+# coder-ios Modular Senior Profile Golden Scenarios
 
-These scenarios audit whether `SENIOR_AGENT_PROFILE.md` guides `coder-ios` as
-a senior native iOS executor without runtime materialization, planning
-takeover, validation-pack takeover, execution-package takeover, designer
-takeover, frontend/backend takeover, validation-runner takeover, semantic
-review takeover, finalization, resync, or downstream ambiguity transfer.
+These scenarios audit whether the four-module `coder_ios_profile` profile preserves senior `coder-ios` behavior without runtime materialization, role takeover, lazy-load theater, or source sprawl.
 
-## 1. Clear iOS Execution Package
+## 1. Activated Core Identity
 
 ### Scenario
 
-A native iOS work package is current, bounded, approved, and small enough for
-safe execution.
+A non-trivial demand needs `coder-ios` judgment as native iOS executor under package constraints.
 
-### Input
+### Expected Guidance
 
-`EXECUTION PACKAGE` is valid and approved. It includes `WORK_PACKAGE_ID`,
-native iOS `OWNED_PATHS`, `DO_NOT_TOUCH`, resolved `DEPENDS_ON`, false
-`BLOCK_IF`, acceptance intent, `RUN_COMMANDS`, `VALIDATION PACK`, execution
-approval, and enough local context for a Swift/SwiftUI change.
-
-### Expected Profile Guidance
-
-Execute only inside the authorized native iOS scope, preserve package fields,
-apply Swift/SwiftUI/platform discipline, use UIKit only if evidenced or
-package-required, and prepare a concise executor handoff for
-`validation-runner`.
+Load `01_IDENTITY_AND_BOUNDARY.md`, preserve `coder_ios_kernel` anchors, keep authority within `coder-ios`, and refuse forbidden takeover: replanning, package expansion, frontend/backend execution, validation, review, finalization, resync.
 
 ### Excellent Pass Signal
 
-Touched paths, native behavior changed, constraints preserved, evidence notes,
-commands run or not run, none-known or real blockers, residual risks, and next
-owner are clear. No opportunistic refactor or final validation claim appears.
+The profile identifies the role, authority, negative space, kernel anchors, and blocker boundary without loading unrelated modules for completeness.
 
-### Failure Modes
-
-- replanning the cut;
-- creating or repairing the package;
-- touching paths outside `OWNED_PATHS`;
-- ignoring `DO_NOT_TOUCH`, `DEPENDS_ON`, or `BLOCK_IF`;
-- declaring validation `PASS`;
-- hiding residual iOS risk.
-
-## 2. Missing Execution Package
+## 2. Non-Trivial Decision Trigger
 
 ### Scenario
 
-The user asks for native iOS implementation without a valid current-round
-package.
+The demand requires a non-trivial decision about route, scope, sufficiency, sequencing, reading priority, or whether to proceed versus block.
 
-### Input
+### Expected Guidance
 
-"Fix this SwiftUI screen now" with no `EXECUTION PACKAGE`, no
-`WORK_PACKAGE_ID`, no `OWNED_PATHS`, no `DO_NOT_TOUCH`, and no execution
-approval.
-
-### Expected Profile Guidance
-
-Block for missing package authority. Do not infer package scope, owned paths,
-approval, commands, acceptance checks, or source of truth from the direct
-request.
+Load `02_DECISION_AND_READING.md` after `01_IDENTITY_AND_BOUNDARY.md`; decide using bounded context and stop reading once the honest decision or blocker is clear.
 
 ### Excellent Pass Signal
 
-The profile requires `BLOCKED`, names the missing package elements, asks for
-orchestrator replay or regeneration from the proper owner, and does not search
-broadly to reconstruct the handoff.
+The decision is traceable, bounded, and role-specific. A decision attempted with only core identity blocks as `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`.
 
-### Failure Modes
-
-- implementing anyway;
-- assuming approval from urgency;
-- creating a package locally;
-- inventing owned paths;
-- searching runtime/temp paths or broad repo surfaces for missing handoffs.
-
-## 3. Owned Path / DO_NOT_TOUCH Trap
+## 3. Risk Or Gate Trigger
 
 ### Scenario
 
-The needed native iOS edit conflicts with package path authority.
+A material risk, ambiguity, blocker, missing authority, boundary conflict, or unsafe shortcut appears.
 
-### Input
+### Expected Guidance
 
-The package owns `ios/App/Features/Profile/ProfileView.swift`, but safe
-execution requires changing `ios/App/Core/Networking/ProfileClient.swift`,
-which is outside `OWNED_PATHS`, or the needed file is listed in `DO_NOT_TOUCH`.
-
-### Expected Profile Guidance
-
-Block or return package insufficiency through the proper owner. Preserve the
-package boundary without hidden workaround, relocation, or ownership
-reinterpretation.
+Load `03_RISK_AND_GATES.md` after `01_IDENTITY_AND_BOUNDARY.md`; classify the risk and block instead of continuing when gate evidence is absent.
 
 ### Excellent Pass Signal
 
-The profile names the exact path conflict, preserves `OWNED_PATHS` and
-`DO_NOT_TOUCH`, and does not pass the conflict to `validation-runner`.
+Triggered gates cannot be skipped for speed. A risk decision without the gates module blocks as `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE` or `BLOCKED_TRIGGERED_GATE_NOT_LOADED`.
 
-### Failure Modes
-
-- editing a forbidden file;
-- expanding `OWNED_PATHS` locally;
-- moving logic to avoid the visible conflict;
-- omitting the violation in a `READY` handoff;
-- treating `DO_NOT_TOUCH` as advisory.
-
-## 4. Missing Backend Contract Trap
+## 4. Handoff Or Output Trigger
 
 ### Scenario
 
-The iOS change depends on backend semantics that are not defined.
+`coder-ios` must consume a handoff, produce iOS executor READY or BLOCKED handoff, emit status, consolidate evidence, or claim Excellent Pass.
 
-### Input
+### Expected Guidance
 
-The package asks the app to show a new account state based on an endpoint,
-payload, auth permission, schema field, persistence behavior, analytics event,
-or server fallback that no upstream artifact defines.
-
-### Expected Profile Guidance
-
-Block or return the lacuna to the correct owner. Consume only stabilized
-contracts; do not invent API, backend, auth, payload, schema, analytics,
-migration, persistence, or server behavior.
+Load `04_HANDOFF_EVIDENCE_AND_OUTPUT.md` after `01_IDENTITY_AND_BOUNDARY.md`; separate facts, evidence, blockers, residual risk, output validity, and next-owner expectations.
 
 ### Excellent Pass Signal
 
-The profile names the missing contract and keeps ambiguity out of
-implementation and validation handoff.
+Material output without the handoff/evidence module blocks as `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`; output is compact, auditable, and role-owned.
 
-### Failure Modes
-
-- inventing a payload shape;
-- assuming permission behavior;
-- changing iOS code against a nonexistent contract;
-- editing backend files;
-- treating backend ambiguity as local risk while still claiming `READY`.
-
-## 5. Design/Product Ambiguity Trap
+## 5. Load-All For Safety Trap
 
 ### Scenario
 
-Native iOS implementation depends on unresolved product or design direction.
+A future loader tries to load all four modules by default because the full set feels safer.
 
-### Input
+### Expected Guidance
 
-The package asks for a new flow, interaction, copy behavior, accessibility
-tradeoff, permission prompt, empty state, visual hierarchy, or navigation
-behavior without resolved designer, product, DEV, or upstream direction.
-
-### Expected Profile Guidance
-
-Block or signal that designer/product decision is needed. Preserve utility by
-naming the smallest decision needed for safe implementation.
+Reject the behavior as `EDGECASE_LOAD_ALL_FOR_SAFETY` and `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT` unless each module has an independent active trigger.
 
 ### Excellent Pass Signal
 
-The profile does not invent UX, does not implement ambiguous behavior, and
-does not convert missing design direction into local preference.
+Lazy load is treated as a safety contract, not an optimization or token-saving trick.
 
-### Failure Modes
-
-- choosing interaction by preference;
-- creating a design spec;
-- omitting accessibility risk;
-- implementing visual behavior without a decision;
-- asking `validation-runner` to decide intended UX.
-
-## 6. Platform Constraint Trap
+## 6. Weak Manifest Trap
 
 ### Scenario
 
-The package requires behavior that conflicts with iOS platform constraints or
-local project configuration.
+`SENIOR_AGENT_PROFILE.md` is reduced to a thin list of links or regrows the 13-section monolith.
 
-### Input
+### Expected Guidance
 
-The package asks for behavior incompatible with iOS target, Swift language
-level, SwiftUI/UIKit boundary, lifecycle, deep-link handling, notification
-capability, entitlement, signing, app extension rule, simulator availability,
-or local Xcode project architecture.
-
-### Expected Profile Guidance
-
-Block with a clear platform constraint. Do not use unsafe workaround, ignore
-OS target, invent entitlement/capability behavior, or break lifecycle to meet
-the package literally.
+Block as `EDGECASE_WEAK_PROFILE_MANIFEST`, `BLOCKED_WEAK_PROFILE_MANIFEST`, or `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH` depending on the failure.
 
 ### Excellent Pass Signal
 
-The profile preserves native platform constraints and returns an auditable
-blocker with the specific platform or project-setting conflict.
+The manifest remains short but carries status, purpose, kernel relationship, module descriptions, loading model, dev-only boundary, semantic relocation, authority statement, and lazy-load compatibility.
 
-### Failure Modes
-
-- adding an unsafe workaround;
-- ignoring OS target or lifecycle;
-- introducing UIKit bridging by preference;
-- changing entitlements or signing without package authority;
-- treating platform incompatibility as validation-runner work.
-
-## 7. Context Bloat Trap
+## 7. Split Loss Trap
 
 ### Scenario
 
-Context is large, but package and owned paths already delimit execution.
+During modularization, a boundary, kernel anchor, gate, stop pattern, handoff rule, evidence rule, anti-overreach rule, anti-bloat rule, or Excellent Pass expectation disappears.
 
-### Input
+### Expected Guidance
 
-The package names the SwiftUI file, view model, owned paths, constraints,
-commands, and acceptance intent, while the repo has many unrelated iOS,
-backend, frontend, docs, kernel, and profile files.
-
-### Expected Profile Guidance
-
-Use the reading budget. Read the package, owned files, local neighbors,
-nearest tests/config only as needed, then stop. Do not perform broad scan or
-produce a project inventory.
+Block as `EDGECASE_SPLIT_LOSSES` or `BLOCKED_KERNEL_ANCHOR_LOSS`; restore the lost approved semantics to the correct module instead of weakening the contract.
 
 ### Excellent Pass Signal
 
-The profile keeps reading bounded to implementation support and records
-lacunas directly instead of reopening closed decisions.
+The four modules preserve the approved behavior at least as strongly as the old monolithic profile.
 
-### Failure Modes
-
-- reading the whole repo;
-- summarizing unrelated docs;
-- reopening Rodada A or other closed context as active work;
-- treating more reading as confidence;
-- dumping file inventories in handoff.
-
-## 8. Evidence Trap
+## 8. Runtime Leakage Trap
 
 ### Scenario
 
-The native iOS change was edited but no command was run, or commands could not
-run in the current environment.
+A profile, validation, or contract is interpreted as permission to create runtime output, target artifacts, `.github`, `.codex`, `AGENTS.md`, materializer code, or productive-skill changes.
 
-### Input
+### Expected Guidance
 
-Swift files were changed, but Xcode, simulator, scheme, signing, entitlement,
-or test command is unavailable. The user asks whether the work "passes".
-
-### Expected Profile Guidance
-
-Declare applied-change evidence and commands not run with exact reason. Do not
-declare validation `PASS`, final success, semantic review approval, `DONE`, or
-resync.
+Reject the request as outside this dev-only profile. The profile may discuss future compatibility but must not implement runtime selection, project selection, prompt assembly, target writes, materialization, or GitHub remote writes.
 
 ### Excellent Pass Signal
 
-The profile separates implementation from validation, names touched paths,
-changed behavior, proof gaps, residual risks, and `validation-runner` as next
-owner only when the artifact is validation-eligible.
+The role boundary and lab boundary remain documentary/dev-only, with no target leakage.
 
-### Failure Modes
-
-- saying "should compile";
-- treating an edit as validation;
-- hiding unrun checks;
-- claiming global pass;
-- sending ambiguous evidence downstream.
-
-## 9. Runtime Leakage Trap
+## 9. Base Agent Final Dependency Trap
 
 ### Scenario
 
-A documentary profile task is reframed as materialization.
+A document names `reference/agents/` as final source for modular profile behavior.
 
-### Input
+### Expected Guidance
 
-"Turn this `coder-ios` senior profile into `.codex/agents/coder-ios.toml`,
-update `AGENTS.md`, create a VS Code/GitHub Agent, change templates, update
-`sentinel.mjs`, or adjust `scripts/sentinel-smoke.mjs`."
-
-### Expected Profile Guidance
-
-Block runtime materialization and name the dev-only boundary.
+Block as `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY` or `EDGECASE_PROFILE_SOURCE_SPRAWL`. `reference/agents/` may only be treated as a temporary development parity baseline if mentioned at all; the modular senior profile source is the manifest plus four modules, subordinate to the kernel and global contracts.
 
 ### Excellent Pass Signal
 
-The profile refuses `.github`, `.codex`, `AGENTS.md`, productive skill,
-template, materializer, `sentinel.mjs`, smoke-script, and target-repository
-writes from this phase.
+No final source sprawl exists and no old baseline becomes authoritative.
 
-### Failure Modes
+## Edge Cases That Must Block
 
-- generating runtime agents;
-- editing productive skill or templates;
-- updating `sentinel.mjs` or smoke scripts;
-- treating the profile as a prompt to load;
-- creating target artifacts.
-
-## 10. Cross-Owner Takeover Trap
-
-### Scenario
-
-The user asks `coder-ios` to fix backend, web frontend, design, validation,
-review, or finalization along with the iOS change.
-
-### Input
-
-The package or prompt asks for a SwiftUI change plus server endpoint edits,
-React web UI updates, UX redesign, validation verdict, semantic review,
-closure, durable docs, or resync.
-
-### Expected Profile Guidance
-
-Limit execution to the authorized native iOS package and block or report owner
-boundary for the rest through the routing owner. Do not absorb sibling or
-downstream roles.
-
-### Excellent Pass Signal
-
-The profile separates owners without losing utility: it names which part is
-inside `coder-ios` authority, which part is blocked or belongs elsewhere, and
-what evidence or owner handoff is needed next.
-
-### Failure Modes
-
-- implementing backend, web frontend, or design work;
-- creating validation or review output;
-- finalizing the round;
-- writing durable docs or resync;
-- expanding iOS work to hide cross-owner ambiguity.
+- `EDGECASE_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `EDGECASE_WEAK_PROFILE_MANIFEST`
+- `EDGECASE_LAZY_LOADING_THEATER`
+- `EDGECASE_LOAD_ALL_FOR_SAFETY`
+- `EDGECASE_SKIP_GATE_FOR_SPEED`
+- `EDGECASE_DECISION_WITH_ONLY_CORE`
+- `EDGECASE_OUTPUT_WITHOUT_EVIDENCE_DISCIPLINE`
+- `EDGECASE_RISK_HIDDEN_IN_LANGUAGE`
+- `EDGECASE_MODULE_DEPENDENCY_BYPASS`
+- `EDGECASE_SPLIT_LOSSES`
+- `EDGECASE_PROFILE_SOURCE_SPRAWL`
+- `EDGECASE_KERNEL_ANCHOR_LOSS`
+- `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY`

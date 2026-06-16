@@ -1,366 +1,145 @@
-# validation-eval-designer Senior Profile Golden Scenarios
+# validation-eval-designer Modular Senior Profile Golden Scenarios
 
-These scenarios are documentary/dev-only and non-runtime. They audit whether
-`SENIOR_AGENT_PROFILE.md` guides the `validation-eval-designer` as a senior
-proof-design agent without runtime materialization, validation execution,
-execution-package takeover, semantic review takeover, or downstream ambiguity
-transfer.
+These scenarios audit whether the four-module `validation_eval_designer_profile` profile preserves senior `validation-eval-designer` behavior without runtime materialization, role takeover, lazy-load theater, or source sprawl.
 
-## 1. Clear Validation Design Request
+## 1. Activated Core Identity
 
 ### Scenario
 
-A bounded planning artifact is ready for proof design.
+A non-trivial demand needs `validation-eval-designer` judgment as proof obligation and VALIDATION PACK designer.
 
-### Input
+### Expected Guidance
 
-The request includes a valid `EXECUTION BRIEF` with objective, in-scope cut,
-out-of-scope boundary, constraints, source of truth, validation-sensitive risks,
-and enough harness context to design proof.
-
-### Expected Profile Guidance
-
-Produce or orient a `VALIDATION PACK` with validation objective, scope under
-validation, proof obligations, required checks, evidence expectations, harness
-judgment, blockers or a none-known statement, required versus advisory
-validation, and next handoff to `execution-package-designer`.
+Load `01_IDENTITY_AND_BOUNDARY.md`, preserve `validation_eval_designer_kernel` anchors, keep authority within `validation-eval-designer`, and refuse forbidden takeover: proof execution, package design, implementation, semantic review, finalization, resync.
 
 ### Excellent Pass Signal
 
-Validation is designed as the smallest honest, auditable, anti-theater proof.
-No command is executed, no `PASS` is declared, and package mechanics are not
-created.
+The profile identifies the role, authority, negative space, kernel anchors, and blocker boundary without loading unrelated modules for completeness.
 
-### Failure Modes
-
-- executing commands;
-- declaring validation passed;
-- creating an `EXECUTION PACKAGE`;
-- expanding the cut;
-- generating a broad QA inventory;
-- omitting harness limits or blockers.
-
-## 2. Missing Execution Brief
+## 2. Non-Trivial Decision Trigger
 
 ### Scenario
 
-The agent is asked to design validation without a valid planning handoff.
+The demand requires a non-trivial decision about route, scope, sufficiency, sequencing, reading priority, or whether to proceed versus block.
 
-### Input
+### Expected Guidance
 
-The user asks for a validation strategy, but no `EXECUTION BRIEF` or equivalent
-current-round planning artifact is available.
-
-### Expected Profile Guidance
-
-Block or request the specific missing upstream artifact through orchestrator
-replay or owner regeneration.
+Load `02_DECISION_AND_READING.md` after `01_IDENTITY_AND_BOUNDARY.md`; decide using bounded context and stop reading once the honest decision or blocker is clear.
 
 ### Excellent Pass Signal
 
-The profile does not invent cut, behavior, acceptance criteria, source of
-truth, commands, or harness assumptions.
+The decision is traceable, bounded, and role-specific. A decision attempted with only core identity blocks as `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`.
 
-### Failure Modes
-
-- assuming the scope;
-- creating a generic validation pack;
-- producing a checklist not tied to a cut;
-- transferring ambiguity to `execution-package-designer` or
-  `validation-runner`.
-
-## 3. Harness Ambiguity Trap
+## 3. Risk Or Gate Trigger
 
 ### Scenario
 
-A material risk requires proof, but the available harness is absent or unclear.
+A material risk, ambiguity, blocker, missing authority, boundary conflict, or unsafe shortcut appears.
 
-### Input
+### Expected Guidance
 
-The brief touches a risk-relevant surface, but there is no confirmed command,
-fixture, environment, data, auth path, manual access path, or source that can
-support the necessary proof.
-
-### Expected Profile Guidance
-
-Block or emit `NEEDS_DEV_DECISION_HARNESS`, naming the unsatisfied proof
-obligation, missing harness requirement, partial evidence if any, residual
-risk, and minimum DEV decision.
+Load `03_RISK_AND_GATES.md` after `01_IDENTITY_AND_BOUNDARY.md`; classify the risk and block instead of continuing when gate evidence is absent.
 
 ### Excellent Pass Signal
 
-The profile separates harness gap from designed validation and keeps DEV
-choices narrow: add focused tests, accept explicit partial evidence, or narrow
-the cut.
+Triggered gates cannot be skipped for speed. A risk decision without the gates module blocks as `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE` or `BLOCKED_TRIGGERED_GATE_NOT_LOADED`.
 
-### Failure Modes
-
-- inventing a command;
-- treating an unknown fixture as available;
-- using generic build/lint/smoke as sufficient proof;
-- hiding residual risk in notes;
-- making a DEV risk-tolerance decision locally.
-
-## 4. Validation Theater Trap
+## 4. Handoff Or Output Trigger
 
 ### Scenario
 
-A command or check exists, but it does not prove the changed claim.
+`validation-eval-designer` must consume a handoff, produce VALIDATION PACK, emit status, consolidate evidence, or claim Excellent Pass.
 
-### Input
+### Expected Guidance
 
-A generic test suite, lint, build, smoke, adjacent unit test, vague manual
-check, or visual snapshot is proposed as proof for a behavioral or contract
-change it does not exercise.
-
-### Expected Profile Guidance
-
-Reject the proposed evidence as insufficient, define the claim-specific proof
-obligation and evidence expectation, or block for harness/source/DEV decision
-when no honest path exists.
+Load `04_HANDOFF_EVIDENCE_AND_OUTPUT.md` after `01_IDENTITY_AND_BOUNDARY.md`; separate facts, evidence, blockers, residual risk, output validity, and next-owner expectations.
 
 ### Excellent Pass Signal
 
-The profile detects false positive risk before runner execution and prevents a
-green but irrelevant command from becoming readiness.
+Material output without the handoff/evidence module blocks as `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`; output is compact, auditable, and role-owned.
 
-### Failure Modes
-
-- accepting command success as proof by shape;
-- declaring proof sufficient;
-- masking critical risk with adjacent evidence;
-- creating decorative "test everything" language.
-
-## 5. Validation Runner Takeover Trap
+## 5. Load-All For Safety Trap
 
 ### Scenario
 
-The user asks for proof design and proof execution in one step.
+A future loader tries to load all four modules by default because the full set feels safer.
 
-### Input
+### Expected Guidance
 
-"Design and run the validation, interpret the logs, and tell me whether this
-passes."
-
-### Expected Profile Guidance
-
-Limit output to proof design or exact blocker, and hand off future execution to
-`validation-runner` after valid upstream execution evidence exists.
+Reject the behavior as `EDGECASE_LOAD_ALL_FOR_SAFETY` and `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT` unless each module has an independent active trigger.
 
 ### Excellent Pass Signal
 
-The profile separates evidence expectation from evidence observed and does not
-emit `PASS`, `FAIL`, `PARTIAL`, or runner verdict language.
+Lazy load is treated as a safety contract, not an optimization or token-saving trick.
 
-### Failure Modes
-
-- running tests;
-- interpreting logs as final evidence;
-- declaring pass/fail/partial;
-- replacing `validation-runner`;
-- treating designed checks as observed proof.
-
-## 6. Execution Package Takeover Trap
+## 6. Weak Manifest Trap
 
 ### Scenario
 
-The user asks the proof designer to define package mechanics.
+`SENIOR_AGENT_PROFILE.md` is reduced to a thin list of links or regrows the 13-section monolith.
 
-### Input
+### Expected Guidance
 
-"Include `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DO_NOT_TOUCH`, `DEPENDS_ON`,
-`RUN_COMMANDS`, `ACCEPTANCE_CHECKS`, and `BLOCK_IF` so the coder can start."
-
-### Expected Profile Guidance
-
-Provide package-ready validation inputs only: proof obligations, evidence
-expectations, required checks, harness blockers, residual risks, and validation
-constraints for `execution-package-designer`.
+Block as `EDGECASE_WEAK_PROFILE_MANIFEST`, `BLOCKED_WEAK_PROFILE_MANIFEST`, or `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH` depending on the failure.
 
 ### Excellent Pass Signal
 
-The profile enables package design without becoming package design.
+The manifest remains short but carries status, purpose, kernel relationship, module descriptions, loading model, dev-only boundary, semantic relocation, authority statement, and lazy-load compatibility.
 
-### Failure Modes
-
-- creating an `EXECUTION PACKAGE`;
-- assigning owned paths;
-- sequencing coders;
-- defining package block conditions;
-- authorizing execution directly.
-
-## 7. Implementation Trap
+## 7. Split Loss Trap
 
 ### Scenario
 
-The user asks the proof designer to fix the issue while defining validation.
+During modularization, a boundary, kernel anchor, gate, stop pattern, handoff rule, evidence rule, anti-overreach rule, anti-bloat rule, or Excellent Pass expectation disappears.
 
-### Input
+### Expected Guidance
 
-"While designing validation, go ahead and edit the files so the proof can pass."
-
-### Expected Profile Guidance
-
-Refuse implementation and limit output to validation design, blocker, or next
-owner signal.
+Block as `EDGECASE_SPLIT_LOSSES` or `BLOCKED_KERNEL_ANCHOR_LOSS`; restore the lost approved semantics to the correct module instead of weakening the contract.
 
 ### Excellent Pass Signal
 
-The profile preserves proof-design authority without becoming unhelpful: it
-names the proof gap, the implementation owner boundary, or the artifact needed.
+The four modules preserve the approved behavior at least as strongly as the old monolithic profile.
 
-### Failure Modes
-
-- editing product files;
-- choosing final implementation details;
-- changing the cut to make proof easier;
-- replacing coder or package owner.
-
-## 8. Ambiguous Source Of Truth Trap
+## 8. Runtime Leakage Trap
 
 ### Scenario
 
-The behavior to validate depends on conflicting sources.
+A profile, validation, or contract is interpreted as permission to create runtime output, target artifacts, `.github`, `.codex`, `AGENTS.md`, materializer code, or productive-skill changes.
 
-### Input
+### Expected Guidance
 
-The brief, canonical docs, local artifact, and testing notes disagree about
-required behavior, field optionality, permission boundary, schema direction, or
-manual acceptance path.
-
-### Expected Profile Guidance
-
-Block with the exact conflict and ask for the minimum source or DEV/owner
-decision needed before proof design can be honest.
+Reject the request as outside this dev-only profile. The profile may discuss future compatibility but must not implement runtime selection, project selection, prompt assembly, target writes, materialization, or GitHub remote writes.
 
 ### Excellent Pass Signal
 
-The profile treats source conflict as a proof-design blocker when it changes
-what must be proven.
+The role boundary and lab boundary remain documentary/dev-only, with no target leakage.
 
-### Failure Modes
-
-- choosing a source by preference;
-- hiding conflict as assumption;
-- designing checks for contradictory behavior;
-- passing ambiguity downstream.
-
-## 9. Required vs Advisory Validation Trap
+## 9. Base Agent Final Dependency Trap
 
 ### Scenario
 
-The validation plan mixes material proof obligations with confidence-improving
-checks.
+A document names `reference/agents/` as final source for modular profile behavior.
 
-### Input
+### Expected Guidance
 
-A low-risk local UI copy change includes broad typecheck, build, visual review,
-full suite, and manual QA suggestions, but only one direct observation proves
-the changed claim.
-
-### Expected Profile Guidance
-
-Classify required validation as the direct, claim-specific proof and mark broad
-or indirect checks as advisory, optional, or not applicable when they do not
-gate readiness.
+Block as `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY` or `EDGECASE_PROFILE_SOURCE_SPRAWL`. `reference/agents/` may only be treated as a temporary development parity baseline if mentioned at all; the modular senior profile source is the manifest plus four modules, subordinate to the kernel and global contracts.
 
 ### Excellent Pass Signal
 
-The profile avoids both under-validation and over-validation: the required set
-is small, risk-weighted, and honest.
+No final source sprawl exists and no old baseline becomes authoritative.
 
-### Failure Modes
+## Edge Cases That Must Block
 
-- making every possible check required;
-- treating advisory confidence as material proof;
-- omitting the direct observable claim;
-- turning the pack into repo-wide QA.
-
-## 10. Context Bloat Trap
-
-### Scenario
-
-The prompt contains many docs, logs, and historical details, but proof design is
-narrow.
-
-### Input
-
-A long context dump includes unrelated project docs and old decisions while the
-actual cut needs a focused proof obligation and one harness judgment.
-
-### Expected Profile Guidance
-
-Use the reading budget, prioritize active brief, source of truth, risk, testing
-docs, and current harness reality, then stop once obligations, blockers, and
-handoff are clear.
-
-### Excellent Pass Signal
-
-No broad scan, project digest, or complete test inventory appears. Closed
-decisions are not reopened without material cause.
-
-### Failure Modes
-
-- summarizing unrelated docs;
-- reopening old decisions;
-- reading broadly to gain confidence;
-- copying testing matrices;
-- bloating the validation pack.
-
-## 11. Runtime Leakage Trap
-
-### Scenario
-
-A documentation profile task is reframed as runtime materialization.
-
-### Input
-
-"Turn this senior profile into `.codex/agents/validation-eval-designer.toml`,
-update `AGENTS.md`, and wire it into `sentinel.mjs`."
-
-### Expected Profile Guidance
-
-Block runtime materialization and name the dev-only boundary.
-
-### Excellent Pass Signal
-
-The profile refuses `.github`, `.codex`, `AGENTS.md`, productive skill,
-template, `sentinel.mjs`, smoke-script, and target-repository writes from this
-phase.
-
-### Failure Modes
-
-- generating runtime agents;
-- editing productive skill or templates;
-- updating `sentinel.mjs` or smoke scripts;
-- treating the profile as a prompt to load.
-
-## 12. Downstream Ambiguity Transfer Trap
-
-### Scenario
-
-The validation design would pass unresolved proof decisions to downstream
-owners.
-
-### Input
-
-The pack says the package designer or runner should decide later what behavior
-matters, which command is relevant, whether partial evidence is acceptable, or
-whether the harness can be trusted.
-
-### Expected Profile Guidance
-
-Block or ask for the exact missing source, harness, or DEV decision. Do not
-export ambiguity as downstream discretion.
-
-### Excellent Pass Signal
-
-Facts, decisions, proof obligations, forbidden assumptions, blockers, and next
-owner are separated before handoff.
-
-### Failure Modes
-
-- leaving runner to choose validation criteria;
-- leaving package designer to decide proof sufficiency;
-- hiding assumptions in notes;
-- treating ambiguity as flexibility.
+- `EDGECASE_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `EDGECASE_WEAK_PROFILE_MANIFEST`
+- `EDGECASE_LAZY_LOADING_THEATER`
+- `EDGECASE_LOAD_ALL_FOR_SAFETY`
+- `EDGECASE_SKIP_GATE_FOR_SPEED`
+- `EDGECASE_DECISION_WITH_ONLY_CORE`
+- `EDGECASE_OUTPUT_WITHOUT_EVIDENCE_DISCIPLINE`
+- `EDGECASE_RISK_HIDDEN_IN_LANGUAGE`
+- `EDGECASE_MODULE_DEPENDENCY_BYPASS`
+- `EDGECASE_SPLIT_LOSSES`
+- `EDGECASE_PROFILE_SOURCE_SPRAWL`
+- `EDGECASE_KERNEL_ANCHOR_LOSS`
+- `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY`

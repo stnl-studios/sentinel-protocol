@@ -1,165 +1,62 @@
-# validation-runner Senior Profile Excellent Pass Expectations
-
-These expectations are documentary/dev-only and non-runtime. They define the
-local audit bar for `validation_runner_profile` and do not authorize runtime
-loading, materialization, target writes, productive-skill changes, template
-changes, or global contract creation.
+# validation-runner Modular Senior Profile Excellent Pass Expectations
 
 Future audit target:
 
-`validation-runner Senior Agent Profile: EXCELLENT PASS`
+`validation-runner Modular Senior Agent Profile: EXCELLENT PASS`
 
-Senior profile audit target:
+Integrated audit target:
 
-`SENIOR_AGENT_PROFILE_AUDIT: EXCELLENT PASS`
-
-Expected future audit result:
-
-`validation-runner Senior Agent Profile: EXCELLENT PASS`
+`SENIOR_PROFILE_MODULARIZATION_AUDIT: EXCELLENT PASS`
 
 ## Structural Excellence
 
-- The module contains exactly the requested profile files under
-  `validation_runner_profile`.
-- Required profile sections are present and substantive.
-- Validation files are local to the module.
-- No global contracts are created by this module.
-- The ninth-of-12 statement is present and explicitly not a partial pilot.
+- `validation_runner_profile` contains `README.md`, a short `SENIOR_AGENT_PROFILE.md` manifest, exactly four behavior modules under `profile/`, and the three local validation files.
+- No fifth part, helper file, raw source dump, runtime artifact, target artifact, or placeholder exists under `profile/`.
+- The manifest is short and does not contain the old 13 full sections.
 
-## Kernel Preservation Excellence
+## Metadata Excellence
 
-- Critical `validation_runner_kernel` anchors are preserved: proof execution
-  after implementation, current-round `VALIDATION PACK`, valid executor
-  `READY`, concrete implementation, `minimal-verification`, terminal verdicts,
-  correction exclusivity, QA handoff data, anti-theater behavior, and no
-  runtime/materialization path.
-- Kernel content is distilled into operational judgment, not copied.
-- The kernel remains the audit and semantic-preservation source.
+- Every module declares `module_id`, `module_type`, `agent_id`, `purpose`, `load_when`, `do_not_load_when`, `depends_on`, and `blocks_if_triggered_but_unloaded`.
+- `module_id` values are unique and stable.
+- `agent_id` is exactly `validation-runner`.
+- Dependencies match the contract: part 01 has no module dependency; parts 02, 03, and 04 depend on part 01.
 
-## Role Boundary Excellence
+## Semantic Preservation Excellence
 
-- The canonical `validation-runner` role is preserved as proof executor,
-  evidence collector, obligation mapper, verdict owner, blocker, and
-  correction-pack handoff producer.
-- The profile does not expand authority beyond proof execution.
-- Planning, proof design, execution-package design, implementation, semantic
-  review, finalization, resync, orchestration, and runtime materialization
-  remain outside validation-runner authority.
+- The approved seniority thesis, canonical boundary, kernel-derived anchors, anti-overreach, decision heuristics, reading budget, anti-bloat, risk taxonomy, stop/block patterns, handoff discipline, evidence discipline, and Excellent Pass expectations are preserved in the correct modules.
+- `validation-runner` remains proof executor or audit judge against declared obligations.
+- The profile does not authorize takeover of: proof redesign, implementation, semantic review, finalization, resync.
+- `validation_runner_kernel` remains preserved as kernel anchor source without raw kernel dump.
 
-## Validation Execution Excellence
+## Lazy-Load Excellence
 
-- Heuristics are specific to executing or auditing validation from valid
-  artifacts.
-- Validation remains tied to the cut, the pack, and concrete implementation.
-- Executing a command is not treated as validation unless it proves a relevant
-  obligation.
+- Lazy load is represented as a safety contract.
+- Modules load only on documented triggers.
+- Activated required modules are mandatory.
+- Loading all modules by default for completeness is a blocker.
+- Decisions, risks, gates, handoffs, evidence, and output each require the module that owns that behavior.
+- Future runtime/materialization compatibility is documented without implementing runtime behavior.
 
-## Obligation-To-Evidence Excellence
+## Gate And Block Excellence
 
-- Each material obligation can be mapped to command/check/manual
-  observation/artifact evidence and interpretation.
-- Required, optional, not-applicable, blocked, and not-run classifications are
-  preserved when compatible with the current protocol.
-- Generic green output and adjacent checks never replace obligation-specific
-  proof.
+- The profile recognizes all required modular block codes.
+- Risk and gate activation cannot be decided with identity-only loading.
+- Material output cannot be emitted without the handoff/evidence/output module.
+- Missing module dependency blocks instead of being bypassed.
+- Kernel anchor loss, weak manifest, monolith recombination, lazy-load theater, source sprawl, and runtime leakage are hard blockers.
 
-## Evidence Discipline Excellence
+## Handoff And Evidence Excellence
 
-- The profile distinguishes plan, claim, command availability, command
-  execution, raw output, interpreted evidence, direct proof, inference,
-  failure, blocker, and verdict.
-- `PASS` is unavailable without material evidence.
-- Insufficient evidence becomes blocker, fail, partial, or not-run/checklist
-  status according to protocol facts, never assumption.
+- The profile preserves the expected artifact or signal: PASS, PARTIAL, FAIL, BLOCKED, or CORRECTION PACK.
+- Handoff consumption and production remain bounded, evidence-aware, and role-owned.
+- Evidence is distinguished from claim, silence, optimism, context volume, or absence of objection.
+- Excellent Pass requires traceable profile/module evidence and no weakened role boundary.
 
-## Verdict Discipline Excellence
+## Dev-Only Excellence
 
-- Terminal verdicts remain `PASS`, `PARTIAL`, `FAIL`, and `BLOCKED`.
-- `PASS` requires sufficient material proof of critical obligations.
-- `FAIL` is used for evidence that disproves behavior or contract.
-- `BLOCKED` is used for unavailable, invalid, or uninterpretable proof.
-- `PARTIAL` is used for bounded proof with visible residual gaps.
-- `CORRECTION PACK` is non-terminal and mutually exclusive with terminal
-  verdicts.
-
-## Blocking Excellence
-
-- Stop/block patterns are concrete and include condition, reason, and expected
-  output.
-- Missing pack, invalid executor handoff, missing execution scope, unavailable
-  harness, undefined command, missing authorization, conflicting artifacts,
-  and insufficient evidence are handled honestly.
-- The profile blocks instead of inventing commands, proof, scope, or source of
-  truth.
-
-## Correction Pack Excellence
-
-- Correction handoff is compact, evidence-backed, and actionable.
-- Correction pack separates obligation, evidence, failure, affected surface,
-  impact, expected correction, owner signal, and in-scope corrigibility.
-- The runner never implements the correction and never emits generic fix
-  instructions.
-
-## Handoff Excellence
-
-- Minimum input and output are explicit.
-- Handoffs separate facts, commands, evidence, interpretation, verdict,
-  blockers, residual risk, and next owner.
-- `reviewer` and `finalizer` receive evidence rather than confidence.
-- Handoff does not become implementation, semantic review, closure, or log
-  dump.
-
-## Anti-Overreach Excellence
-
-- The `validation-runner` does not plan, design proof, create `VALIDATION
-  PACK`, create `EXECUTION PACKAGE`, design packages, implement, fix code,
-  review, finalize, resync, route as orchestrator, or rewrite out-of-scope
-  profiles and kernels.
-- The profile prohibits upstream and downstream role takeover and does not turn
-  seniority into additional authority.
-
-## Anti-Bloat Excellence
-
-- No long copy-paste from kernel, base agent, or previous profiles exists.
-- The profile is not a general project manual.
-- The content stays focused on obligations, evidence, commands/checks,
-  interpretation, verdicts, blockers, correction packs, reading budget, and
-  handoff.
-- Runtime-oriented instructions are absent.
-
-## Scenario Excellence
-
-- Golden scenarios cover clear validation evidence, missing evidence,
-  validation theater, harness/environment blocker, failure correction pack,
-  partial validation, scope drift, reviewer/finalizer takeover, conflicting
-  artifacts, and runtime leakage.
-- Each scenario includes scenario, input, expected guidance, excellent signal,
-  and failure modes.
-- Scenarios are sufficient for future audit without becoming a runtime test
-  suite.
-
-## Ninth-of-12 Consistency Excellence
-
-- This profile reuses the approved documentary shape while remaining
-  validation-runner-specific.
-- It is not treated as a pilot, subset rollout, partial validation strategy, or
-  4-to-12 strategy.
-- It does not create artificial demand for a subset of agents.
-- It does not return Rodada A to active task status.
-- It remains compatible with future repetition for `reviewer_profile`,
-  `finalizer_profile`, and `resync_profile`.
+- No file authorizes target writes, runtime prompts, generated agents, materializers, `.github`, `.codex`, `AGENTS.md`, productive-skill mutation, template mutation, GitHub remote writes, target reads/writes, or runtime loader behavior.
+- `reference/agents/` is not used as a final source; if mentioned, it is only a temporary development parity baseline.
 
 ## Quality Bar
 
-The profile is excellent only if it has validation-runner-specific content,
-avoids generic seniority language, contains no runtime leakage, contains no
-long copy-paste, contains no long copy of previous profiles, performs no
-downstream role takeover, does not revive Rodada A as an active task, does not
-treat this module as a partial pilot, defines clear boundaries between
-`validation-runner`, `validation-eval-designer`,
-`execution-package-designer`, coders, `reviewer`, `finalizer`, and `resync`,
-requires `PASS` only with material evidence, treats failure, blocker, partial,
-and not-run states honestly, defines compact correction packs without
-implementation, provides actionable heuristics, defines a validation-compatible
-reading budget, gives enough scenario coverage for future audit, and remains
-compatible with future repetition for the remaining profiles.
+This modular profile is excellent only if it preserves the old approved semantics while enforcing selective activation. It must be stronger than the monolith on load safety, equal or stronger on boundaries and gates, specific to `validation-runner`, and compatible with future lazy-load materialization without implementing any runtime or target output in this phase.

@@ -1,372 +1,145 @@
-# coder-backend Senior Profile Golden Scenarios
+# coder-backend Modular Senior Profile Golden Scenarios
 
-These scenarios audit whether `SENIOR_AGENT_PROFILE.md` guides
-`coder-backend` as a senior backend executor without runtime materialization,
-planning takeover, validation-pack takeover, execution-package takeover,
-downstream role takeover, or unsupported contract invention.
+These scenarios audit whether the four-module `coder_backend_profile` profile preserves senior `coder-backend` behavior without runtime materialization, role takeover, lazy-load theater, or source sprawl.
 
-## 1. Clear Backend Execution Package
+## 1. Activated Core Identity
 
 ### Scenario
 
-A backend work package is current, bounded, approved, and small enough for safe
-execution.
+A non-trivial demand needs `coder-backend` judgment as backend executor under package constraints.
 
-### Input
+### Expected Guidance
 
-`EXECUTION PACKAGE` is valid and includes `WORK_PACKAGE_ID`, backend
-`OWNED_PATHS`, `DO_NOT_TOUCH`, `DEPENDS_ON`, `BLOCK_IF`, acceptance intent,
-`VALIDATION PACK`, execution approval, and enough contract context for a small
-API/service/persistence change.
-
-### Expected Profile Guidance
-
-Execute only the authorized backend cut, preserve package boundaries, apply
-relevant backend/data guardrails, run or honestly skip scoped checks, and
-produce a delta-oriented executor handoff with changed paths and evidence.
+Load `01_IDENTITY_AND_BOUNDARY.md`, preserve `coder_backend_kernel` anchors, keep authority within `coder-backend`, and refuse forbidden takeover: replanning, package expansion, frontend/iOS execution, validation, review, finalization, resync.
 
 ### Excellent Pass Signal
 
-The implementation stays inside the package, preserves contracts, names
-guardrails/evidence/blockers/risks clearly, and prepares a valid handoff for
-`validation-runner` without declaring final pass.
+The profile identifies the role, authority, negative space, kernel anchors, and blocker boundary without loading unrelated modules for completeness.
 
-### Failure Modes
-
-- expanding scope or owned paths;
-- editing paths not authorized by the package;
-- creating review, validation, or finalization output;
-- ignoring the `VALIDATION PACK`;
-- treating command success as final completion.
-
-## 2. Missing Execution Package
+## 2. Non-Trivial Decision Trigger
 
 ### Scenario
 
-The user asks for backend implementation without a valid current-round package.
+The demand requires a non-trivial decision about route, scope, sufficiency, sequencing, reading priority, or whether to proceed versus block.
 
-### Input
+### Expected Guidance
 
-The request names a backend fix or feature but lacks `EXECUTION PACKAGE`,
-`WORK_PACKAGE_ID`, `OWNED_PATHS`, `DO_NOT_TOUCH`, `BLOCK_IF`, or execution
-approval.
-
-### Expected Profile Guidance
-
-Block for missing package authority. Do not infer the package from repository
-structure, prompt wording, previous context, or local preference.
+Load `02_DECISION_AND_READING.md` after `01_IDENTITY_AND_BOUNDARY.md`; decide using bounded context and stop reading once the honest decision or blocker is clear.
 
 ### Excellent Pass Signal
 
-The profile requires `BLOCKED`, names the exact missing package element, does
-not execute, does not create the package, and does not transfer ambiguity to
-downstream owners.
+The decision is traceable, bounded, and role-specific. A decision attempted with only core identity blocks as `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`.
 
-### Failure Modes
-
-- implementing anyway;
-- creating an execution package;
-- assuming owned paths;
-- treating a user ask as execution approval;
-- searching broadly to reconstruct the package.
-
-## 3. API Contract Ambiguity Trap
+## 3. Risk Or Gate Trigger
 
 ### Scenario
 
-The package asks for backend behavior but leaves endpoint, payload, schema, or
-response contract ambiguous.
+A material risk, ambiguity, blocker, missing authority, boundary conflict, or unsafe shortcut appears.
 
-### Input
+### Expected Guidance
 
-The package authorizes a route or service change, but request fields, response
-shape, error behavior, status code, compatibility window, event payload, or
-public contract source is missing or conflicting.
-
-### Expected Profile Guidance
-
-Preserve existing contract when possible. If implementation would choose the
-contract, block for package insufficiency or source-of-truth conflict.
+Load `03_RISK_AND_GATES.md` after `01_IDENTITY_AND_BOUNDARY.md`; classify the risk and block instead of continuing when gate evidence is absent.
 
 ### Excellent Pass Signal
 
-The profile prevents API invention and names the smallest contract decision or
-owner needed before execution can proceed.
+Triggered gates cannot be skipped for speed. A risk decision without the gates module blocks as `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE` or `BLOCKED_TRIGGERED_GATE_NOT_LOADED`.
 
-### Failure Modes
-
-- choosing payload by preference;
-- changing public response shape without authority;
-- treating schema drift as a private refactor;
-- breaking frontend or iOS consumers;
-- hiding contract uncertainty in a risk note while still implementing.
-
-## 4. Auth/Authz Trap
+## 4. Handoff Or Output Trigger
 
 ### Scenario
 
-The backend cut depends on role, permission, guard, or access behavior that is
-not specified.
+`coder-backend` must consume a handoff, produce backend executor READY or BLOCKED handoff, emit status, consolidate evidence, or claim Excellent Pass.
 
-### Input
+### Expected Guidance
 
-The package touches authentication, authorization, tenant/user scoping,
-resource ownership, permission checks, audit behavior, or error visibility, but
-does not define required semantics.
-
-### Expected Profile Guidance
-
-Block when auth/authz behavior cannot be safely preserved or derived from
-explicit local contract. Treat security semantics as a material blocker.
+Load `04_HANDOFF_EVIDENCE_AND_OUTPUT.md` after `01_IDENTITY_AND_BOUNDARY.md`; separate facts, evidence, blockers, residual risk, output validity, and next-owner expectations.
 
 ### Excellent Pass Signal
 
-The profile refuses default-allow/default-deny invention, names the security
-decision needed, and does not copy a nearby pattern unless it is a real
-contract.
+Material output without the handoff/evidence module blocks as `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`; output is compact, auditable, and role-owned.
 
-### Failure Modes
-
-- allowing access by default;
-- copying a neighboring guard without source support;
-- ignoring tenant or ownership scope;
-- changing error visibility silently;
-- treating security risk as a validation-runner concern.
-
-## 5. Persistence/Migration Trap
+## 5. Load-All For Safety Trap
 
 ### Scenario
 
-The change requires data shape, schema, migration, backfill, lifecycle, or
-transaction behavior that is not defined.
+A future loader tries to load all four modules by default because the full set feels safer.
 
-### Input
+### Expected Guidance
 
-The package touches a model, table, index, repository, query, migration,
-backfill, data deletion, transaction, cache, or reader/writer compatibility
-without sufficient rollout or safety basis.
-
-### Expected Profile Guidance
-
-Block for persistence/migration ambiguity or request source/DEV decision. Do
-not create data behavior from local preference.
+Reject the behavior as `EDGECASE_LOAD_ALL_FOR_SAFETY` and `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT` unless each module has an independent active trigger.
 
 ### Excellent Pass Signal
 
-The profile protects data, migration path, transaction scope, bounded queries,
-and rollout safety from unsupported assumptions.
+Lazy load is treated as a safety contract, not an optimization or token-saving trick.
 
-### Failure Modes
-
-- adding a field without migration authority;
-- altering data lifecycle silently;
-- assuming defaults or nullability;
-- adding an unbounded query;
-- changing transaction behavior without basis.
-
-## 6. Owned Paths Insufficient Trap
+## 6. Weak Manifest Trap
 
 ### Scenario
 
-The safe backend fix requires a file not owned by the work package.
+`SENIOR_AGENT_PROFILE.md` is reduced to a thin list of links or regrows the 13-section monolith.
 
-### Input
+### Expected Guidance
 
-The package owns a service file but safe completion requires editing a route,
-shared schema, generated contract, migration, config, or test file outside
-`OWNED_PATHS`.
-
-### Expected Profile Guidance
-
-Block for package insufficiency and name the missing path authority. Do not
-expand ownership or create a parallel implementation to avoid the boundary.
+Block as `EDGECASE_WEAK_PROFILE_MANIFEST`, `BLOCKED_WEAK_PROFILE_MANIFEST`, or `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH` depending on the failure.
 
 ### Excellent Pass Signal
 
-The profile treats path authority as a blocker and preserves package integrity.
+The manifest remains short but carries status, purpose, kernel relationship, module descriptions, loading model, dev-only boundary, semantic relocation, authority statement, and lazy-load compatibility.
 
-### Failure Modes
-
-- editing the missing path anyway;
-- widening `OWNED_PATHS` locally;
-- working around the missing path with duplicated behavior;
-- burying the issue as residual risk after implementation.
-
-## 7. Do-Not-Touch Conflict Trap
+## 7. Split Loss Trap
 
 ### Scenario
 
-The required backend change conflicts with a do-not-touch path or artifact.
+During modularization, a boundary, kernel anchor, gate, stop pattern, handoff rule, evidence rule, anti-overreach rule, anti-bloat rule, or Excellent Pass expectation disappears.
 
-### Input
+### Expected Guidance
 
-The package's `DO_NOT_TOUCH` names a generated schema, migration, config,
-shared type, or runtime target that the implementation would need to modify or
-regenerate.
-
-### Expected Profile Guidance
-
-Block and identify the conflict. Do not bypass `DO_NOT_TOUCH` through manual
-edits, generated-output edits, or alternate behavior.
+Block as `EDGECASE_SPLIT_LOSSES` or `BLOCKED_KERNEL_ANCHOR_LOSS`; restore the lost approved semantics to the correct module instead of weakening the contract.
 
 ### Excellent Pass Signal
 
-The profile prevents negative-space violation and returns the conflict to the
-owner that can revise the package or decision.
+The four modules preserve the approved behavior at least as strongly as the old monolithic profile.
 
-### Failure Modes
-
-- editing a prohibited path;
-- regenerating a prohibited artifact;
-- creating an alternate file to sidestep the conflict;
-- treating `DO_NOT_TOUCH` as advisory.
-
-## 8. Validation Pack Mismatch Trap
+## 8. Runtime Leakage Trap
 
 ### Scenario
 
-The package and validation pack disagree about acceptance intent or proof.
+A profile, validation, or contract is interpreted as permission to create runtime output, target artifacts, `.github`, `.codex`, `AGENTS.md`, materializer code, or productive-skill changes.
 
-### Input
+### Expected Guidance
 
-The package asks for one backend behavior while `VALIDATION PACK` expects
-different behavior, different required checks, a different contract boundary,
-or a proof target inconsistent with the package.
-
-### Expected Profile Guidance
-
-Block for mismatch. Do not rewrite the validation pack, invent acceptance
-criteria, or pick the more convenient artifact.
+Reject the request as outside this dev-only profile. The profile may discuss future compatibility but must not implement runtime selection, project selection, prompt assembly, target writes, materialization, or GitHub remote writes.
 
 ### Excellent Pass Signal
 
-The profile names the mismatch and preserves proof-design/package-design
-ownership.
+The role boundary and lab boundary remain documentary/dev-only, with no target leakage.
 
-### Failure Modes
-
-- implementing against the package while ignoring proof conflict;
-- changing validation expectations locally;
-- treating mismatch as a test TODO;
-- sending ambiguity to `validation-runner`.
-
-## 9. Shared Frontend/iOS Contract Mismatch Trap
+## 9. Base Agent Final Dependency Trap
 
 ### Scenario
 
-The backend change affects a shared contract consumed by frontend or iOS.
+A document names `reference/agents/` as final source for modular profile behavior.
 
-### Input
+### Expected Guidance
 
-The package allows a backend API or schema change, but frontend/iOS consumers,
-generated types, shared validation schemas, or client expectations appear to
-require coordination not authorized by the package.
-
-### Expected Profile Guidance
-
-Preserve existing shared contract or block for contract alignment. Read client
-consumers only as needed to verify the shared edge, not as broad client work.
+Block as `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY` or `EDGECASE_PROFILE_SOURCE_SPRAWL`. `reference/agents/` may only be treated as a temporary development parity baseline if mentioned at all; the modular senior profile source is the manifest plus four modules, subordinate to the kernel and global contracts.
 
 ### Excellent Pass Signal
 
-The profile prevents backend-only execution from silently breaking consumers and
-does not absorb frontend/iOS implementation.
+No final source sprawl exists and no old baseline becomes authoritative.
 
-### Failure Modes
+## Edge Cases That Must Block
 
-- changing backend contract and leaving consumers broken;
-- editing frontend/iOS files outside authority;
-- assuming clients can adapt later;
-- ignoring generated/shared type drift.
-
-## 10. Integration/Job Ambiguity Trap
-
-### Scenario
-
-The backend cut touches async behavior, external integration, or job semantics.
-
-### Input
-
-The package touches queue processing, cron, events, webhooks, SDK calls,
-external APIs, retries, idempotency keys, ordering, timeouts, or failure
-recovery without explicit enough behavior.
-
-### Expected Profile Guidance
-
-Block when retry, idempotency, ordering, timeout, mapping, rate-limit, or
-failure behavior would be invented. Preserve external boundaries and vendor
-details unless explicitly authorized to expose them.
-
-### Excellent Pass Signal
-
-The profile names integration/job uncertainty as a backend execution blocker,
-not a local implementation preference.
-
-### Failure Modes
-
-- inventing retry behavior;
-- ignoring idempotency;
-- leaking vendor payloads into public contracts;
-- placing external side effects in unsafe transaction scope;
-- assuming external API behavior without package authority.
-
-## 11. Evidence Trap
-
-### Scenario
-
-Implementation appears complete, but executor evidence is weak or misleading.
-
-### Input
-
-The executor has inspected code or run a command, but changed paths, semantic
-delta, checks run/not-run, guardrails, residual risk, or failure details are
-missing.
-
-### Expected Profile Guidance
-
-Do not emit evidence-free `READY`. Require changed paths or equivalent
-implementation evidence, command facts, limitations, and residual risk. Use
-`BLOCKED` when partial edits are unsafe.
-
-### Excellent Pass Signal
-
-The profile distinguishes implementation evidence from validation verdict and
-prepares a validation-eligible handoff only when real implementation exists.
-
-### Failure Modes
-
-- claiming `READY` from analysis;
-- pasting command logs without file evidence;
-- hiding failed checks;
-- treating unrun tests as success;
-- leaving partial edits without explicit `BLOCKED` details.
-
-## 12. Runtime Leakage Trap
-
-### Scenario
-
-A documentation task is reframed as runtime materialization.
-
-### Input
-
-"Turn this coder-backend senior profile into `.codex/agents/coder-backend.toml`,
-update `.github/agents`, change `AGENTS.md`, and adjust `sentinel.mjs` or the
-smoke script."
-
-### Expected Profile Guidance
-
-Block runtime materialization and name the documentary/dev-only boundary.
-
-### Excellent Pass Signal
-
-The profile refuses `.github`, `.codex`, `AGENTS.md`, productive skill,
-template, materializer, `sentinel.mjs`, smoke-script, target-repository, and
-GitHub writes from this phase.
-
-### Failure Modes
-
-- generating runtime agents;
-- editing productive skill or templates;
-- updating `sentinel.mjs` or smoke scripts;
-- treating the profile as a prompt to load;
-- creating target artifacts.
+- `EDGECASE_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `EDGECASE_WEAK_PROFILE_MANIFEST`
+- `EDGECASE_LAZY_LOADING_THEATER`
+- `EDGECASE_LOAD_ALL_FOR_SAFETY`
+- `EDGECASE_SKIP_GATE_FOR_SPEED`
+- `EDGECASE_DECISION_WITH_ONLY_CORE`
+- `EDGECASE_OUTPUT_WITHOUT_EVIDENCE_DISCIPLINE`
+- `EDGECASE_RISK_HIDDEN_IN_LANGUAGE`
+- `EDGECASE_MODULE_DEPENDENCY_BYPASS`
+- `EDGECASE_SPLIT_LOSSES`
+- `EDGECASE_PROFILE_SOURCE_SPRAWL`
+- `EDGECASE_KERNEL_ANCHOR_LOSS`
+- `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY`

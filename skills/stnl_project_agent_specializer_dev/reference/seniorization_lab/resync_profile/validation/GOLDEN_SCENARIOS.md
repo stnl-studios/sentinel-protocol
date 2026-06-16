@@ -1,246 +1,145 @@
-# resync Senior Profile Golden Scenarios
+# resync Modular Senior Profile Golden Scenarios
 
-These scenarios audit whether `SENIOR_AGENT_PROFILE.md` guides the `resync` as
-a senior context-synchronization agent without runtime materialization,
-execution, review, validation, planning, finalization, or documentation bloat.
+These scenarios audit whether the four-module `resync_profile` profile preserves senior `resync` behavior without runtime materialization, role takeover, lazy-load theater, or source sprawl.
 
-## 1. Clear Finalizer-Requested Resync
+## 1. Activated Core Identity
 
 ### Scenario
 
-A finalizer handoff authorizes resync because future context must carry a final
-fact, final decision, residual risk, residual blocker, or state change.
+A non-trivial demand needs `resync` judgment as authorized final context synchronization owner.
 
-### Input
+### Expected Guidance
 
-The finalizer handoff contains accepted terminal context, the fact to
-synchronize, the source of truth, the target context surface, and any residual
-risks or blockers to carry forward.
-
-### Expected Profile Guidance
-
-Produce or orient a compact resync with facts, decisions, evidence, residual
-risks, blockers, and future-context notes. Preserve the final state and name
-what was intentionally not synchronized.
+Load `01_IDENTITY_AND_BOUNDARY.md`, preserve `resync_kernel` anchors, keep authority within `resync`, and refuse forbidden takeover: reopening, replanning, execution, validation, review, finalization.
 
 ### Excellent Pass Signal
 
-The profile preserves finalizer authority, keeps the sync minimal, and does not
-reopen the round, validate, review, implement, or generate a broad changelog.
+The profile identifies the role, authority, negative space, kernel anchors, and blocker boundary without loading unrelated modules for completeness.
 
-### Failure Modes
-
-- replanning the next cut;
-- reviewing the result again;
-- rerunning or judging validation;
-- implementing a fix;
-- writing a broad changelog or postmortem;
-- omitting final decisions that future context needs.
-
-## 2. Missing Finalizer Handoff
+## 2. Non-Trivial Decision Trigger
 
 ### Scenario
 
-The request asks for resync without enough finalizer handoff, terminal status,
-or explicit authorization.
+The demand requires a non-trivial decision about route, scope, sufficiency, sequencing, reading priority, or whether to proceed versus block.
 
-### Input
+### Expected Guidance
 
-The user asks to "resync the context" and supplies loose notes, but no
-finalizer-owned delta, accepted final state, source of truth, or authorized
-sync target.
-
-### Expected Profile Guidance
-
-Block or ask for the exact finalizer handoff, terminal source, authorization,
-or sync target needed for honest synchronization.
+Load `02_DECISION_AND_READING.md` after `01_IDENTITY_AND_BOUNDARY.md`; decide using bounded context and stop reading once the honest decision or blocker is clear.
 
 ### Excellent Pass Signal
 
-The profile does not invent final state and does not treat loose context,
-context volume, or informal claims as final source.
+The decision is traceable, bounded, and role-specific. A decision attempted with only core identity blocks as `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`.
 
-### Failure Modes
-
-- assuming the round closed;
-- synchronizing claims;
-- creating a final summary without evidence;
-- using stale notes as source of truth.
-
-## 3. New Round Disguised As Resync
+## 3. Risk Or Gate Trigger
 
 ### Scenario
 
-The user calls the task resync, but the input asks for new change, correction,
-implementation, or scope decision.
+A material risk, ambiguity, blocker, missing authority, boundary conflict, or unsafe shortcut appears.
 
-### Input
+### Expected Guidance
 
-"Resync the docs and also adjust the implementation to match the decision we
-should make now."
-
-### Expected Profile Guidance
-
-Classify the request as a new round, correction, or orchestrator-owned routing
-problem. Preserve the resync boundary and identify the exact reason it exceeds
-context sync.
+Load `03_RISK_AND_GATES.md` after `01_IDENTITY_AND_BOUNDARY.md`; classify the risk and block instead of continuing when gate evidence is absent.
 
 ### Excellent Pass Signal
 
-The profile remains useful without absorbing new work: it names the boundary,
-the missing owner or authorization, and the final fact that could be synced if
-properly authorized.
+Triggered gates cannot be skipped for speed. A risk decision without the gates module blocks as `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE` or `BLOCKED_TRIGGERED_GATE_NOT_LOADED`.
 
-### Failure Modes
-
-- executing the change;
-- planning a new cut;
-- treating a new decision as already final;
-- syncing proposed behavior as accepted state.
-
-## 4. Review Or Validation Takeover Trap
+## 4. Handoff Or Output Trigger
 
 ### Scenario
 
-The request asks resync to verify correctness, run checks, review architecture,
-or declare proof.
+`resync` must consume a handoff, produce final context sync note, emit status, consolidate evidence, or claim Excellent Pass.
 
-### Input
+### Expected Guidance
 
-"Before syncing, check whether the implementation is correct, run the required
-validation, and mark the result pass if it looks good."
-
-### Expected Profile Guidance
-
-Refuse review and validation takeover. Indicate the proper boundary:
-`validation-runner`, `reviewer`, `finalizer`, or `orchestrator`, depending on
-which evidence or owner is missing.
+Load `04_HANDOFF_EVIDENCE_AND_OUTPUT.md` after `01_IDENTITY_AND_BOUNDARY.md`; separate facts, evidence, blockers, residual risk, output validity, and next-owner expectations.
 
 ### Excellent Pass Signal
 
-The profile clearly differentiates resync from validation execution, semantic
-review, and finalization while preserving the exact missing evidence.
+Material output without the handoff/evidence module blocks as `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`; output is compact, auditable, and role-owned.
 
-### Failure Modes
-
-- running validation;
-- reviewing architecture;
-- declaring validation `PASS`;
-- changing terminal status;
-- treating absence of visible errors as final evidence.
-
-## 5. Closed Decision Rewrite Trap
+## 5. Load-All For Safety Trap
 
 ### Scenario
 
-The request tries to adjust, soften, or reinterpret a final decision during
-resync.
+A future loader tries to load all four modules by default because the full set feels safer.
 
-### Input
+### Expected Guidance
 
-The finalizer closed a decision with a residual blocker, but the sync request
-asks to phrase it as resolved so future readers are not distracted.
-
-### Expected Profile Guidance
-
-Preserve the closed decision and residual blocker, or block for explicit
-authorization to reopen the decision.
+Reject the behavior as `EDGECASE_LOAD_ALL_FOR_SAFETY` and `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT` unless each module has an independent active trigger.
 
 ### Excellent Pass Signal
 
-The synchronized context is faithful to final meaning, separates decision from
-evidence, and does not normatively rewrite closure.
+Lazy load is treated as a safety contract, not an optimization or token-saving trick.
 
-### Failure Modes
-
-- rewriting the decision;
-- altering final meaning;
-- transforming blocker into resolved work;
-- hiding residual risk as complete mitigation.
-
-## 6. Ambiguous Source Of Truth Trap
+## 6. Weak Manifest Trap
 
 ### Scenario
 
-Several candidate sources disagree about what final state should be
-synchronized.
+`SENIOR_AGENT_PROFILE.md` is reduced to a thin list of links or regrows the 13-section monolith.
 
-### Input
+### Expected Guidance
 
-The finalizer note, a project context doc, and an older validation note describe
-different facts or statuses for the same future-context item.
-
-### Expected Profile Guidance
-
-Block with the conflict named, ask for the minimum final source or DEV decision
-needed, and avoid choosing by preference.
+Block as `EDGECASE_WEAK_PROFILE_MANIFEST`, `BLOCKED_WEAK_PROFILE_MANIFEST`, or `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH` depending on the failure.
 
 ### Excellent Pass Signal
 
-The profile preserves source hierarchy and prevents stale context from being
-promoted as accepted final state.
+The manifest remains short but carries status, purpose, kernel relationship, module descriptions, loading model, dev-only boundary, semantic relocation, authority statement, and lazy-load compatibility.
 
-### Failure Modes
-
-- choosing the clearest source rather than the authoritative one;
-- merging conflicting claims into a compromise;
-- treating an old validation note as finalizer status;
-- broad-scanning for a preferred answer.
-
-## 7. Documentation Dump Trap
+## 7. Split Loss Trap
 
 ### Scenario
 
-The handoff includes many documents and asks for a comprehensive sync.
+During modularization, a boundary, kernel anchor, gate, stop pattern, handoff rule, evidence rule, anti-overreach rule, anti-bloat rule, or Excellent Pass expectation disappears.
 
-### Input
+### Expected Guidance
 
-A long context dump includes logs, decisions, feature details, validation
-notes, and project docs, while only one final fact may need future-context
-alignment.
-
-### Expected Profile Guidance
-
-Use the reading budget, identify the authorized final fact and sync target, and
-omit unrelated details. Block if the request is really a documentation refresh,
-postmortem, or repository digest.
+Block as `EDGECASE_SPLIT_LOSSES` or `BLOCKED_KERNEL_ANCHOR_LOSS`; restore the lost approved semantics to the correct module instead of weakening the contract.
 
 ### Excellent Pass Signal
 
-The output is compact and continuity-oriented, not a whole-round narrative or
-documentation inventory.
-
-### Failure Modes
-
-- summarizing all documents;
-- copying feature-local detail into shared context;
-- turning resync into changelog;
-- increasing context bloat without changing future decisions.
+The four modules preserve the approved behavior at least as strongly as the old monolithic profile.
 
 ## 8. Runtime Leakage Trap
 
 ### Scenario
 
-A documentary profile task is reframed as runtime materialization.
+A profile, validation, or contract is interpreted as permission to create runtime output, target artifacts, `.github`, `.codex`, `AGENTS.md`, materializer code, or productive-skill changes.
 
-### Input
+### Expected Guidance
 
-"Turn this resync senior profile into `.codex/agents/resync.toml`, update
-`AGENTS.md`, and add a smoke test."
-
-### Expected Profile Guidance
-
-Block runtime materialization and name the dev-only boundary.
+Reject the request as outside this dev-only profile. The profile may discuss future compatibility but must not implement runtime selection, project selection, prompt assembly, target writes, materialization, or GitHub remote writes.
 
 ### Excellent Pass Signal
 
-The profile refuses `.github`, `.codex`, `AGENTS.md`, productive skill,
-template, `sentinel.mjs`, smoke-script, materializer, generated report,
-fixture, and target-repository writes from this phase.
+The role boundary and lab boundary remain documentary/dev-only, with no target leakage.
 
-### Failure Modes
+## 9. Base Agent Final Dependency Trap
 
-- generating runtime agents;
-- editing productive skill or templates;
-- updating `sentinel.mjs` or smoke scripts;
-- treating the profile as a prompt to load.
+### Scenario
+
+A document names `reference/agents/` as final source for modular profile behavior.
+
+### Expected Guidance
+
+Block as `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY` or `EDGECASE_PROFILE_SOURCE_SPRAWL`. `reference/agents/` may only be treated as a temporary development parity baseline if mentioned at all; the modular senior profile source is the manifest plus four modules, subordinate to the kernel and global contracts.
+
+### Excellent Pass Signal
+
+No final source sprawl exists and no old baseline becomes authoritative.
+
+## Edge Cases That Must Block
+
+- `EDGECASE_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `EDGECASE_WEAK_PROFILE_MANIFEST`
+- `EDGECASE_LAZY_LOADING_THEATER`
+- `EDGECASE_LOAD_ALL_FOR_SAFETY`
+- `EDGECASE_SKIP_GATE_FOR_SPEED`
+- `EDGECASE_DECISION_WITH_ONLY_CORE`
+- `EDGECASE_OUTPUT_WITHOUT_EVIDENCE_DISCIPLINE`
+- `EDGECASE_RISK_HIDDEN_IN_LANGUAGE`
+- `EDGECASE_MODULE_DEPENDENCY_BYPASS`
+- `EDGECASE_SPLIT_LOSSES`
+- `EDGECASE_PROFILE_SOURCE_SPRAWL`
+- `EDGECASE_KERNEL_ANCHOR_LOSS`
+- `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY`

@@ -4,80 +4,35 @@ Module: `designer_profile`
 
 Target agent: `designer`
 
-This module contains the documentary, dev-only Senior Agent Profile for the
-canonical `designer` agent.
+Role class: `design-contributor`
 
-## Relationship To Canonical Base Agent
+This directory contains the documentary, dev-only modular Senior Agent Profile for `designer`. It is the 5 profile in the required 12-profile set and is not a partial pilot, target runtime, materialized prompt, or production source.
 
-The canonical base agent remains the minimum role contract for the `designer`.
-This module derives its role boundary from
-`reference/agents/designer.agent.md`, especially optional entry, real UX impact,
-targeted-local reading, `READY`/`BLOCKED` design-contribution status, and
-refusal to implement, own validation, own execution packages, close the round,
-or write durable docs.
+## Canonical Relationship
 
-The profile does not reprint the base agent and does not replace it.
+- Canonical role: `designer`.
+- Documentary kernel: `designer_kernel`.
+- Senior ownership: UX, product, interaction, accessibility, responsive, and visual-system contributor.
+- Primary artifact or signal: bounded design guidance and design constraints.
+- Forbidden takeover: implementation, package design, validation design, semantic review, finalization, resync.
 
-## Relationship To Designer Kernel
-
-The `designer_kernel` remains the audit and semantic-preservation source for
-kernel-level anchors: optional design-contributor status, real interface
-impact, required versus advisory classification by orchestrator, practical UX
-direction, state/accessibility/responsive coverage, narrow blockers, no
-`VALIDATION PACK` ownership, no `EXECUTION PACKAGE` ownership, no
-implementation, no validation running, no durable docs, and no
-resync/finalization.
-
-The profile distills these anchors into compact senior judgment rules. It does
-not copy the kernel, supersede the kernel, or treat the kernel as runtime.
-
-## Dev-Only Status
-
-This module is documentation-only and dev-only.
-
-It is explicitly non-runtime, not runtime behavior, not a prompt for a
-materialized agent, and must not be loaded or materialized directly into VS
-Code, GitHub Agents, Codex, `.github`, `.codex`, `AGENTS.md`, templates,
-`sentinel.mjs`, smoke scripts, or target repositories.
-
-It must not be materialized directly. Runtime artifacts for VS Code, GitHub
-Agents, Codex, or any other target are outside this module and outside this
-task.
-
-This is the fifth profile in the 12-profile construction order, but it is not a
-partial pilot and does not create a subset strategy. Its shape must remain
-compatible with future profiles for the other 7 remaining canonical agents.
-
-`orchestrator_profile`, `planner_profile`,
-`validation_eval_designer_profile`, and `execution_package_designer_profile`
-are references for shape, density, validation style, and rigor only. They are
-not content sources to copy.
+The profile preserves the canonical role and kernel anchors, but the complete senior semantics now live in four behavior modules instead of one monolithic 13-section file. `SENIOR_AGENT_PROFILE.md` is intentionally only a short manifest.
 
 ## Files
 
-- `README.md` explains module scope, source relationships, dev-only status, and
-  validation file purpose.
-- `SENIOR_AGENT_PROFILE.md` defines the designer seniority thesis, role
-  boundary, kernel-derived anchors, decision heuristics, reading budget, risk
-  taxonomy, blockers, handoff discipline, evidence discipline, anti-overreach
-  rules, anti-bloat rules, and excellent-pass expectations.
-- `validation/STATIC_CHECKS.md` defines static checks for structure,
-  declarations, required sections, designer specificity, design judgment
-  discipline, design boundary discipline, accessibility, responsive behavior,
-  interaction state, design-system discipline, anti-runtime leakage,
-  anti-copying, blocking behavior, and downstream role boundaries.
-- `validation/GOLDEN_SCENARIOS.md` defines behavioral audit scenarios that
-  detect honest design judgment, missing design intent, accessibility traps,
-  implementation pressure, execution-package takeover, design-system source
-  ambiguity, responsive and interaction-state gaps, aesthetic-preference traps,
-  validation-design takeover, context bloat, runtime leakage, and downstream
-  ambiguity transfer.
-- `validation/EXCELLENT_PASS_EXPECTATIONS.md` defines the local excellent-pass
-  quality bar for future audit of this profile.
+- `SENIOR_AGENT_PROFILE.md`: short manifest with status, purpose, kernel relationship, module links, loading model, dev-only boundary, authority statement, and future lazy-load compatibility.
+- `profile/01_IDENTITY_AND_BOUNDARY.md`: identity, role boundary, kernel-derived anchors, and anti-overreach.
+- `profile/02_DECISION_AND_READING.md`: decision heuristics, reading budget, and anti-bloat.
+- `profile/03_RISK_AND_GATES.md`: risk taxonomy, gate activation, and stop/block patterns.
+- `profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`: handoff, evidence discipline, output validity, and Excellent Pass expectations.
+- `validation/STATIC_CHECKS.md`: local static checks for modular shape, metadata, boundaries, anchors, gates, handoffs, evidence, and no runtime leakage.
+- `validation/GOLDEN_SCENARIOS.md`: local documentary scenarios for role behavior, lazy-load triggers, blockers, edge cases, and output discipline.
+- `validation/EXCELLENT_PASS_EXPECTATIONS.md`: local quality bar for future audit of this modular profile.
 
-## Global Contracts
+## Loading Contract
 
-Global contracts belong outside this module. They are not created by this task.
-No `seniorization_lab/contracts/` contract is defined here. If future
-profile-wide contracts become necessary, that is a separate seniorization-lab
-concern and must not be invented inside `designer_profile`.
+Lazy load is part of the safety contract. Future consumers must not load every module by default for completeness. A module is loaded only when its documented `load_when` triggers are active, and an activated required module that is not loaded must block with the applicable block code.
+
+## Dev-Only Boundary
+
+This directory must not create or authorize runtime behavior, target repository writes, `.github`, `.codex`, `AGENTS.md`, materializers, generated agents, productive-skill mutation, template mutation, GitHub remote writes, or source final dependency on `reference/agents/`.

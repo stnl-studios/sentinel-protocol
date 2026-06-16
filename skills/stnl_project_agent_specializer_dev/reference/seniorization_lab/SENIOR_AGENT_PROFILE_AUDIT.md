@@ -1,5 +1,12 @@
 # SENIOR_AGENT_PROFILE_AUDIT
 
+> Superseded note (2026-06-16): this historical audit validated the pre-modular
+> 13-section Senior Agent Profile shape. It is preserved as audit history, but
+> the active approved structure is now the modular profile structure:
+> short `SENIOR_AGENT_PROFILE.md` manifest plus four behavior modules under
+> `profile/`. Use the modular contracts and current profile modules for any new
+> validation.
+
 ## Verdict
 
 `SENIOR_AGENT_PROFILE_AUDIT: EXCELLENT PASS`

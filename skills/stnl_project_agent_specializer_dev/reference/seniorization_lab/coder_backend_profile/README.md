@@ -4,70 +4,35 @@ Module: `coder_backend_profile`
 
 Target agent: `coder-backend`
 
-This module contains the documentary, dev-only Senior Agent Profile for the
-canonical `coder-backend` agent.
+Role class: `executor`
 
-## Relationship To Canonical Base Agent
+This directory contains the documentary, dev-only modular Senior Agent Profile for `coder-backend`. It is the 7 profile in the required 12-profile set and is not a partial pilot, target runtime, materialized prompt, or production source.
 
-The canonical base agent remains the minimum role contract for
-`coder-backend`. This module derives its role boundary from
-`reference/agents/coder-backend.agent.md`, especially executor-only ownership,
-`EXECUTION PACKAGE` dependency, targeted-local reading, package boundary
-discipline, terminal `READY` or `BLOCKED` handoff, and refusal to plan,
-validate, review, finalize, resync, or write durable docs.
+## Canonical Relationship
 
-The profile does not reprint the base agent and does not replace it.
+- Canonical role: `coder-backend`.
+- Documentary kernel: `coder_backend_kernel`.
+- Senior ownership: backend executor under package constraints.
+- Primary artifact or signal: backend executor READY or BLOCKED handoff.
+- Forbidden takeover: replanning, package expansion, frontend/iOS execution, validation, review, finalization, resync.
 
-## Relationship To Coder-Backend Kernel
-
-The coder-backend kernel remains the audit and semantic-preservation source for
-kernel-level anchors: authorized work package execution, backend-owned
-implementation, package boundary discipline, contract safety, data and
-migration rigor, auth/authz caution, guardrail use, blocker behavior, and
-executor evidence.
-
-The profile distills these anchors into compact senior judgment rules. It does
-not copy the kernel, supersede the kernel, or treat the kernel as runtime.
-
-## Dev-Only Status
-
-This module is documentation-only and dev-only.
-
-It is not runtime behavior, not a prompt for a materialized agent, and must not
-be loaded or materialized directly into VS Code, GitHub Agents, Codex,
-`.github`, `.codex`, `AGENTS.md`, templates, `sentinel.mjs`, smoke scripts, or
-target repositories.
-
-This module is part of the 12-profile Senior Agent Profile construction. It is
-not a partial pilot, does not create a subset strategy, and does not create
-artificial demand for a subset of agents.
-
-`orchestrator_profile` and `planner_profile` are references for shape, density,
-validation style, and rigor only. They are not content sources to copy.
+The profile preserves the canonical role and kernel anchors, but the complete senior semantics now live in four behavior modules instead of one monolithic 13-section file. `SENIOR_AGENT_PROFILE.md` is intentionally only a short manifest.
 
 ## Files
 
-- `README.md` explains module scope, source relationships, dev-only status, and
-  validation file purpose.
-- `SENIOR_AGENT_PROFILE.md` defines the coder-backend seniority thesis, role
-  boundary, kernel-derived anchors, backend execution heuristics, reading
-  budget, risk taxonomy, blockers, handoff discipline, evidence discipline,
-  anti-overreach rules, anti-bloat rules, and excellent-pass expectations.
-- `validation/STATIC_CHECKS.md` defines static checks for structure,
-  declarations, required sections, coder-backend specificity, anti-runtime
-  leakage, anti-copying, backend execution discipline, package boundary
-  discipline, contract safety, and downstream role boundaries.
-- `validation/GOLDEN_SCENARIOS.md` defines behavioral audit scenarios that
-  detect backend execution quality, missing package handling, API/schema traps,
-  auth/authz traps, persistence/migration traps, owned-path issues,
-  do-not-touch conflicts, validation mismatch, shared-contract mismatch,
-  integration/job ambiguity, evidence traps, and runtime leakage.
-- `validation/EXCELLENT_PASS_EXPECTATIONS.md` defines the local excellent-pass
-  quality bar for future audit of this profile.
+- `SENIOR_AGENT_PROFILE.md`: short manifest with status, purpose, kernel relationship, module links, loading model, dev-only boundary, authority statement, and future lazy-load compatibility.
+- `profile/01_IDENTITY_AND_BOUNDARY.md`: identity, role boundary, kernel-derived anchors, and anti-overreach.
+- `profile/02_DECISION_AND_READING.md`: decision heuristics, reading budget, and anti-bloat.
+- `profile/03_RISK_AND_GATES.md`: risk taxonomy, gate activation, and stop/block patterns.
+- `profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`: handoff, evidence discipline, output validity, and Excellent Pass expectations.
+- `validation/STATIC_CHECKS.md`: local static checks for modular shape, metadata, boundaries, anchors, gates, handoffs, evidence, and no runtime leakage.
+- `validation/GOLDEN_SCENARIOS.md`: local documentary scenarios for role behavior, lazy-load triggers, blockers, edge cases, and output discipline.
+- `validation/EXCELLENT_PASS_EXPECTATIONS.md`: local quality bar for future audit of this modular profile.
 
-## Global Contracts
+## Loading Contract
 
-Global contracts belong outside this module. They are not created by this task.
-No `seniorization_lab/contracts/` contract is defined here. If future
-profile-wide contracts become necessary, that is a separate seniorization-lab
-concern and must not be invented inside `coder_backend_profile`.
+Lazy load is part of the safety contract. Future consumers must not load every module by default for completeness. A module is loaded only when its documented `load_when` triggers are active, and an activated required module that is not loaded must block with the applicable block code.
+
+## Dev-Only Boundary
+
+This directory must not create or authorize runtime behavior, target repository writes, `.github`, `.codex`, `AGENTS.md`, materializers, generated agents, productive-skill mutation, template mutation, GitHub remote writes, or source final dependency on `reference/agents/`.

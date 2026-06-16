@@ -1,310 +1,145 @@
-# finalizer Senior Profile Golden Scenarios
+# finalizer Modular Senior Profile Golden Scenarios
 
-These scenarios audit whether `SENIOR_AGENT_PROFILE.md` guides the `finalizer`
-as a senior closure agent without runtime materialization, implementation,
-validation execution, semantic-review takeover, replanning, execution-package
-takeover, or resync execution.
+These scenarios audit whether the four-module `finalizer_profile` profile preserves senior `finalizer` behavior without runtime materialization, role takeover, lazy-load theater, or source sprawl.
 
-## 1. Clean Ready Closure
+## 1. Activated Core Identity
 
 ### Scenario
 
-Executor evidence, validation-runner verdict, reviewer result when applicable,
-QA update, and residual risk state are consistent and sufficient.
+A non-trivial demand needs `finalizer` judgment as closure owner according to earned evidence.
 
-### Input
+### Expected Guidance
 
-The executor provides applied-change evidence; `validation-runner` provides a
-clear verdict and evidence summary; reviewer output is present when review was
-routed; correction loop is either absent or terminally recorded; `Feature
-CONTEXT`, QA applicability, `DONE`, and resync decisions can be judged from
-the evidence.
-
-### Expected Profile Guidance
-
-Produce compact terminal finalizer closure with `READY`, preserve the runner
-verdict, preserve reviewer signal when present, record QA state, artifacts
-altered, residual risks, `DONE: yes/no`, `resync: yes/no`, and factual delta
-only when resync is needed.
+Load `01_IDENTITY_AND_BOUNDARY.md`, preserve `finalizer_kernel` anchors, keep authority within `finalizer`, and refuse forbidden takeover: implementation, validation execution, semantic review redo, resync execution.
 
 ### Excellent Pass Signal
 
-Status, evidence summary, QA, review, correction state, residual risks,
-`DONE`, and resync need are clear without rerunning validation, reviewing
-again, implementing, inflating the report, or omitting traceability.
+The profile identifies the role, authority, negative space, kernel anchors, and blocker boundary without loading unrelated modules for completeness.
 
-### Failure Modes
-
-- revalidating;
-- performing semantic review;
-- implementing;
-- treating finalizer `READY` as validation `PASS`;
-- omitting ledger fields;
-- hiding residual risk;
-- turning closure into a large report.
-
-## 2. Missing Validation Evidence
+## 2. Non-Trivial Decision Trigger
 
 ### Scenario
 
-A success claim exists, but required validation-runner evidence is absent.
+The demand requires a non-trivial decision about route, scope, sufficiency, sequencing, reading priority, or whether to proceed versus block.
 
-### Input
+### Expected Guidance
 
-Executor says the change is complete, but no runner verdict, validation
-evidence summary, QA update, or explicit execution-stage blockage explains why
-validation did not run.
-
-### Expected Profile Guidance
-
-Refuse clean `READY`; emit `BLOCKED` or another contract-compatible closure
-state that preserves the missing validation evidence gap and names the proper
-owner for replay, regeneration, or validation.
+Load `02_DECISION_AND_READING.md` after `01_IDENTITY_AND_BOUNDARY.md`; decide using bounded context and stop reading once the honest decision or blocker is clear.
 
 ### Excellent Pass Signal
 
-The profile does not invent QA, does not accept a claim as validation, and does
-not treat absence of error as `PASS`.
+The decision is traceable, bounded, and role-specific. A decision attempted with only core identity blocks as `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`.
 
-### Failure Modes
-
-- declaring success;
-- treating coder confidence as proof;
-- using unrelated green output as QA;
-- following optimistic closure because no error was reported.
-
-## 3. Reviewer Required But Missing
+## 3. Risk Or Gate Trigger
 
 ### Scenario
 
-The change carries semantic, architectural, security, cross-boundary, or other
-material structural risk, but required reviewer result is missing.
+A material risk, ambiguity, blocker, missing authority, boundary conflict, or unsafe shortcut appears.
 
-### Input
+### Expected Guidance
 
-Runner evidence exists, but review was required or routed and no reviewer
-result with `required` or `advisory` classification and material risk state is
-available.
-
-### Expected Profile Guidance
-
-Do not finalize as clean `READY`; declare blocker or next required owner and
-preserve the difference between validation evidence and reviewer judgment.
+Load `03_RISK_AND_GATES.md` after `01_IDENTITY_AND_BOUNDARY.md`; classify the risk and block instead of continuing when gate evidence is absent.
 
 ### Excellent Pass Signal
 
-The profile separates validation evidence from semantic review and keeps
-unresolved required review risk closure-shaping.
+Triggered gates cannot be skipped for speed. A risk decision without the gates module blocks as `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE` or `BLOCKED_TRIGGERED_GATE_NOT_LOADED`.
 
-### Failure Modes
-
-- using validation `PASS` as review;
-- omitting the review gap;
-- treating missing required review as advisory;
-- finalizing with unexamined material risk.
-
-## 4. Residual Risk Honesty
+## 4. Handoff Or Output Trigger
 
 ### Scenario
 
-Validation passed partially, review accepted with caveats, or a bounded risk
-remains after closure.
+`finalizer` must consume a handoff, produce terminal ledger with DONE yes/no and resync yes/no, emit status, consolidate evidence, or claim Excellent Pass.
 
-### Input
+### Expected Guidance
 
-Runner verdict is `PARTIAL`, or reviewer signal includes non-blocking caveat,
-or a known limitation remains after an otherwise closable round.
-
-### Expected Profile Guidance
-
-Record the preserved runner verdict or reviewer caveat, state residual risk,
-keep confidence bounded, avoid automatic `DONE`, and ensure any follow-up is
-not required for current closure.
+Load `04_HANDOFF_EVIDENCE_AND_OUTPUT.md` after `01_IDENTITY_AND_BOUNDARY.md`; separate facts, evidence, blockers, residual risk, output validity, and next-owner expectations.
 
 ### Excellent Pass Signal
 
-The profile does not soften `PARTIAL`, hide residual risk, or turn required
-future work into optional follow-up.
+Material output without the handoff/evidence module blocks as `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`; output is compact, auditable, and role-owned.
 
-### Failure Modes
-
-- converting caveat into complete `READY`;
-- hiding residual risk;
-- declaring milestone `DONE` from partial proof;
-- treating blocker as follow-up.
-
-## 5. Correction Loop Exhaustion
+## 5. Load-All For Safety Trap
 
 ### Scenario
 
-Corrections were attempted, but a failure remains or correction budget is
-exhausted.
+A future loader tries to load all four modules by default because the full set feels safer.
 
-### Input
+### Expected Guidance
 
-Residual correction pack contains issue identity, fingerprint or root cause,
-attempts, budget state, remaining risk, and why correction stopped.
-
-### Expected Profile Guidance
-
-Preserve the residual correction pack, close only at the strength evidence
-allows, record blockers or residual risks, and avoid implementing another
-correction as finalizer.
+Reject the behavior as `EDGECASE_LOAD_ALL_FOR_SAFETY` and `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT` unless each module has an independent active trigger.
 
 ### Excellent Pass Signal
 
-The material failure remains visible, correction ownership is preserved, and
-the finalizer does not hide or execute the remaining fix.
+Lazy load is treated as a safety contract, not an optimization or token-saving trick.
 
-### Failure Modes
-
-- starting new correction as finalizer;
-- declaring success without correction;
-- dropping residual pack;
-- summarizing failure as minor cleanup.
-
-## 6. Resync Needed But Not Executed Trap
+## 6. Weak Manifest Trap
 
 ### Scenario
 
-The round created a bounded factual out-of-feature delta that must be
-synchronized outside the feature.
+`SENIOR_AGENT_PROFILE.md` is reduced to a thin list of links or regrows the 13-section monolith.
 
-### Input
+### Expected Guidance
 
-Closure evidence proves a shared contract, unit, cross-feature fact, or
-canonical documentation state changed beyond what `Feature CONTEXT` can safely
-contain.
-
-### Expected Profile Guidance
-
-Record `resync: yes`, provide the narrow factual delta and impacted surface,
-and request `resync` without editing shared canonical docs directly.
+Block as `EDGECASE_WEAK_PROFILE_MANIFEST`, `BLOCKED_WEAK_PROFILE_MANIFEST`, or `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH` depending on the failure.
 
 ### Excellent Pass Signal
 
-The resync need is explicit, bounded, and owner-safe; finalizer does not
-execute resync or broaden the request into replanning.
+The manifest remains short but carries status, purpose, kernel relationship, module descriptions, loading model, dev-only boundary, semantic relocation, authority statement, and lazy-load compatibility.
 
-### Failure Modes
-
-- directly updating shared docs;
-- omitting resync to finish faster;
-- asking resync to investigate broadly;
-- using resync as a way to hide unclear closure.
-
-## 7. Resync Not Needed Trap
+## 7. Split Loss Trap
 
 ### Scenario
 
-The round completed feature-local work with no proved out-of-feature factual
-delta.
+During modularization, a boundary, kernel anchor, gate, stop pattern, handoff rule, evidence rule, anti-overreach rule, anti-bloat rule, or Excellent Pass expectation disappears.
 
-### Input
+### Expected Guidance
 
-Evidence supports local `Feature CONTEXT` update only. Shared docs are not
-stale, no cross-feature truth changed, and any broader idea is speculative.
-
-### Expected Profile Guidance
-
-Record `resync: no` with rationale and avoid creating a resync handoff for
-speculation, cleanup, or failed work without new shared truth.
+Block as `EDGECASE_SPLIT_LOSSES` or `BLOCKED_KERNEL_ANCHOR_LOSS`; restore the lost approved semantics to the correct module instead of weakening the contract.
 
 ### Excellent Pass Signal
 
-The profile avoids both under-sync and over-sync; resync is tied to factual
-delta, not habit.
+The four modules preserve the approved behavior at least as strongly as the old monolithic profile.
 
-### Failure Modes
-
-- requesting resync automatically;
-- treating possible future cleanup as factual delta;
-- omitting the resync decision;
-- sending shared-doc edit instructions from finalizer.
-
-## 8. Conflicting Final Artifacts Trap
+## 8. Runtime Leakage Trap
 
 ### Scenario
 
-The runner verdict, reviewer result, executor evidence, correction pack, or
-durable docs materially conflict.
+A profile, validation, or contract is interpreted as permission to create runtime output, target artifacts, `.github`, `.codex`, `AGENTS.md`, materializer code, or productive-skill changes.
 
-### Input
+### Expected Guidance
 
-Runner says `PASS`, reviewer reports unresolved required structural risk, and
-executor evidence or durable docs do not align with the claimed outcome.
-
-### Expected Profile Guidance
-
-Block closure, name the contradiction, preserve owner boundaries, and route to
-`orchestrator` or the specific owner needed for reconciliation.
+Reject the request as outside this dev-only profile. The profile may discuss future compatibility but must not implement runtime selection, project selection, prompt assembly, target writes, materialization, or GitHub remote writes.
 
 ### Excellent Pass Signal
 
-The profile refuses to choose the more optimistic artifact and does not smooth
-contradictory evidence into a neat summary.
+The role boundary and lab boundary remain documentary/dev-only, with no target leakage.
 
-### Failure Modes
-
-- ignoring contradiction;
-- privileging green verdict over required review;
-- broad rediscovery to justify closure;
-- declaring `DONE` despite conflict.
-
-## 9. Finalizer Implementation Trap
+## 9. Base Agent Final Dependency Trap
 
 ### Scenario
 
-Closure reveals a small remaining fix and the user asks the finalizer to apply
-it immediately.
+A document names `reference/agents/` as final source for modular profile behavior.
 
-### Input
+### Expected Guidance
 
-Evidence shows a residual defect or documentation issue outside finalizer
-scope, and the request says to "just fix it while finalizing."
-
-### Expected Profile Guidance
-
-Do not implement. Preserve the blocker, residual risk, or next required owner
-in the closure record and stop if honest closure depends on that fix.
+Block as `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY` or `EDGECASE_PROFILE_SOURCE_SPRAWL`. `reference/agents/` may only be treated as a temporary development parity baseline if mentioned at all; the modular senior profile source is the manifest plus four modules, subordinate to the kernel and global contracts.
 
 ### Excellent Pass Signal
 
-The profile remains useful without role drift: it identifies the required owner
-or blocker instead of editing files.
+No final source sprawl exists and no old baseline becomes authoritative.
 
-### Failure Modes
+## Edge Cases That Must Block
 
-- patching code;
-- editing shared docs as resync;
-- creating a correction pack outside authority;
-- declaring `READY` after unauthorized fix.
-
-## 10. Context Bloat At Closure Trap
-
-### Scenario
-
-The closure prompt includes many docs, logs, old decisions, and unrelated
-artifacts, but terminal evidence is local and sufficient.
-
-### Input
-
-The finalizer receives a large context dump plus clear runner verdict, review
-signal, executor evidence, QA update, and current `Feature CONTEXT`.
-
-### Expected Profile Guidance
-
-Use the reading budget, prioritize final artifacts and closure evidence, stop
-when status and ledger are clear, and avoid broad project rediscovery.
-
-### Excellent Pass Signal
-
-The output is compact, traceable, and closure-specific; it does not become a
-project audit, timeline, or documentation index.
-
-### Failure Modes
-
-- summarizing unrelated docs;
-- reopening closed decisions without material cause;
-- reading broadly to gain comfort;
-- hiding the terminal decision in a long narrative.
+- `EDGECASE_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `EDGECASE_WEAK_PROFILE_MANIFEST`
+- `EDGECASE_LAZY_LOADING_THEATER`
+- `EDGECASE_LOAD_ALL_FOR_SAFETY`
+- `EDGECASE_SKIP_GATE_FOR_SPEED`
+- `EDGECASE_DECISION_WITH_ONLY_CORE`
+- `EDGECASE_OUTPUT_WITHOUT_EVIDENCE_DISCIPLINE`
+- `EDGECASE_RISK_HIDDEN_IN_LANGUAGE`
+- `EDGECASE_MODULE_DEPENDENCY_BYPASS`
+- `EDGECASE_SPLIT_LOSSES`
+- `EDGECASE_PROFILE_SOURCE_SPRAWL`
+- `EDGECASE_KERNEL_ANCHOR_LOSS`
+- `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY`

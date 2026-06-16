@@ -38,6 +38,18 @@ The canonical documentary/dev-only reference bundle is organized as:
 - All twelve passes are dev kernel-lab results only. They do not authorize runtime,
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
+- `reference/seniorization_lab/` now uses the approved modular Senior
+  Agent Profile shape: each of the 12 profiles has a short
+  `SENIOR_AGENT_PROFILE.md` manifest and exactly four behavior modules under
+  `profile/`: identity/boundary, decision/reading, risk/gates, and
+  handoff/evidence/output. The old 13-section monolithic profile shape is
+  superseded. The new contracts
+  `SENIOR_PROFILE_MODULARIZATION_CONTRACT.md`,
+  `BEHAVIOR_MODULE_ACTIVATION_CONTRACT.md`, and
+  `RUNTIME_LAZY_LOAD_CONTRACT.md` define the documentary modularization and
+  future lazy-load safety model. This status grants no runtime, no
+  materialization, no target writes, no GitHub writes, no productive-skill
+  mutation, and no final source dependency on `reference/agents/`.
 - `reference/materialization_lab/` defines the dev-only target contract for
   future senior-agent materialization, the source model contract, and the
   dev-only templates and outputs contract for canonical `copilot` and `codex`
@@ -293,6 +305,126 @@ The canonical documentary/dev-only reference bundle is organized as:
   literally from `templates/agents/resync.agent.md`.
 
 Required files:
+- `reference/seniorization_lab/README.md`
+- `reference/seniorization_lab/SENIOR_AGENT_PROFILE_AUDIT.md`
+- `reference/seniorization_lab/SENIOR_AGENT_PROFILE_INTEGRATED_VALIDATION.md`
+- `reference/seniorization_lab/contracts/README.md`
+- `reference/seniorization_lab/contracts/CONTRACT.md`
+- `reference/seniorization_lab/contracts/SENIOR_PROFILE_MODULARIZATION_CONTRACT.md`
+- `reference/seniorization_lab/contracts/BEHAVIOR_MODULE_ACTIVATION_CONTRACT.md`
+- `reference/seniorization_lab/contracts/RUNTIME_LAZY_LOAD_CONTRACT.md`
+- `reference/seniorization_lab/contracts/MINIMUM_SAFE_BUNDLE.md`
+- `reference/seniorization_lab/contracts/PROFILE_SET_INDEX.md`
+- `reference/seniorization_lab/contracts/HANDOFF_CHAIN_CONTRACT.md`
+- `reference/seniorization_lab/contracts/INTEGRATED_VALIDATION_GATES.md`
+- `reference/seniorization_lab/orchestrator_profile/README.md`
+- `reference/seniorization_lab/orchestrator_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/orchestrator_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/orchestrator_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/orchestrator_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/orchestrator_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/orchestrator_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/orchestrator_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/orchestrator_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/planner_profile/README.md`
+- `reference/seniorization_lab/planner_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/planner_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/planner_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/planner_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/planner_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/planner_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/planner_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/planner_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/README.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/validation_eval_designer_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/execution_package_designer_profile/README.md`
+- `reference/seniorization_lab/execution_package_designer_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/execution_package_designer_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/execution_package_designer_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/execution_package_designer_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/execution_package_designer_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/execution_package_designer_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/execution_package_designer_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/execution_package_designer_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/designer_profile/README.md`
+- `reference/seniorization_lab/designer_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/designer_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/designer_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/designer_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/designer_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/designer_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/designer_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/designer_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/coder_frontend_profile/README.md`
+- `reference/seniorization_lab/coder_frontend_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/coder_frontend_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/coder_frontend_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/coder_frontend_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/coder_frontend_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/coder_frontend_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/coder_frontend_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/coder_frontend_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/coder_backend_profile/README.md`
+- `reference/seniorization_lab/coder_backend_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/coder_backend_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/coder_backend_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/coder_backend_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/coder_backend_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/coder_backend_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/coder_backend_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/coder_backend_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/coder_ios_profile/README.md`
+- `reference/seniorization_lab/coder_ios_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/coder_ios_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/coder_ios_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/coder_ios_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/coder_ios_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/coder_ios_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/coder_ios_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/coder_ios_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/validation_runner_profile/README.md`
+- `reference/seniorization_lab/validation_runner_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/validation_runner_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/validation_runner_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/validation_runner_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/validation_runner_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/validation_runner_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/validation_runner_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/validation_runner_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/reviewer_profile/README.md`
+- `reference/seniorization_lab/reviewer_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/reviewer_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/reviewer_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/reviewer_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/reviewer_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/reviewer_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/reviewer_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/reviewer_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/finalizer_profile/README.md`
+- `reference/seniorization_lab/finalizer_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/finalizer_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/finalizer_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/finalizer_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/finalizer_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/finalizer_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/finalizer_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/finalizer_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/seniorization_lab/resync_profile/README.md`
+- `reference/seniorization_lab/resync_profile/SENIOR_AGENT_PROFILE.md`
+- `reference/seniorization_lab/resync_profile/profile/01_IDENTITY_AND_BOUNDARY.md`
+- `reference/seniorization_lab/resync_profile/profile/02_DECISION_AND_READING.md`
+- `reference/seniorization_lab/resync_profile/profile/03_RISK_AND_GATES.md`
+- `reference/seniorization_lab/resync_profile/profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `reference/seniorization_lab/resync_profile/validation/STATIC_CHECKS.md`
+- `reference/seniorization_lab/resync_profile/validation/GOLDEN_SCENARIOS.md`
+- `reference/seniorization_lab/resync_profile/validation/EXCELLENT_PASS_EXPECTATIONS.md`
 - `reference/agents/orchestrator.agent.md`
 - `reference/agents/planner.agent.md`
 - `reference/kernel_lab/README.md`

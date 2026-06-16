@@ -4,69 +4,35 @@ Module: `validation_eval_designer_profile`
 
 Target agent: `validation-eval-designer`
 
-This module contains the documentary, dev-only Senior Agent Profile for the
-canonical `validation-eval-designer` agent.
+Role class: `proof-design`
 
-## Relationship To Canonical Base Agent
+This directory contains the documentary, dev-only modular Senior Agent Profile for `validation-eval-designer`. It is the 3 profile in the required 12-profile set and is not a partial pilot, target runtime, materialized prompt, or production source.
 
-The canonical base agent remains the minimum role contract for the
-`validation-eval-designer`. This module derives its role boundary from
-`reference/agents/validation-eval-designer.agent.md`, especially proof design,
-targeted-local reading, ephemeral `VALIDATION PACK` ownership, harness
-judgment, anti-theater behavior, and refusal to execute validation.
+## Canonical Relationship
 
-The profile does not reprint the base agent and does not replace it.
+- Canonical role: `validation-eval-designer`.
+- Documentary kernel: `validation_eval_designer_kernel`.
+- Senior ownership: proof obligation and VALIDATION PACK designer.
+- Primary artifact or signal: VALIDATION PACK.
+- Forbidden takeover: proof execution, package design, implementation, semantic review, finalization, resync.
 
-## Relationship To Validation Eval Designer Kernel
-
-The `validation_eval_designer_kernel` remains the audit and
-semantic-preservation source for kernel-level anchors: proof design before
-execution package design, validation design separate from validation execution,
-ephemeral `VALIDATION PACK`, `NEEDS_DEV_DECISION_HARNESS`, anti-theater
-validation, harness decision gates, and role boundaries.
-
-The profile distills these anchors into compact senior judgment rules. It does
-not copy the kernel, supersede the kernel, or treat the kernel as runtime.
-
-## Dev-Only Status
-
-This module is documentation-only and dev-only.
-
-It is explicitly non-runtime, not runtime behavior, not a prompt for a
-materialized agent, and must not be loaded or materialized directly into VS
-Code, GitHub Agents, Codex, `.github`, `.codex`, `AGENTS.md`, templates,
-`sentinel.mjs`, smoke scripts, or target repositories.
-
-This is the third profile in the 12-profile construction order, but it is not a
-partial pilot and does not create a subset strategy. Its shape must remain
-compatible with future profiles for the other 9 remaining canonical agents.
-
-`orchestrator_profile` and `planner_profile` are references for shape, density,
-validation style, and rigor only. They are not content sources to copy.
+The profile preserves the canonical role and kernel anchors, but the complete senior semantics now live in four behavior modules instead of one monolithic 13-section file. `SENIOR_AGENT_PROFILE.md` is intentionally only a short manifest.
 
 ## Files
 
-- `README.md` explains module scope, source relationships, dev-only status, and
-  validation file purpose.
-- `SENIOR_AGENT_PROFILE.md` defines the validation-eval-designer seniority
-  thesis, role boundary, kernel-derived anchors, decision heuristics, reading
-  budget, risk taxonomy, blockers, handoff discipline, evidence discipline,
-  anti-overreach rules, anti-bloat rules, and excellent-pass expectations.
-- `validation/STATIC_CHECKS.md` defines static checks for structure,
-  declarations, required sections, validation-eval-designer specificity,
-  proof-design discipline, harness decision discipline, anti-theater behavior,
-  anti-runtime leakage, anti-copying, and downstream role boundaries.
-- `validation/GOLDEN_SCENARIOS.md` defines behavioral audit scenarios that
-  detect honest validation design, missing brief handling, harness ambiguity,
-  validation theater, validation-runner takeover, execution-package takeover,
-  implementation pressure, source ambiguity, required versus advisory
-  validation, context bloat, and runtime leakage.
-- `validation/EXCELLENT_PASS_EXPECTATIONS.md` defines the local excellent-pass
-  quality bar for future audit of this profile.
+- `SENIOR_AGENT_PROFILE.md`: short manifest with status, purpose, kernel relationship, module links, loading model, dev-only boundary, authority statement, and future lazy-load compatibility.
+- `profile/01_IDENTITY_AND_BOUNDARY.md`: identity, role boundary, kernel-derived anchors, and anti-overreach.
+- `profile/02_DECISION_AND_READING.md`: decision heuristics, reading budget, and anti-bloat.
+- `profile/03_RISK_AND_GATES.md`: risk taxonomy, gate activation, and stop/block patterns.
+- `profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`: handoff, evidence discipline, output validity, and Excellent Pass expectations.
+- `validation/STATIC_CHECKS.md`: local static checks for modular shape, metadata, boundaries, anchors, gates, handoffs, evidence, and no runtime leakage.
+- `validation/GOLDEN_SCENARIOS.md`: local documentary scenarios for role behavior, lazy-load triggers, blockers, edge cases, and output discipline.
+- `validation/EXCELLENT_PASS_EXPECTATIONS.md`: local quality bar for future audit of this modular profile.
 
-## Global Contracts
+## Loading Contract
 
-Global contracts belong outside this module. They are not created by this task.
-No `seniorization_lab/contracts/` contract is defined here. If future
-profile-wide contracts become necessary, that is a separate seniorization-lab
-concern and must not be invented inside `validation_eval_designer_profile`.
+Lazy load is part of the safety contract. Future consumers must not load every module by default for completeness. A module is loaded only when its documented `load_when` triggers are active, and an activated required module that is not loaded must block with the applicable block code.
+
+## Dev-Only Boundary
+
+This directory must not create or authorize runtime behavior, target repository writes, `.github`, `.codex`, `AGENTS.md`, materializers, generated agents, productive-skill mutation, template mutation, GitHub remote writes, or source final dependency on `reference/agents/`.

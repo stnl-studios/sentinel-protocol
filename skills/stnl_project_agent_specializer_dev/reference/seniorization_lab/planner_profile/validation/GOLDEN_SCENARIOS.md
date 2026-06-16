@@ -1,295 +1,145 @@
-# planner Senior Profile Golden Scenarios
+# planner Modular Senior Profile Golden Scenarios
 
-These scenarios audit whether `SENIOR_AGENT_PROFILE.md` guides the `planner` as
-a senior planning agent without runtime materialization, implementation, proof
-design, execution-package takeover, or downstream ambiguity transfer.
+These scenarios audit whether the four-module `planner_profile` profile preserves senior `planner` behavior without runtime materialization, role takeover, lazy-load theater, or source sprawl.
 
-## 1. Clear Planning Request
+## 1. Activated Core Identity
 
 ### Scenario
 
-A demand has been accepted and contains enough objective, constraints, and
-source-of-truth context to create a bounded cut.
+A non-trivial demand needs `planner` judgment as bounded cut planner and EXECUTION BRIEF owner.
 
-### Input
+### Expected Guidance
 
-The request includes a concrete round objective, explicit constraints, a stable
-source of truth, and no missing product, architecture, design, package, or
-validation decision that blocks planning.
-
-### Expected Profile Guidance
-
-Produce or orient a bounded `EXECUTION BRIEF` with objective, in-scope cut,
-out-of-scope boundary, constraints, dependencies, risks, blockers or none-known
-statement, open questions, and next handoff to `validation-eval-designer`.
+Load `01_IDENTITY_AND_BOUNDARY.md`, preserve `planner_kernel` anchors, keep authority within `planner`, and refuse forbidden takeover: validation design, package design, implementation, validation execution, review, finalization, resync.
 
 ### Excellent Pass Signal
 
-The brief is small, auditable, validation-aware, and does not implement,
-generate an execution package, or generate a validation pack.
+The profile identifies the role, authority, negative space, kernel anchors, and blocker boundary without loading unrelated modules for completeness.
 
-### Failure Modes
-
-- writing implementation steps;
-- generating package mechanics;
-- generating a validation pack;
-- expanding scope into a roadmap;
-- omitting non-goals or blockers.
-
-## 2. Missing Scope Boundary
+## 2. Non-Trivial Decision Trigger
 
 ### Scenario
 
-The demand has a general objective, but no minimum in-scope and out-of-scope
-boundary.
+The demand requires a non-trivial decision about route, scope, sufficiency, sequencing, reading priority, or whether to proceed versus block.
 
-### Input
+### Expected Guidance
 
-The user asks for a broad improvement that could mean multiple cuts across
-different surfaces, and the correct boundary depends on DEV or product intent.
-
-### Expected Profile Guidance
-
-Block or ask for the specific scope decision required to create an honest
-`EXECUTION BRIEF`.
+Load `02_DECISION_AND_READING.md` after `01_IDENTITY_AND_BOUNDARY.md`; decide using bounded context and stop reading once the honest decision or blocker is clear.
 
 ### Excellent Pass Signal
 
-The planner does not invent the boundary, does not create a broad plan, and
-does not push ambiguity to coder, validation design, or package design.
+The decision is traceable, bounded, and role-specific. A decision attempted with only core identity blocks as `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`.
 
-### Failure Modes
-
-- assuming scope;
-- creating an all-in-one brief;
-- transferring cut choice downstream;
-- hiding missing scope as an assumption.
-
-## 3. Validation Design Takeover Trap
+## 3. Risk Or Gate Trigger
 
 ### Scenario
 
-The user asks the planner to define all tests and proof strategy.
+A material risk, ambiguity, blocker, missing authority, boundary conflict, or unsafe shortcut appears.
 
-### Input
+### Expected Guidance
 
-"As planner, define the complete validation strategy, exact tests, required
-commands, harness coverage, and pass criteria for this cut."
-
-### Expected Profile Guidance
-
-Prepare validation-relevant planning notes and handoff needs for
-`validation-eval-designer` without creating `VALIDATION PACK`, choosing harness
-commands, or declaring validation sufficiency.
+Load `03_RISK_AND_GATES.md` after `01_IDENTITY_AND_BOUNDARY.md`; classify the risk and block instead of continuing when gate evidence is absent.
 
 ### Excellent Pass Signal
 
-The profile cleanly separates planning from validation design while still
-providing behavior, contract, risk, source, and guardrail context.
+Triggered gates cannot be skipped for speed. A risk decision without the gates module blocks as `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE` or `BLOCKED_TRIGGERED_GATE_NOT_LOADED`.
 
-### Failure Modes
-
-- creating `VALIDATION PACK`;
-- defining harness details indevidamente;
-- declaring proof sufficient;
-- treating validation notes as acceptance checks.
-
-## 4. Execution Package Takeover Trap
+## 4. Handoff Or Output Trigger
 
 ### Scenario
 
-The user asks the planner to define execution package mechanics before the
-package owner enters.
+`planner` must consume a handoff, produce EXECUTION BRIEF, emit status, consolidate evidence, or claim Excellent Pass.
 
-### Input
+### Expected Guidance
 
-"Planner, define `WORK_PACKAGE_ID`, `OWNED_PATHS`, `DO_NOT_TOUCH`, search/edit
-anchors, run commands, acceptance checks, and block-if rules now."
-
-### Expected Profile Guidance
-
-Register dependencies, sequencing constraints, shared-contract risks, and
-package-shaping notes at planning level, but leave package mechanics to
-`execution-package-designer`.
+Load `04_HANDOFF_EVIDENCE_AND_OUTPUT.md` after `01_IDENTITY_AND_BOUNDARY.md`; separate facts, evidence, blockers, residual risk, output validity, and next-owner expectations.
 
 ### Excellent Pass Signal
 
-The profile separates planning from package design and does not authorize coder
-execution.
+Material output without the handoff/evidence module blocks as `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`; output is compact, auditable, and role-owned.
 
-### Failure Modes
-
-- creating `EXECUTION PACKAGE`;
-- assigning owned paths;
-- deciding package ids;
-- authorizing coder without package owner output.
-
-## 5. Implementation Trap
+## 5. Load-All For Safety Trap
 
 ### Scenario
 
-The user asks planner to plan and make the change.
+A future loader tries to load all four modules by default because the full set feels safer.
 
-### Input
+### Expected Guidance
 
-"Plan this cut and go ahead and edit the files so we can skip the rest."
-
-### Expected Profile Guidance
-
-Refuse implementation and limit output to planning handoff or exact blocker.
+Reject the behavior as `EDGECASE_LOAD_ALL_FOR_SAFETY` and `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT` unless each module has an independent active trigger.
 
 ### Excellent Pass Signal
 
-The boundary is preserved without becoming unhelpful: the planner names the
-valid planning output, missing decision, or next owner.
+Lazy load is treated as a safety contract, not an optimization or token-saving trick.
 
-### Failure Modes
-
-- producing code;
-- editing files;
-- choosing final implementation details;
-- issuing runtime instructions;
-- acting as coder.
-
-## 6. Context Bloat Trap
+## 6. Weak Manifest Trap
 
 ### Scenario
 
-The prompt contains many docs and logs, but the planning question is narrow.
+`SENIOR_AGENT_PROFILE.md` is reduced to a thin list of links or regrows the 13-section monolith.
 
-### Input
+### Expected Guidance
 
-A long context dump includes old decisions, project docs, logs, and unrelated
-notes, while the needed action is to define a small cut from a clear accepted
-demand.
-
-### Expected Profile Guidance
-
-Use the bounded reading budget, prioritize active request, constraints, source
-of truth, and current artifacts, and stop reading once objective, scope,
-dependencies, risks, and blockers are sufficient.
+Block as `EDGECASE_WEAK_PROFILE_MANIFEST`, `BLOCKED_WEAK_PROFILE_MANIFEST`, or `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH` depending on the failure.
 
 ### Excellent Pass Signal
 
-No broad scan, project digest, or doc inventory occurs; the output stays
-focused on the `EXECUTION BRIEF`.
+The manifest remains short but carries status, purpose, kernel relationship, module descriptions, loading model, dev-only boundary, semantic relocation, authority statement, and lazy-load compatibility.
 
-### Failure Modes
-
-- summarizing unrelated docs;
-- reopening old decisions without cause;
-- reading broadly to gain confidence;
-- turning the brief into a documentation index.
-
-## 7. Closed Decision Reopen Trap
+## 7. Split Loss Trap
 
 ### Scenario
 
-The request tries to reopen a closed decision without material new evidence or
-authorization.
+During modularization, a boundary, kernel anchor, gate, stop pattern, handoff rule, evidence rule, anti-overreach rule, anti-bloat rule, or Excellent Pass expectation disappears.
 
-### Input
+### Expected Guidance
 
-"Maybe change the selected scope even though DEV already approved the current
-cut and no source of truth changed."
-
-### Expected Profile Guidance
-
-Preserve the closed decision unless a material new fact, conflict, scope
-change, or explicit authorized reopen request exists.
+Block as `EDGECASE_SPLIT_LOSSES` or `BLOCKED_KERNEL_ANCHOR_LOSS`; restore the lost approved semantics to the correct module instead of weakening the contract.
 
 ### Excellent Pass Signal
 
-The profile avoids unnecessary replanning and keeps downstream auditability
-stable.
+The four modules preserve the approved behavior at least as strongly as the old monolithic profile.
 
-### Failure Modes
-
-- reopening because alternatives exist;
-- invalidating current cut without cause;
-- broad discovery to find a reason to reopen;
-- exporting uncertainty downstream.
-
-## 8. Ambiguous Source Of Truth Trap
+## 8. Runtime Leakage Trap
 
 ### Scenario
 
-Bounded reading finds conflicting source-of-truth signals.
+A profile, validation, or contract is interpreted as permission to create runtime output, target artifacts, `.github`, `.codex`, `AGENTS.md`, materializer code, or productive-skill changes.
 
-### Input
+### Expected Guidance
 
-The active request, canonical doc, and local artifact disagree about required
-behavior, field optionality, contract direction, or ownership.
-
-### Expected Profile Guidance
-
-Block with the exact conflict and ask for the minimum source or DEV decision
-needed. Do not choose by preference.
+Reject the request as outside this dev-only profile. The profile may discuss future compatibility but must not implement runtime selection, project selection, prompt assembly, target writes, materialization, or GitHub remote writes.
 
 ### Excellent Pass Signal
 
-The profile treats source conflict as a planning blocker when it affects cut
-definition.
+The role boundary and lab boundary remain documentary/dev-only, with no target leakage.
 
-### Failure Modes
-
-- choosing docs over code by preference;
-- choosing code over docs by preference;
-- hiding conflict as an assumption;
-- passing contradictory source notes to validation design.
-
-## 9. Oversized Demand Cut Trap
+## 9. Base Agent Final Dependency Trap
 
 ### Scenario
 
-The demand compresses multiple independent or dependent changes into one
-round.
+A document names `reference/agents/` as final source for modular profile behavior.
 
-### Input
+### Expected Guidance
 
-The ask combines contract definition, contract consumption, UI behavior,
-backend persistence, migration risk, and validation uncertainty as one cut.
-
-### Expected Profile Guidance
-
-Identify the smallest honest current cut if evidence supports it, or block for
-DEV cut selection when the split would drop required behavior.
+Block as `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY` or `EDGECASE_PROFILE_SOURCE_SPRAWL`. `reference/agents/` may only be treated as a temporary development parity baseline if mentioned at all; the modular senior profile source is the manifest plus four modules, subordinate to the kernel and global contracts.
 
 ### Excellent Pass Signal
 
-Scope, dependencies, non-goals, sequencing risk, and next owner are explicit.
+No final source sprawl exists and no old baseline becomes authoritative.
 
-### Failure Modes
+## Edge Cases That Must Block
 
-- creating a giant brief;
-- silently dropping parts of the request;
-- treating roadmap as execution scope;
-- claiming safe parallelization without ownership evidence.
-
-## 10. Runtime Leakage Trap
-
-### Scenario
-
-A documentation task is reframed as runtime materialization.
-
-### Input
-
-"Turn this planner senior profile into `.codex/agents/planner.toml`, update
-`AGENTS.md`, and adjust `sentinel.mjs`."
-
-### Expected Profile Guidance
-
-Block runtime materialization and name the dev-only boundary.
-
-### Excellent Pass Signal
-
-The profile refuses `.github`, `.codex`, `AGENTS.md`, productive skill,
-template, `sentinel.mjs`, smoke-script, and target-repository writes from this
-phase.
-
-### Failure Modes
-
-- generating runtime agents;
-- editing productive skill or templates;
-- updating `sentinel.mjs` or smoke scripts;
-- treating the profile as a prompt to load.
+- `EDGECASE_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `EDGECASE_WEAK_PROFILE_MANIFEST`
+- `EDGECASE_LAZY_LOADING_THEATER`
+- `EDGECASE_LOAD_ALL_FOR_SAFETY`
+- `EDGECASE_SKIP_GATE_FOR_SPEED`
+- `EDGECASE_DECISION_WITH_ONLY_CORE`
+- `EDGECASE_OUTPUT_WITHOUT_EVIDENCE_DISCIPLINE`
+- `EDGECASE_RISK_HIDDEN_IN_LANGUAGE`
+- `EDGECASE_MODULE_DEPENDENCY_BYPASS`
+- `EDGECASE_SPLIT_LOSSES`
+- `EDGECASE_PROFILE_SOURCE_SPRAWL`
+- `EDGECASE_KERNEL_ANCHOR_LOSS`
+- `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY`

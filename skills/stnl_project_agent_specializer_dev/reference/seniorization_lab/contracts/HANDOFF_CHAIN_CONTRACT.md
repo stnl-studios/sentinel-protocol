@@ -2,44 +2,30 @@
 
 Status: `DOCUMENTARY_DEV_ONLY`.
 
-This contract defines the integrated handoff chain expected across the 12 Senior
-Agent Profiles. It is a validation and alignment contract only. It does not
-execute the chain and does not create runtime routing.
+This contract defines the integrated handoff chain expected across the 12 modular Senior Agent Profiles. It is a validation and alignment contract only. It does not execute the chain, load modules, create runtime routing, or materialize agents.
 
 ## Chain Principle
 
-Every handoff must preserve:
+Every handoff must preserve source owner, next owner, objective, scope boundary, artifact or signal being transferred, evidence available, blockers and open questions, explicit out-of-scope statement, and the modules required to support any material output.
 
-- source owner;
-- next owner;
-- objective;
-- scope boundary;
-- artifact or signal being transferred;
-- evidence available;
-- blockers and open questions;
-- explicit statement of what is out of scope.
-
-A downstream profile may use only the handoff it actually received and the
-sources it is authorized to inspect. It must not infer missing upstream content
-from desired workflow shape.
+A downstream profile may use only the handoff it actually received and the sources it is authorized to inspect. It must not infer missing upstream content from desired workflow shape.
 
 ## Integrated Sequence
 
 ```text
 orchestrator
-  -> planner
-  -> validation-eval-designer
-  -> execution-package-designer
-  -> designer / coder-frontend / coder-backend / coder-ios as package requires
-  -> validation-runner
-  -> reviewer
-  -> finalizer
-  -> resync when authorized
+-> planner
+-> validation-eval-designer
+-> execution-package-designer
+-> designer when real UX is present
+-> coder-frontend / coder-backend / coder-ios as package requires
+-> validation-runner
+-> reviewer
+-> finalizer
+-> resync when authorized
 ```
 
-This sequence is a canonical integrated dry-run spine, not a runtime router.
-Actual owner activation remains controlled by canonical workflow authority and
-explicit task context.
+This sequence is a canonical integrated dry-run spine, not a runtime router and not load-all authorization. Actual owner activation remains controlled by canonical workflow authority, valid handoff, minimum context, and explicit task context.
 
 ## Required Handoff Edges
 
@@ -60,9 +46,7 @@ explicit task context.
 
 ## Artifact Vocabulary
 
-The following artifact names are allowed as documentary vocabulary in profile
-validation and handoff discussion. Their presence here does not materialize
-files or templates:
+The following artifact names are allowed as documentary vocabulary in profile validation and handoff discussion. Their presence here does not materialize files or templates:
 
 - `EXECUTION BRIEF`
 - `VALIDATION PACK`
@@ -85,25 +69,10 @@ files or templates:
 - `DONE`
 - `resync: yes/no`
 
-## Blocking Rules
+## Modular Blocking Rules
 
-A profile must block instead of continuing when:
-
-- the incoming handoff is absent;
-- the incoming handoff lacks scope;
-- the incoming handoff lacks owner identity;
-- the incoming handoff lacks required artifact or evidence;
-- the requested next step belongs to a different profile;
-- the transfer would skip required proof design, package design, validation,
-  review, closure, or resync authorization;
-- the task asks for runtime/materialization behavior.
+A profile must block instead of continuing when the incoming handoff is absent, lacks scope, lacks owner identity, lacks required artifact or evidence, requires a module that was not loaded, would skip proof design/package design/validation/review/closure/resync authorization, asks for another profile's duty, or asks for runtime/materialization behavior.
 
 ## Dry-Run Use
 
-For integrated validation, this chain may be simulated with a synthetic demand
-that exercises all 12 profiles.
-
-A successful dry-run proves documentary coherence only. It does not prove that
-runtime agents exist, that generated targets are valid, or that any production
-materialization is authorized.
-
+For integrated validation, this chain may be simulated with a synthetic demand that exercises all 12 profiles. A successful dry-run proves documentary coherence only. It does not prove that runtime agents exist, generated targets are valid, or production materialization is authorized.

@@ -1,5 +1,12 @@
 # SENIOR_AGENT_PROFILE_INTEGRATED_VALIDATION
 
+> Superseded note (2026-06-16): this historical integrated validation recorded
+> the pre-modular 13-section profile set and the first shared contract layer.
+> It is preserved as historical evidence, but the active approved structure is
+> now the modular profile structure: short `SENIOR_AGENT_PROFILE.md` manifest
+> plus four behavior modules under `profile/`. Use the modular contracts and
+> current profile modules for any new integrated validation.
+
 ## Verdict
 
 `SENIOR_AGENT_PROFILE_INTEGRATED_VALIDATION: EXCELLENT PASS`

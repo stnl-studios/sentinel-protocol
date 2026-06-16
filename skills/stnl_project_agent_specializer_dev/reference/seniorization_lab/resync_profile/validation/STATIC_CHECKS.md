@@ -1,57 +1,52 @@
-# resync Senior Profile Static Checks
+# resync Modular Senior Profile Static Checks
 
-These static checks are documentary/dev-only. They validate the local
-`resync_profile` module and do not authorize runtime loading, materialization,
-target writes, productive-skill changes, template changes, or global contract
-creation.
+These checks are documentary/dev-only. They validate the modular `resync_profile` bundle and do not authorize runtime loading, materialization, target writes, productive-skill changes, template changes, GitHub writes, or target repository mutation.
 
 | Check | Intent | Pass Condition | Fail Condition |
 | --- | --- | --- | --- |
-| `PROFILE_FILE_EXISTS` | Ensure the profile artifact exists. | `SENIOR_AGENT_PROFILE.md` exists in `resync_profile`. | Profile file is absent or placed outside the module. |
-| `README_FILE_EXISTS` | Ensure module orientation exists. | `README.md` exists in `resync_profile`. | README is absent or placed outside the module. |
-| `VALIDATION_FILES_EXIST` | Ensure validation support exists. | `validation/STATIC_CHECKS.md`, `validation/GOLDEN_SCENARIOS.md`, and `validation/EXCELLENT_PASS_EXPECTATIONS.md` exist. | Any validation file is missing or outside `validation/`. |
-| `DEV_ONLY_DECLARATION_PRESENT` | Prevent production interpretation. | README and profile explicitly say dev-only or documentary/dev-only. | Dev-only status is missing, vague, or contradicted. |
-| `NON_RUNTIME_DECLARATION_PRESENT` | Prevent runtime prompt adoption. | README and profile explicitly say non-runtime and not a materialized prompt. | The module implies runtime use, prompt loading, or agent execution. |
-| `REQUIRED_SECTIONS_PRESENT` | Preserve approved profile shape. | Profile contains sections 1 through 13 with approved headings. | Any required section is missing, renamed beyond recognition, or merged away. |
-| `NO_EMPTY_REQUIRED_SECTIONS` | Avoid placeholder profile. | Each required section contains substantive resync-specific content. | Any required section is empty, placeholder, or generic filler. |
-| `CANONICAL_ROLE_BOUNDARY_PRESENT` | Preserve base-agent role limits. | Profile states what resync may and must not do. | Boundary is absent or allows upstream/downstream role takeover. |
-| `KERNEL_DERIVED_ANCHORS_PRESENT` | Preserve resync kernel anchors. | Profile names finalizer/requested-resync entry, factual delta qualification, minimal sync, targeted reading, safe block, and no role takeover. | Anchors are missing or replaced by generic statements. |
-| `DECISION_HEURISTICS_PRESENT` | Make resync judgment operational. | Profile gives resync-specific heuristics for accepting sync, blocking, preserving final state, classifying non-resync asks, and returning to orchestrator. | Heuristics are absent, vague, or expand authority. |
-| `READING_BUDGET_PRESENT` | Keep sync targeted. | Profile defines first reads, conditional reads, stop points, anti-broad-scan rules, and resync-vs-execution/review/validation/planning reading. | Reading rules are missing or encourage broad discovery. |
-| `RISK_TAXONOMY_PRESENT` | Support senior sync risk detection. | Profile lists resync-specific authorization, source, final-state, bloat, role-drift, runtime leakage, and evidence risks. | Risk section is missing or generic. |
-| `STOP_BLOCK_PATTERNS_PRESENT` | Make blockers auditable. | Profile defines concrete stop/block patterns with condition, reason, and expected output. | Blocks are absent, abstract, or lack expected output. |
-| `HANDOFF_DISCIPLINE_PRESENT` | Preserve valid sync handoff. | Profile defines minimum input/output, finalizer handoff consumption, sync source/target, traceability, and fact/decision/evidence/risk/blocker separation. | Handoff rules are absent or permit ambiguous sync. |
-| `EVIDENCE_DISCIPLINE_PRESENT` | Prevent claims from replacing final evidence. | Profile distinguishes finalizer handoff, final decision, final artifact, source of truth, residual risks, blockers, and informal claims. | Evidence section accepts loose context, no-error status, or assumptions as final source. |
-| `ANTI_OVERREACH_RULES_PRESENT` | Prevent role takeover. | Profile explicitly prohibits orchestration takeover, planning, validation design, package design, design, implementation, validation execution, review, finalization, and status changes. | Overreach rules are missing or omit major downstream roles. |
-| `ANTI_BLOAT_RULES_PRESENT` | Keep profile compact. | Profile prohibits copying kernel/base/reference profiles, project-doc dumping, generic seniority, runtime instructions, broad changelogs, and whole-round summaries. | Profile invites long copies, general docs, or runtime details. |
-| `EXCELLENT_PASS_EXPECTATIONS_PRESENT` | Define audit target. | Profile and validation expectations state excellent-pass criteria. | Excellent-pass criteria are missing or not local to resync. |
-| `NO_RUNTIME_TARGET_LEAKAGE` | Preserve dev-only isolation. | No file instructs writing `.github`, `.codex`, `AGENTS.md`, target artifacts, runtime prompts, generated agents, generated reports, fixtures, loaders, or materializers. | Any file authorizes or implies runtime materialization or target writes. |
-| `NO_PRODUCTIVE_SKILL_MUTATION` | Protect productive skill. | Module does not require or describe edits to productive skill files. | Content asks to mutate productive skill or use it as output target. |
-| `NO_TEMPLATE_MUTATION` | Protect canonical templates. | Module does not require or describe template edits. | Content asks to mutate canonical templates. |
-| `NO_LONG_KERNEL_COPY` | Avoid kernel reprint. | Kernel anchors are summarized compactly and operationally. | Profile copies long kernel blocks or becomes a kernel duplicate. |
-| `NO_BASE_AGENT_REPRINT` | Avoid base-agent reprint. | Base role is distilled rather than reproduced. | Profile reprints large base-agent sections. |
-| `NO_ORCHESTRATOR_PROFILE_COPY` | Preserve resync-specific authorship. | Shape may align with `orchestrator_profile`, but content is resync-specific. | Resync profile copies orchestrator-specific routing language or scenarios as resync content. |
-| `NO_PLANNER_PROFILE_COPY` | Preserve resync-specific authorship. | Shape may align with `planner_profile`, but content is resync-specific. | Resync profile copies planner-specific planning language or scenarios as resync content. |
-| `NO_GENERIC_SENIORITY_ONLY` | Ensure specificity. | Seniority thesis is tied to finalizer handoff, final facts, sync target, residual risks, blockers, and future context. | Seniority is described only in generic leadership terms. |
-| `NO_DOWNSTREAM_ROLE_TAKEOVER` | Preserve owner boundaries. | Profile prohibits resync from planning, validation design, package design, design, coding, validation, review, finalization, and orchestration. | Any downstream or upstream owner responsibility is assigned to resync. |
-| `RESYNC_DISCIPLINE_PRESENT` | Preserve sync mission. | Profile centers authorized final-context synchronization and drift reduction. | Sync discipline is secondary or replaced by execution, review, validation, or docs maintenance. |
-| `FINALIZER_HANDOFF_DISCIPLINE_PRESENT` | Preserve finalizer relationship. | Profile requires finalizer handoff or explicit authorization when applicable and states finalizer owns `resync: yes/no`. | Resync can self-authorize, decide `resync: yes/no`, or ignore missing finalizer input. |
-| `CONTEXT_SYNC_BOUNDARY_PRESENT` | Keep context alignment narrow. | Profile limits output to final facts, decisions, residual risks, blockers, sync target, and future-context notes. | Sync becomes broad summary, changelog, project docs refresh, or whole-round narrative. |
-| `FINAL_STATE_PRESERVATION_PRESENT` | Protect accepted closure meaning. | Profile requires faithful carry-forward of accepted final state without normative rewrite. | Profile permits reinterpretation, softening, or status drift. |
-| `CLOSED_DECISION_PRESERVATION_PRESENT` | Protect closed decisions. | Profile preserves closed decisions unless explicit reopen authorization exists. | Profile invites reopening or rewriting decisions during sync. |
-| `BLOCKING_BEHAVIOR_PRESENT` | Preserve safe stop. | Profile requires block/ask behavior when handoff, authorization, source, target, evidence, or role boundary is insufficient. | Missing inputs can be guessed, buried as assumptions, or resolved through broad discovery. |
-| `NO_PLANNING_TAKEOVER` | Preserve planner boundary. | Profile says resync does not plan or create `EXECUTION BRIEF`. | Resync is allowed to create cuts, plans, or planning artifacts. |
-| `NO_VALIDATION_PACK_TAKEOVER` | Preserve proof-design boundary. | Profile says resync does not create validation strategy or `VALIDATION PACK`. | Resync is allowed to define proof strategy or harness sufficiency. |
-| `NO_EXECUTION_PACKAGE_TAKEOVER` | Preserve package-design boundary. | Profile says resync does not create `EXECUTION PACKAGE` or package mechanics. | Resync is allowed to define package ids, owned paths, commands, or block-if rules. |
-| `NO_IMPLEMENTATION_TAKEOVER` | Preserve executor boundary. | Profile prohibits code, edits outside authorized documentary sync, bug fixes, and implementation corrections. | Resync is allowed to implement, patch, or fix product code. |
-| `NO_VALIDATION_RUNNER_TAKEOVER` | Preserve proof-execution boundary. | Profile prohibits running checks, judging proof, or declaring validation `PASS`. | Resync is allowed to validate or replace runner verdict. |
-| `NO_REVIEWER_TAKEOVER` | Preserve semantic-review boundary. | Profile prohibits architecture, semantic, or risk review as reviewer. | Resync is allowed to decide correctness or architectural acceptability. |
-| `NO_FINALIZER_TAKEOVER` | Preserve closure boundary. | Profile prohibits closure, terminal verdict changes, `DONE`, and deciding `resync: yes/no`. | Resync is allowed to finalize, close, or alter terminal status. |
-| `NO_NEW_ROUND_DISGUISED_AS_RESYNC` | Preserve resync classification. | Profile classifies new change, correction, implementation, or scope decision as new round or orchestrator work. | Profile accepts new work as context sync. |
-| `NO_PARTIAL_PILOT_LANGUAGE` | Avoid subset strategy. | Module says third created but not a partial pilot and does not propose partial validation or 4-to-12 strategy. | Module describes pilot, partial rollout, subset validation, or artificial subset demand. |
-| `THIRD_CREATED_BUT_NOT_PILOT_DECLARATION_PRESENT` | Preserve phase framing. | README and profile include the third-created-not-pilot declaration. | Declaration is missing or contradicted. |
-| `CONTRACTS_NOT_CREATED_BY_THIS_MODULE` | Keep global contracts out. | README states global contracts are outside this module and not created here. | Module creates, defines, or implies global contracts as local deliverables. |
-| `RESYNC_SPECIFICITY_PRESENT` | Avoid agent-agnostic profile. | Content references finalizer handoff, final state, factual sync, sync target, residual risks, blockers, context drift, and no role takeover. | Content could apply unchanged to any agent. |
+| `PROFILE_MANIFEST_EXISTS` | Ensure the manifest exists. | `SENIOR_AGENT_PROFILE.md` exists and is short. | Manifest is absent or replaced by full behavior. |
+| `PROFILE_MANIFEST_SHORT` | Prevent monolith resurrection. | Manifest contains status, purpose, kernel relation, module links, loading model, dev-only boundary, semantic relocation statement, authority statement, and lazy-load compatibility only. | Manifest contains the old 13 full sections or recombines behavior. |
+| `PROFILE_PARTS_EXIST` | Ensure four-part modular shape. | Exactly four files exist under `profile/`: `01_IDENTITY_AND_BOUNDARY.md`, `02_DECISION_AND_READING.md`, `03_RISK_AND_GATES.md`, `04_HANDOFF_EVIDENCE_AND_OUTPUT.md`. | Any part is missing, renamed, or extra part exists. |
+| `NO_PROFILE_PART_SPRAWL` | Forbid fifth part or helper files. | No extra file exists inside `profile/`. | A fifth behavior part, helper, scratch, or copied source file exists. |
+| `PROFILE_PARTS_HAVE_MODULE_ID` | Require stable module identity. | Each part declares `module_id` in YAML metadata. | Any module lacks `module_id`. |
+| `PROFILE_PARTS_HAVE_MODULE_TYPE` | Require one of four approved types. | Each part declares the correct `module_type`. | Module type is absent, wrong, or invents another type. |
+| `PROFILE_PARTS_HAVE_AGENT_ID` | Bind part to canonical agent. | Each part declares `agent_id: resync`. | Agent id is absent, generic, or wrong. |
+| `PROFILE_PARTS_HAVE_PURPOSE` | Require specific purpose. | Each part has a resync-specific purpose tied to `resync_kernel`. | Purpose is blank, generic, or role-agnostic. |
+| `PROFILE_PARTS_HAVE_LOAD_WHEN` | Require real activation triggers. | Each part declares concrete `load_when` triggers. | A part lacks `load_when` or uses only completeness language. |
+| `PROFILE_PARTS_HAVE_DO_NOT_LOAD_WHEN` | Prevent load-all behavior. | Each part declares `do_not_load_when` that blocks loading by completeness. | A part lacks `do_not_load_when` or permits load-all for safety. |
+| `PROFILE_PARTS_HAVE_DEPENDS_ON` | Require dependency trace. | Part 01 depends on none; parts 02, 03, and 04 depend on part 01. | Dependencies are missing, cyclic, or bypass identity/boundary. |
+| `PROFILE_PARTS_HAVE_BLOCKS_FLAG` | Require triggered-but-unloaded block behavior. | `blocks_if_triggered_but_unloaded: true` appears in every module. | A triggered required module can be skipped. |
+| `KERNEL_ANCHORS_PRESERVED` | Preserve kernel-derived behavior. | Modules preserve `resync_kernel` anchors without raw kernel dump. | Kernel anchors disappear, become generic, or are copied wholesale. |
+| `ROLE_BOUNDARY_PRESERVED` | Preserve canonical role authority. | The profile keeps `resync` as authorized final context synchronization owner. | The profile allows resync to take over reopening, replanning, execution, validation, review, finalization. |
+| `HANDOFF_DISCIPLINE_PRESERVED` | Preserve incoming/outgoing handoff expectations. | Module 04 defines bounded handoff, valid output, blockers, and evidence-aware transfer. | Handoffs become implied, narrative, or transcript dumps. |
+| `EVIDENCE_DISCIPLINE_PRESERVED` | Prevent status without proof. | Module 04 distinguishes claims, evidence, validation/review/closure signals, blockers, and residual risk. | Claims, silence, confidence, or absence of objection count as proof. |
+| `STOP_BLOCK_PATTERNS_PRESERVED` | Preserve safe stop. | Module 03 defines explicit stop/block behavior and block codes for missing modules, gates, and dependencies. | Unsafe continuation, gate skipping, or soft blockers pass. |
+| `ANTI_OVERREACH_PRESERVED` | Prevent seniority becoming authority. | Module 01 rejects role takeover and authority expansion. | Seniority grants new owner authority. |
+| `ANTI_BLOAT_PRESERVED` | Preserve bounded reading and content. | Module 02 forbids broad scan, load-all, raw dumps, and profile bloat. | The profile encourages broad rediscovery or copies source material. |
+| `EXCELLENT_PASS_PRESERVED` | Keep role-specific excellence bar. | Module 04 and validation expectations define role-specific Excellent Pass. | Excellent Pass is generic or weaker than the old profile. |
+| `NO_RUNTIME_TARGET_LEAKAGE` | Maintain dev-only isolation. | Files deny `.github`, `.codex`, `AGENTS.md`, target artifacts, runtime prompts, generated agents, and materializers. | Any file authorizes runtime or target output. |
+| `NO_PROFILE_PART_MONOLITH` | Prevent recombined monoliths. | No module contains all 13 legacy sections or acts as the full profile alone. | A module recombines the complete profile. |
+| `NO_WEAK_PROFILE_MANIFEST` | Prevent index-only manifest. | Manifest carries enough contract to locate modules and enforce lazy-load safety. | Manifest is just a weak link list without authority, load, and boundary statements. |
+| `NO_BASE_AGENT_SOURCE` | Prevent final dependency on development baseline. | `reference/agents/` is not named as source final; if mentioned, only as temporary development parity baseline. | `reference/agents/` becomes final source of truth. |
+| `NO_KERNEL_RAW_DUMP` | Avoid raw kernel copy. | Kernel anchors are distilled from approved senior profile semantics. | A module copies large kernel blocks. |
+
+## Block Codes
+
+The local validation must recognize and fail closed on these block codes when applicable:
+
+- `BLOCKED_REQUIRED_MODULE_NOT_LOADED`
+- `BLOCKED_TRIGGERED_GATE_NOT_LOADED`
+- `BLOCKED_LAZY_LOAD_TRACE_MISSING`
+- `BLOCKED_PROFILE_PART_DEPENDENCY_MISSING`
+- `BLOCKED_BEHAVIOR_MODULE_WITHOUT_LOAD_WHEN`
+- `BLOCKED_BEHAVIOR_MODULE_WITHOUT_DO_NOT_LOAD_WHEN`
+- `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT`
+- `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`
+- `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`
+- `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE`
+- `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `BLOCKED_WEAK_PROFILE_MANIFEST`
+- `BLOCKED_KERNEL_ANCHOR_LOSS`
 
 ## Out Of Scope
 
@@ -61,5 +56,6 @@ creation.
 - writes outside `resync_profile`;
 - productive skill mutation;
 - template mutation;
-- global contract creation;
-- profiles for other agents.
+- target repository reads or writes;
+- GitHub remote writes;
+- treating `reference/agents/` as final source.

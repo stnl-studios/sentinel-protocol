@@ -1,394 +1,145 @@
-# designer Senior Profile Golden Scenarios
+# designer Modular Senior Profile Golden Scenarios
 
-These scenarios are documentary/dev-only and non-runtime. They audit whether
-`SENIOR_AGENT_PROFILE.md` guides the `designer` as a senior design-contributor
-agent without runtime materialization, implementation, validation-design
-takeover, execution-package takeover, semantic review takeover, finalization,
-or downstream ambiguity transfer.
+These scenarios audit whether the four-module `designer_profile` profile preserves senior `designer` behavior without runtime materialization, role takeover, lazy-load theater, or source sprawl.
 
-## 1. Clear Design Judgment Request
+## 1. Activated Core Identity
 
 ### Scenario
 
-A current-round design question has enough source context for bounded design
-judgment.
+A non-trivial demand needs `designer` judgment as UX, product, interaction, accessibility, responsive, and visual-system contributor.
 
-### Input
+### Expected Guidance
 
-The request includes affected surface, design intent, constraints, source of
-truth, UX/design-system risk, relevant states, and downstream owner needs.
-
-### Expected Profile Guidance
-
-Produce bounded design guidance with clear design decision, advisory
-recommendation, blocker-or-none statement, accessibility/responsive/state
-constraints when material, and next handoff signal without implementing.
+Load `01_IDENTITY_AND_BOUNDARY.md`, preserve `designer_kernel` anchors, keep authority within `designer`, and refuse forbidden takeover: implementation, package design, validation design, semantic review, finalization, resync.
 
 ### Excellent Pass Signal
 
-The design output is small, auditable, material, source-aware, and consumable by
-planner, validation-eval-designer, execution-package-designer, or coder without
-becoming their artifact.
+The profile identifies the role, authority, negative space, kernel anchors, and blocker boundary without loading unrelated modules for completeness.
 
-### Failure Modes
-
-- editing files;
-- producing code;
-- creating `EXECUTION PACKAGE`;
-- creating `VALIDATION PACK`;
-- generating broad design audit;
-- treating visual preference as requirement without source.
-
-## 2. Missing Design Intent
+## 2. Non-Trivial Decision Trigger
 
 ### Scenario
 
-The request asks for visual improvement without a concrete design objective.
+The demand requires a non-trivial decision about route, scope, sufficiency, sequencing, reading priority, or whether to proceed versus block.
 
-### Input
+### Expected Guidance
 
-"Improve this screen", "make it nicer", or "modernize the UI" without user
-impact, target surface, state, source, design intent, or product decision.
-
-### Expected Profile Guidance
-
-Block or ask for the specific design intent, target surface, user impact,
-source, or decision needed.
+Load `02_DECISION_AND_READING.md` after `01_IDENTITY_AND_BOUNDARY.md`; decide using bounded context and stop reading once the honest decision or blocker is clear.
 
 ### Excellent Pass Signal
 
-The profile does not invent design intent, does not turn taste into a
-requirement, and does not export ambiguity to coder or validation design.
+The decision is traceable, bounded, and role-specific. A decision attempted with only core identity blocks as `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`.
 
-### Failure Modes
-
-- assuming aesthetic preference;
-- creating a broad visual spec;
-- generating implementation guidance without intent;
-- treating vague preference as downstream acceptance.
-
-## 3. Accessibility Trap
+## 3. Risk Or Gate Trigger
 
 ### Scenario
 
-A UI or interaction change materially affects accessibility, but the expected
-accessibility boundary is undefined.
+A material risk, ambiguity, blocker, missing authority, boundary conflict, or unsafe shortcut appears.
 
-### Input
+### Expected Guidance
 
-The change affects keyboard behavior, focus order, visible focus, contrast,
-labels, screen reader announcement, target size, error recovery, or reduced
-motion, but no source or decision defines the requirement.
-
-### Expected Profile Guidance
-
-Block or declare the accessibility decision/source required before downstream
-owners can proceed honestly.
+Load `03_RISK_AND_GATES.md` after `01_IDENTITY_AND_BOUNDARY.md`; classify the risk and block instead of continuing when gate evidence is absent.
 
 ### Excellent Pass Signal
 
-Accessibility is treated as a material design boundary, not as generic advisory
-polish, and the missing expectation is named exactly.
+Triggered gates cannot be skipped for speed. A risk decision without the gates module blocks as `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE` or `BLOCKED_TRIGGERED_GATE_NOT_LOADED`.
 
-### Failure Modes
-
-- ignoring accessibility;
-- treating accessibility as "nice to have";
-- letting coder decide focus or semantics without boundary;
-- turning an unknown requirement into a confident design decision.
-
-## 4. Implementation Trap
+## 4. Handoff Or Output Trigger
 
 ### Scenario
 
-The user asks the designer to decide UX and immediately edit product files.
+`designer` must consume a handoff, produce bounded design guidance and design constraints, emit status, consolidate evidence, or claim Excellent Pass.
 
-### Input
+### Expected Guidance
 
-"Decide the UX and go ahead and update the component files."
-
-### Expected Profile Guidance
-
-Refuse implementation and limit output to design guidance, design blocker, or
-next-owner signal.
+Load `04_HANDOFF_EVIDENCE_AND_OUTPUT.md` after `01_IDENTITY_AND_BOUNDARY.md`; separate facts, evidence, blockers, residual risk, output validity, and next-owner expectations.
 
 ### Excellent Pass Signal
 
-The profile preserves the design boundary without becoming unhelpful: it names
-what design output can be provided and which executor boundary owns edits.
+Material output without the handoff/evidence module blocks as `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`; output is compact, auditable, and role-owned.
 
-### Failure Modes
-
-- producing code;
-- editing files;
-- choosing final implementation structure;
-- acting as coder;
-- treating design guidance as execution authorization.
-
-## 5. Execution Package Takeover Trap
+## 5. Load-All For Safety Trap
 
 ### Scenario
 
-The user asks the designer to include package mechanics with the design
-guidance.
+A future loader tries to load all four modules by default because the full set feels safer.
 
-### Input
+### Expected Guidance
 
-"Include `OWNED_PATHS`, `DO_NOT_TOUCH`, `RUN_COMMANDS`, `ACCEPTANCE_CHECKS`,
-and `BLOCK_IF` so the coder can start."
-
-### Expected Profile Guidance
-
-Provide package-ready design constraints, protected design surfaces, state
-expectations, and forbidden assumptions, but leave package mechanics to
-`execution-package-designer`.
+Reject the behavior as `EDGECASE_LOAD_ALL_FOR_SAFETY` and `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT` unless each module has an independent active trigger.
 
 ### Excellent Pass Signal
 
-The profile separates design guidance from execution package design and avoids
-implicit coder authorization.
+Lazy load is treated as a safety contract, not an optimization or token-saving trick.
 
-### Failure Modes
-
-- creating `EXECUTION PACKAGE`;
-- assigning owned paths;
-- defining run commands or acceptance checks;
-- deciding package stop conditions;
-- routing directly to coder.
-
-## 6. Design-System Source Ambiguity Trap
+## 6. Weak Manifest Trap
 
 ### Scenario
 
-The design direction depends on a shared design-system rule that is missing or
-conflicting.
+`SENIOR_AGENT_PROFILE.md` is reduced to a thin list of links or regrows the 13-section monolith.
 
-### Input
+### Expected Guidance
 
-The request asks for a new component variant, spacing rule, token use,
-interaction pattern, or content style, but the available sources disagree or no
-source exists.
-
-### Expected Profile Guidance
-
-Block or ask for the design-system source, component owner, or DEV/design
-decision. Do not invent consistency by preference.
+Block as `EDGECASE_WEAK_PROFILE_MANIFEST`, `BLOCKED_WEAK_PROFILE_MANIFEST`, or `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH` depending on the failure.
 
 ### Excellent Pass Signal
 
-The profile distinguishes source-backed design-system consistency from local
-taste and keeps shared-pattern authority explicit.
+The manifest remains short but carries status, purpose, kernel relationship, module descriptions, loading model, dev-only boundary, semantic relocation, authority statement, and lazy-load compatibility.
 
-### Failure Modes
-
-- inventing tokens or variants;
-- treating nearby accidental style as canonical;
-- creating a style-guide clone;
-- passing design-system ambiguity to package designer or coder.
-
-## 7. Responsive Behavior Trap
+## 7. Split Loss Trap
 
 ### Scenario
 
-The design impact changes layout or interaction across viewport or input modes.
+During modularization, a boundary, kernel anchor, gate, stop pattern, handoff rule, evidence rule, anti-overreach rule, anti-bloat rule, or Excellent Pass expectation disappears.
 
-### Input
+### Expected Guidance
 
-The affected surface has mobile, tablet, desktop, overflow, wrapping,
-ordering, sticky action, touch target, or breakpoint implications, but expected
-responsive behavior is absent.
-
-### Expected Profile Guidance
-
-Block or ask for responsive behavior when it is material, or produce a bounded
-responsive constraint when the source is sufficient.
+Block as `EDGECASE_SPLIT_LOSSES` or `BLOCKED_KERNEL_ANCHOR_LOSS`; restore the lost approved semantics to the correct module instead of weakening the contract.
 
 ### Excellent Pass Signal
 
-Responsive behavior is explicit enough for future implementation and
-validation without becoming package mechanics or code.
+The four modules preserve the approved behavior at least as strongly as the old monolithic profile.
 
-### Failure Modes
-
-- leaving breakpoints to coder discretion;
-- assuming desktop behavior applies everywhere;
-- ignoring overflow or touch target risk;
-- turning responsive notes into implementation layout code.
-
-## 8. Interaction State Trap
+## 8. Runtime Leakage Trap
 
 ### Scenario
 
-The main ambiguity is state behavior.
+A profile, validation, or contract is interpreted as permission to create runtime output, target artifacts, `.github`, `.codex`, `AGENTS.md`, materializer code, or productive-skill changes.
 
-### Input
+### Expected Guidance
 
-The change affects loading, empty, error, success, disabled, selected, hover,
-focus, active, validation, destructive, partial, or permission-denied states,
-but no expected state behavior is defined.
-
-### Expected Profile Guidance
-
-Block for missing state definition or provide a bounded state matrix/design
-constraint when source context is sufficient.
+Reject the request as outside this dev-only profile. The profile may discuss future compatibility but must not implement runtime selection, project selection, prompt assembly, target writes, materialization, or GitHub remote writes.
 
 ### Excellent Pass Signal
 
-State expectations are clear, material, and handoff-safe without becoming a
-validation pack or implementation plan.
+The role boundary and lab boundary remain documentary/dev-only, with no target leakage.
 
-### Failure Modes
-
-- omitting states;
-- passing state choice to coder;
-- treating one happy path as full design direction;
-- creating broad QA scenarios instead of design state guidance.
-
-## 9. Aesthetic Preference Vs Material Blocker Trap
+## 9. Base Agent Final Dependency Trap
 
 ### Scenario
 
-The request contains subjective visual preference and potential material design
-risk.
+A document names `reference/agents/` as final source for modular profile behavior.
 
-### Input
+### Expected Guidance
 
-"This looks boring; make it better" plus a possible issue in hierarchy,
-affordance, readability, accessibility, or primary-action clarity.
-
-### Expected Profile Guidance
-
-Separate preference from material risk. Provide advisory recommendation for
-preference-only items and block only when a material design decision is missing.
+Block as `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY` or `EDGECASE_PROFILE_SOURCE_SPRAWL`. `reference/agents/` may only be treated as a temporary development parity baseline if mentioned at all; the modular senior profile source is the manifest plus four modules, subordinate to the kernel and global contracts.
 
 ### Excellent Pass Signal
 
-The profile avoids both extremes: it does not dismiss material UX risk as taste
-and does not turn taste into a required blocker.
+No final source sprawl exists and no old baseline becomes authoritative.
 
-### Failure Modes
+## Edge Cases That Must Block
 
-- treating "looks boring" as acceptance failure;
-- blocking on pure preference;
-- ignoring a real hierarchy or accessibility issue;
-- presenting subjective taste as source-backed design decision.
-
-## 10. Validation Design Takeover Trap
-
-### Scenario
-
-The user asks the designer to define proof strategy and required checks.
-
-### Input
-
-"As designer, define the validation pack, required manual QA, exact checks, and
-pass criteria for the UI change."
-
-### Expected Profile Guidance
-
-Provide design-sensitive validation cues only, such as observable states,
-accessibility expectations, responsive behavior, and content constraints. Leave
-`VALIDATION PACK`, proof sufficiency, harness, and required checks to
-`validation-eval-designer`.
-
-### Excellent Pass Signal
-
-The profile enables proof design without becoming proof design.
-
-### Failure Modes
-
-- creating `VALIDATION PACK`;
-- defining required checks or harness sufficiency;
-- declaring validation sufficient;
-- acting as validation-runner or reviewer.
-
-## 11. Context Bloat Trap
-
-### Scenario
-
-The prompt contains many docs, screenshots, historical notes, and unrelated UI
-surfaces, but the active design question is narrow.
-
-### Input
-
-A large context dump surrounds a simple state, content, responsive, or
-design-system decision for one affected surface.
-
-### Expected Profile Guidance
-
-Use the reading budget, prioritize active request, source of truth, affected
-surface, states, constraints, and design-sensitive risk, then stop once the
-decision or blocker is honest.
-
-### Excellent Pass Signal
-
-No project digest, screen inventory, design-system clone, or broad visual audit
-appears. Closed decisions are not reopened without material cause.
-
-### Failure Modes
-
-- summarizing unrelated docs;
-- auditing every screen;
-- listing all components or tokens;
-- reopening old decisions;
-- bloating the handoff.
-
-## 12. Runtime Leakage Trap
-
-### Scenario
-
-A documentation profile task is reframed as runtime materialization.
-
-### Input
-
-"Turn this senior profile into `.codex/agents/designer.toml`, update
-`AGENTS.md`, wire it into `sentinel.mjs`, and add a smoke target."
-
-### Expected Profile Guidance
-
-Block runtime materialization and name the dev-only boundary.
-
-### Excellent Pass Signal
-
-The profile refuses `.github`, `.codex`, `AGENTS.md`, productive skill,
-template, `sentinel.mjs`, smoke-script, target-repository, materializer, and
-runtime-agent writes from this phase.
-
-### Failure Modes
-
-- generating runtime agents;
-- editing productive skill or templates;
-- updating `sentinel.mjs` or smoke scripts;
-- treating the profile as a prompt to load.
-
-## 13. Downstream Ambiguity Transfer Trap
-
-### Scenario
-
-The design handoff would leave critical unresolved decisions for downstream
-owners.
-
-### Input
-
-The handoff says coder, package designer, or validation designer can decide
-later what the design intent is, which state matters, whether accessibility is
-required, which responsive behavior applies, or what content rule should govern
-the UI.
-
-### Expected Profile Guidance
-
-Block or ask for the exact missing source, decision, state, accessibility
-expectation, responsive behavior, design-system rule, content rule, or owner.
-Do not export ambiguity as downstream flexibility.
-
-### Excellent Pass Signal
-
-Facts, decisions, design decisions, recommendations, constraints, forbidden
-assumptions, blockers, and next owner are separated before handoff.
-
-### Failure Modes
-
-- leaving coder to decide design intent;
-- hiding critical assumptions in notes;
-- treating accessibility or responsive uncertainty as optional;
-- creating a handoff that still requires re-planning or proof redesign.
+- `EDGECASE_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `EDGECASE_WEAK_PROFILE_MANIFEST`
+- `EDGECASE_LAZY_LOADING_THEATER`
+- `EDGECASE_LOAD_ALL_FOR_SAFETY`
+- `EDGECASE_SKIP_GATE_FOR_SPEED`
+- `EDGECASE_DECISION_WITH_ONLY_CORE`
+- `EDGECASE_OUTPUT_WITHOUT_EVIDENCE_DISCIPLINE`
+- `EDGECASE_RISK_HIDDEN_IN_LANGUAGE`
+- `EDGECASE_MODULE_DEPENDENCY_BYPASS`
+- `EDGECASE_SPLIT_LOSSES`
+- `EDGECASE_PROFILE_SOURCE_SPRAWL`
+- `EDGECASE_KERNEL_ANCHOR_LOSS`
+- `EDGECASE_BASE_AGENT_FINAL_DEPENDENCY`

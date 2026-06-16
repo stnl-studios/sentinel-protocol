@@ -1,133 +1,62 @@
-# planner Senior Profile Excellent Pass Expectations
+# planner Modular Senior Profile Excellent Pass Expectations
 
 Future audit target:
 
-`planner Senior Agent Profile: EXCELLENT PASS`
+`planner Modular Senior Agent Profile: EXCELLENT PASS`
 
-Senior profile audit target:
+Integrated audit target:
 
-`SENIOR_AGENT_PROFILE_AUDIT: EXCELLENT PASS`
+`SENIOR_PROFILE_MODULARIZATION_AUDIT: EXCELLENT PASS`
 
 ## Structural Excellence
 
-- The module contains exactly the requested profile files under
-  `planner_profile`.
-- Required profile sections are present and substantive.
-- Validation files are local to the module.
-- No global contracts are created by this module.
-- The second-of-12 statement is present and explicitly not a partial pilot.
+- `planner_profile` contains `README.md`, a short `SENIOR_AGENT_PROFILE.md` manifest, exactly four behavior modules under `profile/`, and the three local validation files.
+- No fifth part, helper file, raw source dump, runtime artifact, target artifact, or placeholder exists under `profile/`.
+- The manifest is short and does not contain the old 13 full sections.
 
-## Kernel Preservation Excellence
+## Metadata Excellence
 
-- Critical planner kernel anchors are preserved: planning before proof design,
-  bounded-context reading, explicit scope boundary, ephemeral
-  `EXECUTION BRIEF`, anti-inference, no implementation, no validation pack, no
-  execution package, safe stop, and return to orchestrator.
-- Kernel content is distilled into operational judgment, not copied.
-- The kernel remains the audit and semantic-preservation source.
+- Every module declares `module_id`, `module_type`, `agent_id`, `purpose`, `load_when`, `do_not_load_when`, `depends_on`, and `blocks_if_triggered_but_unloaded`.
+- `module_id` values are unique and stable.
+- `agent_id` is exactly `planner`.
+- Dependencies match the contract: part 01 has no module dependency; parts 02, 03, and 04 depend on part 01.
 
-## Role Boundary Excellence
+## Semantic Preservation Excellence
 
-- The canonical `planner` role is preserved as cut framer, scope boundary
-  owner, planning blocker, and `EXECUTION BRIEF` owner.
-- The profile does not expand authority beyond planning-level judgment.
-- Product, architecture, UX, schema, auth, permission, payload, package,
-  validation, implementation, review, finalization, and resync decisions remain
-  outside planner authority unless already supplied by valid upstream source.
+- The approved seniority thesis, canonical boundary, kernel-derived anchors, anti-overreach, decision heuristics, reading budget, anti-bloat, risk taxonomy, stop/block patterns, handoff discipline, evidence discipline, and Excellent Pass expectations are preserved in the correct modules.
+- `planner` remains bounded cut planner and EXECUTION BRIEF owner.
+- The profile does not authorize takeover of: validation design, package design, implementation, validation execution, review, finalization, resync.
+- `planner_kernel` remains preserved as kernel anchor source without raw kernel dump.
 
-## Planning Excellence
+## Lazy-Load Excellence
 
-- Heuristics are specific to accepted demand, objective, cut boundary,
-  constraints, decisions, dependencies, risks, blockers, and open questions.
-- The profile blocks instead of inventing a base when the demand is not
-  plannable.
-- Planning stays low-token, bounded, and auditable.
+- Lazy load is represented as a safety contract.
+- Modules load only on documented triggers.
+- Activated required modules are mandatory.
+- Loading all modules by default for completeness is a blocker.
+- Decisions, risks, gates, handoffs, evidence, and output each require the module that owns that behavior.
+- Future runtime/materialization compatibility is documented without implementing runtime behavior.
 
-## Scope Boundary Excellence
+## Gate And Block Excellence
 
-- In-scope, out-of-scope, non-goals, negative space, and tempting adjacent work
-  are explicit.
-- Oversized demands are cut to the smallest honest round only when evidence
-  supports the cut.
-- Missing scope decisions are blockers, not downstream discretion.
+- The profile recognizes all required modular block codes.
+- Risk and gate activation cannot be decided with identity-only loading.
+- Material output cannot be emitted without the handoff/evidence/output module.
+- Missing module dependency blocks instead of being bypassed.
+- Kernel anchor loss, weak manifest, monolith recombination, lazy-load theater, source sprawl, and runtime leakage are hard blockers.
 
-## Execution Brief Excellence
+## Handoff And Evidence Excellence
 
-- `EXECUTION BRIEF` is described as bounded, auditable, and ephemeral when
-  required.
-- The brief contains objective, scope, non-goals, constraints, source of truth,
-  dependencies, risks, blockers, open questions, and next owner.
-- The brief does not become a giant SPEC, backlog, roadmap, durable file, or
-  execution authorization.
+- The profile preserves the expected artifact or signal: EXECUTION BRIEF.
+- Handoff consumption and production remain bounded, evidence-aware, and role-owned.
+- Evidence is distinguished from claim, silence, optimism, context volume, or absence of objection.
+- Excellent Pass requires traceable profile/module evidence and no weakened role boundary.
 
-## Handoff Excellence
+## Dev-Only Excellence
 
-- Minimum input and output are explicit.
-- Handoffs separate facts, decisions, assumptions forbidden, blockers, and next
-  owner.
-- Handoff to `validation-eval-designer` enables validation design without
-  creating the validation pack.
-- Package-shaping notes enable `execution-package-designer` without creating
-  package mechanics.
-- Ambiguous decisions are resolved upstream, routed back, or blocked rather
-  than exported downstream.
-
-## Evidence Discipline Excellence
-
-- The profile distinguishes DEV decisions, valid artifacts, source of truth,
-  blockers, risks, hypotheses, and assumptions.
-- "I think", silence, context volume, stale artifacts, and absence of objection
-  do not replace explicit decision or evidence.
-- The profile detects when the correct result is block/ask rather than
-  planning.
-
-## Anti-Overreach Excellence
-
-- The planner does not route as orchestrator, design proof, create validation
-  pack, create execution package, resolve detailed design, implement, execute
-  validation, review, finalize, resync, or rewrite out-of-scope profiles and
-  kernels.
-- The profile prohibits downstream role takeover and does not turn seniority
-  into additional authority.
-
-## Anti-Bloat Excellence
-
-- No long copy-paste from kernel, base agent, or `orchestrator_profile` exists.
-- The profile is not a general project manual.
-- The content stays focused on cut, scope, objective, constraints, risks,
-  blockers, evidence, reading budget, and handoff.
-- Runtime-oriented instructions are absent.
-
-## Scenario Excellence
-
-- Golden scenarios cover clear planning, missing scope, validation-design
-  takeover, execution-package takeover, implementation pressure, context bloat,
-  closed-decision reopening, source-of-truth ambiguity, oversized cuts, and
-  runtime leakage.
-- Each scenario includes scenario, input, expected guidance, excellent signal,
-  and failure modes.
-- Scenarios are sufficient for future audit without becoming a runtime test
-  suite.
-
-## Second-of-12 Consistency Excellence
-
-- This profile reuses the approved documentary shape while remaining
-  planner-specific.
-- It is not treated as a pilot, subset rollout, or partial validation strategy.
-- It does not create artificial demand for a subset of agents.
-- It does not return Rodada A to active task status.
-- It remains compatible with future repetition for the other 10 remaining
-  profiles.
+- No file authorizes target writes, runtime prompts, generated agents, materializers, `.github`, `.codex`, `AGENTS.md`, productive-skill mutation, template mutation, GitHub remote writes, target reads/writes, or runtime loader behavior.
+- `reference/agents/` is not used as a final source; if mentioned, it is only a temporary development parity baseline.
 
 ## Quality Bar
 
-The profile is excellent only if it has planner-specific content, avoids
-generic seniority language, contains no runtime leakage, contains no long
-copy-paste, contains no long copy of `orchestrator_profile`, performs no
-downstream role takeover, does not revive Rodada A as an active task, does not
-treat this module as a partial pilot, defines boundaries between planning,
-validation design, execution package, implementation, validation, review,
-finalization, and resync, defines clear blockers, provides actionable
-heuristics, defines a reading budget compatible with planning, gives enough
-scenario coverage for future audit, and remains compatible with future
-repetition for the other profiles.
+This modular profile is excellent only if it preserves the old approved semantics while enforcing selective activation. It must be stronger than the monolith on load safety, equal or stronger on boundaries and gates, specific to `planner`, and compatible with future lazy-load materialization without implementing any runtime or target output in this phase.

@@ -1,105 +1,62 @@
-# orchestrator Senior Profile Excellent Pass Expectations
+# orchestrator Modular Senior Profile Excellent Pass Expectations
 
 Future audit target:
 
-`orchestrator Senior Agent Profile: EXCELLENT PASS`
+`orchestrator Modular Senior Agent Profile: EXCELLENT PASS`
 
-Senior profile audit target:
+Integrated audit target:
 
-`SENIOR_AGENT_PROFILE_AUDIT: EXCELLENT PASS`
+`SENIOR_PROFILE_MODULARIZATION_AUDIT: EXCELLENT PASS`
 
 ## Structural Excellence
 
-- The module contains exactly the requested profile files under
-  `orchestrator_profile`.
-- Required profile sections are present and substantive.
-- Validation files are local to the module.
-- No global contracts are created by this module.
-- The first-of-12 statement is present and explicitly not a partial pilot.
+- `orchestrator_profile` contains `README.md`, a short `SENIOR_AGENT_PROFILE.md` manifest, exactly four behavior modules under `profile/`, and the three local validation files.
+- No fifth part, helper file, raw source dump, runtime artifact, target artifact, or placeholder exists under `profile/`.
+- The manifest is short and does not contain the old 13 full sections.
 
-## Kernel Preservation Excellence
+## Metadata Excellence
 
-- Critical kernel anchors are preserved: routing safety, authority separation,
-  safe stop, no invented artifacts, no unauthorized execution, minimum handoff,
-  no optional-module or materialization fallback, and protocol sequence.
-- Kernel content is distilled into operational judgment, not copied.
-- The kernel remains the audit and semantic-preservation source.
+- Every module declares `module_id`, `module_type`, `agent_id`, `purpose`, `load_when`, `do_not_load_when`, `depends_on`, and `blocks_if_triggered_but_unloaded`.
+- `module_id` values are unique and stable.
+- `agent_id` is exactly `orchestrator`.
+- Dependencies match the contract: part 01 has no module dependency; parts 02, 03, and 04 depend on part 01.
 
-## Role Boundary Excellence
+## Semantic Preservation Excellence
 
-- The canonical `orchestrator` role is preserved as router, gatekeeper, owner
-  selector, handoff controller, blocker, and escalation surface.
-- The profile does not expand authority beyond routing-level judgment.
-- Product, architecture, schema, auth, permission, payload, and business-rule
-  decisions remain outside orchestrator unless explicitly owned by valid
-  upstream authority.
+- The approved seniority thesis, canonical boundary, kernel-derived anchors, anti-overreach, decision heuristics, reading budget, anti-bloat, risk taxonomy, stop/block patterns, handoff discipline, evidence discipline, and Excellent Pass expectations are preserved in the correct modules.
+- `orchestrator` remains routing controller and safe delegation judge.
+- The profile does not authorize takeover of: planning, proof design, package design, design contribution, implementation, validation, review, finalization, resync.
+- `orchestrator_kernel` remains preserved as kernel anchor source without raw kernel dump.
 
-## Routing Excellence
+## Lazy-Load Excellence
 
-- Heuristics are specific for planner, validation-eval-designer,
-  execution-package-designer, designer, coder-frontend, coder-backend,
-  coder-ios, validation-runner, reviewer, finalizer, and resync.
-- Blocking, artifact requests, closed-decision preservation, resync/context
-  alignment, and audit/review classification are covered.
-- Routing preserves the current gate, reason, payload boundary, and blocker.
+- Lazy load is represented as a safety contract.
+- Modules load only on documented triggers.
+- Activated required modules are mandatory.
+- Loading all modules by default for completeness is a blocker.
+- Decisions, risks, gates, handoffs, evidence, and output each require the module that owns that behavior.
+- Future runtime/materialization compatibility is documented without implementing runtime behavior.
 
-## Handoff Excellence
+## Gate And Block Excellence
 
-- Minimum input and output are explicit.
-- Handoffs separate facts, decisions, blockers, and next route.
-- Handoffs are compact and auditable.
-- Ambiguous decisions are resolved upstream, routed back, or blocked rather than
-  exported downstream.
-- Handoff content cannot become disguised execution.
+- The profile recognizes all required modular block codes.
+- Risk and gate activation cannot be decided with identity-only loading.
+- Material output cannot be emitted without the handoff/evidence/output module.
+- Missing module dependency blocks instead of being bypassed.
+- Kernel anchor loss, weak manifest, monolith recombination, lazy-load theater, source sprawl, and runtime leakage are hard blockers.
 
-## Evidence Discipline Excellence
+## Handoff And Evidence Excellence
 
-- The profile distinguishes claims from material evidence.
-- "Looks ok", absence of visible error, progress narration, and command logs do
-  not replace executor evidence, runner verdict, reviewer decision, or
-  finalizer closure.
-- The profile detects when the correct next owner is validation-runner,
-  reviewer, or finalizer.
+- The profile preserves the expected artifact or signal: route, block, or next-owner handoff.
+- Handoff consumption and production remain bounded, evidence-aware, and role-owned.
+- Evidence is distinguished from claim, silence, optimism, context volume, or absence of objection.
+- Excellent Pass requires traceable profile/module evidence and no weakened role boundary.
 
-## Anti-Overreach Excellence
+## Dev-Only Excellence
 
-- The orchestrator does not plan, create validation strategy, create execution
-  package, design, implement, validate, review, finalize, resync, or rewrite
-  profiles/kernels outside scope.
-- The profile prohibits downstream role takeover and does not turn seniority
-  into additional authority.
-
-## Anti-Bloat Excellence
-
-- No long copy-paste from kernel or base agent exists.
-- The profile is not a general project manual.
-- The content stays focused on decision, risk, blocker, handoff, evidence, and
-  reading budget.
-- Runtime-oriented instructions are absent.
-
-## Scenario Excellence
-
-- Golden scenarios cover clear routing, missing handoff, overreach, evidence
-  gaps, context bloat, loops, runtime leakage, closed decision reopening, and
-  ambiguous downstream handoffs.
-- Each scenario includes scenario, input, expected guidance, excellent signal,
-  and failure modes.
-- Scenarios are sufficient for future audit without becoming a full runtime
-  test suite.
-
-## First-of-12 Consistency Excellence
-
-- This profile establishes a reusable documentary shape for future profiles.
-- It is not treated as a pilot, subset rollout, or partial validation strategy.
-- It does not create artificial demand for a subset of agents.
-- It does not return Rodada A to active task status.
-- It remains compatible with future repetition for the other 11 profiles.
+- No file authorizes target writes, runtime prompts, generated agents, materializers, `.github`, `.codex`, `AGENTS.md`, productive-skill mutation, template mutation, GitHub remote writes, target reads/writes, or runtime loader behavior.
+- `reference/agents/` is not used as a final source; if mentioned, it is only a temporary development parity baseline.
 
 ## Quality Bar
 
-The profile is excellent only if it has orchestrator-specific content, avoids
-generic seniority language, contains no runtime leakage, contains no long
-copy-paste, performs no downstream role takeover, does not revive Rodada A as an
-active task, does not treat this module as a partial pilot, defines clear
-blockers, provides actionable heuristics, and gives enough local validation
-coverage for future audit.
+This modular profile is excellent only if it preserves the old approved semantics while enforcing selective activation. It must be stronger than the monolith on load safety, equal or stronger on boundaries and gates, specific to `orchestrator`, and compatible with future lazy-load materialization without implementing any runtime or target output in this phase.

@@ -4,61 +4,35 @@ Module: `orchestrator_profile`
 
 Target agent: `orchestrator`
 
-This module contains the documentary, dev-only Senior Agent Profile for the
-canonical `orchestrator` agent.
+Role class: `router`
 
-## Relationship To Canonical Base Agent
+This directory contains the documentary, dev-only modular Senior Agent Profile for `orchestrator`. It is the 1 profile in the required 12-profile set and is not a partial pilot, target runtime, materialized prompt, or production source.
 
-The canonical base agent remains the minimum role contract for the
-`orchestrator`. This module derives its role boundary from
-`reference/agents/orchestrator.agent.md`, especially routing-minimal reading,
-gate sequencing, valid handoffs, anti-role-drift, and refusal to implement.
+## Canonical Relationship
 
-The profile does not reprint the base agent and does not replace it.
+- Canonical role: `orchestrator`.
+- Documentary kernel: `orchestrator_kernel`.
+- Senior ownership: routing controller and safe delegation judge.
+- Primary artifact or signal: route, block, or next-owner handoff.
+- Forbidden takeover: planning, proof design, package design, design contribution, implementation, validation, review, finalization, resync.
 
-## Relationship To Orchestrator Kernel
-
-The orchestrator kernel remains the audit and semantic-preservation source for
-kernel-level anchors: routing safety, authority boundaries, safe stop,
-minimum handoff, no unauthorized execution, no invented artifacts, and
-materialization isolation.
-
-The profile distills these anchors into compact senior judgment rules. It does
-not copy the kernel, supersede the kernel, or treat the kernel as runtime.
-
-## Dev-Only Status
-
-This module is documentation-only and dev-only.
-
-It is not runtime behavior, not a prompt for a materialized agent, and must not
-be loaded or materialized directly into VS Code, GitHub Agents, Codex, `.github`,
-`.codex`, `AGENTS.md`, templates, `sentinel.mjs`, or target repositories.
-
-This is the first profile in the 12-profile construction order, but it is not a
-partial pilot and does not create a subset strategy. Its shape must remain
-compatible with future profiles for the other 11 canonical agents.
+The profile preserves the canonical role and kernel anchors, but the complete senior semantics now live in four behavior modules instead of one monolithic 13-section file. `SENIOR_AGENT_PROFILE.md` is intentionally only a short manifest.
 
 ## Files
 
-- `README.md` explains module scope, source relationships, dev-only status, and
-  validation file purpose.
-- `SENIOR_AGENT_PROFILE.md` defines the orchestrator seniority thesis, role
-  boundary, kernel-derived anchors, routing heuristics, reading budget, risk
-  taxonomy, blockers, handoff discipline, evidence discipline, anti-overreach
-  rules, anti-bloat rules, and excellent-pass expectations.
-- `validation/STATIC_CHECKS.md` defines static checks for structure,
-  declarations, required sections, specificity, anti-runtime leakage,
-  anti-copying, and scope safety.
-- `validation/GOLDEN_SCENARIOS.md` defines behavioral audit scenarios that
-  detect routing quality, missing handoff handling, role takeover, evidence
-  traps, context bloat, loops, runtime leakage, closed-decision reopening, and
-  ambiguous downstream handoffs.
-- `validation/EXCELLENT_PASS_EXPECTATIONS.md` defines the local excellent-pass
-  quality bar for future audit of this profile.
+- `SENIOR_AGENT_PROFILE.md`: short manifest with status, purpose, kernel relationship, module links, loading model, dev-only boundary, authority statement, and future lazy-load compatibility.
+- `profile/01_IDENTITY_AND_BOUNDARY.md`: identity, role boundary, kernel-derived anchors, and anti-overreach.
+- `profile/02_DECISION_AND_READING.md`: decision heuristics, reading budget, and anti-bloat.
+- `profile/03_RISK_AND_GATES.md`: risk taxonomy, gate activation, and stop/block patterns.
+- `profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`: handoff, evidence discipline, output validity, and Excellent Pass expectations.
+- `validation/STATIC_CHECKS.md`: local static checks for modular shape, metadata, boundaries, anchors, gates, handoffs, evidence, and no runtime leakage.
+- `validation/GOLDEN_SCENARIOS.md`: local documentary scenarios for role behavior, lazy-load triggers, blockers, edge cases, and output discipline.
+- `validation/EXCELLENT_PASS_EXPECTATIONS.md`: local quality bar for future audit of this modular profile.
 
-## Global Contracts
+## Loading Contract
 
-Global contracts belong outside this module. They are not created by this task.
-If future profile-wide contracts become necessary, that is a separate
-seniorization-lab concern and must not be invented inside
-`orchestrator_profile`.
+Lazy load is part of the safety contract. Future consumers must not load every module by default for completeness. A module is loaded only when its documented `load_when` triggers are active, and an activated required module that is not loaded must block with the applicable block code.
+
+## Dev-Only Boundary
+
+This directory must not create or authorize runtime behavior, target repository writes, `.github`, `.codex`, `AGENTS.md`, materializers, generated agents, productive-skill mutation, template mutation, GitHub remote writes, or source final dependency on `reference/agents/`.
