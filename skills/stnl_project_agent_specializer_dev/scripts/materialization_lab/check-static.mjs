@@ -20,6 +20,7 @@ const materializationContracts = [
   "DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md",
   "VALIDATION_HARNESS_CONTRACT.md",
   "IMPLEMENTATION_BOUNDARY_CONTRACT.md",
+  "FIXTURE_BOUNDARY_CONTRACT.md",
 ];
 
 const validationFiles = [
@@ -140,13 +141,27 @@ const blockCodesByContract = {
     "BLOCKED_SCRIPT_PRODUCTIVE_MUTATION",
     "BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED",
   ],
+  "reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md": [
+    "BLOCKED_FIXTURE_SCOPE_INVALID",
+    "BLOCKED_FIXTURE_PATH_UNAUTHORIZED",
+    "BLOCKED_FIXTURE_TARGET_REAL",
+    "BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT",
+    "BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED",
+    "BLOCKED_FIXTURE_ESCAPES_DEV_SKILL",
+  ],
 };
 
 const forbiddenAuthorizations = [
   "runtime materializer",
+  "target read/write",
+  "target real read/write",
   "target writes",
   "generated outputs",
+  "generated final artifacts",
   "fixtures",
+  "fixture creation",
+  "paths outside the authorized fixture root",
+  "persistent reports",
   "productive skill changes",
   "GitHub writes",
   "real materialization",
@@ -227,6 +242,7 @@ function hasForbiddenPositiveAuthorization(line, term) {
     "does not grant",
     "not authorize",
     "non-authorization",
+    "unauthoriz",
     "no ",
     "must not",
     "forbid",
@@ -236,10 +252,15 @@ function hasForbiddenPositiveAuthorization(line, term) {
     "deny",
     "out of scope",
     "without",
+    "future path",
+    "future fixture",
     "later step",
     "later authorization",
     "separately authorized",
     "future outputs",
+    "only inside",
+    "remain prohibited",
+    "outside the authorized fixture root",
   ];
 
   return !denialMarkers.some((marker) => lowerLine.includes(marker));
@@ -353,6 +374,25 @@ async function validateContractAnchors() {
     "skills/stnl_project_agent_specializer_dev/SKILL.md",
     "skills/stnl_project_agent_specializer_dev/openai.yaml",
   ], "implementation boundary");
+
+  const fixture = await readText(contractPath("FIXTURE_BOUNDARY_CONTRACT.md"));
+  requireAll(fixture, contractPath("FIXTURE_BOUNDARY_CONTRACT.md"), [
+    "Status: documentary/dev-only contract.",
+    "This task does not create fixtures",
+    "may occur only in a later step",
+    "skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/",
+    "fixture read/write in this task",
+    "use a real target project root",
+    "write to a real target project",
+    ".github/**",
+    ".codex/**",
+    "AGENTS.md",
+    "paths outside the authorized fixture root remain prohibited",
+    "accept only fixture paths that resolve",
+    "target real read/write",
+    "generated final artifacts",
+    "persistent reports in this task",
+  ], "fixture boundary");
 }
 
 async function validateTemplatePlaceholders() {

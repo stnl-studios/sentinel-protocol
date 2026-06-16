@@ -212,6 +212,7 @@ async function validateRequiredFiles() {
   await requireFile(contractPath("TEMPLATES_AND_OUTPUTS_CONTRACT.md"));
   await requireFile(contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"));
   await requireFile(contractPath("DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md"));
+  await requireFile(contractPath("FIXTURE_BOUNDARY_CONTRACT.md"));
   await requireFile(validationPath("STATIC_CHECKS.md"));
   await requireFile(validationPath("EXCELLENT_PASS_EXPECTATIONS.md"));
 
@@ -325,6 +326,21 @@ async function validateDryRunPathMappings() {
   ], "canonical output path mapping");
 }
 
+async function validateFixtureBoundaryNonAuthorization() {
+  const relativePath = contractPath("FIXTURE_BOUNDARY_CONTRACT.md");
+  const content = await readText(relativePath);
+
+  requireAll(content, relativePath, [
+    "This task does not create fixtures",
+    "fixture read/write in this task",
+    "target real read/write",
+    "write to a real target project",
+    "generated final artifacts",
+    "persistent reports in this task",
+    "real materialization",
+  ], "fixture boundary non-authorization");
+}
+
 async function validateManifestAndValidatorDocs() {
   const manifest = await readText("reference/MANIFEST.md");
   for (const template of templates) {
@@ -367,6 +383,7 @@ async function main() {
   await validateCopilotFrontmatter();
   await validateTemplateNonAuthorizationAndLegacyGuard();
   await validateDryRunPathMappings();
+  await validateFixtureBoundaryNonAuthorization();
   await validateManifestAndValidatorDocs();
 
   if (failures.length === 0) {

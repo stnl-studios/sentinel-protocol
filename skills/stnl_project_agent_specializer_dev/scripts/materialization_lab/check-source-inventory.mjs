@@ -52,6 +52,7 @@ const materializationContracts = [
   "DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md",
   "VALIDATION_HARNESS_CONTRACT.md",
   "IMPLEMENTATION_BOUNDARY_CONTRACT.md",
+  "FIXTURE_BOUNDARY_CONTRACT.md",
 ];
 
 const templates = [
@@ -384,6 +385,22 @@ async function validateTemplatesAndManifest() {
   );
 }
 
+async function validateFixtureBoundaryInventory() {
+  if (await exists("reference/materialization_lab/fixtures")) {
+    recordFailure(
+      "reference/materialization_lab/fixtures must not exist before a later explicitly authorized fixture phase",
+    );
+  }
+
+  const manifest = await readText("reference/MANIFEST.md");
+  requireIncludes(
+    manifest,
+    "reference/MANIFEST.md",
+    "reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md",
+    "manifest fixture boundary contract",
+  );
+}
+
 async function main() {
   await validateNoTargetArgument();
   await validateScriptBoundary();
@@ -392,6 +409,7 @@ async function main() {
   await validateBaseAgentAnchors();
   await validateSeniorProfileAnchors();
   await validateTemplatesAndManifest();
+  await validateFixtureBoundaryInventory();
 
   if (failures.length === 0) {
     console.log("MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS");
