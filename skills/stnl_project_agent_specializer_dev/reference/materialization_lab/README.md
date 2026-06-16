@@ -15,8 +15,9 @@ boundary for a later, separately authorized dev-only script layer. It does not
 authorize runtime
 materialization, runtime script creation, target-repository writes,
 productive-skill changes, GitHub writes, or changes to productive templates.
-It also defines the fixture-boundary contract for possible future controlled
-fixtures inside the dev skill, without creating fixtures in this task.
+It also defines the fixture-boundary contract and the documentary/dev-only
+fixture skeleton inside the dev skill, without creating complete fixture cases
+or complete snapshots in this phase.
 
 ## Canonical Scope
 
@@ -46,11 +47,18 @@ fixtures inside the dev skill, without creating fixtures in this task.
   sources, write prohibitions, output limits, and implementation-boundary block
   codes, but does not create or authorize scripts in this phase.
 - `contracts/FIXTURE_BOUNDARY_CONTRACT.md`: documentary/dev-only fixture
-  boundary for a later, separately authorized fixture step. It declares the
-  only future fixture root, limits fixture target-artifact paths to that root,
-  and preserves the prohibition on real target read/write, GitHub writes,
-  productive-skill changes, real materialization, runtime materializer
-  behavior, and overwrites of manual files outside fixtures.
+  boundary for the fixture skeleton and later controlled fixture cases. It
+  declares the only fixture root, requires `FIXTURE_SCHEMA.md`, limits fixture
+  target-artifact paths to that root, distinguishes fixture snapshots from real
+  target artifacts, and preserves the prohibition on real target read/write,
+  GitHub writes, productive-skill changes, real materialization, runtime
+  materializer behavior, and overwrites of manual files outside fixtures.
+- `fixtures/README.md`: documentary/dev-only fixture root README.
+- `fixtures/FIXTURE_SCHEMA.md`: documentary schema for future fixture metadata.
+- `fixtures/projects/README.md`: future positive project scenario category.
+- `fixtures/expected_outputs/README.md`: future fixture-only snapshot category.
+- `fixtures/lazy_load/README.md`: future lazy-load trace fixture category.
+- `fixtures/blocked_cases/README.md`: future negative fixture case category.
 - `validation/STATIC_CHECKS.md`: required static checks for this contract
   phase.
 - `validation/GOLDEN_SCENARIOS.md`: minimum positive and negative scenarios
@@ -163,22 +171,34 @@ Implementation-boundary failures block with
 `BLOCKED_SCRIPT_TARGET_MUTATION`, `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`, or
 `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
 
-Fixture-boundary planning is also contract-only in this phase. This task does
-not create fixtures. Fixture creation may occur only in a later explicitly
-authorized step, and the only future fixture root currently eligible for that
-authorization is
+Fixture-boundary planning now includes the documentary/dev-only skeleton. The
+only fixture root is
 `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`.
+The root contains only `README.md`, `FIXTURE_SCHEMA.md`, and category READMEs
+for `projects/`, `expected_outputs/`, `lazy_load/`, and `blocked_cases/`.
+Complete positive fixtures, negative fixtures, lazy-load trace payloads, and
+expected-output snapshots remain future work.
+
 Future fixtures must simulate controlled target project roots and must never
 use a real target project root. Future fixture scripts/checkers must accept
 only paths inside the authorized fixture root. `.github/**`, `.codex/**`, and
-`AGENTS.md` may appear only inside an authorized fixture root; those paths
-remain prohibited outside that root.
+`AGENTS.md` may appear only inside the fixture root as fixture-local examples
+or snapshots; those paths remain prohibited outside that root.
+
+Fixture expected outputs are snapshots under the fixture root, not generated
+artifacts and not real target artifacts. They do not authorize target
+read/write. Lazy-load fixture traces are documentary validation inputs, not a
+runtime loader. Load-all by completeness is a violation, and missing required
+lazy-load trace blocks future validation.
 
 Fixture-boundary failures block with `BLOCKED_FIXTURE_SCOPE_INVALID`,
 `BLOCKED_FIXTURE_PATH_UNAUTHORIZED`, `BLOCKED_FIXTURE_TARGET_REAL`,
 `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`,
 `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`, or
-`BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`.
+`BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`. Fixture root, schema, traversal, and
+absolute-path failures block with `BLOCKED_FIXTURE_ROOT_MISSING`,
+`BLOCKED_FIXTURE_SCHEMA_MISSING`, `BLOCKED_FIXTURE_PATH_TRAVERSAL`, or
+`BLOCKED_FIXTURE_ABSOLUTE_PATH`.
 
 Future fixtures, when explicitly authorized later, must test
 `kernel_source + senior_profile_source + template_source`, not a
@@ -198,3 +218,24 @@ base-agent-driven source model.
 - No fixture, script, generated artifact, persistent report, GitHub write,
   productive skill change, target real read/write, or real materialization is
   introduced.
+
+## Fixture Skeleton Pass Criterion
+
+`MATERIALIZATION_FIXTURE_CONTRACT_AND_SKELETON_PHASE: PASS` requires:
+
+- the fixture root exists only under
+  `reference/materialization_lab/fixtures/`;
+- `fixtures/README.md` and `fixtures/FIXTURE_SCHEMA.md` exist;
+- `projects/`, `expected_outputs/`, `lazy_load/`, and `blocked_cases/` exist
+  with README files;
+- the skeleton contains no complete positive or negative fixture cases;
+- no complete rendered snapshots are created;
+- fixture paths do not escape the root and do not use absolute or traversal
+  paths;
+- contracts and validation docs recognize fixture boundary, fixture schema,
+  future project scenario fixtures, future expected-output snapshots, future
+  lazy-load trace fixtures, and future blocked cases;
+- no runtime materializer, renderer, writer, scenario selector, target real
+  read/write, GitHub write, productive-skill mutation, kernel change,
+  template change, Senior Profile change, or `reference/agents/` final-source
+  dependency is introduced.

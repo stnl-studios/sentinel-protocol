@@ -23,6 +23,19 @@ Confirm the twelve materialization lab files exist:
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
 
+Confirm the documentary/dev-only fixture skeleton exists:
+
+- `reference/materialization_lab/fixtures/README.md`
+- `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md`
+- `reference/materialization_lab/fixtures/projects/README.md`
+- `reference/materialization_lab/fixtures/expected_outputs/README.md`
+- `reference/materialization_lab/fixtures/lazy_load/README.md`
+- `reference/materialization_lab/fixtures/blocked_cases/README.md`
+
+Confirm the skeleton contains no complete fixture case directories, no
+complete expected-output snapshots, no runtime materializer, no renderer, no
+writer, no scenario selector, and no target artifacts.
+
 Confirm the four explicit canonical templates exist:
 
 - `reference/templates/copilot/agent.md`
@@ -386,8 +399,11 @@ validation-harness block codes:
 Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` states that unknown block
 codes block with `BLOCKED_UNKNOWN_BLOCK_CODE`.
 
-Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` states that fixtures may
-exist only in a later explicitly authorized step.
+Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` recognizes fixture boundary
+validation, lazy-load trace fixture validation, project scenario matrix fixture
+validation, expected output snapshot policy validation, blocked fixture case
+validation, no base-agent final source validation, no inferred templates
+validation, and no runtime materializer validation.
 
 Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` does not authorize runtime
 scripts, fixtures, target writes, generated outputs, productive skill changes,
@@ -465,14 +481,16 @@ materializer, or fixture creation.
 Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` exists and is classified as
 documentary/dev-only.
 
-Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that this task does
-not create fixtures.
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that this phase
+creates only the fixture root, category READMEs, and documentary schema.
 
-Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that fixture creation
-may occur only in a later explicitly authorized step.
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that complete positive
+fixtures, complete negative fixtures, rendered snapshots, runtime fixtures,
+fixture scripts, scenario selector, lazy-load runtime, renderer, writer, target
+artifacts, and runtime materializer are not created in this phase.
 
-Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` declares the only future
-fixture root currently eligible for authorization:
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` declares the only fixture
+root:
 
 - `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`
 
@@ -488,10 +506,18 @@ Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that future fixture
 scripts/checkers must accept only fixture paths inside the authorized fixture
 root.
 
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` requires
+`FIXTURE_SCHEMA.md`, declares fixture expected-output snapshots as
+documentary fixture data rather than target artifacts, and states that
+lazy-load trace fixtures are not runtime loaders.
+
 Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that future fixture
-tests may validate path safety, managed notice detection, unmanaged collision,
-invalid managed notice, drift classification, dry-run report shape, and
-no-write enforcement.
+tests may validate fixture boundary, fixture schema, project scenario matrix,
+source model composition, explicit template selection, no inferred templates,
+path safety, managed notice detection, unmanaged collision, invalid managed
+notice, drift classification, expected output snapshot policy, dry-run report
+shape, lazy-load trace fixtures, blocked fixture cases, and no-write
+enforcement.
 
 Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` states that future fixtures do
 not authorize target real read/write, GitHub writes, productive skill changes,
@@ -507,6 +533,14 @@ fixture-boundary block codes:
 - `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`
 - `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`
 - `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`
+
+Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` also contains the fixture
+skeleton/path block codes:
+
+- `BLOCKED_FIXTURE_ROOT_MISSING`
+- `BLOCKED_FIXTURE_SCHEMA_MISSING`
+- `BLOCKED_FIXTURE_PATH_TRAVERSAL`
+- `BLOCKED_FIXTURE_ABSOLUTE_PATH`
 
 Confirm the current separately authorized implementation is limited to
 `scripts/materialization_lab/check-static.mjs` as a static contract validator

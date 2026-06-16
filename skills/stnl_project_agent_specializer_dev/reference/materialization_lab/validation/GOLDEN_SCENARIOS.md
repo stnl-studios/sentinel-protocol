@@ -165,6 +165,64 @@ Expected result:
   `.codex/**`, `AGENTS.md`, GitHub write, productive skill change, or real
   materialization is performed
 
+### Fixture Skeleton Exists Without Complete Cases
+
+Input:
+
+- requested validation target: materialization lab fixture skeleton
+- fixture root: `reference/materialization_lab/fixtures/`
+
+Expected result:
+
+- fixture root exists only under `reference/materialization_lab/fixtures/`
+- `README.md` and `FIXTURE_SCHEMA.md` exist
+- `projects/README.md`, `expected_outputs/README.md`,
+  `lazy_load/README.md`, and `blocked_cases/README.md` exist
+- no complete positive project fixture is present
+- no complete blocked-case fixture is present
+- no complete expected-output snapshot is present
+- no runtime materializer, scenario selector, lazy-load runtime, renderer,
+  writer, target artifact, GitHub write, target real read/write, or productive
+  skill mutation is performed
+
+### Fixture Schema Is Documentary Only
+
+Input:
+
+- requested validation target: `fixtures/FIXTURE_SCHEMA.md`
+
+Expected result:
+
+- schema defines future fixture metadata fields for source model, selected
+  agents, template sources, lazy-load expectation, expected outputs, blocked
+  expectation, target safety, and validation
+- schema requires dev-only and no-real-write flags
+- schema requires explicit `kernel_source`, `senior_profile_source`, and
+  `template_source`
+- schema treats `reference/agents/` as a forbidden final source
+- schema does not authorize runtime validation, target writes, GitHub writes,
+  generated outputs, or runtime materializer
+
+### Future Fixture Categories Are Planned Only
+
+Input:
+
+- requested fixture categories: project scenarios, expected outputs,
+  lazy-load traces, and blocked cases
+
+Expected result:
+
+- project scenarios document future Backend-only, Frontend-only, iOS-only,
+  Fullstack BE + FE, Fullstack BE + iOS, and Fullstack BE + FE + iOS coverage
+- expected outputs are fixture-only snapshots and not real target outputs
+- lazy-load traces are documentary traces and not a runtime loader
+- blocked cases document missing template, inferred template, forbidden target
+  path, `reference/agents/` as final source, load-all by completeness, missing
+  required lazy-load module, missing lazy-load trace, real `.github` write,
+  real `.codex` write, real `AGENTS.md` write, runtime materializer created,
+  productive skill mutation, and GitHub write
+- no complete fixture payload is created in this phase
+
 ### Compose `orchestrator` Copilot Agents Block
 
 Input:
@@ -388,6 +446,19 @@ Expected result:
 
 - block before writing
 - return `BLOCKED_TEMPLATE_MISSING`
+
+### Inferred Template Blocks
+
+Input:
+
+- requested output shape has no explicit `template_source`
+- fixture or render plan tries to infer a template from output path or runtime
+  naming
+
+Expected result:
+
+- block before rendering, dry-run planning, snapshot comparison, or writing
+- return `BLOCKED_TEMPLATE_INFERRED`
 
 ### Missing Kernel Source
 

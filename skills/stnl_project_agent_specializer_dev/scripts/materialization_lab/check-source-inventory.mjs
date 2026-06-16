@@ -795,9 +795,54 @@ async function validateTemplatesAndManifest() {
 }
 
 async function validateFixtureBoundaryInventory() {
-  if (await exists("reference/materialization_lab/fixtures")) {
+  const fixtureRoot = "reference/materialization_lab/fixtures";
+  const expectedFixtureFiles = [
+    "README.md",
+    "FIXTURE_SCHEMA.md",
+    "projects/README.md",
+    "expected_outputs/README.md",
+    "lazy_load/README.md",
+    "blocked_cases/README.md",
+  ];
+
+  for (const fixtureFile of expectedFixtureFiles) {
+    await requireFile(rel(fixtureRoot, fixtureFile));
+  }
+
+  const allowedRootEntries = new Set([
+    "README.md",
+    "FIXTURE_SCHEMA.md",
+    "projects",
+    "expected_outputs",
+    "lazy_load",
+    "blocked_cases",
+  ]);
+  const rootEntries = await readdir(abs(fixtureRoot), { withFileTypes: true });
+  for (const entry of rootEntries) {
+    if (isIgnoredName(entry.name)) {
+      continue;
+    }
+    if (!allowedRootEntries.has(entry.name)) {
+      recordFailure(`${fixtureRoot} contains unexpected fixture skeleton entry: ${entry.name}`);
+    }
+  }
+
+  for (const category of ["projects", "expected_outputs", "lazy_load", "blocked_cases"]) {
+    const categoryPath = rel(fixtureRoot, category);
+    const entries = await readdir(abs(categoryPath), { withFileTypes: true });
+    for (const entry of entries) {
+      if (isIgnoredName(entry.name)) {
+        continue;
+      }
+      if (entry.name !== "README.md" || !entry.isFile()) {
+        recordFailure(`${categoryPath} contains premature complete fixture payload: ${entry.name}`);
+      }
+    }
+  }
+
+  if (!(await exists(fixtureRoot))) {
     recordFailure(
-      "reference/materialization_lab/fixtures must not exist before a later explicitly authorized fixture phase",
+      "reference/materialization_lab/fixtures skeleton root is missing",
     );
   }
 
@@ -808,6 +853,14 @@ async function validateFixtureBoundaryInventory() {
     "reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md",
     "manifest fixture boundary contract",
   );
+  for (const fixtureFile of expectedFixtureFiles) {
+    requireIncludes(
+      manifest,
+      "reference/MANIFEST.md",
+      rel(fixtureRoot, fixtureFile),
+      `manifest fixture skeleton file: ${fixtureFile}`,
+    );
+  }
 }
 
 async function main() {

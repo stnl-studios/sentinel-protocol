@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -28,6 +28,22 @@ const validationFiles = [
   "STATIC_CHECKS.md",
   "GOLDEN_SCENARIOS.md",
   "EXCELLENT_PASS_EXPECTATIONS.md",
+];
+
+const fixtureSkeletonFiles = [
+  "reference/materialization_lab/fixtures/README.md",
+  "reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md",
+  "reference/materialization_lab/fixtures/projects/README.md",
+  "reference/materialization_lab/fixtures/expected_outputs/README.md",
+  "reference/materialization_lab/fixtures/lazy_load/README.md",
+  "reference/materialization_lab/fixtures/blocked_cases/README.md",
+];
+
+const fixtureCategoryDirs = [
+  "projects",
+  "expected_outputs",
+  "lazy_load",
+  "blocked_cases",
 ];
 
 const templates = [
@@ -168,6 +184,13 @@ const blockCodesByContract = {
     "BLOCKED_TARGET_FILE_MUTATION",
     "BLOCKED_MATRIX_INCOMPLETE",
     "BLOCKED_UNKNOWN_BLOCK_CODE",
+    "BLOCKED_TEMPLATE_INFERRED",
+    "BLOCKED_RUNTIME_MATERIALIZER_CREATED",
+    "BLOCKED_GITHUB_WRITE",
+    "BLOCKED_FIXTURE_ROOT_MISSING",
+    "BLOCKED_FIXTURE_SCHEMA_MISSING",
+    "BLOCKED_FIXTURE_PATH_TRAVERSAL",
+    "BLOCKED_FIXTURE_ABSOLUTE_PATH",
   ],
   "reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md": [
     "BLOCKED_IMPLEMENTATION_SCOPE_INVALID",
@@ -179,7 +202,11 @@ const blockCodesByContract = {
   ],
   "reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md": [
     "BLOCKED_FIXTURE_SCOPE_INVALID",
+    "BLOCKED_FIXTURE_ROOT_MISSING",
+    "BLOCKED_FIXTURE_SCHEMA_MISSING",
     "BLOCKED_FIXTURE_PATH_UNAUTHORIZED",
+    "BLOCKED_FIXTURE_PATH_TRAVERSAL",
+    "BLOCKED_FIXTURE_ABSOLUTE_PATH",
     "BLOCKED_FIXTURE_TARGET_REAL",
     "BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT",
     "BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED",
@@ -286,13 +313,17 @@ function hasForbiddenPositiveAuthorization(line, term) {
     "forbidden",
     "denies",
     "deny",
+    "never authorize",
     "out of scope",
     "without",
     "future path",
     "future fixture",
+    "future fixtures",
     "later step",
     "later authorization",
     "separately authorized",
+    "authorized fixture root",
+    "blocked_",
     "future outputs",
     "only inside",
     "remain prohibited",
@@ -311,6 +342,10 @@ async function validateRequiredFiles() {
 
   for (const validation of validationFiles) {
     await requireFile(validationPath(validation));
+  }
+
+  for (const fixtureFile of fixtureSkeletonFiles) {
+    await requireFile(fixtureFile);
   }
 
   for (const template of templates) {
@@ -458,21 +493,177 @@ async function validateContractAnchors() {
   const fixture = await readText(contractPath("FIXTURE_BOUNDARY_CONTRACT.md"));
   requireAll(fixture, contractPath("FIXTURE_BOUNDARY_CONTRACT.md"), [
     "Status: documentary/dev-only contract.",
-    "This task does not create fixtures",
-    "may occur only in a later step",
+    "fixture root, category READMEs, and documentary schema",
+    "complete positive fixtures",
+    "complete negative fixtures",
+    "rendered snapshots",
     "skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/",
-    "fixture read/write in this task",
+    "FIXTURE_SCHEMA.md",
+    "repository-relative paths under the root",
+    "Absolute paths",
+    "traversal paths",
+    "fixture expected-output snapshot",
+    "not a generated artifact",
     "use a real target project root",
     "write to a real target project",
     ".github/**",
     ".codex/**",
     "AGENTS.md",
     "paths outside the authorized fixture root remain prohibited",
-    "accept only fixture paths that resolve",
     "target real read/write",
     "generated final artifacts",
-    "persistent reports in this task",
+    "persistent reports in this phase",
   ], "fixture boundary");
+}
+
+async function validateFixtureSkeleton() {
+  const fixtureRoot = "reference/materialization_lab/fixtures";
+  const rootEntries = await readdir(abs(fixtureRoot), { withFileTypes: true });
+  const allowedRootEntries = new Set([
+    "README.md",
+    "FIXTURE_SCHEMA.md",
+    ...fixtureCategoryDirs,
+  ]);
+
+  for (const entry of rootEntries) {
+    if (entry.name === "__MACOSX" || entry.name === ".DS_Store") {
+      continue;
+    }
+    if (!allowedRootEntries.has(entry.name)) {
+      recordFailure(`${fixtureRoot} contains unexpected skeleton entry: ${entry.name}`);
+      continue;
+    }
+    if (fixtureCategoryDirs.includes(entry.name) && !entry.isDirectory()) {
+      recordFailure(`${fixtureRoot}/${entry.name} must be a directory`);
+    }
+    if (["README.md", "FIXTURE_SCHEMA.md"].includes(entry.name) && !entry.isFile()) {
+      recordFailure(`${fixtureRoot}/${entry.name} must be a file`);
+    }
+  }
+
+  for (const categoryDir of fixtureCategoryDirs) {
+    const categoryPath = rel(fixtureRoot, categoryDir);
+    const entries = await readdir(abs(categoryPath), { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.name === "__MACOSX" || entry.name === ".DS_Store") {
+        continue;
+      }
+      if (entry.name !== "README.md" || !entry.isFile()) {
+        recordFailure(`${categoryPath} contains premature fixture payload: ${entry.name}`);
+      }
+    }
+  }
+
+  const fixtureReadme = await readText(rel(fixtureRoot, "README.md"));
+  requireAll(fixtureReadme, rel(fixtureRoot, "README.md"), [
+    "documentary/dev-only",
+    "never authorize target real read/write",
+    "GitHub writes",
+    "runtime",
+    ".github/**",
+    ".codex/**",
+    "AGENTS.md",
+    "reference/agents/",
+    "not be used as a final materialization source",
+    "Templates must be explicit",
+    "Lazy load is a safety contract",
+    "Loading all modules for completeness is a violation",
+    "Complete positive and negative fixture cases will be created in a later",
+  ], "fixture README boundary");
+
+  const fixtureSchema = await readText(rel(fixtureRoot, "FIXTURE_SCHEMA.md"));
+  requireAll(fixtureSchema, rel(fixtureRoot, "FIXTURE_SCHEMA.md"), [
+    "fixture_id:",
+    "fixture_type:",
+    "status:",
+    "scenario:",
+    "purpose:",
+    "dev_only:",
+    "no_real_write:",
+    "source_model:",
+    "kernel_source:",
+    "senior_profile_source:",
+    "template_source:",
+    "materialization_contract_source:",
+    "forbidden_sources:",
+    "selected_agents:",
+    "target_surface:",
+    "template_sources:",
+    "lazy_load_expectation:",
+    "demand_type:",
+    "activated_modules:",
+    "loaded_modules:",
+    "forbidden_modules:",
+    "depends_on_verified:",
+    "decision_trace_required:",
+    "output_trace_required:",
+    "expected_outputs:",
+    "snapshots:",
+    "forbidden_real_paths:",
+    "blocked_expectation:",
+    "should_block:",
+    "block_codes:",
+    "target_safety:",
+    "fixture_root:",
+    "simulated_target_paths:",
+    "forbidden_real_target_paths:",
+    "validation:",
+    "responsible_checks:",
+    "expected_verdict:",
+    "documentation only",
+  ], "fixture schema field");
+
+  const projectsReadme = await readText(rel(fixtureRoot, "projects/README.md"));
+  requireAll(projectsReadme, rel(fixtureRoot, "projects/README.md"), [
+    "Backend-only",
+    "Frontend-only",
+    "iOS-only",
+    "Fullstack BE + FE",
+    "Fullstack BE + iOS",
+    "Fullstack BE + FE + iOS",
+    "This phase creates no complete project fixture",
+  ], "fixture projects README");
+
+  const expectedOutputsReadme = await readText(
+    rel(fixtureRoot, "expected_outputs/README.md"),
+  );
+  requireAll(expectedOutputsReadme, rel(fixtureRoot, "expected_outputs/README.md"), [
+    "fixture-only",
+    "not real outputs",
+    "must not be written to a real target",
+    "Templates must not be inferred",
+    "Complete snapshots are not created in this phase",
+  ], "fixture expected outputs README");
+
+  const lazyLoadReadme = await readText(rel(fixtureRoot, "lazy_load/README.md"));
+  requireAll(lazyLoadReadme, rel(fixtureRoot, "lazy_load/README.md"), [
+    "not create a runtime loader",
+    "Module 01 is required",
+    "Module 02 is required",
+    "Module 03 is required",
+    "Module 04 is required",
+    "Load-all by default blocks",
+    "An activated module that is not loaded blocks",
+    "Missing trace blocks",
+  ], "fixture lazy load README");
+
+  const blockedCasesReadme = await readText(rel(fixtureRoot, "blocked_cases/README.md"));
+  requireAll(blockedCasesReadme, rel(fixtureRoot, "blocked_cases/README.md"), [
+    "missing template",
+    "inferred template",
+    "forbidden target path",
+    "`reference/agents/` as final source",
+    "load-all for completeness",
+    "missing required lazy-load module",
+    "missing lazy-load trace",
+    "write `.github` real",
+    "write `.codex` real",
+    "write `AGENTS.md` real",
+    "runtime materializer created",
+    "productive skill mutation",
+    "GitHub write",
+    "This phase creates no complete blocked-case fixture",
+  ], "fixture blocked cases README");
 }
 
 async function validateTemplatePlaceholders() {
@@ -580,6 +771,7 @@ async function validateStaticValidatorRegistration() {
 async function main() {
   await validateRequiredFiles();
   await validateContractAnchors();
+  await validateFixtureSkeleton();
   await validateTemplatePlaceholders();
   await validateBlockCodes();
   await validateNonAuthorization();

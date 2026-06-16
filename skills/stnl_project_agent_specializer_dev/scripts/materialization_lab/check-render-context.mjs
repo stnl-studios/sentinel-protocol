@@ -563,12 +563,14 @@ async function validateFixtureBoundaryNonAuthorization() {
   const content = await readText(relativePath);
 
   requireAll(content, relativePath, [
-    "This task does not create fixtures",
-    "fixture read/write in this task",
+    "current phase creates only the",
+    "complete positive fixtures",
+    "complete negative fixtures",
+    "runtime fixtures",
     "target real read/write",
     "write to a real target project",
     "generated final artifacts",
-    "persistent reports in this task",
+    "persistent reports in this phase",
     "real materialization",
   ], "fixture boundary non-authorization");
 }

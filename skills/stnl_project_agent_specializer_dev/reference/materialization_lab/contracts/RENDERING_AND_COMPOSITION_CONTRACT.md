@@ -14,8 +14,8 @@ placeholder requirements, escaping requirements, composition blockers, and the
 expected shape of a future render context per agent and target.
 
 This phase must not write `.github/**`, `.codex/**`, `AGENTS.md`, generated
-agent files, generated config files, reports, fixtures, or target-project
-artifacts.
+agent files, generated config files, reports, complete fixtures, or
+target-project artifacts.
 
 ## Composition Sources
 
@@ -93,6 +93,17 @@ The render context must include at least:
 The context must be reproducible from the explicit inputs above. If two runs
 receive the same explicit inputs and policy, they must derive the same render
 context.
+
+Future fixture expected outputs may document fixture-only snapshots derived
+from a render context. Those snapshots are documentary fixture data only. They
+are not generated artifacts, target artifacts, runtime materialization output,
+or permission to write `.github/**`, `.codex/**`, `AGENTS.md`, or any other
+real target path.
+
+A future render-context validator may compare an abstract render context
+against fixture expected outputs, but the comparison must remain inside
+`reference/materialization_lab/fixtures/` and must not create snapshots in this
+phase.
 
 ## Common Required Placeholders
 
@@ -178,6 +189,9 @@ protocol-significant behavior, the future renderer must block with
 `BLOCKED_COMPOSITION_CONFLICT`. It must not choose one source by preference or
 merge conflicting instructions silently.
 
+Lazy-load trace fixtures are trace documentation for future validation. They
+are not a runtime loader and must not be used to implement module loading.
+
 ## Blocking Rules
 
 The future renderer must fail closed before any target write or generated
@@ -218,6 +232,7 @@ This contract does not authorize:
 - target writes;
 - runtime scripts;
 - generated outputs;
+- fixture expected outputs as real target artifacts;
 - productive skill changes;
 - GitHub writes;
 - inferred templates;

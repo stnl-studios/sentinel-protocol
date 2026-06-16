@@ -21,9 +21,9 @@ when all 12 canonical agents map to real kernel modules, `reference/kernel_lab/`
 is the primary behavior source, `reference/agents/` is only a temporary
 development parity baseline, render contexts and dry-run planned artifacts use
 `kernel_source`, deprecated field `base_agent_source` is absent from final
-shapes, and no fixture, script, generated artifact, persistent report, target
-real read/write, GitHub write, productive skill change, or real materialization
-is introduced.
+shapes, and no complete fixture, script, generated artifact, persistent report,
+target real read/write, GitHub write, productive skill change, or real
+materialization is introduced.
 
 The verdict
 `MATERIALIZATION_DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT: EXCELLENT PASS` may be
@@ -43,10 +43,17 @@ authorization, and block-code criteria below are also satisfied.
 
 The verdict
 `MATERIALIZATION_FIXTURE_BOUNDARY_CONTRACT: EXCELLENT PASS` may be declared
-only when the documentary fixture boundary, future fixture root, fixture
+only when the fixture boundary, fixture skeleton, fixture schema,
 target-artifact containment, real-target prohibition, future fixture
 script/checker path restriction, non-authorization limits, and block-code
 criteria below are also satisfied.
+
+The verdict `MATERIALIZATION_FIXTURE_CONTRACT_AND_SKELETON_PHASE: PASS` may
+be declared only when the fixture root, README, schema, category READMEs,
+contract updates, validation documentation, and manifest registrations are
+present, while no complete fixture cases, complete snapshots, runtime
+materializer, target real read/write, GitHub write, productive-skill mutation,
+kernel change, template change, or Senior Profile change is introduced.
 
 The validator output
 `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` may be accepted only when
@@ -59,17 +66,17 @@ The validator output
 `scripts/materialization_lab/check-source-inventory.mjs` exists in the
 authorized materialization-lab script path and the checker validates the
 source inventory bundle without accepting a target project path, reading a
-target project, writing a target project, creating fixtures, creating generated
-outputs, writing GitHub, changing the productive skill, or performing real
-materialization.
+target project, writing a target project, creating complete fixtures, creating
+generated outputs, writing GitHub, changing the productive skill, or
+performing real materialization.
 
 The validator output
 `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS` may be accepted only when
 `scripts/materialization_lab/check-template-coverage.mjs` exists in the
 authorized materialization-lab script path and the checker validates template
 coverage without accepting a target project path, reading a target project,
-writing a target project, creating fixtures, creating generated outputs,
-writing GitHub, changing the productive skill, or performing real
+writing a target project, creating complete fixtures, creating generated
+outputs, writing GitHub, changing the productive skill, or performing real
 materialization.
 
 The validator output
@@ -78,8 +85,8 @@ The validator output
 authorized materialization-lab script path and the render-context
 planner/checker validates the abstract render-context matrix without accepting
 a target project path, reading a target project, writing a target project,
-creating fixtures, creating generated outputs, creating persistent reports,
-writing GitHub, changing the productive skill, or performing real
+creating complete fixtures, creating generated outputs, creating persistent
+reports, writing GitHub, changing the productive skill, or performing real
 materialization.
 
 The validator output
@@ -88,8 +95,8 @@ The validator output
 materialization-lab script path and the dry-run output plan checker validates
 the abstract planned-artifact matrix without accepting a target project path,
 reading a target project, writing a target project, calculating drift against
-real target files, creating fixtures, creating generated outputs, creating
-persistent reports, writing GitHub, changing the productive skill, or
+real target files, creating complete fixtures, creating generated outputs,
+creating persistent reports, writing GitHub, changing the productive skill, or
 performing real materialization.
 
 ## Required Criteria
@@ -160,19 +167,24 @@ performing real materialization.
   `BLOCKED_SCRIPT_TARGET_MUTATION`, `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`, and
   `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that runtime materializer,
-  fixture creation, and target write remain out of scope.
+  complete fixture creation, and target write remain out of scope.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` denies script creation, runtime
-  execution, fixtures, target writes, generated outputs, productive skill
-  changes, GitHub writes, and real materialization.
+  execution, complete fixtures, target writes, generated outputs, productive
+  skill changes, GitHub writes, and real materialization.
 - `FIXTURE_BOUNDARY_CONTRACT.md` exists and is classified as
   documentary/dev-only.
-- `FIXTURE_BOUNDARY_CONTRACT.md` states that this task does not create
-  fixtures.
-- `FIXTURE_BOUNDARY_CONTRACT.md` states that fixture creation may occur only in
-  a later explicitly authorized step.
+- `FIXTURE_BOUNDARY_CONTRACT.md` states that this phase creates only the
+  fixture root, category READMEs, and documentary schema.
+- `FIXTURE_BOUNDARY_CONTRACT.md` states that complete positive fixtures,
+  complete negative fixtures, rendered snapshots, runtime fixtures, fixture
+  scripts, scenario selector, lazy-load runtime, renderer, writer, target
+  artifacts, and runtime materializer are not created in this phase.
 - `FIXTURE_BOUNDARY_CONTRACT.md` declares
   `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`
-  as the only future fixture root currently eligible for authorization.
+  as the only fixture root.
+- `FIXTURE_BOUNDARY_CONTRACT.md` requires `FIXTURE_SCHEMA.md`.
+- `FIXTURE_BOUNDARY_CONTRACT.md` distinguishes fixture snapshots from real
+  target artifacts.
 - `FIXTURE_BOUNDARY_CONTRACT.md` requires future fixtures to simulate
   controlled target project roots and never use a real target project root.
 - `FIXTURE_BOUNDARY_CONTRACT.md` allows `.github/**`, `.codex/**`, and
@@ -188,11 +200,43 @@ performing real materialization.
   GitHub writes, productive skill changes, real materialization, runtime
   materializer, or overwrite of manual files outside a fixture.
 - `FIXTURE_BOUNDARY_CONTRACT.md` declares
+  `BLOCKED_FIXTURE_ROOT_MISSING`,
+  `BLOCKED_FIXTURE_SCHEMA_MISSING`,
   `BLOCKED_FIXTURE_SCOPE_INVALID`,
   `BLOCKED_FIXTURE_PATH_UNAUTHORIZED`, `BLOCKED_FIXTURE_TARGET_REAL`,
+  `BLOCKED_FIXTURE_PATH_TRAVERSAL`, `BLOCKED_FIXTURE_ABSOLUTE_PATH`,
   `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`,
   `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`, and
   `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`.
+- `fixtures/README.md` exists and states that fixtures are documentary/dev-only,
+  live only inside `reference/materialization_lab/fixtures/`, never authorize
+  target real read/write, GitHub write, runtime materializer, or target writes,
+  and may contain `.github/**`, `.codex/**`, and `AGENTS.md` only as
+  fixture-local examples or snapshots.
+- `fixtures/FIXTURE_SCHEMA.md` exists and defines future fixture metadata for
+  `fixture_id`, `fixture_type`, `status`, `scenario`, `purpose`, `dev_only`,
+  `no_real_write`, `source_model`, `selected_agents`, `target_surface`,
+  `template_sources`, `lazy_load_expectation`, `expected_outputs`,
+  `blocked_expectation`, `target_safety`, and `validation`.
+- `fixtures/projects/README.md` exists and documents future Backend-only,
+  Frontend-only, iOS-only, Fullstack BE + FE, Fullstack BE + iOS, and
+  Fullstack BE + FE + iOS positive fixtures.
+- `fixtures/expected_outputs/README.md` exists and states that snapshots are
+  fixture-only, not real outputs, derive from explicit templates, and are not
+  created in this phase.
+- `fixtures/lazy_load/README.md` exists and states that lazy-load validation is
+  simulated by trace fixture, not runtime loader, load-all by default blocks,
+  activated module not loaded blocks, depends_on must be respected, and
+  missing trace blocks.
+- `fixtures/blocked_cases/README.md` exists and documents future negative
+  categories for missing template, inferred template, forbidden target path,
+  `reference/agents/` as final source, load-all by completeness, missing
+  required lazy-load module, missing lazy-load trace, real `.github` write,
+  real `.codex` write, real `AGENTS.md` write, runtime materializer created,
+  productive skill mutation, and GitHub write.
+- The fixture skeleton contains no complete positive project fixture, no
+  complete blocked case, no complete lazy-load trace payload, and no complete
+  expected-output snapshot.
 - `scripts/materialization_lab/check-static.mjs` exists as the first
   separately authorized dev-only static contract validator implementation.
 - `scripts/materialization_lab/check-static.mjs` is read-only, uses Node.js ESM,
@@ -564,11 +608,13 @@ performing real materialization.
   `BLOCKED_MATRIX_INCOMPLETE`.
 - The validation harness contract blocks unknown block codes with
   `BLOCKED_UNKNOWN_BLOCK_CODE`.
-- The validation harness contract states that fixtures may exist only in a
-  later explicitly authorized step.
+- The validation harness contract recognizes fixture boundary, fixture schema,
+  lazy-load trace fixture, project scenario matrix fixture, expected output
+  snapshot policy, blocked fixture case, no base-agent final source, no
+  inferred templates, and no runtime materializer validation.
 - The validation harness contract denies runtime scripts, target writes,
-  generated outputs, fixtures, productive skill changes, GitHub writes, and
-  real materialization.
+  generated outputs, complete fixtures, productive skill changes, GitHub
+  writes, and real materialization.
 - The implementation-boundary contract allows future static contract validator
   scripts only in a later explicitly authorized step and only in an authorized
   dev-only path.
@@ -695,7 +741,7 @@ or undocumented assumptions.
 
 Do not declare
 `MATERIALIZATION_FIXTURE_BOUNDARY_CONTRACT: EXCELLENT PASS` if any check
-depends on fixture creation in this task, fixture paths outside
+depends on complete fixture creation in this task, fixture paths outside
 `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`,
 real target project roots, target real read/write, `.github/**`, `.codex/**`,
 or `AGENTS.md` outside an authorized fixture root, GitHub writes,

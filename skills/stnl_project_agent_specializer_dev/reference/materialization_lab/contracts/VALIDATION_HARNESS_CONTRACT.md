@@ -17,9 +17,10 @@ future harness must check and report before any materialization decision. It
 does not implement the harness, create scripts, create fixtures, create
 generated outputs, write target files, or mutate the productive skill.
 
-Fixtures may exist only in a later step that explicitly authorizes fixture
-creation and scopes where those fixtures may live. Until that later
-authorization exists, fixture absence is intentional.
+Fixture root and schema documentation may exist only under
+`reference/materialization_lab/fixtures/`. Their presence supports future
+dev-only validation and does not authorize complete fixture cases, target
+read/write, generated outputs, runtime scripts, or runtime materialization.
 
 ## Validation Layers
 
@@ -36,7 +37,15 @@ materialization:
 - dry-run output plan validation;
 - write-boundary validation;
 - no-target-write validation;
-- productive-skill untouched validation.
+- productive-skill untouched validation;
+- fixture boundary validation;
+- lazy-load trace fixture validation;
+- project scenario matrix fixture validation;
+- expected output snapshot policy validation;
+- blocked fixture case validation;
+- no base-agent final source validation;
+- no inferred templates validation;
+- no runtime materializer validation.
 
 Each layer must fail closed. A skipped, unknown, or inconclusive layer blocks
 the validation verdict rather than allowing materialization to proceed.
@@ -74,6 +83,26 @@ The source model layer must also validate complete kernel coverage for the 12
 canonical agents. The validation harness must classify `reference/agents/` only
 as a temporary development parity baseline and must not treat it as a render,
 dry-run, or materialization source.
+
+## Future Fixture Validation
+
+Future fixture validation must recognize the fixture skeleton:
+
+- `reference/materialization_lab/fixtures/README.md`
+- `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md`
+- `reference/materialization_lab/fixtures/projects/README.md`
+- `reference/materialization_lab/fixtures/expected_outputs/README.md`
+- `reference/materialization_lab/fixtures/lazy_load/README.md`
+- `reference/materialization_lab/fixtures/blocked_cases/README.md`
+
+Fixture validation remains documentary/dev-only. It must validate fixture
+boundary, fixture schema, lazy-load trace fixtures, project scenario matrix
+fixtures, expected output snapshot policy, blocked fixture cases, no
+base-agent final source, no inferred templates, no runtime materializer, no
+target real read/write, no GitHub write, and no productive-skill mutation.
+
+The skeleton must not be treated as complete positive or negative fixtures.
+Complete fixture cases and complete snapshots are future work.
 
 ## Structured Validation Report
 
@@ -142,6 +171,20 @@ Use these validation-harness block codes exactly:
   development parity baseline is required as a final source.
 - `BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD`: deprecated field `base_agent_source`
   appears in final render context or final dry-run planned artifact shape.
+- `BLOCKED_TEMPLATE_INFERRED`: a target, target-agent pair, output shape, or
+  fixture attempts to infer a template instead of using an explicit
+  `template_source`.
+- `BLOCKED_RUNTIME_MATERIALIZER_CREATED`: a runtime materializer, runtime
+  loader, renderer, writer, or materialization entrypoint is created in a
+  validation or fixture phase.
+- `BLOCKED_GITHUB_WRITE`: validation, fixture setup, fixture execution,
+  materialization planning, or any related step attempts a GitHub write.
+- `BLOCKED_FIXTURE_ROOT_MISSING`: required fixture root is absent.
+- `BLOCKED_FIXTURE_SCHEMA_MISSING`: required fixture schema is absent.
+- `BLOCKED_FIXTURE_PATH_TRAVERSAL`: fixture path traverses outside the fixture
+  root.
+- `BLOCKED_FIXTURE_ABSOLUTE_PATH`: fixture path is absolute instead of
+  repository-relative under the fixture root.
 
 Unknown block codes must not be ignored, normalized, or treated as warnings.
 They block the validation verdict with `BLOCKED_UNKNOWN_BLOCK_CODE`.
@@ -155,14 +198,18 @@ The future validation harness must check this contract together with:
 - `TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
+- `FIXTURE_BOUNDARY_CONTRACT.md`
 
 The validation harness must also preserve earlier source, template,
 placeholder, render-safety, composition, dry-run, path-safety, and managed
 artifact block codes defined by those contracts.
 
-Future fixtures, when explicitly authorized in a later step, must test
+Future fixtures must test
 `kernel_source + senior_profile_source + template_source`, not a
-base-agent-driven source model.
+base-agent-driven source model. They must also validate that lazy load is a
+safety contract, load-all by completeness is a violation, material decisions
+leave trace, and output/handoff scenarios load the handoff/evidence/output
+module when required.
 
 ## Explicit Non-Authorization
 
@@ -171,9 +218,10 @@ This contract does not authorize:
 - runtime scripts;
 - target writes;
 - generated outputs;
-- fixtures;
+- complete fixtures;
 - productive skill changes;
 - GitHub writes;
+- runtime materializer;
 - real materialization;
 - changes to `skills/stnl_project_agent_specializer/`;
 - creation or alteration of `.github/**`, `.codex/**`, or `AGENTS.md` in this

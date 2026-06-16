@@ -20,10 +20,19 @@ A later step may authorize only these dev-only script categories:
 - template coverage validator;
 - render-context planner;
 - dry-run output planner;
-- validation report generator.
+- validation report generator;
+- fixture validator;
+- lazy-load fixture validator;
+- project scenario matrix validator;
+- expected output snapshot validator;
+- blocked case validator.
 
 Any script category outside this list is out of scope unless this contract is
 updated first in a documentary/dev-only change.
+
+The fixture-related validator categories are future dev-only validators. This
+phase does not create those validators, does not create new checkers, and does
+not authorize complete fixture cases.
 
 ## Authorized Future Script Locations
 
@@ -99,7 +108,7 @@ beyond authorized read-only dry-run, or materialization.
 The following remain out of scope:
 
 - runtime materializer;
-- fixture creation;
+- complete fixture creation;
 - target writes;
 - real materialization.
 
@@ -109,7 +118,7 @@ This stage does not authorize:
 
 - creation of scripts;
 - runtime execution;
-- fixtures;
+- complete fixtures;
 - target writes;
 - generated outputs;
 - productive skill changes;

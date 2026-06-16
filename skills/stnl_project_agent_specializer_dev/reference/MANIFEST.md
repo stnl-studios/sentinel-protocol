@@ -61,13 +61,14 @@ The canonical documentary/dev-only reference bundle is organized as:
   future pre-materialization validation and dry-run smoke reporting, plus the
   documentary implementation-boundary contract for a later separately
   authorized dev-only script layer, plus the documentary fixture-boundary
-  contract for a later separately authorized controlled fixture layer. This
+  contract and fixture skeleton for later controlled fixture cases. This
   phase does not authorize runtime
   materialization, runtime script creation,
   target-repository writes, productive-skill changes, productive-template
   changes, GitHub writes, inferred templates, inferred senior profiles,
-  generated outputs, runtime scripts, fixtures, target project mutation,
-  overwrite of manual files, validation writes, or a final materializer.
+  generated outputs, runtime scripts, complete fixtures, target project
+  mutation, overwrite of manual files, validation writes, or a final
+  materializer.
 - `reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md` defines
   `reference/kernel_lab/` as the primary behavior source,
   `reference/seniorization_lab/` as seniorization overlay,
@@ -126,21 +127,34 @@ The canonical documentary/dev-only reference bundle is organized as:
   historical-audit, and GitHub writes; and blocks unauthorized scope, paths,
   write capability, target mutation, productive mutation, and outputs.
 - `reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md`
-  defines the documentary/dev-only fixture boundary for possible future
-  controlled fixtures. It states that this task does not create fixtures; that
-  fixture creation may occur only in a later explicitly authorized step; that
-  the only future fixture root currently eligible for authorization is
+  defines the documentary/dev-only fixture boundary for the fixture skeleton
+  and later controlled fixture cases. It states that the current phase creates
+  only the fixture root, category READMEs, and documentary schema; that the
+  only fixture root is
   `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`;
-  that future fixtures must simulate controlled target project roots and never
-  use real target project roots; that `.github/**`, `.codex/**`, and
-  `AGENTS.md` may appear only inside an authorized fixture root and remain
-  prohibited outside it; that future fixture scripts/checkers must accept only
-  paths inside the authorized fixture root; and that fixtures do not authorize
-  target real read/write, GitHub writes, productive-skill changes, real
+  that `FIXTURE_SCHEMA.md` is mandatory; that future fixtures must simulate
+  controlled target project roots and never use real target project roots;
+  that `.github/**`, `.codex/**`, and `AGENTS.md` may appear only inside the
+  fixture root as fixture-local examples or snapshots and remain prohibited
+  outside it; that future fixture scripts/checkers must accept only paths
+  inside the authorized fixture root; and that fixtures do not authorize target
+  real read/write, GitHub writes, productive-skill changes, real
   materialization, runtime materializer, or overwrite of manual files outside a
-  fixture. It blocks invalid scope, unauthorized fixture paths, real target
-  roots, writes outside root, unauthorized outputs, and paths escaping the dev
-  skill.
+  fixture. It blocks missing root/schema, invalid scope, unauthorized fixture
+  paths, absolute/traversal paths, real target roots, writes outside root,
+  unauthorized outputs, and paths escaping the dev skill.
+- `reference/materialization_lab/fixtures/README.md` defines the
+  documentary/dev-only fixture root boundary.
+- `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md` defines the
+  documentary schema for future fixture metadata.
+- `reference/materialization_lab/fixtures/projects/README.md` records the
+  future positive project scenario fixture category.
+- `reference/materialization_lab/fixtures/expected_outputs/README.md` records
+  the future fixture-only expected output snapshot category.
+- `reference/materialization_lab/fixtures/lazy_load/README.md` records the
+  future lazy-load trace fixture category.
+- `reference/materialization_lab/fixtures/blocked_cases/README.md` records the
+  future negative blocked-case fixture category.
 - `scripts/materialization_lab/check-static.mjs` is the first separately
   authorized dev-only static contract validator for the materialization lab. It
   is read-only, has no external package dependency, validates only the dev
