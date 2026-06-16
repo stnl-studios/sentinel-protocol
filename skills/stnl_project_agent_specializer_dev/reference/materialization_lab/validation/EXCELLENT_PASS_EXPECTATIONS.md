@@ -16,6 +16,15 @@ The verdict
 declared only when the render-context composition criteria below are also
 satisfied.
 
+The verdict `MATERIALIZATION_SOURCE_MODEL_RESYNC: PASS` may be declared only
+when all 12 canonical agents map to real kernel modules, `reference/kernel_lab/`
+is the primary behavior source, `reference/agents/` is only a temporary
+development parity baseline, render contexts and dry-run planned artifacts use
+`kernel_source`, deprecated field `base_agent_source` is absent from final
+shapes, and no fixture, script, generated artifact, persistent report, target
+real read/write, GitHub write, productive skill change, or real materialization
+is introduced.
+
 The verdict
 `MATERIALIZATION_DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT: EXCELLENT PASS` may be
 declared only when the dry-run output-plan, drift, managed-artifact,
@@ -85,8 +94,23 @@ performing real materialization.
 
 ## Required Criteria
 
-- The eleven materialization lab files exist in
+- The twelve materialization lab files exist in
   `reference/materialization_lab/`.
+- `SOURCE_MODEL_CONTRACT.md` exists and is classified as
+  documentary/dev-only.
+- `SOURCE_MODEL_CONTRACT.md` declares `reference/kernel_lab/` as primary
+  behavior source, `reference/seniorization_lab/` as seniorization overlay,
+  `reference/templates/` as target output shape, and `reference/agents/` only
+  as a temporary development parity baseline.
+- `SOURCE_MODEL_CONTRACT.md` declares deprecated field `base_agent_source` as
+  deprecated materialization source and declares `base_agent_parity_source` only
+  as dev-only parity validation metadata.
+- `SOURCE_MODEL_CONTRACT.md` declares all 12 canonical `kernel_source`
+  mappings and the six source-model block codes:
+  `BLOCKED_SOURCE_MODEL_INVALID`, `BLOCKED_BASE_AGENT_FINAL_DEPENDENCY`,
+  `BLOCKED_KERNEL_SOURCE_MISSING`, `BLOCKED_KERNEL_COVERAGE_INCOMPLETE`,
+  `BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE`, and
+  `BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD`.
 - `TARGETS_CONTRACT.md` declares `copilot` and `codex` as the only canonical
   target IDs for the new version.
 - `TEMPLATES_AND_OUTPUTS_CONTRACT.md` exists and is classified as
@@ -174,7 +198,7 @@ performing real materialization.
 - `scripts/materialization_lab/check-static.mjs` is read-only, uses Node.js ESM,
   has no external package dependency, and ignores `__MACOSX` and `.DS_Store`.
 - `scripts/materialization_lab/check-static.mjs` validates required contracts,
-  validation files, explicit templates, 12 base agents, 12 Senior Agent
+  validation files, explicit templates, 12 kernel sources, 12 Senior Agent
   Profiles, target/path anchors, placeholders, planned operations, validation
   statuses, and declared block codes.
 - `scripts/materialization_lab/check-static.mjs` does not authorize target
@@ -192,11 +216,12 @@ performing real materialization.
   `.DS_Store`, rejects target project path arguments, and reads only inside
   `skills/stnl_project_agent_specializer_dev/`.
 - `scripts/materialization_lab/check-source-inventory.mjs` validates exactly
-  the 12 canonical base agents in `reference/agents/`, exactly the 12 Senior
-  Agent Profiles in `reference/seniorization_lab/`, the explicit kebab-case
-  agent ID to underscore profile directory mapping, absence of non-ignored
-  extra base agents, and absence of non-ignored extra profile directories
-  outside known canonical/global seniorization items.
+  the 12 canonical kernel modules in `reference/kernel_lab/`, exactly the 12
+  Senior Agent Profiles in `reference/seniorization_lab/`, the explicit
+  kebab-case agent ID to underscore kernel/profile directory mapping, current
+  `reference/agents/` parity baseline classification when present, and absence
+  of non-ignored extra profile directories outside known canonical/global
+  seniorization items.
 - `scripts/materialization_lab/check-source-inventory.mjs` validates base-agent
   identity, mission, required output, status/role signal, and handoff or
   boundary anchors.
@@ -247,7 +272,7 @@ performing real materialization.
   the explicit kebab-case agent ID to underscore profile directory mapping,
   and the existence of the three earlier materialization-lab validators.
 - `scripts/materialization_lab/check-render-context.mjs` validates every
-  `agent+target` pair has a base agent source, Senior Agent Profile source,
+  `agent+target` pair has a `kernel_source`, Senior Agent Profile source,
   explicit template source, target contract source, template/output contract
   source, and rendering/composition contract source.
 - `scripts/materialization_lab/check-render-context.mjs` validates
@@ -267,7 +292,7 @@ performing real materialization.
   `{{MODEL_REASONING_EFFORT}}`, and `{{SANDBOX_MODE}}`.
 - `scripts/materialization_lab/check-render-context.mjs` validates every
   abstract render context includes `agent_id`, `target_id`,
-  `base_agent_source`, `senior_profile_source`, `template_source`,
+  `kernel_source`, `senior_profile_source`, `template_source`,
   `target_contract_source`, `template_contract_source`,
   `rendering_contract_source`, `required_placeholder_values`,
   `target_specific_placeholder_values`, `escaping_mode`, `safety_verdict`,
@@ -315,7 +340,7 @@ performing real materialization.
   artifact.
 - `scripts/materialization_lab/check-dry-run-plan.mjs` validates every
   abstract planned artifact includes `target_id`, `agent_id`, `output_shape`,
-  `planned_path`, `template_source`, `base_agent_source`,
+  `planned_path`, `template_source`, `kernel_source`,
   `senior_profile_source`, `operation`, `managed_artifact`,
   `existing_file_state`, `drift_status`, `blocking_status`, and `block_code`.
 - `scripts/materialization_lab/check-dry-run-plan.mjs` validates planned paths
@@ -396,9 +421,10 @@ performing real materialization.
   template, existing target-project artifact, or naming symmetry.
 - Productive templates are allowed only as read-only conceptual reference in
   this phase and never as automatic write sources.
-- Rendering/composition sources are explicit: base agent, Senior Agent Profile,
-  target template, `TARGETS_CONTRACT.md`, and
-  `TEMPLATES_AND_OUTPUTS_CONTRACT.md`.
+- Rendering/composition sources are explicit: kernel source, Senior Agent
+  Profile, target template, `TARGETS_CONTRACT.md`,
+  `TEMPLATES_AND_OUTPUTS_CONTRACT.md`, and
+  `RENDERING_AND_COMPOSITION_CONTRACT.md`.
 - The rendering/composition contract declares all 12 canonical agent IDs:
   `orchestrator`, `planner`, `validation-eval-designer`,
   `execution-package-designer`, `designer`, `coder-frontend`,
@@ -423,8 +449,8 @@ performing real materialization.
 - The rendering/composition contract defines generated notice rules for
   Copilot Markdown and Codex TOML comments and blocks unsafe notices.
 - The rendering/composition contract requires `{{AGENT_BODY}}` to preserve
-  base-agent mission, boundaries, handoff, role class, status, invariants, and
-  operating rules while incorporating seniorization without erasing base
+  kernel mission, boundaries, handoff, role class, status, invariants, and
+  operating rules while incorporating seniorization without erasing kernel
   contracts.
 - The rendering/composition contract declares
   `BLOCKED_SOURCE_MISSING`, `BLOCKED_TEMPLATE_MISSING`,
@@ -436,7 +462,7 @@ performing real materialization.
 - The dry-run/write-boundary contract requires a dry-run output plan before any
   future target write, generated artifact write, repair, delete, or cleanup.
 - The dry-run output plan requires `target_id`, `agent_id`, `output_shape`,
-  `planned_path`, `template_source`, `base_agent_source`,
+  `planned_path`, `template_source`, `kernel_source`,
   `senior_profile_source`, `operation`, `managed_artifact`,
   `existing_file_state`, `drift_status`, `blocking_status`, and `block_code`
   for each planned artifact.
@@ -590,8 +616,9 @@ Do not declare
 `MATERIALIZATION_RENDERING_AND_COMPOSITION_CONTRACT: EXCELLENT PASS` if any
 check depends on inferred sources, inferred templates, inferred senior
 profiles, unsafe YAML/TOML rendering, target writes, runtime scripts, generated
-outputs, productive-skill edits, GitHub writes, or silent conflict resolution
-between base agents and Senior Agent Profiles.
+outputs, productive-skill edits, GitHub writes, final dependency on
+`reference/agents/`, deprecated field `base_agent_source`, or silent conflict
+resolution between kernel sources and Senior Agent Profiles.
 
 Do not declare
 `MATERIALIZATION_DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT: EXCELLENT PASS` if any

@@ -50,6 +50,21 @@ const profileByAgent = new Map([
   ["resync", "resync_profile"],
 ]);
 
+const kernelByAgent = new Map([
+  ["orchestrator", "orchestrator_kernel"],
+  ["planner", "planner_kernel"],
+  ["validation-eval-designer", "validation_eval_designer_kernel"],
+  ["execution-package-designer", "execution_package_designer_kernel"],
+  ["designer", "designer_kernel"],
+  ["coder-frontend", "coder_frontend_kernel"],
+  ["coder-backend", "coder_backend_kernel"],
+  ["coder-ios", "coder_ios_kernel"],
+  ["validation-runner", "validation_runner_kernel"],
+  ["reviewer", "reviewer_kernel"],
+  ["finalizer", "finalizer_kernel"],
+  ["resync", "resync_kernel"],
+]);
+
 const targets = [
   {
     id: "copilot",
@@ -88,7 +103,7 @@ const commonPlaceholders = [
 const renderContextFields = [
   "agent_id",
   "target_id",
-  "base_agent_source",
+  "kernel_source",
   "senior_profile_source",
   "template_source",
   "target_contract_source",
@@ -104,6 +119,12 @@ const renderContextFields = [
 ];
 
 const renderingBlockCodes = [
+  "BLOCKED_SOURCE_MODEL_INVALID",
+  "BLOCKED_BASE_AGENT_FINAL_DEPENDENCY",
+  "BLOCKED_KERNEL_SOURCE_MISSING",
+  "BLOCKED_KERNEL_COVERAGE_INCOMPLETE",
+  "BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE",
+  "BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD",
   "BLOCKED_SOURCE_MISSING",
   "BLOCKED_TEMPLATE_MISSING",
   "BLOCKED_PLACEHOLDER_MISSING",
@@ -216,6 +237,12 @@ function expectedProfileDir(agentId) {
   return `${agentId.replaceAll("-", "_")}_profile`;
 }
 
+function expectedKernelDir(agentId) {
+  return `${agentId.replaceAll("-", "_")}_kernel`;
+}
+
+const deprecatedBaseAgentSourceField = "base_agent_source";
+
 async function validateNoTargetArgument() {
   const extraArgs = process.argv.slice(2);
   if (extraArgs.length > 0) {
@@ -238,24 +265,16 @@ async function validateScriptBoundary() {
 }
 
 async function validateCanonicalAgentIds() {
-  const expectedAgentFiles = new Set(
-    agents.map((agent) => `${agent}.agent.md`),
-  );
-  const entries = await readTopLevel("reference/agents");
-
-  for (const entry of entries) {
-    if (!entry.isFile()) {
-      recordFailure(`reference/agents contains non-file item: ${entry.name}`);
-      continue;
-    }
-
-    if (!expectedAgentFiles.has(entry.name)) {
-      recordFailure(`reference/agents contains unexpected item: ${entry.name}`);
-    }
-  }
-
   for (const agent of agents) {
-    await requireFile(rel("reference/agents", `${agent}.agent.md`));
+    const expectedKernel = expectedKernelDir(agent);
+    const actualKernel = kernelByAgent.get(agent);
+    if (actualKernel !== expectedKernel) {
+      recordFailure(
+        `kernel mapping mismatch for ${agent}: expected ${expectedKernel}, got ${actualKernel}`,
+      );
+    }
+    await requireFile(rel("reference/kernel_lab", actualKernel));
+
     const expectedProfile = expectedProfileDir(agent);
     const actualProfile = profileByAgent.get(agent);
     if (actualProfile !== expectedProfile) {
@@ -307,6 +326,7 @@ async function validateCanonicalTargets() {
 
 async function validateRequiredSources() {
   await requireFile("reference/MANIFEST.md");
+  await requireFile(contractPath("SOURCE_MODEL_CONTRACT.md"));
   await requireFile(contractPath("TARGETS_CONTRACT.md"));
   await requireFile(contractPath("TEMPLATES_AND_OUTPUTS_CONTRACT.md"));
   await requireFile(contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"));
@@ -360,7 +380,7 @@ function buildRenderContext(agentId, target) {
   return {
     agent_id: agentId,
     target_id: target.id,
-    base_agent_source: rel("reference/agents", `${agentId}.agent.md`),
+    kernel_source: rel("reference/kernel_lab", kernelByAgent.get(agentId)),
     senior_profile_source: rel(
       "reference/seniorization_lab",
       profileByAgent.get(agentId),
@@ -398,11 +418,15 @@ async function validateRenderingContractAnchors() {
 
   requireAll(content, relativePath, agents, "canonical agent id");
   requireAll(content, relativePath, [
-    "reference/agents/<agent>.agent.md",
+    "reference/kernel_lab/<agent>_kernel/",
     "reference/seniorization_lab/<agent>_profile/SENIOR_AGENT_PROFILE.md",
     "reference/templates/<target>/...",
+    "reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md",
     "reference/materialization_lab/contracts/TARGETS_CONTRACT.md",
     "reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md",
+    "reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md",
+    "primary behavior source",
+    "temporary development parity baseline",
   ], "render context source");
   requireAll(content, relativePath, commonPlaceholders, "common placeholder");
   for (const target of targets) {
@@ -436,8 +460,21 @@ async function validateRenderContexts() {
         }
       }
 
+      if (deprecatedBaseAgentSourceField in context) {
+        recordFailure(
+          `${agent}+${target.id} render context contains deprecated field: ${deprecatedBaseAgentSourceField}`,
+        );
+      }
+
+      const expectedKernelSource = rel("reference/kernel_lab", kernelByAgent.get(agent));
+      if (context.kernel_source !== expectedKernelSource) {
+        recordFailure(
+          `${agent}+${target.id} kernel_source mismatch: expected ${expectedKernelSource}, got ${context.kernel_source}`,
+        );
+      }
+
       for (const sourceField of [
-        "base_agent_source",
+        "kernel_source",
         "senior_profile_source",
         "template_source",
         "target_contract_source",

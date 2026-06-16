@@ -45,8 +45,24 @@ const profileByAgent = new Map([
   ["resync", "resync_profile"],
 ]);
 
+const kernelByAgent = new Map([
+  ["orchestrator", "orchestrator_kernel"],
+  ["planner", "planner_kernel"],
+  ["validation-eval-designer", "validation_eval_designer_kernel"],
+  ["execution-package-designer", "execution_package_designer_kernel"],
+  ["designer", "designer_kernel"],
+  ["coder-frontend", "coder_frontend_kernel"],
+  ["coder-backend", "coder_backend_kernel"],
+  ["coder-ios", "coder_ios_kernel"],
+  ["validation-runner", "validation_runner_kernel"],
+  ["reviewer", "reviewer_kernel"],
+  ["finalizer", "finalizer_kernel"],
+  ["resync", "resync_kernel"],
+]);
+
 const materializationContracts = [
   "TARGETS_CONTRACT.md",
+  "SOURCE_MODEL_CONTRACT.md",
   "TEMPLATES_AND_OUTPUTS_CONTRACT.md",
   "RENDERING_AND_COMPOSITION_CONTRACT.md",
   "DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md",
@@ -148,6 +164,12 @@ function requireIncludes(content, relativePath, anchor, label = anchor) {
   }
 }
 
+function requireAll(content, relativePath, anchors, groupLabel) {
+  for (const anchor of anchors) {
+    requireIncludes(content, relativePath, anchor, `${groupLabel}: ${anchor}`);
+  }
+}
+
 function requireAny(content, relativePath, anchors, label) {
   if (!anchors.some((anchor) => content.includes(anchor))) {
     recordFailure(
@@ -164,6 +186,14 @@ function requireLowerIncludes(content, relativePath, anchor, label = anchor) {
 
 function expectedProfileDir(agentId) {
   return `${agentId.replaceAll("-", "_")}_profile`;
+}
+
+function expectedKernelDir(agentId) {
+  return `${agentId.replaceAll("-", "_")}_kernel`;
+}
+
+function kernelPath(agentId, ...parts) {
+  return rel("reference/kernel_lab", kernelByAgent.get(agentId), ...parts);
 }
 
 async function validateNoTargetArgument() {
@@ -186,6 +216,25 @@ async function validateScriptBoundary() {
 }
 
 async function validateAgentInventory() {
+  const sourceModel = await readText(
+    "reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md",
+  );
+  requireAll(sourceModel, "reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md", [
+    "temporary development parity baseline",
+    "not a final materialization source",
+    "may be removed after final validation",
+  ], "base agent parity baseline classification");
+
+  if (!(await exists("reference/agents"))) {
+    requireIncludes(
+      sourceModel,
+      "reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md",
+      "may be removed after final validation",
+      "future absence of reference/agents does not invalidate final source model",
+    );
+    return;
+  }
+
   const expectedAgentFiles = new Set(
     agents.map((agent) => `${agent}.agent.md`),
   );
@@ -204,6 +253,51 @@ async function validateAgentInventory() {
 
   for (const fileName of expectedAgentFiles) {
     await requireFile(rel("reference/agents", fileName));
+  }
+}
+
+async function validateKernelInventory() {
+  const entries = await readTopLevel("reference/kernel_lab");
+  const expectedKernelDirs = new Set(kernelByAgent.values());
+
+  for (const entry of entries) {
+    if (entry.name === "README.md" && entry.isFile()) {
+      continue;
+    }
+
+    if (!expectedKernelDirs.has(entry.name)) {
+      recordFailure(`reference/kernel_lab contains unexpected top-level item: ${entry.name}`);
+      continue;
+    }
+
+    if (!entry.isDirectory()) {
+      recordFailure(`reference/kernel_lab/${entry.name} must be a kernel directory`);
+    }
+  }
+
+  for (const agent of agents) {
+    const expectedKernel = expectedKernelDir(agent);
+    const actualKernel = kernelByAgent.get(agent);
+    if (actualKernel !== expectedKernel) {
+      recordFailure(
+        `kernel mapping mismatch for ${agent}: expected ${expectedKernel}, got ${actualKernel}`,
+      );
+    }
+
+    await requireFile(kernelPath(agent, "README.md"));
+    await requireFile(kernelPath(agent, "contracts", "CONTRACT.md"));
+    await requireFile(kernelPath(agent, "contracts", "MINIMUM_SAFE_BUNDLE.md"));
+    await requireFile(kernelPath(agent, "contracts", "BEHAVIOR_PARITY_SPINE.md"));
+    await requireFile(kernelPath(agent, "validation", "STATIC_CHECKS.md"));
+    await requireFile(kernelPath(agent, "validation", "GOLDEN_TESTS.md"));
+
+    const contract = await readText(kernelPath(agent, "contracts", "CONTRACT.md"));
+    requireAny(
+      contract,
+      kernelPath(agent, "contracts", "CONTRACT.md"),
+      ["Status:", "##", "#"],
+      "kernel contractual documentation",
+    );
   }
 }
 
@@ -245,6 +339,10 @@ async function validateProfileInventory() {
 }
 
 async function validateBaseAgentAnchors() {
+  if (!(await exists("reference/agents"))) {
+    return;
+  }
+
   for (const agent of agents) {
     const relativePath = rel("reference/agents", `${agent}.agent.md`);
     const content = await readText(relativePath);
@@ -344,12 +442,19 @@ async function validateTemplatesAndManifest() {
 
   const manifest = await readText("reference/MANIFEST.md");
 
-  for (const agent of agents) {
+  requireIncludes(
+    manifest,
+    "reference/MANIFEST.md",
+    "temporary development parity baseline",
+    "manifest classifies reference/agents as parity baseline",
+  );
+
+  for (const [agent, kernelDir] of kernelByAgent.entries()) {
     requireIncludes(
       manifest,
       "reference/MANIFEST.md",
-      rel("reference/agents", `${agent}.agent.md`),
-      `manifest base agent: ${agent}`,
+      rel("reference/kernel_lab", kernelDir, "contracts", "CONTRACT.md"),
+      `manifest kernel contract: ${agent}`,
     );
   }
 
@@ -405,6 +510,7 @@ async function main() {
   await validateNoTargetArgument();
   await validateScriptBoundary();
   await validateAgentInventory();
+  await validateKernelInventory();
   await validateProfileInventory();
   await validateBaseAgentAnchors();
   await validateSeniorProfileAnchors();

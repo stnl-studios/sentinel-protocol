@@ -27,6 +27,8 @@ A future validation harness must run all layers below before any real
 materialization:
 
 - source inventory validation;
+- source model validation;
+- kernel coverage validation;
 - target normalization validation;
 - template coverage validation;
 - placeholder validation;
@@ -67,6 +69,11 @@ The matrix is complete only when every canonical agent is checked for both
 canonical targets and the target-level Codex artifacts are checked. Missing any
 agent, target, or Codex target-level artifact blocks with
 `BLOCKED_MATRIX_INCOMPLETE`.
+
+The source model layer must also validate complete kernel coverage for the 12
+canonical agents. The validation harness must classify `reference/agents/` only
+as a temporary development parity baseline and must not treat it as a render,
+dry-run, or materialization source.
 
 ## Structured Validation Report
 
@@ -123,6 +130,18 @@ Use these validation-harness block codes exactly:
   instructions.
 - `BLOCKED_UNKNOWN_BLOCK_CODE`: an unknown block code appears in the validation
   report, planned artifacts, blocked artifacts, or validation layer output.
+- `BLOCKED_SOURCE_MODEL_INVALID`: source-model roles, precedence, or source
+  composition contradict `SOURCE_MODEL_CONTRACT.md`.
+- `BLOCKED_BASE_AGENT_FINAL_DEPENDENCY`: final render, dry-run, or
+  materialization depends on `reference/agents/`.
+- `BLOCKED_KERNEL_SOURCE_MISSING`: a required kernel module or its real
+  minimum documentation/contract bundle is missing.
+- `BLOCKED_KERNEL_COVERAGE_INCOMPLETE`: the 12 canonical agent to kernel
+  module mappings are incomplete.
+- `BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE`: the temporary
+  development parity baseline is required as a final source.
+- `BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD`: deprecated field `base_agent_source`
+  appears in final render context or final dry-run planned artifact shape.
 
 Unknown block codes must not be ignored, normalized, or treated as warnings.
 They block the validation verdict with `BLOCKED_UNKNOWN_BLOCK_CODE`.
@@ -132,6 +151,7 @@ They block the validation verdict with `BLOCKED_UNKNOWN_BLOCK_CODE`.
 The future validation harness must check this contract together with:
 
 - `TARGETS_CONTRACT.md`
+- `SOURCE_MODEL_CONTRACT.md`
 - `TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
@@ -139,6 +159,10 @@ The future validation harness must check this contract together with:
 The validation harness must also preserve earlier source, template,
 placeholder, render-safety, composition, dry-run, path-safety, and managed
 artifact block codes defined by those contracts.
+
+Future fixtures, when explicitly authorized in a later step, must test
+`kernel_source + senior_profile_source + template_source`, not a
+base-agent-driven source model.
 
 ## Explicit Non-Authorization
 

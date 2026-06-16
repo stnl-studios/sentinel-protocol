@@ -5,13 +5,14 @@ materialization rewrite of `stnl_project_agent_specializer_dev`.
 
 It defines the canonical target contract and validation expectations for the
 next materialization phase. It also defines the explicit template and output
-shape contract for the canonical targets, plus the render-context composition
-contract for combining base agents, Senior Agent Profiles, and explicit
-templates. It also defines the dry-run output-plan and write-boundary contract
-for future artifact planning. It also defines the validation harness contract
-for future pre-materialization validation and dry-run smoke reporting. It also
-defines the documentary implementation boundary for a later, separately
-authorized dev-only script layer. It does not authorize runtime
+shape contract for the canonical targets, plus the source model contract for
+combining kernel source bundles, Senior Agent Profiles, and explicit templates.
+It also defines the render-context composition contract, the dry-run
+output-plan and write-boundary contract for future artifact planning, and the
+validation harness contract for future pre-materialization validation and
+dry-run smoke reporting. It also defines the documentary implementation
+boundary for a later, separately authorized dev-only script layer. It does not
+authorize runtime
 materialization, runtime script creation, target-repository writes,
 productive-skill changes, GitHub writes, or changes to productive templates.
 It also defines the fixture-boundary contract for possible future controlled
@@ -24,8 +25,13 @@ fixtures inside the dev skill, without creating fixtures in this task.
 - `contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`: explicit template inventory,
   expected output shapes, current missing-template status, and
   `BLOCKED_TEMPLATE_MISSING` rules for the canonical targets.
+- `contracts/SOURCE_MODEL_CONTRACT.md`: documentary/dev-only source model
+  contract declaring `reference/kernel_lab/` as the primary behavior source,
+  `reference/seniorization_lab/` as seniorization overlay,
+  `reference/templates/` as target output shape, and `reference/agents/` only
+  as a temporary development parity baseline.
 - `contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`: documentary/dev-only
-  render-context contract for deterministic composition from base agents,
+  render-context contract for deterministic composition from kernel sources,
   Senior Agent Profiles, target/template contracts, and explicit templates.
 - `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`: documentary/dev-only
   dry-run output-plan, drift classification, managed-artifact, path-safety, and
@@ -58,19 +64,23 @@ This lab is only a contract layer. It is not the final runtime materializer and
 must not be treated as permission to write `.github/**`, `.codex/**`, or
 `AGENTS.md` in any target project.
 
-Rendering and composition are also contract-only in this phase. A future
-renderer must derive a render context per `agent+target` pair from explicit
-sources, but this phase does not produce generated outputs or materialize in a
-target project.
+Source model, rendering, and composition are also contract-only in this phase.
+`reference/kernel_lab/` is the primary behavior source. `reference/agents/` is
+only a temporary development parity baseline and is removable after final dev
+validation. A future renderer must derive a render context per `agent+target`
+pair from explicit kernel, senior profile, template, target contract, template
+contract, and rendering contract sources, but this phase does not produce
+generated outputs or materialize in a target project.
 
 Dry-run/write-boundary planning is also contract-only in this phase. A future
 materialization flow must produce a dry-run output plan before any write, and
 each planned artifact must record target, agent, output shape, planned path,
-template source, base-agent source, senior-profile source, operation,
+template source, `kernel_source`, senior-profile source, operation,
 managed-artifact state, existing-file state, drift status, blocking status, and
-block code. During this documentary/dev-only phase, all operations are only
-planned: `CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and
-`BLOCKED_PLANNED` write nothing.
+block code. Deprecated field `base_agent_source` must not appear in final
+dry-run planned artifacts. During this documentary/dev-only phase, all
+operations are only planned: `CREATE_PLANNED`, `UPDATE_PLANNED`,
+`UNCHANGED_PLANNED`, and `BLOCKED_PLANNED` write nothing.
 
 Templates must be explicit. A target, target-agent pair, or output shape
 without an explicit template blocks with `BLOCKED_TEMPLATE_MISSING`; no
@@ -91,15 +101,19 @@ These templates are source references only. Their presence does not authorize
 runtime scripts, target-repository writes, productive-skill changes, GitHub
 writes, or materialization in `.github/**`, `.codex/**`, or `AGENTS.md`.
 
-Composition sources are explicit: `reference/agents/<agent>.agent.md`,
+Composition sources are explicit: `reference/kernel_lab/<agent>_kernel/`,
 `reference/seniorization_lab/<agent>_profile/SENIOR_AGENT_PROFILE.md`,
 `reference/templates/<target>/...`,
-`reference/materialization_lab/contracts/TARGETS_CONTRACT.md`, and
-`reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`.
-Missing sources block with `BLOCKED_SOURCE_MISSING`; missing placeholders block
-with `BLOCKED_PLACEHOLDER_MISSING`; unsafe YAML/TOML rendering blocks with
-`BLOCKED_UNSAFE_RENDER`; conflicts between base agents and Senior Agent
-Profiles block with `BLOCKED_COMPOSITION_CONFLICT`.
+`reference/materialization_lab/contracts/TARGETS_CONTRACT.md`,
+`reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`,
+and `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`.
+Missing sources block with `BLOCKED_SOURCE_MISSING`; missing kernel sources
+block with `BLOCKED_KERNEL_SOURCE_MISSING`; incomplete kernel coverage blocks
+with `BLOCKED_KERNEL_COVERAGE_INCOMPLETE`; final dependency on
+`reference/agents/` blocks with `BLOCKED_BASE_AGENT_FINAL_DEPENDENCY`; missing
+placeholders block with `BLOCKED_PLACEHOLDER_MISSING`; unsafe YAML/TOML
+rendering blocks with `BLOCKED_UNSAFE_RENDER`; conflicts between kernel source
+bundles and Senior Agent Profiles block with `BLOCKED_COMPOSITION_CONFLICT`.
 
 Future output paths must be relative to the target project root: `copilot`
 agents plan to `.github/agents/<agent>.agent.md`, `codex` agents plan to
@@ -113,10 +127,11 @@ write without an approved dry-run output plan blocks with
 
 Validation harness planning is also contract-only in this phase. A future
 validation harness must run before any real materialization and must validate
-source inventory, target normalization, template coverage, placeholders, render
-safety, dry-run output plans, write boundaries, absence of target writes, and
-absence of productive-skill changes. The minimum future matrix is 12 agents x
-`copilot`, 12 agents x `codex`, `codex` config, and `codex` root instructions.
+source inventory, source model, kernel coverage, target normalization, template
+coverage, placeholders, render safety, dry-run output plans, write boundaries,
+absence of target writes, and absence of productive-skill changes. The minimum
+future matrix is 12 agents x `copilot`, 12 agents x `codex`, `codex` config,
+and `codex` root instructions.
 The future report must include `validation_id`, `status`, `checked_contracts`,
 `agent_matrix`, `target_matrix`, `planned_artifacts`, `blocked_artifacts`,
 `write_attempts`, `productive_skill_changes`, `target_file_changes`, and
@@ -164,3 +179,22 @@ Fixture-boundary failures block with `BLOCKED_FIXTURE_SCOPE_INVALID`,
 `BLOCKED_FIXTURE_WRITE_OUTSIDE_ROOT`,
 `BLOCKED_FIXTURE_OUTPUT_UNAUTHORIZED`, or
 `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`.
+
+Future fixtures, when explicitly authorized later, must test
+`kernel_source + senior_profile_source + template_source`, not a
+base-agent-driven source model.
+
+## Source Model Resync Pass Criterion
+
+`MATERIALIZATION_SOURCE_MODEL_RESYNC: PASS` requires:
+
+- `SOURCE_MODEL_CONTRACT.md` exists and is registered.
+- All 12 canonical agents map to real kernel modules under
+  `reference/kernel_lab/`.
+- Render contexts require `kernel_source`, not deprecated field `base_agent_source`.
+- Dry-run planned artifacts require `kernel_source`, not deprecated field `base_agent_source`.
+- `reference/agents/` is classified only as a temporary development parity
+  baseline.
+- No fixture, script, generated artifact, persistent report, GitHub write,
+  productive skill change, target real read/write, or real materialization is
+  introduced.

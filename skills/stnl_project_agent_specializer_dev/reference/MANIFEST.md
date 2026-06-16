@@ -6,21 +6,26 @@ Skill: `stnl_project_agent_specializer_dev`
 
 The canonical documentary/dev-only reference bundle is organized as:
 
-- `reference/agents/`: canonical base agents used as local dev snapshots for
-  comparison and anchoring.
+- `reference/agents/`: temporary development parity baseline used as local dev
+  snapshots for comparison only. It is not a final materialization source and
+  may be removed after final dev validation.
 - `reference/kernel_lab/`: the 12 documentary/dev-only kernels and their
-  contracts, validations, and read-only harnesses.
+  contracts, validations, and read-only harnesses. This is the primary
+  behavior source for the new materialization source model.
 - `reference/materialization_lab/`: documentary/dev-only contracts for the
   future senior-agent materialization rewrite, including the canonical target
-  IDs, explicit template and output-shape contract, missing-template blocking
-  rules, rendering/composition contract, dry-run/write-boundary contract,
-  validation harness contract, implementation-boundary contract,
+  IDs, source model contract, explicit template and output-shape contract,
+  missing-template blocking rules, rendering/composition contract,
+  dry-run/write-boundary contract, validation harness contract,
+  implementation-boundary contract,
   fixture-boundary contract, and validation expectations. This is not a
   runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
-  `contracts/` layer, and integrated seniorization validations.
-- `reference/templates/`: reference/template material only; it is not
-  materialization, a generated artifact target, or a runtime output path.
+  `contracts/` layer, and integrated seniorization validations. These profiles
+  are seniorization overlays over the kernel behavior source.
+- `reference/templates/`: reference/template material only; it defines target
+  output shape and is not materialization, a generated artifact target, or a
+  runtime output path.
 - `reference/MANIFEST.md`: this manifest, the canonical index for the dev
   reference bundle.
 
@@ -34,22 +39,30 @@ The canonical documentary/dev-only reference bundle is organized as:
   materialization, target-repository writes, productive-skill changes, or a
   materializer.
 - `reference/materialization_lab/` defines the dev-only target contract for
-  future senior-agent materialization and the dev-only templates and outputs
-  contract for canonical `copilot` and `codex` outputs. It also defines the
-  documentary render-context composition contract for deterministic composition
-  from base agents, Senior Agent Profiles, explicit templates, and
-  target/template contracts, plus the documentary dry-run output-plan and
-  write-boundary contract for future planned artifacts, plus the documentary
-  validation harness contract for future pre-materialization validation and
-  dry-run smoke reporting, plus the documentary implementation-boundary
-  contract for a later separately authorized dev-only script layer, plus the
-  documentary fixture-boundary contract for a later separately authorized
-  controlled fixture layer. This phase does not authorize runtime
+  future senior-agent materialization, the source model contract, and the
+  dev-only templates and outputs contract for canonical `copilot` and `codex`
+  outputs. It also defines the documentary render-context composition contract
+  for deterministic composition from `kernel_source`, Senior Agent Profiles,
+  explicit templates, and target/template/rendering contracts, plus the
+  documentary dry-run output-plan and write-boundary contract for future
+  planned artifacts, plus the documentary validation harness contract for
+  future pre-materialization validation and dry-run smoke reporting, plus the
+  documentary implementation-boundary contract for a later separately
+  authorized dev-only script layer, plus the documentary fixture-boundary
+  contract for a later separately authorized controlled fixture layer. This
+  phase does not authorize runtime
   materialization, runtime script creation,
   target-repository writes, productive-skill changes, productive-template
   changes, GitHub writes, inferred templates, inferred senior profiles,
   generated outputs, runtime scripts, fixtures, target project mutation,
   overwrite of manual files, validation writes, or a final materializer.
+- `reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md` defines
+  `reference/kernel_lab/` as the primary behavior source,
+  `reference/seniorization_lab/` as seniorization overlay,
+  `reference/templates/` as target output shape, and `reference/agents/` as a
+  temporary development parity baseline only. Future materialization uses
+  `kernel_source + senior_profile_source + template_source` plus target,
+  template, and rendering contracts.
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
   inventories the explicit templates currently present under
   `reference/templates/`, records that the canonical `copilot` agent and
@@ -58,28 +71,31 @@ The canonical documentary/dev-only reference bundle is organized as:
   shape lacks an explicit template.
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
   defines the documentary/dev-only render-context composition layer for the 12
-  canonical agents and canonical targets. It requires explicit base agents,
-  Senior Agent Profiles, explicit templates, target/template contracts,
-  YAML-safe and TOML-safe rendering, common and target-specific placeholders,
-  and fail-closed blocking via `BLOCKED_SOURCE_MISSING`,
+  canonical agents and canonical targets. It requires explicit kernel sources,
+  Senior Agent Profiles, explicit templates, target/template/rendering
+  contracts, YAML-safe and TOML-safe rendering, common and target-specific
+  placeholders, and fail-closed blocking via `BLOCKED_SOURCE_MISSING`,
   `BLOCKED_TEMPLATE_MISSING`, `BLOCKED_PLACEHOLDER_MISSING`,
-  `BLOCKED_UNSAFE_RENDER`, and `BLOCKED_COMPOSITION_CONFLICT`.
+  `BLOCKED_UNSAFE_RENDER`, `BLOCKED_COMPOSITION_CONFLICT`, and the source model
+  block codes.
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
   defines the documentary/dev-only dry-run output-plan and write-boundary layer
   for future planned artifacts. It requires planned operations only
   (`CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`,
-  `BLOCKED_PLANNED`), target-root-relative paths for `copilot` and `codex`,
-  managed-artifact notice checks, drift classification, and fail-closed
-  blocking via `BLOCKED_TARGET_ROOT_INVALID`, `BLOCKED_PATH_UNSAFE`,
+  `BLOCKED_PLANNED`), `kernel_source` for agent artifacts,
+  target-root-relative paths for `copilot` and `codex`, managed-artifact
+  notice checks, drift classification, and fail-closed blocking via
+  `BLOCKED_TARGET_ROOT_INVALID`, `BLOCKED_PATH_UNSAFE`,
   `BLOCKED_UNMANAGED_COLLISION`, `BLOCKED_INVALID_MANAGED_NOTICE`, and
   `BLOCKED_DRY_RUN_REQUIRED`, while preserving the earlier source, template,
   placeholder, render-safety, and composition block codes.
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
   defines the documentary/dev-only validation harness and dry-run smoke layer
   for future pre-materialization validation. It requires validation before real
-  materialization; covers source inventory, target normalization, template
-  coverage, placeholder, render safety, dry-run output plan, write-boundary,
-  no-target-write, and productive-skill untouched layers; requires a minimum
+  materialization; covers source inventory, source model, kernel coverage,
+  target normalization, template coverage, placeholder, render safety, dry-run
+  output plan, write-boundary, no-target-write, and productive-skill untouched
+  layers; requires a minimum
   matrix of 12 agents x `copilot`, 12 agents x `codex`, `codex` config, and
   `codex` root instructions; defines structured report fields and statuses
   `VALIDATION_PASS`, `VALIDATION_BLOCKED`, and `VALIDATION_FAILED`; and blocks
@@ -400,6 +416,7 @@ Required files:
 - `reference/kernel_lab/resync_kernel/validation/check-golden.mjs`
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
+- `reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md`
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`

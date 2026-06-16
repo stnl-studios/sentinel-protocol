@@ -70,6 +70,8 @@ const codexRequiredFields = [
   "developer_instructions",
 ];
 
+const deprecatedBaseAgentSourceField = "base_agent_source";
+
 function recordFailure(message) {
   failures.push(message);
 }
@@ -209,6 +211,7 @@ async function validateScriptBoundary() {
 
 async function validateRequiredFiles() {
   await requireFile("reference/MANIFEST.md");
+  await requireFile(contractPath("SOURCE_MODEL_CONTRACT.md"));
   await requireFile(contractPath("TEMPLATES_AND_OUTPUTS_CONTRACT.md"));
   await requireFile(contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"));
   await requireFile(contractPath("DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md"));
@@ -232,6 +235,15 @@ async function validateTemplatesAndOutputsContract() {
       template.outputShape,
     ], `template coverage: ${template.path}`);
   }
+
+  requireAll(content, relativePath, [
+    "Templates define target output shape only",
+    "reference/agents/",
+    "Deprecated field `base_agent_source`",
+    "kernel_source",
+    "senior_profile_source",
+    "template_source",
+  ], "template source-model boundary");
 
   const missingSection = extractSection(content, "Explicit Templates Still Missing");
   if (!missingSection.trim()) {
@@ -302,6 +314,7 @@ async function validateCopilotFrontmatter() {
 async function validateTemplateNonAuthorizationAndLegacyGuard() {
   for (const template of templates) {
     const content = await readText(template.path);
+    const lower = content.toLowerCase();
 
     if (!hasNonAuthorizationStatement(content)) {
       recordFailure(
@@ -311,6 +324,15 @@ async function validateTemplateNonAuthorizationAndLegacyGuard() {
 
     if (/vscode/i.test(content)) {
       recordFailure(`${template.path} mentions vscode as a template target term`);
+    }
+
+    if (
+      lower.includes("reference/agents/") ||
+      lower.includes(deprecatedBaseAgentSourceField)
+    ) {
+      recordFailure(
+        `${template.path} declares deprecated base-agent materialization source`,
+      );
     }
   }
 }
@@ -352,6 +374,8 @@ async function validateManifestAndValidatorDocs() {
     );
   }
   requireAll(manifest, "reference/MANIFEST.md", [
+    "reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md",
+    "primary behavior source",
     expectedScriptPath,
     "template coverage validator",
     "read-only",

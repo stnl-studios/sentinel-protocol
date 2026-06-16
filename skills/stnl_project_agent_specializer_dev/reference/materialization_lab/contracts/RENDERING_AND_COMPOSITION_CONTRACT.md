@@ -3,9 +3,9 @@
 Status: documentary/dev-only contract.
 
 This contract defines the future rendering and composition boundary for turning
-explicit base agents, Senior Agent Profiles, and explicit target templates into
-a render-context plan. It is not a runtime materializer and does not authorize
-writing generated artifacts.
+explicit kernel source bundles, Senior Agent Profiles, and explicit target
+templates into a render-context plan. It is not a runtime materializer and does
+not authorize writing generated artifacts.
 
 ## Non-Runtime Boundary
 
@@ -22,9 +22,9 @@ artifacts.
 Every future render context must be deterministically derived from explicit
 sources only:
 
-- base agent slot: `reference/agents/<agent>.md`
-- base agent physical dev snapshot in this bundle:
-  `reference/agents/<agent>.agent.md`
+- source model contract:
+  `reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md`
+- kernel source: `reference/kernel_lab/<agent>_kernel/`
 - senior profile:
   `reference/seniorization_lab/<agent>_profile/SENIOR_AGENT_PROFILE.md`
 - template: `reference/templates/<target>/...`
@@ -32,10 +32,18 @@ sources only:
   `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
 - template contract:
   `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
+- rendering contract:
+  `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 
 No source may be inferred from output path, legacy runtime naming, generated
 artifact shape, nearby file naming, productive skill files, or historical audit
 text.
+
+`reference/kernel_lab/` is the primary behavior source. `reference/agents/` is
+only a temporary development parity baseline.
+Deprecated field `base_agent_source` must not appear in a final render context.
+Optional `base_agent_parity_source`, if used by a separate dev-only parity
+validator, must not be used for rendering.
 
 ## Canonical Agent IDs
 
@@ -54,10 +62,10 @@ The expected agent IDs are exactly:
 - `finalizer`
 - `resync`
 
-The physical base-agent files in this dev bundle use `.agent.md`. The physical
-senior profile directory uses underscore profile names, but the logical agent
-ID remains the kebab-case ID. A future renderer must resolve those mappings
-explicitly; it must not invent base agents or senior profiles.
+The physical kernel module directory uses underscore kernel names, while the
+logical agent ID remains the kebab-case ID. A future renderer must resolve
+those mappings explicitly; it must not invent kernel modules, senior profiles,
+or templates.
 
 ## Render Context
 
@@ -69,11 +77,12 @@ The render context must include at least:
 
 - canonical `agent_id`;
 - target `target_id`;
-- resolved base-agent source path;
+- resolved `kernel_source`;
 - resolved Senior Agent Profile source path;
 - resolved explicit template source path;
 - target contract source path;
 - template contract source path;
+- rendering contract source path;
 - required placeholder values;
 - target-specific placeholder values;
 - escaping mode and safety verdict;
@@ -155,15 +164,15 @@ writes, productive skill changes, or inferred templates.
 
 ## Agent Body Composition
 
-`{{AGENT_BODY}}` must preserve the base agent's mission, boundaries, handoff,
-role class, status semantics, invariants, and operating rules.
+`{{AGENT_BODY}}` must preserve the kernel source bundle's mission, boundaries,
+handoff, role class, status semantics, invariants, and operating rules.
 
 The composed body must incorporate the Senior Agent Profile without deleting,
-weakening, or silently replacing the base-agent contracts. Seniorization may
-sharpen judgment, explicitness, and operational quality, but it must remain
-compatible with the base agent's canonical role and protocol obligations.
+weakening, or silently replacing the kernel contracts. Seniorization may sharpen
+judgment, explicitness, and operational quality, but it must remain compatible
+with the kernel's canonical role and protocol obligations.
 
-If the base agent and Senior Agent Profile conflict on mission, ownership,
+If the kernel source and Senior Agent Profile conflict on mission, ownership,
 role class, status semantics, handoff validity, target safety, or other
 protocol-significant behavior, the future renderer must block with
 `BLOCKED_COMPOSITION_CONFLICT`. It must not choose one source by preference or
@@ -177,8 +186,20 @@ composition invariant is missing or unsafe.
 
 Use these block codes exactly:
 
-- `BLOCKED_SOURCE_MISSING`: a required base agent, Senior Agent Profile, target
-  contract, template contract, or other declared source is absent.
+- `BLOCKED_SOURCE_MISSING`: a required kernel source, Senior Agent Profile,
+  target contract, template contract, or other declared source is absent.
+- `BLOCKED_SOURCE_MODEL_INVALID`: the source model contradicts
+  `SOURCE_MODEL_CONTRACT.md`.
+- `BLOCKED_BASE_AGENT_FINAL_DEPENDENCY`: final render depends on
+  `reference/agents/`.
+- `BLOCKED_KERNEL_SOURCE_MISSING`: a required kernel module or its real minimum
+  documentation/contract bundle is absent.
+- `BLOCKED_KERNEL_COVERAGE_INCOMPLETE`: the 12 canonical agent to kernel module
+  mappings are incomplete.
+- `BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE`: a temporary parity
+  baseline is required as a final source.
+- `BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD`: deprecated field `base_agent_source`
+  appears in final render context shape.
 - `BLOCKED_TEMPLATE_MISSING`: an explicit template is absent for the requested
   target, target-agent pair, or output shape.
 - `BLOCKED_PLACEHOLDER_MISSING`: a common or target-specific required
@@ -187,8 +208,8 @@ Use these block codes exactly:
 - `BLOCKED_UNSAFE_RENDER`: a placeholder value, generated notice, YAML render,
   TOML render, or block render cannot be represented safely for the target.
 - `BLOCKED_COMPOSITION_CONFLICT`: explicit composition sources conflict in a
-  way that would weaken, contradict, or ambiguate the base-agent contract or
-  senior profile.
+  way that would weaken, contradict, or ambiguate the kernel contract or senior
+  profile.
 
 ## Explicit Non-Authorization
 
@@ -201,6 +222,7 @@ This contract does not authorize:
 - GitHub writes;
 - inferred templates;
 - inferred senior profiles;
+- dependency on `reference/agents/` as a final source;
 - changes to `skills/stnl_project_agent_specializer/`;
 - creation or alteration of `.github/**`, `.codex/**`, or `AGENTS.md` in this
   repo root or any target project;

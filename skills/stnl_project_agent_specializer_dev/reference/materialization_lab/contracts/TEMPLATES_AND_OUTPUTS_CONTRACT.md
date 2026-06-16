@@ -92,6 +92,15 @@ may be read only as conceptual reference during this dev-only phase. They must
 never be used as an automatic source for writing, generating, repairing, or
 backfilling templates in the dev skill or in a target project.
 
+## Source Model Boundary
+
+Templates define target output shape only. They must not declare
+`reference/agents/` as a materialization source.
+Deprecated field `base_agent_source` must not appear as a template-driven
+materialization source. Future materialization combines `kernel_source`,
+`senior_profile_source`, and `template_source` under the source, target,
+template, and rendering contracts.
+
 ## Explicit Non-Authorization
 
 This contract does not authorize:
@@ -105,5 +114,6 @@ This contract does not authorize:
 - changes to productive templates;
 - GitHub writes;
 - broad or blind replacement of `vscode`, `VS Code`, or `VS Code/GitHub`;
+- use of `reference/agents/` as a final materialization source;
 - inferring templates from output paths, legacy names, or productive-skill
   files.

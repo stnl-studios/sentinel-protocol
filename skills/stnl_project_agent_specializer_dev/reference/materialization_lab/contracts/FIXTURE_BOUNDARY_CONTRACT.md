@@ -53,6 +53,8 @@ must remain dev-only and must not expand target read/write authority.
 Future fixture tests may validate only controlled materialization-lab behavior,
 including:
 
+- source model composition from `kernel_source`, `senior_profile_source`, and
+  `template_source`;
 - path safety;
 - managed notice detection;
 - unmanaged collision;
@@ -63,6 +65,10 @@ including:
 
 These fixture tests must use simulated target project roots under the
 authorized fixture root only.
+
+Future fixtures, when explicitly authorized, must test the source model
+`kernel_source + senior_profile_source + template_source`. They must not test
+or require a base-agent-driven final source model.
 
 ## Explicit Non-Authorization
 

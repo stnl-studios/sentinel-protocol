@@ -82,7 +82,7 @@ Input:
 
 - requested agent: `planner`
 - requested target: `copilot`
-- base agent: `reference/agents/planner.agent.md`
+- kernel source: `reference/kernel_lab/planner_kernel/`
 - senior profile:
   `reference/seniorization_lab/planner_profile/SENIOR_AGENT_PROFILE.md`
 - explicit template: `reference/templates/copilot/agent.md`
@@ -101,7 +101,7 @@ Input:
 
 - requested agent: `reviewer`
 - requested target: `codex`
-- base agent: `reference/agents/reviewer.agent.md`
+- kernel source: `reference/kernel_lab/reviewer_kernel/`
 - senior profile:
   `reference/seniorization_lab/reviewer_profile/SENIOR_AGENT_PROFILE.md`
 - explicit template: `reference/templates/codex/agent.toml`
@@ -116,6 +116,26 @@ Expected result:
   context plan
 - no `.codex/**` output and no `AGENTS.md` output are written during this
   contract phase
+
+### Source Model Resync From Kernel Sources
+
+Input:
+
+- requested source model: materialization lab dev bundle
+- kernel coverage: all 12 canonical kernel modules under `reference/kernel_lab/`
+- parity baseline: `reference/agents/` exists only as a temporary development
+  parity baseline
+
+Expected result:
+
+- every canonical agent maps to a real `kernel_source`
+- render context planning uses `kernel_source`
+- dry-run planned artifact planning uses `kernel_source`
+- `reference/agents/` is not a final source
+- no fixture, script, generated artifact, persistent report, target real
+  read/write, GitHub write, productive skill change, or real materialization is
+  performed
+- source model resync may report `MATERIALIZATION_SOURCE_MODEL_RESYNC: PASS`
 
 ### Compose `orchestrator` Copilot Agents Block
 
@@ -341,18 +361,32 @@ Expected result:
 - block before writing
 - return `BLOCKED_TEMPLATE_MISSING`
 
-### Missing Base Agent Source
+### Missing Kernel Source
 
 Input:
 
 - requested target: `copilot`
 - requested agent: a canonical agent ID
-- matching `reference/agents/<agent>.agent.md` is absent
+- matching `reference/kernel_lab/<agent>_kernel/` is absent or lacks its real
+  minimum documentation/contract bundle
 
 Expected result:
 
 - block before composing render context
-- return `BLOCKED_SOURCE_MISSING`
+- return `BLOCKED_KERNEL_SOURCE_MISSING`
+
+### Deprecated `base_agent_source` Negative Scenario
+
+Input:
+
+- requested target: `copilot`
+- requested agent: a canonical agent ID
+- deprecated field `base_agent_source` is required as final source
+
+Expected result:
+
+- block before composing render context
+- return `BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD`
 
 ### Missing Senior Profile Source
 
@@ -411,21 +445,35 @@ Expected result:
 - return `BLOCKED_UNSAFE_RENDER`
 - explain that Codex output must be TOML-safe
 
-### Base Agent And Senior Profile Conflict
+### Kernel Source And Senior Profile Conflict
 
 Input:
 
 - requested target: `copilot` or `codex`
 - requested agent: any canonical agent ID
-- base agent and Senior Agent Profile conflict on role class, mission,
+- kernel source and Senior Agent Profile conflict on role class, mission,
   handoff, status semantics, or other protocol-significant behavior
 
 Expected result:
 
 - block before writing
 - return `BLOCKED_COMPOSITION_CONFLICT`
-- explain that seniorization cannot erase or contradict the base-agent
+- explain that seniorization cannot erase or contradict the kernel
   contract
+
+### Base Agent Final Dependency
+
+Input:
+
+- requested target: `copilot` or `codex`
+- requested agent: any canonical agent ID
+- `reference/agents/` is used as a final render, dry-run, or materialization
+  dependency instead of only as a temporary development parity baseline
+
+Expected result:
+
+- block before rendering or dry-run planning
+- return `BLOCKED_BASE_AGENT_FINAL_DEPENDENCY`
 
 ### Productive Template Reuse Attempt
 

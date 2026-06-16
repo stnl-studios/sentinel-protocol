@@ -36,7 +36,7 @@ Each planned artifact entry must include at least:
 - `output_shape`
 - `planned_path`
 - `template_source`
-- `base_agent_source`
+- `kernel_source`
 - `senior_profile_source`
 - `operation`
 - `managed_artifact`
@@ -49,6 +49,18 @@ The plan must be reproducible from the explicit render context required by
 `RENDERING_AND_COMPOSITION_CONTRACT.md` and the explicit target/template
 contracts. Missing source, template, placeholder, render-safety, or composition
 requirements remain blocking before any output decision.
+
+For agent artifacts, `kernel_source` must point to the mapped kernel module
+bundle in `reference/kernel_lab/<agent>_kernel/`. For target-level Codex
+artifacts such as `.codex/config.toml` and `AGENTS.md`, `kernel_source` may be
+`null` because those artifacts are target-level templates rather than
+agent-behavior artifacts.
+
+Deprecated field `base_agent_source` must not appear in final planned artifact
+shape. Optional `base_agent_parity_source`, if used by a separate dev-only
+parity validator, must not be used to plan render, dry-run, or materialization.
+`reference/agents/` is only a temporary development parity baseline.
+The dry-run output plan must not depend on `reference/agents/`.
 
 ## Planned Operations
 
@@ -132,6 +144,18 @@ Use these dry-run and write-boundary block codes exactly:
   contradictory, ambiguous, or unverifiable managed notice.
 - `BLOCKED_DRY_RUN_REQUIRED`: a write, repair, delete, cleanup, or mutation is
   attempted without a prior approved dry-run output plan.
+- `BLOCKED_SOURCE_MODEL_INVALID`: the source model contradicts
+  `SOURCE_MODEL_CONTRACT.md`.
+- `BLOCKED_BASE_AGENT_FINAL_DEPENDENCY`: final dry-run planning depends on
+  `reference/agents/`.
+- `BLOCKED_KERNEL_SOURCE_MISSING`: a required kernel module or its real minimum
+  documentation/contract bundle is absent.
+- `BLOCKED_KERNEL_COVERAGE_INCOMPLETE`: the 12 canonical agent to kernel module
+  mappings are incomplete.
+- `BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE`: a temporary parity
+  baseline is required as a final source.
+- `BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD`: deprecated field `base_agent_source`
+  appears in final dry-run planned artifact shape.
 
 The future planner must also preserve the rendering/composition and template
 blocks defined by earlier contracts:
@@ -158,6 +182,7 @@ This contract does not authorize:
 - GitHub writes;
 - inferred templates;
 - inferred senior profiles;
+- dependency on `reference/agents/` as a final source;
 - overwrite of manual files;
 - real materialization;
 - creation or alteration of `.github/**`, `.codex/**`, or `AGENTS.md` in this

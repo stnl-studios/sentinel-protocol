@@ -51,6 +51,21 @@ const profileByAgent = new Map([
   ["resync", "resync_profile"],
 ]);
 
+const kernelByAgent = new Map([
+  ["orchestrator", "orchestrator_kernel"],
+  ["planner", "planner_kernel"],
+  ["validation-eval-designer", "validation_eval_designer_kernel"],
+  ["execution-package-designer", "execution_package_designer_kernel"],
+  ["designer", "designer_kernel"],
+  ["coder-frontend", "coder_frontend_kernel"],
+  ["coder-backend", "coder_backend_kernel"],
+  ["coder-ios", "coder_ios_kernel"],
+  ["validation-runner", "validation_runner_kernel"],
+  ["reviewer", "reviewer_kernel"],
+  ["finalizer", "finalizer_kernel"],
+  ["resync", "resync_kernel"],
+]);
+
 const targets = [
   {
     id: "copilot",
@@ -73,7 +88,7 @@ const codexGlobalArtifacts = [
     output_shape: ".codex/config.toml",
     planned_path: ".codex/config.toml",
     template_source: "reference/templates/codex/config.toml",
-    base_agent_source: null,
+    kernel_source: null,
     senior_profile_source: null,
   },
   {
@@ -82,7 +97,7 @@ const codexGlobalArtifacts = [
     output_shape: "AGENTS.md",
     planned_path: "AGENTS.md",
     template_source: "reference/templates/codex/AGENTS.md",
-    base_agent_source: null,
+    kernel_source: null,
     senior_profile_source: null,
   },
 ];
@@ -93,7 +108,7 @@ const plannedArtifactFields = [
   "output_shape",
   "planned_path",
   "template_source",
-  "base_agent_source",
+  "kernel_source",
   "senior_profile_source",
   "operation",
   "managed_artifact",
@@ -116,6 +131,12 @@ const recognizedBlockCodes = [
   "BLOCKED_UNMANAGED_COLLISION",
   "BLOCKED_INVALID_MANAGED_NOTICE",
   "BLOCKED_DRY_RUN_REQUIRED",
+  "BLOCKED_SOURCE_MODEL_INVALID",
+  "BLOCKED_BASE_AGENT_FINAL_DEPENDENCY",
+  "BLOCKED_KERNEL_SOURCE_MISSING",
+  "BLOCKED_KERNEL_COVERAGE_INCOMPLETE",
+  "BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE",
+  "BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD",
   "BLOCKED_SOURCE_MISSING",
   "BLOCKED_TEMPLATE_MISSING",
   "BLOCKED_PLACEHOLDER_MISSING",
@@ -233,6 +254,12 @@ function expectedProfileDir(agentId) {
   return `${agentId.replaceAll("-", "_")}_profile`;
 }
 
+function expectedKernelDir(agentId) {
+  return `${agentId.replaceAll("-", "_")}_kernel`;
+}
+
+const deprecatedBaseAgentSourceField = "base_agent_source";
+
 function buildPlanEntry(entry) {
   return {
     ...entry,
@@ -257,7 +284,7 @@ function buildDryRunPlan() {
           output_shape: target.agentOutputShape,
           planned_path: target.agentPathFor(agent),
           template_source: target.agentTemplate,
-          base_agent_source: rel("reference/agents", `${agent}.agent.md`),
+          kernel_source: rel("reference/kernel_lab", kernelByAgent.get(agent)),
           senior_profile_source: rel(
             "reference/seniorization_lab",
             profileByAgent.get(agent),
@@ -316,6 +343,7 @@ async function validateScriptBoundary() {
 
 async function validateRequiredSources() {
   await requireFile("reference/MANIFEST.md");
+  await requireFile(contractPath("SOURCE_MODEL_CONTRACT.md"));
   await requireFile(contractPath("TARGETS_CONTRACT.md"));
   await requireFile(contractPath("TEMPLATES_AND_OUTPUTS_CONTRACT.md"));
   await requireFile(contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"));
@@ -333,24 +361,16 @@ async function validateRequiredSources() {
 }
 
 async function validateCanonicalAgentIds() {
-  const entries = await readTopLevel("reference/agents");
-  const expectedAgentFiles = new Set(
-    agents.map((agent) => `${agent}.agent.md`),
-  );
-
-  for (const entry of entries) {
-    if (!entry.isFile()) {
-      recordFailure(`reference/agents contains non-file item: ${entry.name}`);
-      continue;
-    }
-
-    if (!expectedAgentFiles.has(entry.name)) {
-      recordFailure(`reference/agents contains unexpected item: ${entry.name}`);
-    }
-  }
-
   for (const agent of agents) {
-    await requireFile(rel("reference/agents", `${agent}.agent.md`));
+    const actualKernel = kernelByAgent.get(agent);
+    const expectedKernel = expectedKernelDir(agent);
+    if (actualKernel !== expectedKernel) {
+      recordFailure(
+        `kernel mapping mismatch for ${agent}: expected ${expectedKernel}, got ${actualKernel}`,
+      );
+    }
+    await requireFile(rel("reference/kernel_lab", actualKernel));
+
     const actualProfile = profileByAgent.get(agent);
     const expectedProfile = expectedProfileDir(agent);
     if (actualProfile !== expectedProfile) {
@@ -406,6 +426,11 @@ async function validateDryRunContractAnchors() {
 
   requireAll(content, relativePath, plannedOperations, "planned operation");
   requireAll(content, relativePath, plannedArtifactFields, "planned artifact field");
+  requireAll(content, relativePath, [
+    "kernel_source",
+    "temporary development parity baseline",
+    "Deprecated field `base_agent_source`",
+  ], "source model planned artifact field");
   requireAll(content, relativePath, [
     ".github/agents/<agent>.agent.md",
     ".codex/agents/<agent>.toml",
@@ -486,6 +511,12 @@ async function validatePlannedArtifacts() {
       }
     }
 
+    if (deprecatedBaseAgentSourceField in entry) {
+      recordFailure(
+        `${entry.planned_path} contains deprecated field: ${deprecatedBaseAgentSourceField}`,
+      );
+    }
+
     if (!allowedTargetIds.has(entry.target_id)) {
       recordFailure(`${entry.planned_path} has non-canonical target: ${entry.target_id}`);
     }
@@ -533,7 +564,13 @@ async function validatePlannedArtifacts() {
       if (!expectedCopilotPaths.has(entry.planned_path)) {
         recordFailure(`${entry.planned_path} is not a canonical copilot agent path`);
       }
-      await requireFile(entry.base_agent_source);
+      const expectedKernelSource = rel("reference/kernel_lab", kernelByAgent.get(entry.agent_id));
+      if (entry.kernel_source !== expectedKernelSource) {
+        recordFailure(
+          `${entry.planned_path} kernel_source mismatch: expected ${expectedKernelSource}, got ${entry.kernel_source}`,
+        );
+      }
+      await requireFile(entry.kernel_source);
       await requireFile(entry.senior_profile_source);
     } else if (entry.output_shape === ".codex/agents/*.toml") {
       if (!agents.includes(entry.agent_id)) {
@@ -542,11 +579,18 @@ async function validatePlannedArtifacts() {
       if (!expectedCodexAgentPaths.has(entry.planned_path)) {
         recordFailure(`${entry.planned_path} is not a canonical codex agent path`);
       }
-      await requireFile(entry.base_agent_source);
+      const expectedKernelSource = rel("reference/kernel_lab", kernelByAgent.get(entry.agent_id));
+      if (entry.kernel_source !== expectedKernelSource) {
+        recordFailure(
+          `${entry.planned_path} kernel_source mismatch: expected ${expectedKernelSource}, got ${entry.kernel_source}`,
+        );
+      }
+      await requireFile(entry.kernel_source);
       await requireFile(entry.senior_profile_source);
     } else if (entry.output_shape === ".codex/config.toml") {
       if (
         entry.agent_id !== null ||
+        entry.kernel_source !== null ||
         entry.planned_path !== ".codex/config.toml" ||
         entry.template_source !== "reference/templates/codex/config.toml"
       ) {
@@ -555,6 +599,7 @@ async function validatePlannedArtifacts() {
     } else if (entry.output_shape === "AGENTS.md") {
       if (
         entry.agent_id !== null ||
+        entry.kernel_source !== null ||
         entry.planned_path !== "AGENTS.md" ||
         entry.template_source !== "reference/templates/codex/AGENTS.md"
       ) {

@@ -15,6 +15,7 @@ const textCache = new Map();
 
 const materializationContracts = [
   "TARGETS_CONTRACT.md",
+  "SOURCE_MODEL_CONTRACT.md",
   "TEMPLATES_AND_OUTPUTS_CONTRACT.md",
   "RENDERING_AND_COMPOSITION_CONTRACT.md",
   "DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md",
@@ -66,6 +67,21 @@ const profileByAgent = new Map([
   ["resync", "resync_profile"],
 ]);
 
+const kernelByAgent = new Map([
+  ["orchestrator", "orchestrator_kernel"],
+  ["planner", "planner_kernel"],
+  ["validation-eval-designer", "validation_eval_designer_kernel"],
+  ["execution-package-designer", "execution_package_designer_kernel"],
+  ["designer", "designer_kernel"],
+  ["coder-frontend", "coder_frontend_kernel"],
+  ["coder-backend", "coder_backend_kernel"],
+  ["coder-ios", "coder_ios_kernel"],
+  ["validation-runner", "validation_runner_kernel"],
+  ["reviewer", "reviewer_kernel"],
+  ["finalizer", "finalizer_kernel"],
+  ["resync", "resync_kernel"],
+]);
+
 const commonPlaceholders = [
   "{{AGENT_ID}}",
   "{{AGENT_NAME}}",
@@ -104,10 +120,24 @@ const validationStatuses = [
 ];
 
 const blockCodesByContract = {
+  "reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md": [
+    "BLOCKED_SOURCE_MODEL_INVALID",
+    "BLOCKED_BASE_AGENT_FINAL_DEPENDENCY",
+    "BLOCKED_KERNEL_SOURCE_MISSING",
+    "BLOCKED_KERNEL_COVERAGE_INCOMPLETE",
+    "BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE",
+    "BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD",
+  ],
   "reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md": [
     "BLOCKED_TEMPLATE_MISSING",
   ],
   "reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md": [
+    "BLOCKED_SOURCE_MODEL_INVALID",
+    "BLOCKED_BASE_AGENT_FINAL_DEPENDENCY",
+    "BLOCKED_KERNEL_SOURCE_MISSING",
+    "BLOCKED_KERNEL_COVERAGE_INCOMPLETE",
+    "BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE",
+    "BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD",
     "BLOCKED_SOURCE_MISSING",
     "BLOCKED_TEMPLATE_MISSING",
     "BLOCKED_PLACEHOLDER_MISSING",
@@ -120,6 +150,12 @@ const blockCodesByContract = {
     "BLOCKED_UNMANAGED_COLLISION",
     "BLOCKED_INVALID_MANAGED_NOTICE",
     "BLOCKED_DRY_RUN_REQUIRED",
+    "BLOCKED_SOURCE_MODEL_INVALID",
+    "BLOCKED_BASE_AGENT_FINAL_DEPENDENCY",
+    "BLOCKED_KERNEL_SOURCE_MISSING",
+    "BLOCKED_KERNEL_COVERAGE_INCOMPLETE",
+    "BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE",
+    "BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD",
     "BLOCKED_SOURCE_MISSING",
     "BLOCKED_TEMPLATE_MISSING",
     "BLOCKED_PLACEHOLDER_MISSING",
@@ -282,7 +318,7 @@ async function validateRequiredFiles() {
   }
 
   for (const agent of agents) {
-    await requireFile(rel("reference/agents", `${agent}.agent.md`));
+    await requireFile(rel("reference/kernel_lab", kernelByAgent.get(agent)));
   }
 
   for (const [agent, profileDir] of profileByAgent.entries()) {
@@ -323,17 +359,54 @@ async function validateContractAnchors() {
     "BLOCKED_TEMPLATE_MISSING",
   ], "template/output anchor");
 
+  const sourceModel = await readText(contractPath("SOURCE_MODEL_CONTRACT.md"));
+  requireAll(sourceModel, contractPath("SOURCE_MODEL_CONTRACT.md"), [
+    "Status: documentary/dev-only contract.",
+    "reference/kernel_lab/",
+    "primary behavior source",
+    "reference/agents/",
+    "temporary development parity baseline",
+    "not a final materialization source",
+    "may be removed after final validation",
+    "Deprecated field `base_agent_source`",
+    "deprecated as a materialization source",
+    "base_agent_parity_source",
+    "dev-only parity validation metadata",
+    "kernel_source",
+    "senior_profile_source",
+    "template_source",
+    "target_contract_source",
+    "template_contract_source",
+    "rendering_contract_source",
+    "target real read/write",
+    "fixtures",
+    "generated outputs",
+    "persistent reports",
+    "real materialization",
+  ], "source model anchor");
+  for (const [agent, kernelDir] of kernelByAgent.entries()) {
+    requireAll(sourceModel, contractPath("SOURCE_MODEL_CONTRACT.md"), [
+      agent,
+      kernelDir,
+      rel("reference/kernel_lab", kernelDir),
+    ], `source model kernel mapping: ${agent}`);
+  }
+
   const rendering = await readText(
     contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"),
   );
   requireAll(rendering, contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"), agents, "agent id");
   requireAll(rendering, contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"), [
-    "reference/agents/<agent>.agent.md",
-    "reference/agents/<agent>.md",
+    "reference/kernel_lab/<agent>_kernel/",
     "reference/seniorization_lab/<agent>_profile/SENIOR_AGENT_PROFILE.md",
     "reference/templates/<target>/...",
+    "reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md",
     "reference/materialization_lab/contracts/TARGETS_CONTRACT.md",
     "reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md",
+    "reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md",
+    "primary behavior source",
+    "temporary development parity baseline",
+    "kernel_source",
   ], "composition source");
   requireAll(rendering, contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"), commonPlaceholders, "common placeholder");
   requireAll(rendering, contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"), copilotPlaceholders, "copilot placeholder");
@@ -341,6 +414,11 @@ async function validateContractAnchors() {
 
   const dryRun = await readText(contractPath("DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md"));
   requireAll(dryRun, contractPath("DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md"), plannedOperations, "planned operation");
+  requireAll(dryRun, contractPath("DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md"), [
+    "kernel_source",
+    "Deprecated field `base_agent_source`",
+    "The dry-run output plan must not depend on `reference/agents/`",
+  ], "dry-run source model");
   requireAll(dryRun, contractPath("DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md"), [
     ".github/agents/<agent>.agent.md",
     ".codex/agents/<agent>.toml",
@@ -352,6 +430,8 @@ async function validateContractAnchors() {
   requireAll(validation, contractPath("VALIDATION_HARNESS_CONTRACT.md"), validationStatuses, "validation status");
   requireAll(validation, contractPath("VALIDATION_HARNESS_CONTRACT.md"), agents, "validation matrix agent");
   requireAll(validation, contractPath("VALIDATION_HARNESS_CONTRACT.md"), [
+    "source model validation",
+    "kernel coverage validation",
     "12 agents x `copilot`",
     "12 agents x `codex`",
     "`codex` config",

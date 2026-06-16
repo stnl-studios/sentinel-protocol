@@ -8,10 +8,11 @@ projects.
 
 ## Required Files
 
-Confirm the eleven materialization lab files exist:
+Confirm the twelve materialization lab files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
+- `reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md`
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
@@ -203,15 +204,40 @@ rendering/composition block codes:
 - `BLOCKED_UNSAFE_RENDER`
 - `BLOCKED_COMPOSITION_CONFLICT`
 
+Confirm `contracts/SOURCE_MODEL_CONTRACT.md` contains all six source-model
+block codes:
+
+- `BLOCKED_SOURCE_MODEL_INVALID`
+- `BLOCKED_BASE_AGENT_FINAL_DEPENDENCY`
+- `BLOCKED_KERNEL_SOURCE_MISSING`
+- `BLOCKED_KERNEL_COVERAGE_INCOMPLETE`
+- `BLOCKED_PARITY_BASELINE_REQUIRED_AS_FINAL_SOURCE`
+- `BLOCKED_SOURCE_MODEL_DEPRECATED_FIELD`
+
+Confirm `contracts/SOURCE_MODEL_CONTRACT.md` declares:
+
+- `reference/kernel_lab/` is the primary behavior source.
+- `reference/agents/` is a temporary development parity baseline.
+- `reference/agents/` is not a final materialization source.
+- Deprecated field `base_agent_source` is deprecated as materialization source.
+- `base_agent_parity_source` is dev-only parity validation metadata only.
+- Future materialization uses `kernel_source`, `senior_profile_source`,
+  `template_source`, `target_contract_source`, `template_contract_source`, and
+  `rendering_contract_source`.
+
 Confirm `contracts/RENDERING_AND_COMPOSITION_CONTRACT.md` declares the explicit
 composition sources:
 
-- `reference/agents/<agent>.agent.md`
-- `reference/agents/<agent>.md` as the logical base-agent source slot
+- `reference/kernel_lab/<agent>_kernel/`
 - `reference/seniorization_lab/<agent>_profile/SENIOR_AGENT_PROFILE.md`
 - `reference/templates/<target>/...`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
+- `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
+
+Confirm `contracts/RENDERING_AND_COMPOSITION_CONTRACT.md` declares that
+`reference/agents/` is only a temporary development parity baseline and that
+deprecated field `base_agent_source` must not appear in final render context.
 
 Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains all four
 planned operations:
@@ -229,7 +255,7 @@ required dry-run output-plan fields:
 - `output_shape`
 - `planned_path`
 - `template_source`
-- `base_agent_source`
+- `kernel_source`
 - `senior_profile_source`
 - `operation`
 - `managed_artifact`
@@ -245,6 +271,10 @@ canonical target-root-relative output paths:
 - `.codex/agents/<agent>.toml`
 - `.codex/config.toml`
 - `AGENTS.md`
+
+Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` declares that
+deprecated field `base_agent_source` must not appear in final planned artifact
+shape and that planned agent artifacts use `kernel_source`.
 
 Confirm `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` contains all five
 dry-run/write-boundary block codes:
@@ -287,6 +317,8 @@ Confirm `contracts/VALIDATION_HARNESS_CONTRACT.md` contains all validation
 layers:
 
 - source inventory validation;
+- source model validation;
+- kernel coverage validation;
 - target normalization validation;
 - template coverage validation;
 - placeholder validation;
@@ -491,10 +523,23 @@ Confirm that this implementation remains dev-only and read-only and does not
 create reports, fixtures, generated artifacts, target artifacts, `.github/**`,
 `.codex/**`, or `AGENTS.md`.
 
+Confirm the source model resync criterion is:
+
+- `MATERIALIZATION_SOURCE_MODEL_RESYNC: PASS`
+- `SOURCE_MODEL_CONTRACT.md` exists and is registered.
+- 12 kernel modules are mapped from canonical agent IDs.
+- render context uses `kernel_source`, not deprecated field `base_agent_source`.
+- dry-run planned artifact uses `kernel_source`, not deprecated field `base_agent_source`.
+- base agents are classified only as a temporary development parity baseline.
+- no fixture, script, generated artifact, persistent report, target real
+  read/write, GitHub write, productive skill change, or real materialization is
+  introduced.
+
 ## Source Inventory Validator Checks
 
-Confirm `scripts/materialization_lab/check-source-inventory.mjs` validates
-exactly the 12 canonical base agents under `reference/agents/`:
+Confirm `scripts/materialization_lab/check-source-inventory.mjs` classifies
+the current 12 base-agent snapshots under `reference/agents/` as a temporary
+development parity baseline:
 
 - `orchestrator.agent.md`
 - `planner.agent.md`
@@ -536,8 +581,9 @@ Confirm the source inventory validator fails when
 outside the 12 expected profile directories, `contracts/`, the known global
 audit/validation files, or canonical global items.
 
-Confirm the source inventory validator checks each base agent for identity,
-mission, required output, status/role signal, and handoff or boundary anchors.
+Confirm the source inventory validator checks each current parity baseline
+base-agent snapshot for identity, mission, required output, status/role signal,
+and handoff or boundary anchors without treating it as a final source.
 
 Confirm the source inventory validator checks each Senior Agent Profile for
 identity, profile status, canonical role boundary, documentary/dev-only or
@@ -547,6 +593,26 @@ target-output/write-boundary anchors.
 Confirm the source inventory validator checks the four explicit templates,
 `reference/MANIFEST.md`, `scripts/materialization_lab/check-static.mjs`, and
 its own manifest registration.
+
+Confirm the source inventory validator validates the 12 kernel modules under
+`reference/kernel_lab/` with this explicit mapping:
+
+- `orchestrator` -> `orchestrator_kernel`
+- `planner` -> `planner_kernel`
+- `validation-eval-designer` -> `validation_eval_designer_kernel`
+- `execution-package-designer` -> `execution_package_designer_kernel`
+- `designer` -> `designer_kernel`
+- `coder-frontend` -> `coder_frontend_kernel`
+- `coder-backend` -> `coder_backend_kernel`
+- `coder-ios` -> `coder_ios_kernel`
+- `validation-runner` -> `validation_runner_kernel`
+- `reviewer` -> `reviewer_kernel`
+- `finalizer` -> `finalizer_kernel`
+- `resync` -> `resync_kernel`
+
+Confirm the source inventory validator validates each kernel module has a real
+minimum documentation/contract bundle already present and treats
+`reference/agents/` only as a temporary development parity baseline.
 
 ## Template Coverage Validator Checks
 
@@ -623,7 +689,7 @@ targets:
 Confirm the render-context planner/checker validates every `agent+target` pair
 has explicit sources for:
 
-- base agent source;
+- kernel source;
 - Senior Agent Profile source;
 - explicit template source;
 - target contract source;
@@ -662,7 +728,7 @@ context contains:
 
 - `agent_id`
 - `target_id`
-- `base_agent_source`
+- `kernel_source`
 - `senior_profile_source`
 - `template_source`
 - `target_contract_source`
@@ -746,7 +812,7 @@ Confirm every abstract planned artifact contains:
 - `output_shape`
 - `planned_path`
 - `template_source`
-- `base_agent_source`
+- `kernel_source`
 - `senior_profile_source`
 - `operation`
 - `managed_artifact`
