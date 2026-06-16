@@ -137,6 +137,34 @@ Expected result:
   performed
 - source model resync may report `MATERIALIZATION_SOURCE_MODEL_RESYNC: PASS`
 
+### Validate Modular Senior Profile Inventory
+
+Input:
+
+- requested source inventory: `reference/seniorization_lab/`
+- expected profiles: all 12 canonical `*_profile` directories
+- profile shape: short `SENIOR_AGENT_PROFILE.md` manifest plus four behavior
+  modules under `profile/`
+- validation files: `STATIC_CHECKS.md`, `GOLDEN_SCENARIOS.md`, and
+  `EXCELLENT_PASS_EXPECTATIONS.md` under each profile's `validation/`
+
+Expected result:
+
+- `README.md` at `reference/seniorization_lab/README.md` is accepted as a
+  canonical top-level documentary item
+- each `SENIOR_AGENT_PROFILE.md` is accepted as a short manifest
+- the old 13 monolithic sections are not required in the manifest
+- all four behavior modules are present for every profile
+- every module declares activation metadata, dependencies, and
+  `blocks_if_triggered_but_unloaded: true`
+- modules 02, 03, and 04 depend only on the same agent's
+  identity/boundary module
+- `reference/agents/` remains only a temporary development parity baseline and
+  is not used as a final materialization source
+- no fixture, runtime materializer, target real read/write, `.github/**`,
+  `.codex/**`, `AGENTS.md`, GitHub write, productive skill change, or real
+  materialization is performed
+
 ### Compose `orchestrator` Copilot Agents Block
 
 Input:
@@ -402,6 +430,78 @@ Expected result:
 
 - block before composing render context
 - return `BLOCKED_SOURCE_MISSING`
+
+### Weak Modular Profile Manifest
+
+Input:
+
+- requested source inventory: a canonical Senior Agent Profile
+- `SENIOR_AGENT_PROFILE.md` exists but does not identify the modular profile,
+  status/purpose, dev-only/non-runtime boundary, four behavior modules,
+  lazy-load or activation model, semantic preservation, or write boundary
+
+Expected result:
+
+- block source inventory validation
+- return or report `BLOCKED_WEAK_PROFILE_MANIFEST`
+- do not infer the missing semantics from old monolithic section names
+
+### Recombined Monolithic Profile
+
+Input:
+
+- requested source inventory: a canonical Senior Agent Profile
+- `SENIOR_AGENT_PROFILE.md` attempts to restore the old 13-section profile
+  body instead of remaining a short manifest over behavior modules
+
+Expected result:
+
+- block source inventory validation
+- return or report `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- preserve the approved modular profile shape
+
+### Missing Behavior Module Metadata
+
+Input:
+
+- requested source inventory: a canonical Senior Agent Profile module
+- a behavior module is missing `load_when:`, `do_not_load_when:`,
+  `depends_on:`, or `blocks_if_triggered_but_unloaded: true`
+
+Expected result:
+
+- block source inventory validation
+- return or report the matching block code:
+  `BLOCKED_BEHAVIOR_MODULE_WITHOUT_LOAD_WHEN`,
+  `BLOCKED_BEHAVIOR_MODULE_WITHOUT_DO_NOT_LOAD_WHEN`,
+  `BLOCKED_PROFILE_PART_DEPENDENCY_MISSING`, or
+  `BLOCKED_REQUIRED_MODULE_NOT_LOADED`
+
+### Invalid Behavior Module Dependency
+
+Input:
+
+- requested source inventory: a canonical Senior Agent Profile module
+- module 02, 03, or 04 has empty `depends_on:`, depends on another module
+  instead of module 01, or depends on a different agent's module
+
+Expected result:
+
+- block source inventory validation
+- return or report `BLOCKED_PROFILE_PART_DEPENDENCY_MISSING`
+
+### Load-All By Default Attempt
+
+Input:
+
+- future runtime/materializer attempts to load every behavior module for
+  completeness when only a subset was activated by real demand
+
+Expected result:
+
+- block before runtime prompt assembly or materialization
+- return `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT`
+- explain that lazy load is a safety contract, not an optimization
 
 ### Unknown Target Without Explicit Template
 

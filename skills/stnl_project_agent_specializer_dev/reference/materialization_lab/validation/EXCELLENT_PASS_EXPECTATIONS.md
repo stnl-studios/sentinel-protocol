@@ -217,18 +217,62 @@ performing real materialization.
   `skills/stnl_project_agent_specializer_dev/`.
 - `scripts/materialization_lab/check-source-inventory.mjs` validates exactly
   the 12 canonical kernel modules in `reference/kernel_lab/`, exactly the 12
-  Senior Agent Profiles in `reference/seniorization_lab/`, the explicit
-  kebab-case agent ID to underscore kernel/profile directory mapping, current
-  `reference/agents/` parity baseline classification when present, and absence
-  of non-ignored extra profile directories outside known canonical/global
-  seniorization items.
+  modular Senior Agent Profiles in `reference/seniorization_lab/`, the
+  explicit kebab-case agent ID to underscore kernel/profile directory mapping,
+  current `reference/agents/` parity baseline classification when present, and
+  absence of non-ignored extra profile directories outside known
+  canonical/global seniorization items. `README.md` at
+  `reference/seniorization_lab/README.md` is an accepted top-level
+  documentary item.
 - `scripts/materialization_lab/check-source-inventory.mjs` validates base-agent
   identity, mission, required output, status/role signal, and handoff or
   boundary anchors.
-- `scripts/materialization_lab/check-source-inventory.mjs` validates Senior
-  Agent Profile identity, profile status, canonical role boundary,
-  documentary/dev-only or non-runtime boundary, materialization/runtime
-  non-authorization, and target-output/write-boundary anchors.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates each
+  Senior Agent Profile as a modular bundle, not as the old 13-section
+  monolithic profile. `SENIOR_AGENT_PROFILE.md` is a short manifest and the
+  checker must not require legacy sections such as `## 1. Profile Status` or
+  `## 3. Canonical Role Boundary` inside that manifest.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates each
+  short manifest for identity, status/purpose, documentary/dev-only or
+  non-runtime boundary, the four behavior module paths, lazy-load or activation
+  model, semantic preservation in modules, modular profile linkage,
+  materialization/runtime non-authorization, and target-output/write-boundary
+  anchors.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates each
+  profile contains `README.md`, `SENIOR_AGENT_PROFILE.md`,
+  `profile/01_IDENTITY_AND_BOUNDARY.md`,
+  `profile/02_DECISION_AND_READING.md`,
+  `profile/03_RISK_AND_GATES.md`,
+  `profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`,
+  `validation/STATIC_CHECKS.md`, `validation/GOLDEN_SCENARIOS.md`, and
+  `validation/EXCELLENT_PASS_EXPECTATIONS.md`.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates every
+  behavior module declares `module_id:`, `module_type:`, `agent_id:`,
+  `purpose:`, `load_when:`, `do_not_load_when:`, `depends_on:`, and
+  `blocks_if_triggered_but_unloaded: true`.
+- `scripts/materialization_lab/check-source-inventory.mjs` validates module
+  dependencies fail-closed: module 01 has no behavior-module dependency, and
+  modules 02, 03, and 04 depend only on the same agent's
+  identity/boundary module. Empty dependencies for modules 02, 03, or 04 and
+  cross-agent dependencies block.
+- The source inventory expectations recognize the modular profile block codes
+  `BLOCKED_REQUIRED_MODULE_NOT_LOADED`,
+  `BLOCKED_TRIGGERED_GATE_NOT_LOADED`,
+  `BLOCKED_LAZY_LOAD_TRACE_MISSING`,
+  `BLOCKED_PROFILE_PART_DEPENDENCY_MISSING`,
+  `BLOCKED_BEHAVIOR_MODULE_WITHOUT_LOAD_WHEN`,
+  `BLOCKED_BEHAVIOR_MODULE_WITHOUT_DO_NOT_LOAD_WHEN`,
+  `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT`,
+  `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`,
+  `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`,
+  `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE`,
+  `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`,
+  `BLOCKED_WEAK_PROFILE_MANIFEST`, and `BLOCKED_KERNEL_ANCHOR_LOSS`.
+- Lazy load is accepted only as a safety contract: an activated module is
+  mandatory, a non-activated module must not be loaded for completeness,
+  load-all by default is a violation, and a later runtime/materializer must
+  trace material decisions. This phase validates only the documentary
+  inventory contract and implements no runtime loader or materializer.
 - `scripts/materialization_lab/check-source-inventory.mjs` validates the four
   explicit templates, `reference/MANIFEST.md`,
   `scripts/materialization_lab/check-static.mjs`, and its own manifest
@@ -558,9 +602,11 @@ performing real materialization.
 - The fixture-boundary contract blocks fixture paths, scripts, checkers, or
   outputs that escape `skills/stnl_project_agent_specializer_dev/` with
   `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`.
-- The current separately authorized implementation step is limited to
-  `scripts/materialization_lab/check-static.mjs` as a read-only static contract
-  validator.
+- The current separately authorized implementation is limited to read-only
+  materialization-lab validators under `scripts/materialization_lab/`:
+  `check-static.mjs`, `check-source-inventory.mjs`,
+  `check-template-coverage.mjs`, `check-render-context.mjs`, and
+  `check-dry-run-plan.mjs`.
 - `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` is valid only as evidence that
   the static documentary/dev-only contract bundle and checker registration
   passed; it is not evidence of render correctness, dry-run output correctness,

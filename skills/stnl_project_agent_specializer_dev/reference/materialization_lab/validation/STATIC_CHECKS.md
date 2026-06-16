@@ -555,7 +555,8 @@ development parity baseline:
 - `resync.agent.md`
 
 Confirm `scripts/materialization_lab/check-source-inventory.mjs` validates
-exactly the 12 Senior Agent Profiles under `reference/seniorization_lab/`:
+exactly the 12 modular Senior Agent Profiles under
+`reference/seniorization_lab/`:
 
 - `orchestrator_profile/SENIOR_AGENT_PROFILE.md`
 - `planner_profile/SENIOR_AGENT_PROFILE.md`
@@ -570,6 +571,74 @@ exactly the 12 Senior Agent Profiles under `reference/seniorization_lab/`:
 - `finalizer_profile/SENIOR_AGENT_PROFILE.md`
 - `resync_profile/SENIOR_AGENT_PROFILE.md`
 
+Confirm each Senior Agent Profile directory contains this modular shape:
+
+- `README.md`
+- `SENIOR_AGENT_PROFILE.md`
+- `profile/01_IDENTITY_AND_BOUNDARY.md`
+- `profile/02_DECISION_AND_READING.md`
+- `profile/03_RISK_AND_GATES.md`
+- `profile/04_HANDOFF_EVIDENCE_AND_OUTPUT.md`
+- `validation/STATIC_CHECKS.md`
+- `validation/GOLDEN_SCENARIOS.md`
+- `validation/EXCELLENT_PASS_EXPECTATIONS.md`
+
+Confirm `SENIOR_AGENT_PROFILE.md` is validated as a short manifest, not as the
+old 13-section monolithic profile. The validator must not require legacy
+sections such as `## 1. Profile Status` or
+`## 3. Canonical Role Boundary` inside the manifest.
+
+Confirm each short manifest has robust signals for status/purpose,
+documentary/dev-only and non-runtime boundary, the four behavior module paths,
+lazy-load or activation model, semantic preservation in the modules, modular
+profile linkage, materialization/runtime non-authorization, and target-output
+write boundary.
+
+Confirm the source inventory validator checks each behavior module frontmatter
+for:
+
+- `module_id:`
+- `module_type:`
+- `agent_id:`
+- `purpose:`
+- `load_when:`
+- `do_not_load_when:`
+- `depends_on:`
+- `blocks_if_triggered_but_unloaded: true`
+
+Confirm the source inventory validator treats lazy load as a safety contract:
+activated modules are mandatory, inactive modules must not be loaded for
+completeness, load-all by default is a violation, and material decisions must
+leave a trace in a later runtime/materializer phase.
+
+Confirm module dependencies are validated fail-closed:
+
+- `01_IDENTITY_AND_BOUNDARY` has no behavior-module dependency.
+- `02_DECISION_AND_READING` depends on the same agent's identity/boundary
+  module.
+- `03_RISK_AND_GATES` depends on the same agent's identity/boundary module.
+- `04_HANDOFF_EVIDENCE_AND_OUTPUT` depends on the same agent's
+  identity/boundary module.
+- Empty dependencies for modules 02, 03, or 04 block.
+- Cross-agent dependencies block.
+
+Confirm the source inventory validator recognizes these modular profile block
+codes where applicable:
+
+- `BLOCKED_REQUIRED_MODULE_NOT_LOADED`
+- `BLOCKED_TRIGGERED_GATE_NOT_LOADED`
+- `BLOCKED_LAZY_LOAD_TRACE_MISSING`
+- `BLOCKED_PROFILE_PART_DEPENDENCY_MISSING`
+- `BLOCKED_BEHAVIOR_MODULE_WITHOUT_LOAD_WHEN`
+- `BLOCKED_BEHAVIOR_MODULE_WITHOUT_DO_NOT_LOAD_WHEN`
+- `BLOCKED_AGENT_LOADED_ALL_MODULES_BY_DEFAULT`
+- `BLOCKED_AGENT_DECIDED_WITHOUT_DECISION_MODULE`
+- `BLOCKED_OUTPUT_WITHOUT_HANDOFF_EVIDENCE_MODULE`
+- `BLOCKED_RISK_DECISION_WITHOUT_GATES_MODULE`
+- `BLOCKED_PROFILE_PARTS_RECOMBINED_AS_MONOLITH`
+- `BLOCKED_WEAK_PROFILE_MANIFEST`
+- `BLOCKED_KERNEL_ANCHOR_LOSS`
+
 Confirm the source inventory validator enforces the explicit kebab-case agent
 ID to underscore profile directory mapping.
 
@@ -579,16 +648,17 @@ an extra non-ignored agent item.
 Confirm the source inventory validator fails when
 `reference/seniorization_lab/` contains an extra non-ignored profile directory
 outside the 12 expected profile directories, `contracts/`, the known global
-audit/validation files, or canonical global items.
+audit/validation files, `README.md`, or canonical global items.
 
 Confirm the source inventory validator checks each current parity baseline
 base-agent snapshot for identity, mission, required output, status/role signal,
 and handoff or boundary anchors without treating it as a final source.
 
-Confirm the source inventory validator checks each Senior Agent Profile for
-identity, profile status, canonical role boundary, documentary/dev-only or
-non-runtime boundary, materialization/runtime non-authorization, and
-target-output/write-boundary anchors.
+Confirm the source inventory validator checks each Senior Agent Profile
+manifest and its four behavior modules for modular structure, activation
+metadata, dependency safety, documentary/dev-only or non-runtime boundary,
+materialization/runtime non-authorization, and target-output/write-boundary
+anchors.
 
 Confirm the source inventory validator checks the four explicit templates,
 `reference/MANIFEST.md`, `scripts/materialization_lab/check-static.mjs`, and
