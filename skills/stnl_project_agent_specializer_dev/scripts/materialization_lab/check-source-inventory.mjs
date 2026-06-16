@@ -801,9 +801,81 @@ async function validateFixtureBoundaryInventory() {
     "FIXTURE_SCHEMA.md",
     "projects/README.md",
     "expected_outputs/README.md",
+    "expected_outputs/SNAPSHOT_POLICY.md",
     "lazy_load/README.md",
     "blocked_cases/README.md",
+    "projects/backend_only_happy/FIXTURE.md",
+    "projects/frontend_only_happy/FIXTURE.md",
+    "projects/ios_only_happy/FIXTURE.md",
+    "projects/fullstack_be_fe_happy/FIXTURE.md",
+    "projects/fullstack_be_ios_happy/FIXTURE.md",
+    "projects/fullstack_be_fe_ios_happy/FIXTURE.md",
+    "lazy_load/non_trivial_loads_01/FIXTURE.md",
+    "lazy_load/decision_loads_02/FIXTURE.md",
+    "lazy_load/risk_loads_03/FIXTURE.md",
+    "lazy_load/output_loads_04/FIXTURE.md",
+    "lazy_load/load_all_default_blocks/FIXTURE.md",
+    "lazy_load/module_03_missing_risk_blocks/FIXTURE.md",
+    "lazy_load/module_04_missing_output_blocks/FIXTURE.md",
+    "lazy_load/trace_missing_blocks/FIXTURE.md",
+    "blocked_cases/missing_template/FIXTURE.md",
+    "blocked_cases/inferred_template/FIXTURE.md",
+    "blocked_cases/forbidden_target_path/FIXTURE.md",
+    "blocked_cases/reference_agents_final_source/FIXTURE.md",
+    "blocked_cases/write_github_real/FIXTURE.md",
+    "blocked_cases/write_codex_real/FIXTURE.md",
+    "blocked_cases/write_agents_md_real/FIXTURE.md",
+    "blocked_cases/runtime_materializer_created/FIXTURE.md",
+    "blocked_cases/productive_skill_mutation/FIXTURE.md",
+    "blocked_cases/github_write/FIXTURE.md",
+    "expected_outputs/minimal_copilot_agent_snapshot/FIXTURE.md",
+    "expected_outputs/minimal_codex_agent_snapshot/FIXTURE.md",
+    "expected_outputs/minimal_codex_config_snapshot/FIXTURE.md",
+    "expected_outputs/minimal_agents_md_snapshot/FIXTURE.md",
   ];
+  const authorizedCategoryEntries = {
+    projects: [
+      "README.md",
+      "backend_only_happy",
+      "frontend_only_happy",
+      "ios_only_happy",
+      "fullstack_be_fe_happy",
+      "fullstack_be_ios_happy",
+      "fullstack_be_fe_ios_happy",
+    ],
+    expected_outputs: [
+      "README.md",
+      "SNAPSHOT_POLICY.md",
+      "minimal_copilot_agent_snapshot",
+      "minimal_codex_agent_snapshot",
+      "minimal_codex_config_snapshot",
+      "minimal_agents_md_snapshot",
+    ],
+    lazy_load: [
+      "README.md",
+      "non_trivial_loads_01",
+      "decision_loads_02",
+      "risk_loads_03",
+      "output_loads_04",
+      "load_all_default_blocks",
+      "module_03_missing_risk_blocks",
+      "module_04_missing_output_blocks",
+      "trace_missing_blocks",
+    ],
+    blocked_cases: [
+      "README.md",
+      "missing_template",
+      "inferred_template",
+      "forbidden_target_path",
+      "reference_agents_final_source",
+      "write_github_real",
+      "write_codex_real",
+      "write_agents_md_real",
+      "runtime_materializer_created",
+      "productive_skill_mutation",
+      "github_write",
+    ],
+  };
 
   for (const fixtureFile of expectedFixtureFiles) {
     await requireFile(rel(fixtureRoot, fixtureFile));
@@ -830,12 +902,20 @@ async function validateFixtureBoundaryInventory() {
   for (const category of ["projects", "expected_outputs", "lazy_load", "blocked_cases"]) {
     const categoryPath = rel(fixtureRoot, category);
     const entries = await readdir(abs(categoryPath), { withFileTypes: true });
+    const authorizedEntries = new Set(authorizedCategoryEntries[category]);
     for (const entry of entries) {
       if (isIgnoredName(entry.name)) {
         continue;
       }
-      if (entry.name !== "README.md" || !entry.isFile()) {
-        recordFailure(`${categoryPath} contains premature complete fixture payload: ${entry.name}`);
+      if (!authorizedEntries.has(entry.name)) {
+        recordFailure(`${categoryPath} contains unauthorized complete fixture payload: ${entry.name}`);
+        continue;
+      }
+      if (entry.name.endsWith(".md") && !entry.isFile()) {
+        recordFailure(`${categoryPath}/${entry.name} must be a file`);
+      }
+      if (!entry.name.endsWith(".md") && !entry.isDirectory()) {
+        recordFailure(`${categoryPath}/${entry.name} must be a fixture directory`);
       }
     }
   }

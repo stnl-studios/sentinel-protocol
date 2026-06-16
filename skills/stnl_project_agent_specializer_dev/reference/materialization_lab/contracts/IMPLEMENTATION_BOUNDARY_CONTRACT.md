@@ -30,9 +30,11 @@ A later step may authorize only these dev-only script categories:
 Any script category outside this list is out of scope unless this contract is
 updated first in a documentary/dev-only change.
 
-The fixture-related validator categories are future dev-only validators. This
-phase does not create those validators, does not create new checkers, and does
-not authorize complete fixture cases.
+The fixture-related validator categories are dev-only validators. This phase
+authorizes read-only fixture boundary, lazy-load fixture, and project scenario
+fixture checkers under the materialization-lab script path. Those checkers may
+read fixture files and contracts only; they must not write reports, target
+files, GitHub, productive skill files, or generated outputs.
 
 ## Authorized Future Script Locations
 
@@ -108,7 +110,7 @@ beyond authorized read-only dry-run, or materialization.
 The following remain out of scope:
 
 - runtime materializer;
-- complete fixture creation;
+- runtime fixture creation outside the authorized documentary matrix;
 - target writes;
 - real materialization.
 
@@ -118,7 +120,7 @@ This stage does not authorize:
 
 - creation of scripts;
 - runtime execution;
-- complete fixtures;
+- runtime fixtures outside the authorized documentary matrix;
 - target writes;
 - generated outputs;
 - productive skill changes;

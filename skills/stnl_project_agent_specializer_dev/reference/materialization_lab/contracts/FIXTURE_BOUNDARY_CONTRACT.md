@@ -3,11 +3,18 @@
 Status: documentary/dev-only contract.
 
 This contract defines the boundary for the materialization lab fixture
-skeleton and future controlled fixtures. The current phase creates only the
-fixture root, category READMEs, and documentary schema. It does not create
-complete positive fixtures, complete negative fixtures, rendered snapshots,
-runtime fixtures, fixture scripts, a scenario selector, a lazy-load runtime,
-a renderer, a writer, target artifacts, or a runtime materializer.
+skeleton and controlled fixtures. The previous skeleton phase created the
+fixture root, category READMEs, and documentary schema. This phase authorizes
+complete documentary/dev-only fixture cases only under that root: positive
+project fixtures, lazy-load trace fixtures, blocked-case fixtures, and minimal
+expected-output snapshot fixtures. It does not create rendered outputs,
+runtime fixtures, a scenario selector, a lazy-load runtime, a renderer, a
+writer, target artifacts, or a runtime materializer.
+
+This authorization covers complete positive fixtures and complete negative fixtures
+only as documentary `FIXTURE.md` files. Rendered snapshots remain forbidden;
+expected-output snapshot fixtures are minimal documentary metadata, not
+rendered snapshots.
 
 ## Authorized Fixture Root
 
@@ -16,14 +23,19 @@ The only fixture root is:
 - `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`
 
 The root must contain only documentary/dev-only fixture material and the
-following skeleton:
+authorized fixture material:
 
 - `README.md`
 - `FIXTURE_SCHEMA.md`
 - `projects/README.md`
 - `expected_outputs/README.md`
+- `expected_outputs/SNAPSHOT_POLICY.md`
 - `lazy_load/README.md`
 - `blocked_cases/README.md`
+- authorized `projects/*/FIXTURE.md`
+- authorized `expected_outputs/*/FIXTURE.md`
+- authorized `lazy_load/*/FIXTURE.md`
+- authorized `blocked_cases/*/FIXTURE.md`
 
 The root and schema are mandatory for future fixture work. Missing root blocks
 with `BLOCKED_FIXTURE_ROOT_MISSING`. Missing schema blocks with
@@ -31,7 +43,7 @@ with `BLOCKED_FIXTURE_ROOT_MISSING`. Missing schema blocks with
 
 ## Fixture Schema
 
-Future complete fixtures must follow
+Complete fixtures must follow
 `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md`. The schema is
 documentary only. It does not authorize runtime validation, target real
 read/write, generated outputs, GitHub writes, productive-skill mutation, or a
@@ -62,9 +74,10 @@ Path violations block as follows:
 
 ## Target-Artifact Boundary Inside Fixtures
 
-Fixture-only `.github/**`, `.codex/**`, and `AGENTS.md` may appear only under
-the authorized fixture root as examples or snapshots in a later phase that
-explicitly creates complete fixtures.
+Fixture-only `.github/**`, `.codex/**`, and `AGENTS.md` may appear only as
+documentary strings inside authorized `FIXTURE.md` files or snapshot policy
+fixtures under the authorized fixture root. This phase does not create real
+`.github/**`, `.codex/**`, or `AGENTS.md` files, even inside fixtures.
 
 The same paths outside the authorized fixture root remain prohibited:
 
@@ -87,9 +100,22 @@ materialized output outside the fixture root. Fixture snapshots never authorize
 real target artifacts, target reads, target writes, overwrite of manual files,
 or generated output writes.
 
-## Future Fixture Test Scope
+## Authorized Fixture Matrix
 
-Future fixture tests may validate only controlled materialization-lab behavior,
+The complete documentary fixture matrix authorized in this phase is:
+
+- six positive project fixtures under `projects/`;
+- four positive and four negative lazy-load trace fixtures under
+  `lazy_load/`;
+- ten negative blocked-case fixtures under `blocked_cases/`;
+- `expected_outputs/SNAPSHOT_POLICY.md`;
+- four minimal expected-output snapshot fixtures under `expected_outputs/`.
+
+Any fixture outside this matrix blocks with `BLOCKED_FIXTURE_SCOPE_INVALID`.
+
+## Fixture Test Scope
+
+Fixture tests may validate only controlled materialization-lab behavior,
 including:
 
 - fixture boundary and root containment;
@@ -110,12 +136,12 @@ including:
 - blocked fixture cases;
 - no-write enforcement.
 
-Future fixtures must use simulated target project roots under the authorized
+Fixtures must use simulated target project roots under the authorized
 fixture root only. They must never use a real target project root and must
 never read from or write to a real target project as part of fixture setup,
 fixture execution, or fixture validation.
 
-Future fixtures must test the source model
+Fixtures must test the source model
 `kernel_source + senior_profile_source + template_source`. They must not test
 or require a base-agent-driven final source model, and `reference/agents/`
 must not become a final source.
@@ -170,4 +196,4 @@ Use these fixture-boundary block codes exactly:
 All fixture blocks are fail-closed. A blocked future fixture flow must not
 proceed to fixture creation, target inspection, target mutation, GitHub writes,
 productive-skill mutation, report generation, runtime materializer creation,
-or materialization.
+or materialization. Fixture writes outside root remain prohibited.

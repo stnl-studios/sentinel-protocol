@@ -14,7 +14,8 @@ This phase does not write artifacts.
 The contract only defines how a future materializer must plan writes before any
 write can exist in a separately authorized phase. It must not create runtime
 scripts, generated outputs, target-project files, `.github/**`, `.codex/**`,
-`AGENTS.md`, fixtures, reports, or materialized agents.
+`AGENTS.md`, runtime fixtures outside the authorized documentary matrix,
+reports, or materialized agents.
 
 Future writing, when it exists, may occur only after a dry-run output plan has
 been produced, reviewed, and explicitly approved inside a later phase that
@@ -28,6 +29,10 @@ target-project write, generated artifact write, repair, delete, or cleanup.
 The dry-run output plan is the only allowed decision surface for future writes.
 During this documentary/dev-only phase, every operation in the plan is planned
 only and writes nothing.
+
+Fixture files may document simulated dry-run paths and forbidden real paths as
+strings under `reference/materialization_lab/fixtures/`. Those strings are not
+dry-run reports, not planned writes, and not target reads or writes.
 
 Each planned artifact entry must include at least:
 

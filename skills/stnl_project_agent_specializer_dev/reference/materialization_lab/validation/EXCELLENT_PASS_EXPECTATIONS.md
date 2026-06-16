@@ -792,3 +792,28 @@ project path arguments, reading outside
 `skills/stnl_project_agent_specializer_dev/`, target read/write, drift
 calculation against real target files, mutation of `.github/**`, `.codex/**`,
 or `AGENTS.md`, or changes to `skills/stnl_project_agent_specializer/`.
+
+Do not accept `MATERIALIZATION_FIXTURE_BOUNDARY_CHECK: PASS` if the checker
+accepts target project path arguments, writes reports, writes target files,
+creates real `.github/**`, `.codex/**`, or `AGENTS.md` outside fixtures,
+writes GitHub, changes the productive skill, creates runtime materializer
+files, accepts fixtures outside the authorized matrix, or ignores unknown block
+codes.
+
+Do not accept `MATERIALIZATION_LAZY_LOAD_FIXTURE_CHECK: PASS` if the checker
+implements a loader, accepts target project paths, skips activated/loaded
+module validation, ignores load-all default blocking, ignores missing module
+blocking, ignores missing trace blocking, or writes any output.
+
+Do not accept `MATERIALIZATION_PROJECT_SCENARIO_FIXTURE_CHECK: PASS` if the
+checker accepts target project paths, changes the selected-agent matrix,
+omits `resync` from a future package fixture, omits `designer` where UX is
+simulated, allows inferred templates, allows `reference/agents/` as final
+source, or writes any output.
+
+The verdict `MATERIALIZATION_FIXTURE_CASES_PHASE: PASS` may be declared only
+when all authorized fixtures, snapshot policy, contract updates, validation
+docs, manifest entries, and read-only fixture checkers exist and all
+materialization-lab checks pass without target real read/write, GitHub write,
+productive skill mutation, runtime materializer, renderer, writer, loader, or
+scenario selector creation.

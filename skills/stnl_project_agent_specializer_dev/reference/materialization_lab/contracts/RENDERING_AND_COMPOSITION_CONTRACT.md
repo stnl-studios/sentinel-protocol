@@ -14,8 +14,8 @@ placeholder requirements, escaping requirements, composition blockers, and the
 expected shape of a future render context per agent and target.
 
 This phase must not write `.github/**`, `.codex/**`, `AGENTS.md`, generated
-agent files, generated config files, reports, complete fixtures, or
-target-project artifacts.
+agent files, generated config files, reports, runtime fixtures outside the
+authorized documentary matrix, or target-project artifacts.
 
 ## Composition Sources
 
@@ -102,8 +102,9 @@ real target path.
 
 A future render-context validator may compare an abstract render context
 against fixture expected outputs, but the comparison must remain inside
-`reference/materialization_lab/fixtures/` and must not create snapshots in this
-phase.
+`reference/materialization_lab/fixtures/`. This phase authorizes only minimal
+documentary snapshot fixtures, not full rendered snapshots or generated
+outputs.
 
 ## Common Required Placeholders
 

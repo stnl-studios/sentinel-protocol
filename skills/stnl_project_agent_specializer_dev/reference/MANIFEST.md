@@ -128,17 +128,17 @@ The canonical documentary/dev-only reference bundle is organized as:
   write capability, target mutation, productive mutation, and outputs.
 - `reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md`
   defines the documentary/dev-only fixture boundary for the fixture skeleton
-  and later controlled fixture cases. It states that the current phase creates
-  only the fixture root, category READMEs, and documentary schema; that the
-  only fixture root is
+  and controlled fixture cases. It states that the authorized complete
+  fixtures are documentary `FIXTURE.md` files under the fixture root only; that
+  the only fixture root is
   `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`;
-  that `FIXTURE_SCHEMA.md` is mandatory; that future fixtures must simulate
+  that `FIXTURE_SCHEMA.md` is mandatory; that fixtures must simulate
   controlled target project roots and never use real target project roots;
-  that `.github/**`, `.codex/**`, and `AGENTS.md` may appear only inside the
-  fixture root as fixture-local examples or snapshots and remain prohibited
-  outside it; that future fixture scripts/checkers must accept only paths
-  inside the authorized fixture root; and that fixtures do not authorize target
-  real read/write, GitHub writes, productive-skill changes, real
+  that `.github/**`, `.codex/**`, and `AGENTS.md` may appear only as
+  documentary path strings in fixture-local examples or snapshot fixtures and
+  remain prohibited outside it; that fixture scripts/checkers must accept only
+  paths inside the authorized fixture root; and that fixtures do not authorize
+  target real read/write, GitHub writes, productive-skill changes, real
   materialization, runtime materializer, or overwrite of manual files outside a
   fixture. It blocks missing root/schema, invalid scope, unauthorized fixture
   paths, absolute/traversal paths, real target roots, writes outside root,
@@ -155,6 +155,13 @@ The canonical documentary/dev-only reference bundle is organized as:
   future lazy-load trace fixture category.
 - `reference/materialization_lab/fixtures/blocked_cases/README.md` records the
   future negative blocked-case fixture category.
+- `reference/materialization_lab/fixtures/expected_outputs/SNAPSHOT_POLICY.md`
+  records the minimal documentary snapshot policy for expected-output
+  fixtures.
+- Materialization fixture case files now include six positive project
+  fixtures, eight lazy-load trace fixtures, ten blocked-case fixtures, and
+  four expected-output snapshot fixtures under
+  `reference/materialization_lab/fixtures/`.
 - `scripts/materialization_lab/check-static.mjs` is the first separately
   authorized dev-only static contract validator for the materialization lab. It
   is read-only, has no external package dependency, validates only the dev
@@ -201,6 +208,18 @@ The canonical documentary/dev-only reference bundle is organized as:
   historical-audit changes, runtime materializer behavior, target read/write,
   or real materialization. It validates abstract planned artifacts only and
   does not calculate drift against real target files.
+- `scripts/materialization_lab/check-fixture-boundary.mjs` is the separately
+  authorized read-only fixture boundary checker for the materialization lab.
+  It validates the authorized fixture matrix, schema metadata, target-safety
+  declarations, block codes, and absence of real target artifacts outside
+  fixtures.
+- `scripts/materialization_lab/check-lazy-load-fixtures.mjs` is the separately
+  authorized read-only lazy-load fixture checker. It validates the declared
+  positive and negative lazy-load trace fixtures without implementing a loader.
+- `scripts/materialization_lab/check-project-scenarios.mjs` is the separately
+  authorized read-only project scenario fixture checker. It validates the six
+  positive scenario fixtures and selected-agent matrix without implementing a
+  scenario selector.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -572,11 +591,49 @@ Required files:
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/materialization_lab/fixtures/README.md`
+- `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md`
+- `reference/materialization_lab/fixtures/projects/README.md`
+- `reference/materialization_lab/fixtures/projects/backend_only_happy/FIXTURE.md`
+- `reference/materialization_lab/fixtures/projects/frontend_only_happy/FIXTURE.md`
+- `reference/materialization_lab/fixtures/projects/ios_only_happy/FIXTURE.md`
+- `reference/materialization_lab/fixtures/projects/fullstack_be_fe_happy/FIXTURE.md`
+- `reference/materialization_lab/fixtures/projects/fullstack_be_ios_happy/FIXTURE.md`
+- `reference/materialization_lab/fixtures/projects/fullstack_be_fe_ios_happy/FIXTURE.md`
+- `reference/materialization_lab/fixtures/lazy_load/README.md`
+- `reference/materialization_lab/fixtures/lazy_load/non_trivial_loads_01/FIXTURE.md`
+- `reference/materialization_lab/fixtures/lazy_load/decision_loads_02/FIXTURE.md`
+- `reference/materialization_lab/fixtures/lazy_load/risk_loads_03/FIXTURE.md`
+- `reference/materialization_lab/fixtures/lazy_load/output_loads_04/FIXTURE.md`
+- `reference/materialization_lab/fixtures/lazy_load/load_all_default_blocks/FIXTURE.md`
+- `reference/materialization_lab/fixtures/lazy_load/module_03_missing_risk_blocks/FIXTURE.md`
+- `reference/materialization_lab/fixtures/lazy_load/module_04_missing_output_blocks/FIXTURE.md`
+- `reference/materialization_lab/fixtures/lazy_load/trace_missing_blocks/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/README.md`
+- `reference/materialization_lab/fixtures/blocked_cases/missing_template/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/inferred_template/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/forbidden_target_path/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/reference_agents_final_source/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/write_github_real/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/write_codex_real/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/write_agents_md_real/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/runtime_materializer_created/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/productive_skill_mutation/FIXTURE.md`
+- `reference/materialization_lab/fixtures/blocked_cases/github_write/FIXTURE.md`
+- `reference/materialization_lab/fixtures/expected_outputs/README.md`
+- `reference/materialization_lab/fixtures/expected_outputs/SNAPSHOT_POLICY.md`
+- `reference/materialization_lab/fixtures/expected_outputs/minimal_copilot_agent_snapshot/FIXTURE.md`
+- `reference/materialization_lab/fixtures/expected_outputs/minimal_codex_agent_snapshot/FIXTURE.md`
+- `reference/materialization_lab/fixtures/expected_outputs/minimal_codex_config_snapshot/FIXTURE.md`
+- `reference/materialization_lab/fixtures/expected_outputs/minimal_agents_md_snapshot/FIXTURE.md`
 - `scripts/materialization_lab/check-static.mjs`
 - `scripts/materialization_lab/check-source-inventory.mjs`
 - `scripts/materialization_lab/check-template-coverage.mjs`
 - `scripts/materialization_lab/check-render-context.mjs`
 - `scripts/materialization_lab/check-dry-run-plan.mjs`
+- `scripts/materialization_lab/check-fixture-boundary.mjs`
+- `scripts/materialization_lab/check-lazy-load-fixtures.mjs`
+- `scripts/materialization_lab/check-project-scenarios.mjs`
 - `reference/templates/copilot/agent.md`
 - `reference/templates/codex/agent.toml`
 - `reference/templates/codex/AGENTS.md`

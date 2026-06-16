@@ -1,11 +1,11 @@
 # Expected Output Fixtures
 
-Status: documentary/dev-only category skeleton.
+Status: documentary/dev-only category.
 
-Future expected-output snapshots are fixture-only. They are not real outputs,
+Expected-output snapshot fixtures are fixture-only. They are not real outputs,
 must not be written to a real target, and must not authorize materialization.
 
-Rules for future snapshots:
+Rules for snapshot fixtures:
 
 - Snapshots must derive from explicit `template_source` values.
 - Templates must not be inferred.
@@ -13,4 +13,5 @@ Rules for future snapshots:
   root as fixture-local examples or snapshots.
 - Real `.github/**`, `.codex/**`, and `AGENTS.md` paths outside this root
   remain prohibited.
-- Complete snapshots are not created in this phase.
+- Minimal documentary snapshot fixtures are authorized in this phase, but full
+  rendered outputs are not created.

@@ -1,8 +1,8 @@
 # Blocked Case Fixtures
 
-Status: documentary/dev-only category skeleton.
+Status: documentary/dev-only category.
 
-Future phases may create negative fixture cases for:
+This phase authorizes negative fixture cases for:
 
 - missing template;
 - inferred template;
@@ -18,7 +18,8 @@ Future phases may create negative fixture cases for:
 - productive skill mutation;
 - GitHub write.
 
-Those future cases must use declared block codes, remain fixture-only, and
-never perform the blocked operation against a real target or GitHub.
+Those cases must use declared block codes, remain fixture-only, and never
+perform the blocked operation against a real target or GitHub.
 
-This phase creates no complete blocked-case fixture.
+This phase creates complete blocked-case fixture documents only, not the
+blocked operations themselves.

@@ -1,8 +1,8 @@
 # Project Scenario Fixtures
 
-Status: documentary/dev-only category skeleton.
+Status: documentary/dev-only category.
 
-Future phases may create positive project fixtures for:
+This phase authorizes positive project fixtures for:
 
 - Backend-only
 - Frontend-only
@@ -11,10 +11,10 @@ Future phases may create positive project fixtures for:
 - Fullstack BE + iOS
 - Fullstack BE + FE + iOS
 
-Those future fixtures will validate scenario selection, explicit source model,
-selected agents, simulated target surfaces, and expected dry-run/render
-planning. This phase creates no complete project fixture and no simulated
-target payload.
+These fixtures validate scenario selection, explicit source model, selected
+agents, simulated target surfaces, and expected dry-run/render planning. They
+create no runtime selector and no simulated target payload beyond the
+documentary `FIXTURE.md` files.
 
 Project scenario fixtures must remain inside
 `reference/materialization_lab/fixtures/projects/` and must never read from or

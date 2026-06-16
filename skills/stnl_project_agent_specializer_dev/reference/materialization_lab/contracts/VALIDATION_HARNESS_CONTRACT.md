@@ -18,9 +18,11 @@ does not implement the harness, create scripts, create fixtures, create
 generated outputs, write target files, or mutate the productive skill.
 
 Fixture root and schema documentation may exist only under
-`reference/materialization_lab/fixtures/`. Their presence supports future
-dev-only validation and does not authorize complete fixture cases, target
-read/write, generated outputs, runtime scripts, or runtime materialization.
+`reference/materialization_lab/fixtures/`. Complete documentary fixtures are
+authorized only under that root when they match the fixture matrix declared by
+`FIXTURE_BOUNDARY_CONTRACT.md`. Their presence supports dev-only validation
+and does not authorize target read/write, generated outputs, runtime scripts,
+or runtime materialization.
 
 ## Validation Layers
 
@@ -86,14 +88,20 @@ dry-run, or materialization source.
 
 ## Future Fixture Validation
 
-Future fixture validation must recognize the fixture skeleton:
+Fixture validation must recognize the fixture skeleton and authorized complete
+fixture matrix:
 
 - `reference/materialization_lab/fixtures/README.md`
 - `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md`
 - `reference/materialization_lab/fixtures/projects/README.md`
 - `reference/materialization_lab/fixtures/expected_outputs/README.md`
+- `reference/materialization_lab/fixtures/expected_outputs/SNAPSHOT_POLICY.md`
 - `reference/materialization_lab/fixtures/lazy_load/README.md`
 - `reference/materialization_lab/fixtures/blocked_cases/README.md`
+- six project `FIXTURE.md` files
+- eight lazy-load `FIXTURE.md` files
+- ten blocked-case `FIXTURE.md` files
+- four expected-output snapshot `FIXTURE.md` files
 
 Fixture validation remains documentary/dev-only. It must validate fixture
 boundary, fixture schema, lazy-load trace fixtures, project scenario matrix
@@ -101,8 +109,8 @@ fixtures, expected output snapshot policy, blocked fixture cases, no
 base-agent final source, no inferred templates, no runtime materializer, no
 target real read/write, no GitHub write, and no productive-skill mutation.
 
-The skeleton must not be treated as complete positive or negative fixtures.
-Complete fixture cases and complete snapshots are future work.
+Only the declared matrix is complete in this phase. Any fixture outside that
+matrix remains unauthorized and must fail closed.
 
 ## Structured Validation Report
 
@@ -218,7 +226,8 @@ This contract does not authorize:
 - runtime scripts;
 - target writes;
 - generated outputs;
-- complete fixtures;
+- runtime fixtures;
+- fixtures outside the authorized documentary matrix;
 - productive skill changes;
 - GitHub writes;
 - runtime materializer;

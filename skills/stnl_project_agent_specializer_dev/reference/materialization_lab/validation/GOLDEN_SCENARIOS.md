@@ -969,3 +969,52 @@ Expected result:
 
 - block before fixture creation, fixture validation, or output planning
 - return `BLOCKED_FIXTURE_ESCAPES_DEV_SKILL`
+
+## Materialization Fixture Cases Phase
+
+Expected positive project fixtures:
+
+- `projects/backend_only_happy/FIXTURE.md`
+- `projects/frontend_only_happy/FIXTURE.md`
+- `projects/ios_only_happy/FIXTURE.md`
+- `projects/fullstack_be_fe_happy/FIXTURE.md`
+- `projects/fullstack_be_ios_happy/FIXTURE.md`
+- `projects/fullstack_be_fe_ios_happy/FIXTURE.md`
+
+Expected lazy-load fixtures:
+
+- `lazy_load/non_trivial_loads_01/FIXTURE.md`
+- `lazy_load/decision_loads_02/FIXTURE.md`
+- `lazy_load/risk_loads_03/FIXTURE.md`
+- `lazy_load/output_loads_04/FIXTURE.md`
+- `lazy_load/load_all_default_blocks/FIXTURE.md`
+- `lazy_load/module_03_missing_risk_blocks/FIXTURE.md`
+- `lazy_load/module_04_missing_output_blocks/FIXTURE.md`
+- `lazy_load/trace_missing_blocks/FIXTURE.md`
+
+Expected blocked-case fixtures:
+
+- `blocked_cases/missing_template/FIXTURE.md`
+- `blocked_cases/inferred_template/FIXTURE.md`
+- `blocked_cases/forbidden_target_path/FIXTURE.md`
+- `blocked_cases/reference_agents_final_source/FIXTURE.md`
+- `blocked_cases/write_github_real/FIXTURE.md`
+- `blocked_cases/write_codex_real/FIXTURE.md`
+- `blocked_cases/write_agents_md_real/FIXTURE.md`
+- `blocked_cases/runtime_materializer_created/FIXTURE.md`
+- `blocked_cases/productive_skill_mutation/FIXTURE.md`
+- `blocked_cases/github_write/FIXTURE.md`
+
+Expected output snapshot fixtures:
+
+- `expected_outputs/SNAPSHOT_POLICY.md`
+- `expected_outputs/minimal_copilot_agent_snapshot/FIXTURE.md`
+- `expected_outputs/minimal_codex_agent_snapshot/FIXTURE.md`
+- `expected_outputs/minimal_codex_config_snapshot/FIXTURE.md`
+- `expected_outputs/minimal_agents_md_snapshot/FIXTURE.md`
+
+The expected checker verdicts are:
+
+- `MATERIALIZATION_FIXTURE_BOUNDARY_CHECK: PASS`
+- `MATERIALIZATION_LAZY_LOAD_FIXTURE_CHECK: PASS`
+- `MATERIALIZATION_PROJECT_SCENARIO_FIXTURE_CHECK: PASS`

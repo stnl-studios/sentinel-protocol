@@ -627,7 +627,7 @@ async function validateFixtureBoundaryNonAuthorization() {
   const content = await readText(relativePath);
 
   requireAll(content, relativePath, [
-    "current phase creates only the",
+    "This phase authorizes",
     "complete positive fixtures",
     "complete negative fixtures",
     "runtime fixtures",

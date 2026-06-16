@@ -171,19 +171,19 @@ Implementation-boundary failures block with
 `BLOCKED_SCRIPT_TARGET_MUTATION`, `BLOCKED_SCRIPT_PRODUCTIVE_MUTATION`, or
 `BLOCKED_SCRIPT_OUTPUT_UNAUTHORIZED`.
 
-Fixture-boundary planning now includes the documentary/dev-only skeleton. The
-only fixture root is
+Fixture-boundary planning now includes complete documentary/dev-only fixtures.
+The only fixture root is
 `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`.
-The root contains only `README.md`, `FIXTURE_SCHEMA.md`, and category READMEs
-for `projects/`, `expected_outputs/`, `lazy_load/`, and `blocked_cases/`.
-Complete positive fixtures, negative fixtures, lazy-load trace payloads, and
-expected-output snapshots remain future work.
+The root contains `README.md`, `FIXTURE_SCHEMA.md`, category READMEs, the
+expected-output `SNAPSHOT_POLICY.md`, and the authorized `FIXTURE.md` matrix
+for positive projects, lazy-load traces, blocked cases, and minimal expected
+output snapshots. These are fixture documents only, not runtime payloads.
 
-Future fixtures must simulate controlled target project roots and must never
-use a real target project root. Future fixture scripts/checkers must accept
-only paths inside the authorized fixture root. `.github/**`, `.codex/**`, and
-`AGENTS.md` may appear only inside the fixture root as fixture-local examples
-or snapshots; those paths remain prohibited outside that root.
+Fixtures must simulate controlled target project roots and must never use a
+real target project root. Fixture scripts/checkers must accept only paths
+inside the authorized fixture root. `.github/**`, `.codex/**`, and `AGENTS.md`
+may appear only as documentary path strings inside fixture-local examples or
+snapshot fixtures; those paths remain prohibited outside that root.
 
 Fixture expected outputs are snapshots under the fixture root, not generated
 artifacts and not real target artifacts. They do not authorize target
@@ -200,9 +200,14 @@ absolute-path failures block with `BLOCKED_FIXTURE_ROOT_MISSING`,
 `BLOCKED_FIXTURE_SCHEMA_MISSING`, `BLOCKED_FIXTURE_PATH_TRAVERSAL`, or
 `BLOCKED_FIXTURE_ABSOLUTE_PATH`.
 
-Future fixtures, when explicitly authorized later, must test
-`kernel_source + senior_profile_source + template_source`, not a
-base-agent-driven source model.
+The authorized fixtures test `kernel_source + senior_profile_source +
+template_source`, not a base-agent-driven source model.
+
+The fixture case phase adds these read-only checkers:
+
+- `scripts/materialization_lab/check-fixture-boundary.mjs`
+- `scripts/materialization_lab/check-lazy-load-fixtures.mjs`
+- `scripts/materialization_lab/check-project-scenarios.mjs`
 
 ## Source Model Resync Pass Criterion
 

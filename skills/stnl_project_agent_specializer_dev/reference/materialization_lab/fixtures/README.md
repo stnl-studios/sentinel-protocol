@@ -1,15 +1,17 @@
 # Materialization Lab Fixtures
 
-Status: documentary/dev-only skeleton.
+Status: documentary/dev-only fixture root.
 
 This directory is the only fixture root for the materialization lab:
 
 - `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`
 
-Fixtures in this tree are documentary/dev-only support for future validation.
-They never authorize target real read/write, GitHub writes, runtime
-materialization, a runtime materializer, productive-skill mutation, productive
-template mutation, target writes, or writes outside this fixture root.
+Fixtures in this tree are documentary/dev-only support for validation. Complete
+fixture cases are authorized only inside this root and only as structured
+documentation. They never authorize target real read/write, GitHub writes,
+runtime materialization, a runtime materializer, productive-skill mutation,
+productive template mutation, target writes, or writes outside this fixture
+root.
 
 ## Boundary
 
@@ -26,19 +28,21 @@ template mutation, target writes, or writes outside this fixture root.
   runtime naming, nearby files, or historical outputs.
 - Lazy load is a safety contract, not an optimization.
 - Loading all modules for completeness is a violation.
-- Complete positive and negative fixture cases will be created in a later
-  phase. This skeleton contains only documentation and category roots.
+- Complete positive and negative fixture cases are authorized in this phase
+  only when they match the declared project, lazy-load, blocked-case, and
+  expected-output snapshot matrix.
 
 ## Contents
 
-- `FIXTURE_SCHEMA.md`: documentary schema for future fixture metadata.
-- `projects/`: future positive project scenario fixtures.
-- `expected_outputs/`: future fixture-only expected output snapshots.
-- `lazy_load/`: future lazy-load trace fixtures.
-- `blocked_cases/`: future negative fixture cases.
+- `FIXTURE_SCHEMA.md`: documentary schema for fixture metadata.
+- `projects/`: authorized positive project scenario fixtures.
+- `expected_outputs/`: authorized fixture-only expected output snapshot policy
+  and minimal snapshot fixtures.
+- `lazy_load/`: authorized positive and negative lazy-load trace fixtures.
+- `blocked_cases/`: authorized negative fixture cases.
 
 ## Non-Authorization
 
-This skeleton does not create a project scenario selector, lazy-load runtime,
-renderer, writer, runtime materializer, target artifact, rendered snapshot,
+These fixtures do not create a project scenario selector, lazy-load runtime,
+renderer, writer, runtime materializer, target artifact, rendered output,
 GitHub write, target read, target write, or productive-skill change.

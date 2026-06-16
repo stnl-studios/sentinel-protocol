@@ -53,6 +53,12 @@ Together these templates cover the currently expected canonical output shapes:
 - `codex`: `.codex/config.toml`
 - `codex`: `AGENTS.md`
 
+Fixture expected-output snapshots may cite these explicit templates only as
+documentary source evidence. Minimal snapshot fixtures are authorized under
+`reference/materialization_lab/fixtures/expected_outputs/`, but they must not
+copy full templates, render full outputs, infer templates, or create real
+`.github/**`, `.codex/**`, or `AGENTS.md` files.
+
 ## Explicit Templates Still Missing
 
 No expected canonical output shape is currently listed as missing in this

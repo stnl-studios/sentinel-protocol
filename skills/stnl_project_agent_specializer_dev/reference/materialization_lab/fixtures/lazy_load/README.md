@@ -1,12 +1,12 @@
 # Lazy-Load Fixtures
 
-Status: documentary/dev-only category skeleton.
+Status: documentary/dev-only category.
 
-Future lazy-load fixtures will simulate lazy-load behavior by documented trace
-fixtures. They will not create a runtime loader and will not authorize runtime
+Lazy-load fixtures simulate lazy-load behavior by documented trace fixtures.
+They do not create a runtime loader and do not authorize runtime
 materialization.
 
-Lazy-load safety rules for future fixtures:
+Lazy-load safety rules for fixtures:
 
 - Module 01 is required for non-trivial work.
 - Module 02 is required for non-trivial decisions.
@@ -20,4 +20,5 @@ Lazy-load safety rules for future fixtures:
 - Material output or handoff must leave an output trace.
 - Missing trace blocks.
 
-This phase creates no lazy-load trace fixture.
+This phase authorizes the declared positive and negative lazy-load trace
+fixtures only as documentary `FIXTURE.md` files.

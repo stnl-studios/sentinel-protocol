@@ -46,6 +46,46 @@ const fixtureCategoryDirs = [
   "blocked_cases",
 ];
 
+const authorizedFixtureEntries = {
+  projects: [
+    "backend_only_happy",
+    "frontend_only_happy",
+    "ios_only_happy",
+    "fullstack_be_fe_happy",
+    "fullstack_be_ios_happy",
+    "fullstack_be_fe_ios_happy",
+  ],
+  expected_outputs: [
+    "SNAPSHOT_POLICY.md",
+    "minimal_copilot_agent_snapshot",
+    "minimal_codex_agent_snapshot",
+    "minimal_codex_config_snapshot",
+    "minimal_agents_md_snapshot",
+  ],
+  lazy_load: [
+    "non_trivial_loads_01",
+    "decision_loads_02",
+    "risk_loads_03",
+    "output_loads_04",
+    "load_all_default_blocks",
+    "module_03_missing_risk_blocks",
+    "module_04_missing_output_blocks",
+    "trace_missing_blocks",
+  ],
+  blocked_cases: [
+    "missing_template",
+    "inferred_template",
+    "forbidden_target_path",
+    "reference_agents_final_source",
+    "write_github_real",
+    "write_codex_real",
+    "write_agents_md_real",
+    "runtime_materializer_created",
+    "productive_skill_mutation",
+    "github_write",
+  ],
+};
+
 const templates = [
   "reference/templates/copilot/agent.md",
   "reference/templates/codex/agent.toml",
@@ -221,8 +261,9 @@ const forbiddenAuthorizations = [
   "target writes",
   "generated outputs",
   "generated final artifacts",
-  "fixtures",
-  "fixture creation",
+  "runtime fixtures",
+  "fixtures outside the authorized documentary matrix",
+  "fixture writes outside root",
   "paths outside the authorized fixture root",
   "persistent reports",
   "productive skill changes",
@@ -319,10 +360,14 @@ function hasForbiddenPositiveAuthorization(line, term) {
     "future path",
     "future fixture",
     "future fixtures",
+    "does not create",
+    "not full",
+    "only minimal documentary",
     "later step",
     "later authorization",
     "separately authorized",
     "authorized fixture root",
+    "outside the authorized documentary matrix",
     "blocked_",
     "future outputs",
     "only inside",
@@ -544,12 +589,28 @@ async function validateFixtureSkeleton() {
   for (const categoryDir of fixtureCategoryDirs) {
     const categoryPath = rel(fixtureRoot, categoryDir);
     const entries = await readdir(abs(categoryPath), { withFileTypes: true });
+    const allowedEntries = new Set([
+      "README.md",
+      ...(authorizedFixtureEntries[categoryDir] ?? []),
+    ]);
     for (const entry of entries) {
       if (entry.name === "__MACOSX" || entry.name === ".DS_Store") {
         continue;
       }
-      if (entry.name !== "README.md" || !entry.isFile()) {
-        recordFailure(`${categoryPath} contains premature fixture payload: ${entry.name}`);
+      if (!allowedEntries.has(entry.name)) {
+        recordFailure(`${categoryPath} contains unauthorized fixture payload: ${entry.name}`);
+        continue;
+      }
+      if (entry.name === "README.md" && !entry.isFile()) {
+        recordFailure(`${categoryPath}/README.md must be a file`);
+      } else if (entry.name === "SNAPSHOT_POLICY.md" && !entry.isFile()) {
+        recordFailure(`${categoryPath}/SNAPSHOT_POLICY.md must be a file`);
+      } else if (!["README.md", "SNAPSHOT_POLICY.md"].includes(entry.name)) {
+        if (!entry.isDirectory()) {
+          recordFailure(`${categoryPath}/${entry.name} must be a fixture directory`);
+          continue;
+        }
+        await requireFile(rel(categoryPath, entry.name, "FIXTURE.md"));
       }
     }
   }
@@ -568,7 +629,7 @@ async function validateFixtureSkeleton() {
     "Templates must be explicit",
     "Lazy load is a safety contract",
     "Loading all modules for completeness is a violation",
-    "Complete positive and negative fixture cases will be created in a later",
+    "Complete positive and negative fixture cases are authorized in this phase",
   ], "fixture README boundary");
 
   const fixtureSchema = await readText(rel(fixtureRoot, "FIXTURE_SCHEMA.md"));
@@ -621,7 +682,7 @@ async function validateFixtureSkeleton() {
     "Fullstack BE + FE",
     "Fullstack BE + iOS",
     "Fullstack BE + FE + iOS",
-    "This phase creates no complete project fixture",
+    "This phase authorizes positive project fixtures",
   ], "fixture projects README");
 
   const expectedOutputsReadme = await readText(
@@ -632,7 +693,7 @@ async function validateFixtureSkeleton() {
     "not real outputs",
     "must not be written to a real target",
     "Templates must not be inferred",
-    "Complete snapshots are not created in this phase",
+    "Minimal documentary snapshot fixtures are authorized in this phase",
   ], "fixture expected outputs README");
 
   const lazyLoadReadme = await readText(rel(fixtureRoot, "lazy_load/README.md"));
@@ -645,6 +706,7 @@ async function validateFixtureSkeleton() {
     "Load-all by default blocks",
     "An activated module that is not loaded blocks",
     "Missing trace blocks",
+    "This phase authorizes the declared positive and negative lazy-load trace",
   ], "fixture lazy load README");
 
   const blockedCasesReadme = await readText(rel(fixtureRoot, "blocked_cases/README.md"));
@@ -662,7 +724,7 @@ async function validateFixtureSkeleton() {
     "runtime materializer created",
     "productive skill mutation",
     "GitHub write",
-    "This phase creates no complete blocked-case fixture",
+    "This phase creates complete blocked-case fixture documents only",
   ], "fixture blocked cases README");
 }
 

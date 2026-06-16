@@ -1164,3 +1164,31 @@ checkers, or outputs that escape
 Confirm the contract blocks blind/global replacement of legacy terms and
 preserves historical references unless a separately scoped and justified
 migration authorizes a specific edit.
+
+## Fixture Cases Phase Checks
+
+Confirm the authorized fixture case matrix exists:
+
+- six positive project `FIXTURE.md` files;
+- eight lazy-load `FIXTURE.md` files;
+- ten blocked-case `FIXTURE.md` files;
+- `reference/materialization_lab/fixtures/expected_outputs/SNAPSHOT_POLICY.md`;
+- four minimal expected-output snapshot `FIXTURE.md` files.
+
+Confirm the separately authorized read-only fixture checkers exist:
+
+- `scripts/materialization_lab/check-fixture-boundary.mjs`
+- `scripts/materialization_lab/check-lazy-load-fixtures.mjs`
+- `scripts/materialization_lab/check-project-scenarios.mjs`
+
+Confirm those checkers reject target project path arguments, read only inside
+`skills/stnl_project_agent_specializer_dev/`, validate fixture files without
+writing reports or outputs, and do not create a runtime materializer, runtime
+loader, renderer, writer, scenario selector, target real read/write, GitHub
+write, or productive-skill mutation.
+
+Confirm the expected successful validator outputs are exactly:
+
+- `MATERIALIZATION_FIXTURE_BOUNDARY_CHECK: PASS`
+- `MATERIALIZATION_LAZY_LOAD_FIXTURE_CHECK: PASS`
+- `MATERIALIZATION_PROJECT_SCENARIO_FIXTURE_CHECK: PASS`
