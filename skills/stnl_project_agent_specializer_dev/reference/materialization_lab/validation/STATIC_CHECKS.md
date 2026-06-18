@@ -1,14 +1,14 @@
 # Static Checks
 
 These checks validate only the documentary/dev-only materialization target,
-template, output, rendering, composition, dry-run/write-boundary, validation
-harness, and implementation-boundary contracts. Passing them does not
-authorize runtime materialization, runtime scripts, or writes to target
-projects.
+template, output, rendering, composition, dry-run/write-boundary, dry-run
+report model, materializer interface, validation harness, and
+implementation-boundary contracts. Passing them does not authorize runtime
+materialization, runtime scripts, or writes to target projects.
 
 ## Required Files
 
-Confirm the fourteen materialization lab contract and validation files exist:
+Confirm the fifteen materialization lab contract and validation files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
@@ -17,6 +17,7 @@ Confirm the fourteen materialization lab contract and validation files exist:
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
+- `reference/materialization_lab/contracts/MATERIALIZER_INTERFACE_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
@@ -189,6 +190,55 @@ Confirm the contract preserves planned-only operations
 evidence, requires non-authorization summary, treats lazy-load as a safety
 contract, introduces no new block codes, and does not expand the 9 official
 checks or the Aggregator Checker.
+
+Confirm the documentary/dev-only/read-only Materializer Interface contract
+exists:
+
+- `reference/materialization_lab/contracts/MATERIALIZER_INTERFACE_CONTRACT.md`
+
+Confirm the contract defines only a conceptual dry-run-only boundary between
+validated materialization intent, dry-run-only planning, conceptual planned
+output entries, and conceptual Dry-run Report Model compatibility.
+
+Confirm the contract defines conceptual `materializer_interface_request` and
+`materializer_interface_result` shapes without creating JSON schema, runtime
+payload, executable interface, TypeScript interface, JavaScript module, CLI
+contract, runner, target adapter, writer, renderer, loader, scenario selector,
+write approval, persistent report, or Target real read/write authorization.
+
+Confirm the contract accepts only conceptual inputs that require dry-run,
+forbid Target real read/write, forbid persistent report, forbid GitHub write,
+forbid productive-skill mutation, use final sources, use explicit templates,
+reference existing contracts, preserve lazy-load as safety contract, preserve
+no-write evidence, and preserve non-authorization summary.
+
+Confirm the contract blocks inputs that use `reference/agents/` as final
+source, infer templates, pass Target real absolute paths, request Target real
+read/write, request persistent report, request real materializer, renderer,
+writer, loader, scenario selector, target adapter, write approval, GitHub
+write, productive-skill mutation, real `.github/**`, `.codex/**`, or
+`AGENTS.md` creation outside fixtures, executed operation, applied patch,
+materialized output, commit, branch, or pull request.
+
+Confirm the contract allows only conceptual outputs such as
+`normalized_target_intent`, `resolved_source_plan`, `render_context_plan`,
+`output_plan_entries`, `gate_results`, `lazy_load_trace`,
+`dry_run_report_model_ref`, `blocking_summary`, `no_write_evidence`, and
+`non_authorization_summary`, with operations limited to `CREATE_PLANNED`,
+`UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`.
+
+Confirm the contract forbids executed operation tokens, materialized files,
+generated files, applied patches, Target real paths, persistent report paths,
+runtime payloads, materializer results, renderer outputs, writer outputs,
+loader results, scenario selector results, target adapter results,
+write approval results, GitHub write results, commit hashes, branch names, and
+pull request URLs.
+
+Confirm the contract introduces no new block codes, preserves no-write
+evidence, requires non-authorization summary, keeps `reference/agents/`
+forbidden as final source, treats lazy-load as a safety contract, does not
+execute checkers, does not persist stdout, does not expand the 9 official
+checks, and does not transform the Aggregator Checker into a report generator.
 
 Confirm the separately authorized dev-only read-only fixture to render/dry-run
 integration checker exists:

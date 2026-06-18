@@ -317,6 +317,50 @@ Expected result:
 - the Aggregator Checker remains stdout-only and keeps exactly the 9 official
   read-only checks
 
+### Materializer Interface Contract Is Documented
+
+Input:
+
+- requested validation target: Materializer Interface contract
+- contract:
+  `reference/materialization_lab/contracts/MATERIALIZER_INTERFACE_CONTRACT.md`
+
+Expected result:
+
+- the contract is documentary/dev-only/read-only
+- the future Materializer Interface is defined only as a conceptual
+  dry-run-only boundary between validated materialization intent,
+  dry-run-only planning, planned output entries, and conceptual Dry-run Report
+  Model compatibility
+- conceptual input model includes request identity, requested target,
+  requested agents, source policy, template policy, dry-run policy,
+  validation policy, report model policy, and boundary policy
+- accepted inputs require dry-run, forbid Target real read/write, forbid
+  persistent report, forbid GitHub write, forbid productive-skill mutation,
+  use final sources, use explicit templates, reference existing contracts,
+  preserve lazy-load as a safety contract, preserve no-write evidence, and
+  preserve non-authorization summary
+- blocked inputs include `reference/agents/` as final source, inferred
+  templates, Target real paths, Target real read/write, persistent report,
+  real materializer, renderer, writer, loader, scenario selector, target
+  adapter, write approval, GitHub write, productive-skill mutation, executed
+  operation, applied patch, materialized output, commit, branch, and pull
+  request
+- conceptual outputs are limited to normalized target intent, resolved source
+  plan, render-context plan, planned-only output entries, conceptual gate
+  results, lazy-load trace, Dry-run Report Model reference, blocking summary,
+  no-write evidence, and non-authorization summary
+- `CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and
+  `BLOCKED_PLANNED` remain the only allowed operation tokens
+- executed operation tokens, materialized files, generated files, applied
+  patches, real Target paths, persistent report paths, runtime payloads,
+  materializer results, renderer outputs, writer outputs, loader results,
+  target adapter results, write approval results, GitHub write results, commit
+  hashes, branch names, and pull request URLs are forbidden
+- no new block codes are introduced
+- the Aggregator Checker remains stdout-only and keeps exactly the 9 official
+  read-only checks
+
 ### Validation Harness Aggregator Checker Passes With 9 Valid Checks
 
 Input:

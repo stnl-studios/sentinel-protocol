@@ -11,6 +11,9 @@ It also defines the render-context composition contract, the dry-run
 output-plan and write-boundary contract for future artifact planning, and the
 dry-run report model contract for future simulation evidence without
 persistence, target read/write, or runtime authorization. It also defines the
+materializer interface contract as a documentary/dev-only/read-only conceptual
+boundary between validated intent, dry-run-only planning, planned output
+entries, and the Dry-run Report Model. It also defines the
 validation harness contract for future pre-materialization validation and
 dry-run smoke reporting. It also defines a dedicated documentary/dev-only
 Validation Harness Aggregator contract and a separately authorized
@@ -50,6 +53,17 @@ runtime payloads, target artifacts, or target writes.
   payload, persistent report, report generator, materializer, renderer, writer,
   loader, scenario selector, target adapter, target read/write, GitHub write,
   productive-skill mutation, or final dependency on `reference/agents/`.
+- `contracts/MATERIALIZER_INTERFACE_CONTRACT.md`:
+  documentary/dev-only/read-only contract for a future dry-run-only
+  Materializer Interface as a conceptual boundary. It defines conceptual input
+  and output models, accepted and blocked inputs, allowed and forbidden
+  outputs, lifecycle vocabulary, Dry-run Report Model compatibility,
+  render-context and planned-artifact relationships, lazy-load and no-write
+  evidence requirements, and non-authorization rules. It creates no runtime
+  materializer, executable interface, CLI, runner, target adapter, write
+  approval, renderer, writer, loader, scenario selector, persistent report,
+  Target real read/write, GitHub write, productive-skill mutation, commit,
+  branch, or pull request authorization.
 - `contracts/VALIDATION_HARNESS_CONTRACT.md`: documentary/dev-only validation
   harness and dry-run smoke contract for future pre-materialization checks,
   structured reporting, no-write enforcement, matrix completeness, and
@@ -132,6 +146,15 @@ adapter, renderer, writer, loader, scenario selector, materializer interface,
 or authorization for Target real read/write. It preserves
 `reference/agents/` only as a temporary development parity baseline and never
 as final source.
+
+Materializer interface planning is also contract-only in this phase.
+`MATERIALIZER_INTERFACE_CONTRACT.md` defines a future dry-run-only interface as
+a conceptual boundary from validated materialization intent to dry-run-only
+planning, conceptual planned output entries, and conceptual Dry-run Report
+Model compatibility. It is not an executable interface, TypeScript interface,
+JavaScript module, runtime payload, JSON schema, CLI contract, runner, target
+adapter, write approval protocol, renderer, writer, loader, scenario selector,
+persistent report, or authorization for Target real read/write.
 
 Templates must be explicit. A target, target-agent pair, or output shape
 without an explicit template blocks with `BLOCKED_TEMPLATE_MISSING`; no
@@ -332,6 +355,32 @@ The fixture case phase adds these read-only checkers:
 - lazy-load remains a safety contract, not an optimization;
 - the Aggregator Checker remains the same stdout-only gate over exactly the 9
   current read-only checks and does not become a report generator.
+
+## Materializer Interface Contract Pass Criterion
+
+`MATERIALIZATION_MATERIALIZER_INTERFACE_CONTRACT: PASS` requires:
+
+- `contracts/MATERIALIZER_INTERFACE_CONTRACT.md` exists and is documentary,
+  dev-only, and read-only;
+- the contract defines only a conceptual dry-run-only boundary between
+  validated materialization intent, dry-run-only planning, planned output
+  entries, and the Dry-run Report Model;
+- the contract does not implement or authorize a materializer, executable
+  interface, CLI, runner, target adapter, write approval, renderer, writer,
+  loader, scenario selector, persistent report, Target real read/write,
+  GitHub write, productive-skill mutation, commit, branch, pull request, or
+  real materialization;
+- final sources remain `reference/kernel_lab/`,
+  `reference/seniorization_lab/`, `reference/templates/`, and
+  `reference/materialization_lab/contracts/`;
+- `reference/agents/` remains forbidden as final source;
+- explicit templates, planned-only operations, no-write evidence,
+  non-authorization summary, and lazy-load as safety contract remain
+  mandatory;
+- the Aggregator Checker remains unchanged with exactly the 9 current
+  read-only checks and no report-generator behavior;
+- no new block code is introduced without a separately justified owning
+  contract.
 
 ## Fixture Matrix Pass Criterion
 

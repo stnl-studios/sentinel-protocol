@@ -41,6 +41,24 @@ loader, scenario selector, target adapter, checker, CLI contract, target real
 read/write, GitHub write, productive-skill mutation, or real materialization;
 and does not expand or repurpose the Aggregator Checker.
 
+The verdict `MATERIALIZATION_MATERIALIZER_INTERFACE_CONTRACT: PASS` may be
+declared only when the Materializer Interface contract exists and remains
+documentary/dev-only/read-only; defines only a conceptual dry-run-only boundary
+between validated materialization intent, dry-run-only planning, planned output
+entries, and Dry-run Report Model compatibility; defines conceptual input and
+output models; accepts only dry-run-required, no-target-read, no-target-write,
+no-persistent-report, no-GitHub-write, no-productive-mutation inputs with
+final sources and explicit templates; blocks real Target paths, target
+read/write, persistent reports, runtime materializer, renderer, writer,
+loader, scenario selector, target adapter, write approval, GitHub write,
+productive-skill mutation, executed operations, materialized outputs, applied
+patches, commit, branch, and pull request requests; preserves no-write
+evidence and non-authorization summary; keeps `reference/agents/` forbidden as
+final source; introduces no new block codes; creates no CLI, runner, runtime
+payload, persistent report, executable interface, target adapter, write
+approval, Target real read/write, GitHub write, productive-skill mutation, or
+real materialization; and does not expand or repurpose the Aggregator Checker.
+
 The verdict
 `MATERIALIZATION_VALIDATION_HARNESS_CONTRACT: EXCELLENT PASS` may be declared
 only when the validation harness, dry-run smoke, matrix completeness, no-write,
@@ -192,6 +210,50 @@ runtime/materializer/renderer/writer/loader/scenario selector.
   summary, introduces no new block codes, creates no persistent report, and
   does not transform any validation check or the Aggregator Checker into a
   report generator.
+- `MATERIALIZER_INTERFACE_CONTRACT.md` exists and is classified as
+  documentary/dev-only/read-only.
+- `MATERIALIZER_INTERFACE_CONTRACT.md` defines a future dry-run-only
+  Materializer Interface only as a conceptual boundary between validated
+  materialization intent, dry-run-only planning, conceptual planned output
+  entries, and conceptual Dry-run Report Model compatibility.
+- `MATERIALIZER_INTERFACE_CONTRACT.md` defines conceptual
+  `materializer_interface_request` and `materializer_interface_result` shapes
+  without creating a JSON schema, runtime payload, executable interface,
+  TypeScript interface, JavaScript module, CLI contract, runner, target
+  adapter, writer, renderer, loader, scenario selector, write approval,
+  persistent report, or Target real read/write authorization.
+- `MATERIALIZER_INTERFACE_CONTRACT.md` accepts only conceptual inputs that
+  require dry-run, forbid Target real read/write, forbid persistent report,
+  forbid GitHub write, forbid productive-skill mutation, use final sources,
+  use explicit templates, reference existing contracts, preserve lazy-load as
+  safety contract, preserve no-write evidence, and preserve
+  non-authorization summary.
+- `MATERIALIZER_INTERFACE_CONTRACT.md` blocks inputs that use
+  `reference/agents/` as final source, infer templates, pass Target real
+  absolute paths, request Target real read/write, request persistent report,
+  request real materializer, renderer, writer, loader, scenario selector,
+  target adapter, write approval, GitHub write, productive-skill mutation,
+  real `.github/**`, `.codex/**`, or `AGENTS.md` creation outside fixtures,
+  executed operation, applied patch, materialized output, commit, branch, or
+  pull request.
+- `MATERIALIZER_INTERFACE_CONTRACT.md` allows only conceptual outputs such as
+  `normalized_target_intent`, `resolved_source_plan`, `render_context_plan`,
+  `output_plan_entries`, `gate_results`, `lazy_load_trace`,
+  `dry_run_report_model_ref`, `blocking_summary`, `no_write_evidence`, and
+  `non_authorization_summary`, with operations limited to `CREATE_PLANNED`,
+  `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`.
+- `MATERIALIZER_INTERFACE_CONTRACT.md` forbids executed operation tokens,
+  materialized files, generated files, applied patches, Target real paths,
+  persistent report paths, runtime payloads, materializer results, renderer
+  outputs, writer outputs, loader results, scenario selector results, target
+  adapter results, write approval results, GitHub write results, commit
+  hashes, branch names, and pull request URLs.
+- `MATERIALIZER_INTERFACE_CONTRACT.md` introduces no new block codes, requires
+  no-write evidence and non-authorization summary, keeps
+  `reference/agents/` forbidden as final source, treats lazy-load as a safety
+  contract, does not execute checkers, does not persist stdout, does not
+  expand the 9 official checks, and does not transform the Aggregator Checker
+  into a report generator.
 - `VALIDATION_HARNESS_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - `VALIDATION_HARNESS_CONTRACT.md` states that it does not create runtime
