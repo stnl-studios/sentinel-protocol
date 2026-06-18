@@ -17,10 +17,10 @@ The canonical documentary/dev-only reference bundle is organized as:
   IDs, source model contract, explicit template and output-shape contract,
   missing-template blocking rules, rendering/composition contract,
   dry-run/write-boundary contract, Dry-run Report Model contract,
-  materializer interface contract, validation harness contract, validation
-  harness aggregator contract, implementation-boundary contract,
-  fixture-boundary contract, and validation expectations. This is not a
-  runtime materializer.
+  materializer interface contract, target adapter contract, validation harness
+  contract, validation harness aggregator contract, implementation-boundary
+  contract, fixture-boundary contract, and validation expectations. This is
+  not a runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
   `contracts/` layer, and integrated seniorization validations. These profiles
   are seniorization overlays over the kernel behavior source.
@@ -69,8 +69,12 @@ The canonical documentary/dev-only reference bundle is organized as:
   authorized zero-argument stdout-only aggregator checker over the current 9
   read-only checks, plus the documentary implementation-boundary contract for
   the separately authorized dev-only script layer, plus the documentary
-  fixture-boundary
-  contract, complete documentary fixture matrix, and read-only fixture to
+  target adapter contract for a future dry-run-only conceptual boundary from
+  canonical target intent to target surface description, target-root-relative
+  output planning, simulated target state, path safety, managed-artifact
+  compatibility, and planned-artifact compatibility, plus the documentary
+  fixture-boundary contract, complete documentary fixture matrix, and
+  read-only fixture to
   render/dry-run integration for controlled fixture cases. This phase does not
   authorize runtime
   materialization, generic runner creation,
@@ -138,6 +142,22 @@ The canonical documentary/dev-only reference bundle is organized as:
   mutation, commit, branch, pull request, or final dependency on
   `reference/agents/`. It introduces no new block codes and preserves the
   current 9-check Aggregator unchanged.
+- `reference/materialization_lab/contracts/TARGET_ADAPTER_CONTRACT.md`
+  defines the documentary/dev-only/read-only Target Adapter contract for a
+  future dry-run-only conceptual boundary. It defines canonical target intent,
+  legacy target-term normalization, target surface descriptions,
+  target-root-relative planned output roots, planned path entries, simulated
+  existing state, simulated drift state, path safety, managed-artifact
+  compatibility, Materializer Interface compatibility, Dry-run Report Model
+  compatibility, no-read/no-write evidence, persistence policy, Aggregator
+  boundary, and non-authorization summary. It creates no Target Adapter
+  implementation, executable adapter, CLI, runner, filesystem adapter, path
+  resolver, Target reader, Target writer, drift detector, materializer,
+  renderer, writer, loader, scenario selector, write approval, persistent
+  report, Target real read/write, GitHub write, productive skill mutation,
+  commit, branch, pull request, or final dependency on `reference/agents/`. It
+  introduces no new block codes and preserves the current 9-check Aggregator
+  unchanged.
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
   defines the documentary/dev-only validation harness and dry-run smoke layer
   for future pre-materialization validation. It requires validation before real
@@ -662,6 +682,7 @@ Required files:
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
 - `reference/materialization_lab/contracts/MATERIALIZER_INTERFACE_CONTRACT.md`
+- `reference/materialization_lab/contracts/TARGET_ADAPTER_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`

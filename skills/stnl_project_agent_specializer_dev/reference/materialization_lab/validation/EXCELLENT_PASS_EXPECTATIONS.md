@@ -59,6 +59,30 @@ payload, persistent report, executable interface, target adapter, write
 approval, Target real read/write, GitHub write, productive-skill mutation, or
 real materialization; and does not expand or repurpose the Aggregator Checker.
 
+The verdict `MATERIALIZATION_TARGET_ADAPTER_CONTRACT: PASS` may be declared
+only when the Target Adapter contract exists and remains
+documentary/dev-only/read-only; defines only a conceptual dry-run-only boundary
+between canonical target intent, target surface description,
+target-root-relative output planning, and dry-run-only planned artifact
+compatibility; defines conceptual input and output models; accepts only valid
+canonical target intent, documentary legacy target normalization,
+target-root-relative planned output roots, simulated target state from
+authorized fixtures or documentation, no-target-read, no-target-write,
+no-absolute-host-path, no-persistent-report, no-GitHub-write, and
+no-productive-mutation inputs; blocks real Target paths, host absolute paths,
+Target real read/write, filesystem stat, real drift calculation, real
+directory listing, real `.github/**`, `.codex/**`, or `AGENTS.md` creation,
+Target Adapter implementation, filesystem adapter, path resolver, reader,
+writer, materializer, renderer, loader, scenario selector, write approval,
+persistent report, GitHub write, productive-skill mutation, executed
+operations, materialized outputs, applied patches, commit, branch, and pull
+request requests; preserves no-read/no-write evidence and non-authorization
+summary; keeps `TARGETS_CONTRACT.md` as owner of canonical target IDs; keeps
+`reference/agents/` forbidden as final source; introduces no new block codes;
+creates no CLI, runner, runtime payload, persistent report, executable
+adapter, target real read/write, GitHub write, productive-skill mutation, or
+real materialization; and does not expand or repurpose the Aggregator Checker.
+
 The verdict
 `MATERIALIZATION_VALIDATION_HARNESS_CONTRACT: EXCELLENT PASS` may be declared
 only when the validation harness, dry-run smoke, matrix completeness, no-write,
@@ -254,6 +278,62 @@ runtime/materializer/renderer/writer/loader/scenario selector.
   contract, does not execute checkers, does not persist stdout, does not
   expand the 9 official checks, and does not transform the Aggregator Checker
   into a report generator.
+- `TARGET_ADAPTER_CONTRACT.md` exists and is classified as
+  documentary/dev-only/read-only.
+- `TARGET_ADAPTER_CONTRACT.md` defines a future Target Adapter only as a
+  conceptual dry-run-only boundary between canonical target intent, target
+  surface description, target-root-relative output planning, and dry-run-only
+  planned artifact compatibility.
+- `TARGET_ADAPTER_CONTRACT.md` defines conceptual
+  `target_adapter_request` and `target_adapter_result` shapes without creating
+  a JSON schema, runtime payload, executable adapter, TypeScript interface,
+  JavaScript module, CLI contract, runner, filesystem adapter, path resolver,
+  Target reader, Target writer, drift detector, materializer, renderer,
+  writer, loader, scenario selector, write approval, persistent report, or
+  Target real read/write authorization.
+- `TARGET_ADAPTER_CONTRACT.md` accepts only conceptual inputs that declare a
+  valid canonical target, use target intent rather than a real Target,
+  normalize legacy target terms only documentarily, use target-root-relative
+  planned output roots, use simulated target state only from authorized
+  fixtures or documentation, forbid Target real read/write, forbid absolute
+  host paths, forbid persistent report, forbid GitHub write, forbid
+  productive-skill mutation, preserve path safety, preserve managed-artifact
+  policy, preserve planned-only operations, preserve no-read/no-write
+  evidence, and preserve non-authorization summary.
+- `TARGET_ADAPTER_CONTRACT.md` blocks inputs that pass real Target paths or
+  host absolute paths, request Target real read/write, filesystem stat, real
+  drift calculation, real directory listing, real `.github/**`, `.codex/**`,
+  or `AGENTS.md` creation, Target Adapter implementation, filesystem adapter,
+  path resolver, reader, writer, materializer, renderer, loader, scenario
+  selector, write approval, persistent report, GitHub write,
+  productive-skill mutation, executed operation, applied patch, materialized
+  output, commit, branch, pull request, fixture path as real Target, simulated
+  target path as host path, target inference by real directory, template
+  inference by real path, or `reference/agents/` as final source.
+- `TARGET_ADAPTER_CONTRACT.md` allows only conceptual outputs such as
+  `canonical_target`, `normalized_legacy_terms`, `target_surface_plan`,
+  `planned_output_roots`, `planned_path_entries`,
+  `simulated_existing_state`, `simulated_drift_state`, `path_safety_results`,
+  `managed_artifact_results`, `blocking_summary`,
+  `no_read_no_write_evidence`, and `non_authorization_summary`, with
+  operations limited to `CREATE_PLANNED`, `UPDATE_PLANNED`,
+  `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`.
+- `TARGET_ADAPTER_CONTRACT.md` forbids executed operation tokens,
+  materialized files, generated files, applied patches, Target real paths,
+  host absolute paths, filesystem stat results, real directory listings,
+  existing file contents, real drift results, persistent report paths, runtime
+  payloads, real target adapter results, filesystem adapter results, path
+  resolver results, reader results, writer outputs, materializer results,
+  renderer outputs, loader results, scenario selector results, write approval
+  results, GitHub write results, commit hashes, branch names, and pull request
+  URLs.
+- `TARGET_ADAPTER_CONTRACT.md` states that `TARGETS_CONTRACT.md` remains owner
+  of canonical target IDs and legacy target-term normalization, target
+  surfaces are descriptions only, planned output roots are
+  target-root-relative, existing/drift state is simulated/documentary only,
+  no-read/no-write evidence is required, no new block codes are introduced,
+  the 9 official Aggregator checks are not expanded, and the Aggregator
+  Checker is not transformed into a report generator.
 - `VALIDATION_HARNESS_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - `VALIDATION_HARNESS_CONTRACT.md` states that it does not create runtime

@@ -13,9 +13,13 @@ dry-run report model contract for future simulation evidence without
 persistence, target read/write, or runtime authorization. It also defines the
 materializer interface contract as a documentary/dev-only/read-only conceptual
 boundary between validated intent, dry-run-only planning, planned output
-entries, and the Dry-run Report Model. It also defines the
-validation harness contract for future pre-materialization validation and
-dry-run smoke reporting. It also defines a dedicated documentary/dev-only
+entries, and the Dry-run Report Model. It also defines the target adapter
+contract as a documentary/dev-only/read-only conceptual boundary between
+canonical target intent, target surface description, target-root-relative
+output planning, and dry-run-only planned artifact compatibility. It also
+defines the validation harness contract for future pre-materialization
+validation and dry-run smoke reporting. It also defines a dedicated
+documentary/dev-only
 Validation Harness Aggregator contract and a separately authorized
 zero-argument, stdout-only checker over the current 9 read-only checks. It
 also defines the documentary implementation boundary for the explicitly
@@ -64,6 +68,19 @@ runtime payloads, target artifacts, or target writes.
   approval, renderer, writer, loader, scenario selector, persistent report,
   Target real read/write, GitHub write, productive-skill mutation, commit,
   branch, or pull request authorization.
+- `contracts/TARGET_ADAPTER_CONTRACT.md`: documentary/dev-only/read-only
+  contract for a future dry-run-only conceptual Target Adapter boundary. It
+  defines canonical target intent handling, legacy target-term normalization,
+  target surface descriptions, target-root-relative planned output roots,
+  simulated existing/drift state from fixtures or documentation, path safety,
+  managed-artifact compatibility, Materializer Interface compatibility,
+  Dry-run Report Model compatibility, no-read/no-write evidence, and
+  non-authorization rules. It creates no Target Adapter implementation,
+  executable adapter, CLI, runner, filesystem adapter, path resolver, Target
+  reader, Target writer, drift detector, materializer, renderer, writer,
+  loader, scenario selector, write approval, persistent report, Target real
+  read/write, GitHub write, productive-skill mutation, commit, branch, or pull
+  request authorization.
 - `contracts/VALIDATION_HARNESS_CONTRACT.md`: documentary/dev-only validation
   harness and dry-run smoke contract for future pre-materialization checks,
   structured reporting, no-write enforcement, matrix completeness, and
@@ -154,6 +171,15 @@ planning, conceptual planned output entries, and conceptual Dry-run Report
 Model compatibility. It is not an executable interface, TypeScript interface,
 JavaScript module, runtime payload, JSON schema, CLI contract, runner, target
 adapter, write approval protocol, renderer, writer, loader, scenario selector,
+persistent report, or authorization for Target real read/write.
+
+Target adapter planning is also contract-only in this phase.
+`TARGET_ADAPTER_CONTRACT.md` defines a future dry-run-only conceptual adapter
+boundary from canonical target intent to target surface description,
+target-root-relative output planning, and planned-artifact compatibility. It is
+not an executable adapter, filesystem adapter, path resolver, Target reader,
+Target writer, drift detector, runtime payload, CLI contract, runner,
+materializer, renderer, writer, loader, scenario selector, write approval,
 persistent report, or authorization for Target real read/write.
 
 Templates must be explicit. A target, target-agent pair, or output shape
@@ -376,6 +402,36 @@ The fixture case phase adds these read-only checkers:
 - `reference/agents/` remains forbidden as final source;
 - explicit templates, planned-only operations, no-write evidence,
   non-authorization summary, and lazy-load as safety contract remain
+  mandatory;
+- the Aggregator Checker remains unchanged with exactly the 9 current
+  read-only checks and no report-generator behavior;
+- no new block code is introduced without a separately justified owning
+  contract.
+
+## Target Adapter Contract Pass Criterion
+
+`MATERIALIZATION_TARGET_ADAPTER_CONTRACT: PASS` requires:
+
+- `contracts/TARGET_ADAPTER_CONTRACT.md` exists and is documentary, dev-only,
+  and read-only;
+- the contract defines only a conceptual dry-run-only boundary between
+  canonical target intent, target surface description, target-root-relative
+  output planning, and dry-run-only planned artifact compatibility;
+- the contract does not implement or authorize a Target Adapter, executable
+  adapter, CLI, runner, filesystem adapter, path resolver, Target reader,
+  Target writer, drift detector, materializer, renderer, writer, loader,
+  scenario selector, write approval, persistent report, Target real
+  read/write, GitHub write, productive-skill mutation, commit, branch, pull
+  request, or real materialization;
+- `TARGETS_CONTRACT.md` remains owner of canonical target IDs and legacy
+  target-term normalization;
+- target intent remains separated from any real Target;
+- target surfaces and planned paths remain target-root-relative and
+  documentary;
+- simulated target state and drift remain restricted to authorized fixtures or
+  documentation;
+- planned-only operations, no-read/no-write evidence, non-authorization
+  summary, path safety, managed-artifact policy, and fixture boundary remain
   mandatory;
 - the Aggregator Checker remains unchanged with exactly the 9 current
   read-only checks and no report-generator behavior;

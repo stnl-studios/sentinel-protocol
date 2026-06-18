@@ -240,6 +240,66 @@ forbidden as final source, treats lazy-load as a safety contract, does not
 execute checkers, does not persist stdout, does not expand the 9 official
 checks, and does not transform the Aggregator Checker into a report generator.
 
+Confirm the documentary/dev-only/read-only Target Adapter contract exists:
+
+- `reference/materialization_lab/contracts/TARGET_ADAPTER_CONTRACT.md`
+
+Confirm the contract defines only a conceptual dry-run-only boundary between
+canonical target intent, target surface description, target-root-relative
+output planning, and dry-run-only planned artifact compatibility.
+
+Confirm the contract defines conceptual `target_adapter_request` and
+`target_adapter_result` shapes without creating JSON schema, runtime payload,
+executable adapter, TypeScript interface, JavaScript module, CLI contract,
+runner, filesystem adapter, path resolver, Target reader, Target writer,
+drift detector, materializer, writer, renderer, loader, scenario selector,
+write approval, persistent report, or Target real read/write authorization.
+
+Confirm the contract accepts only conceptual inputs that declare a valid
+canonical target, use target intent rather than a real Target, normalize
+legacy target terms only documentarily, use target-root-relative planned
+output roots, use simulated target state only from authorized fixtures or
+documentation, forbid Target real read/write, forbid absolute host paths,
+forbid persistent report, forbid GitHub write, forbid productive-skill
+mutation, preserve path safety, preserve managed-artifact policy, preserve
+planned-only operations, preserve no-read/no-write evidence, and preserve
+non-authorization summary.
+
+Confirm the contract blocks inputs that pass real Target paths or host
+absolute paths, request Target real read/write, filesystem stat, real drift
+calculation, real directory listing, real creation of `.github/**`,
+`.codex/**`, or `AGENTS.md`, Target Adapter implementation, filesystem
+adapter, path resolver, reader, writer, materializer, renderer, loader,
+scenario selector, write approval, persistent report, GitHub write,
+productive-skill mutation, executed operation, applied patch, materialized
+output, commit, branch, pull request, fixture path as real Target, simulated
+target path as host path, target inference by real directory, template
+inference by real path, or `reference/agents/` as final source.
+
+Confirm the contract allows only conceptual outputs such as
+`canonical_target`, `normalized_legacy_terms`, `target_surface_plan`,
+`planned_output_roots`, `planned_path_entries`, `simulated_existing_state`,
+`simulated_drift_state`, `path_safety_results`, `managed_artifact_results`,
+`blocking_summary`, `no_read_no_write_evidence`, and
+`non_authorization_summary`, with operations limited to `CREATE_PLANNED`,
+`UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`.
+
+Confirm the contract forbids executed operation tokens, materialized files,
+generated files, applied patches, real Target paths, host absolute paths,
+filesystem stat results, real directory listings, existing file contents, real
+drift results, persistent report paths, runtime payloads, real target adapter
+results, filesystem adapter results, path resolver results, reader results,
+writer outputs, materializer results, renderer outputs, loader results,
+scenario selector results, write approval results, GitHub write results,
+commit hashes, branch names, and pull request URLs.
+
+Confirm the contract states that `TARGETS_CONTRACT.md` remains owner of
+canonical target IDs and legacy target-term normalization, target surfaces are
+descriptions only, planned output roots are target-root-relative,
+existing/drift state is simulated/documentary only, no-read/no-write evidence
+is required, the Aggregator Checker remains exactly 9 official checks, and no
+new block codes are introduced without a separately justified owning contract.
+
 Confirm the separately authorized dev-only read-only fixture to render/dry-run
 integration checker exists:
 

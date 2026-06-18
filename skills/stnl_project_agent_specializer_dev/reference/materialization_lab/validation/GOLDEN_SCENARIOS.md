@@ -361,6 +361,63 @@ Expected result:
 - the Aggregator Checker remains stdout-only and keeps exactly the 9 official
   read-only checks
 
+### Target Adapter Contract Is Documented
+
+Input:
+
+- requested validation target: Target Adapter contract
+- contract:
+  `reference/materialization_lab/contracts/TARGET_ADAPTER_CONTRACT.md`
+
+Expected result:
+
+- the contract is documentary/dev-only/read-only
+- the future Target Adapter is defined only as a conceptual dry-run-only
+  boundary between canonical target intent, target surface description,
+  target-root-relative output planning, and dry-run-only planned artifact
+  compatibility
+- conceptual input model includes request identity, target intent, target
+  policy, output surface policy, path policy, existing state policy, drift
+  policy, and boundary policy
+- accepted inputs require a valid canonical target, target intent rather than
+  real Target access, documentary legacy target-term normalization, known
+  output shapes, target-root-relative planned output roots, simulated target
+  state only from authorized fixtures or documentation, no-target-read,
+  no-target-write, no absolute host paths, no persistent report, no GitHub
+  write, no productive-skill mutation, path safety, managed-artifact policy,
+  planned-only operations, no-read/no-write evidence, and
+  non-authorization summary
+- blocked inputs include real Target paths, host absolute paths, Target real
+  read/write, filesystem stat, real drift calculation, real directory listing,
+  real `.github/**`, `.codex/**`, or `AGENTS.md` creation, Target Adapter
+  implementation, filesystem adapter, path resolver, Target reader, Target
+  writer, materializer, renderer, loader, scenario selector, write approval,
+  persistent report, GitHub write, productive-skill mutation, executed
+  operation, applied patch, materialized output, commit, branch, pull request,
+  fixture paths as real Targets, simulated target paths as host paths, target
+  inference by real directory, template inference by real path, and
+  `reference/agents/` as final source
+- conceptual outputs are limited to canonical target, normalized legacy terms,
+  target surface plan, planned output roots, planned path entries, simulated
+  existing state, simulated drift state, path safety results, managed artifact
+  results, blocking summary, no-read/no-write evidence, and
+  non-authorization summary
+- `TARGETS_CONTRACT.md` remains owner of canonical target IDs and legacy
+  target-term normalization
+- `CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and
+  `BLOCKED_PLANNED` remain the only allowed operation tokens
+- executed operation tokens, materialized files, generated files, applied
+  patches, real Target paths, host absolute paths, filesystem stat results,
+  real directory listings, existing file contents, real drift results,
+  persistent report paths, runtime payloads, real adapter results, filesystem
+  adapter results, path resolver results, reader results, writer outputs,
+  materializer results, renderer outputs, loader results, scenario selector
+  results, write approval results, GitHub write results, commit hashes, branch
+  names, and pull request URLs are forbidden
+- no new block codes are introduced
+- the Aggregator Checker remains stdout-only and keeps exactly the 9 official
+  read-only checks
+
 ### Validation Harness Aggregator Checker Passes With 9 Valid Checks
 
 Input:
