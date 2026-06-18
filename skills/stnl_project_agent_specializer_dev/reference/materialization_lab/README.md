@@ -58,10 +58,14 @@ runtime payloads, target artifacts, or target writes.
   renderer, writer, loader, scenario selector, target read/write, GitHub
   write, or productive skill authorization.
 - `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`: documentary/dev-only
-  implementation boundary for a later, separately authorized dev-only script
-  layer. It lists allowed future script categories, script locations, read
-  sources, write prohibitions, output limits, and implementation-boundary block
-  codes, but does not create or authorize scripts in this phase.
+  implementation boundary for explicitly listed dev-only/read-only script
+  categories. The Validation Harness Aggregator checker is one separately
+  authorized category and is permitted only as a zero-argument, stdout-only
+  gate over the official read-only checks. This does not authorize a generic
+  runner, persistent report, dry-run report model, materializer interface,
+  target adapter, write approval, runtime materializer, renderer, writer,
+  loader, scenario selector, target real read/write, GitHub write, productive
+  skill mutation, or real materialization.
 - `contracts/FIXTURE_BOUNDARY_CONTRACT.md`: documentary/dev-only fixture
   boundary for the complete fixture matrix and later controlled fixture cases.
   It

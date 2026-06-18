@@ -217,18 +217,21 @@ Expected result:
 
 Input:
 
-- requested validation target: future Validation Harness Aggregator contract
+- requested validation target: Validation Harness Aggregator contract
 - contract:
   `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 
 Expected result:
 
-- the contract is documentary/dev-only and creates no executable checker,
-  runner, persistent report, dry-run report model, materializer interface,
-  target adapter, write approval protocol, runtime materializer, runtime
-  renderer, runtime writer, runtime loader, runtime scenario selector, target
-  real read/write, GitHub write, productive skill authorization, or final
-  source dependency on `reference/agents/`
+- the contract is documentary/dev-only and separately authorizes only the
+  executable Validation Harness Aggregator checker as a zero-argument,
+  stdout-only, dev-only/read-only gate over the 9 official checks
+- the checker is not a generic runner and creates or authorizes no persistent
+  report, dry-run report model, materializer interface, target adapter, write
+  approval protocol, runtime materializer, runtime renderer, runtime writer,
+  runtime loader, runtime scenario selector, target real read/write, GitHub
+  write, productive skill authorization, real materialization, or final source
+  dependency on `reference/agents/`
 - the official checklist lists exactly the 9 existing read-only child checks
   in order:
   `check-static.mjs`, `check-source-inventory.mjs`,
