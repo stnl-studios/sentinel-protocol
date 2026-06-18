@@ -17,6 +17,9 @@ entries, and the Dry-run Report Model. It also defines the target adapter
 contract as a documentary/dev-only/read-only conceptual boundary between
 canonical target intent, target surface description, target-root-relative
 output planning, and dry-run-only planned artifact compatibility. It also
+defines the write approval protocol contract as a documentary/dev-only/read-only
+conceptual boundary between validated dry-run evidence, approval precondition
+review, conceptual approval state, and a still-no-write boundary. It also
 defines the validation harness contract for future pre-materialization
 validation and dry-run smoke reporting. It also defines a dedicated
 documentary/dev-only
@@ -81,6 +84,21 @@ runtime payloads, target artifacts, or target writes.
   loader, scenario selector, write approval, persistent report, Target real
   read/write, GitHub write, productive-skill mutation, commit, branch, or pull
   request authorization.
+- `contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md`:
+  documentary/dev-only/read-only contract for a future conceptual Write
+  Approval Protocol boundary. It defines conceptual request and result models,
+  approval-state vocabulary, accepted and blocked approval requests, required
+  preconditions, required evidence bundle, Dry-run Report Model compatibility,
+  Materializer Interface compatibility, Target Adapter compatibility,
+  planned-artifact, path-safety, managed-artifact, source/template, drift,
+  no-read/no-write, human-approval, persistence, Aggregator, block-code, and
+  non-authorization rules. It creates no real write approval, write
+  authorization, approval token, approval registry, persistent approval state,
+  signer, writer, Target writer, filesystem writer, materializer, Target
+  Adapter, CLI, runner, persistent report, Target real read/write, GitHub
+  write, productive-skill mutation, commit, branch, pull request, applied
+  patch, generated file, materialized output, or final dependency on
+  `reference/agents/`.
 - `contracts/VALIDATION_HARNESS_CONTRACT.md`: documentary/dev-only validation
   harness and dry-run smoke contract for future pre-materialization checks,
   structured reporting, no-write enforcement, matrix completeness, and
@@ -181,6 +199,17 @@ not an executable adapter, filesystem adapter, path resolver, Target reader,
 Target writer, drift detector, runtime payload, CLI contract, runner,
 materializer, renderer, writer, loader, scenario selector, write approval,
 persistent report, or authorization for Target real read/write.
+
+Write approval protocol planning is also contract-only in this phase.
+`WRITE_APPROVAL_PROTOCOL_CONTRACT.md` defines a future conceptual approval
+boundary from validated dry-run evidence to approval precondition review,
+conceptual approval state, and still-no-write evidence. It is not an approval
+implementation, executable gate, token issuer, registry, persistent approval
+state, signer, writer, Target writer, filesystem writer, materializer, Target
+Adapter, CLI, runner, persistent report, Target real read/write authorization,
+GitHub write authorization, productive-skill mutation authorization, commit,
+branch, pull request, generated output, applied patch, or materialization
+authorization.
 
 Templates must be explicit. A target, target-agent pair, or output shape
 without an explicit template blocks with `BLOCKED_TEMPLATE_MISSING`; no
@@ -433,6 +462,45 @@ The fixture case phase adds these read-only checkers:
 - planned-only operations, no-read/no-write evidence, non-authorization
   summary, path safety, managed-artifact policy, and fixture boundary remain
   mandatory;
+- the Aggregator Checker remains unchanged with exactly the 9 current
+  read-only checks and no report-generator behavior;
+- no new block code is introduced without a separately justified owning
+  contract.
+
+## Write Approval Protocol Contract Pass Criterion
+
+`MATERIALIZATION_WRITE_APPROVAL_PROTOCOL: PASS` requires:
+
+- `contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md` exists and is documentary,
+  dev-only, and read-only;
+- the contract defines only a conceptual boundary between validated dry-run
+  evidence, approval precondition review, conceptual approval state, and
+  still-no-write evidence;
+- the contract defines conceptual `write_approval_request`,
+  `write_approval_result`, and `write_approval_evidence_bundle` shapes without
+  creating JSON schema, runtime payload, executable interface, CLI, runner,
+  token issuer, approval registry, persistent approval state, signer, writer,
+  Target writer, filesystem writer, materializer, Target Adapter, persistent
+  report, or Target real read/write authorization;
+- accepted requests require dry-run evidence, Dry-run Report Model evidence,
+  Materializer Interface evidence, Target Adapter evidence, planned-only
+  output entries, final sources, explicit templates, path safety,
+  managed-artifact compatibility, no-read/no-write evidence, and
+  non-authorization summary;
+- blocked requests include real write approval, real Target read/write,
+  writer, materializer, Target Adapter, renderer, loader, scenario selector,
+  persistent report, approval token, signer, registry, persistent approval
+  state, GitHub write, commit, branch, pull request, applied patch,
+  materialized output, generated file, executed operation, unsafe path,
+  unmanaged collision, invalid managed notice, real drift, inferred template,
+  and `reference/agents/` as final source;
+- allowed states are only `APPROVAL_NOT_REQUESTED`,
+  `APPROVAL_CONCEPTUALLY_ELIGIBLE`, `APPROVAL_BLOCKED`, and
+  `APPROVAL_OUT_OF_SCOPE`, and no state authorizes writing;
+- the contract preserves planned-only operations, no-read/no-write evidence,
+  non-authorization summary, Dry-run Report Model non-persistence,
+  conceptual Materializer Interface, conceptual Target Adapter, explicit
+  templates, and final source roots;
 - the Aggregator Checker remains unchanged with exactly the 9 current
   read-only checks and no report-generator behavior;
 - no new block code is introduced without a separately justified owning

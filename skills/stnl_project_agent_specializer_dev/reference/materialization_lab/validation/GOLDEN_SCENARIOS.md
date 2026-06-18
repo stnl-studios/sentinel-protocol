@@ -418,6 +418,60 @@ Expected result:
 - the Aggregator Checker remains stdout-only and keeps exactly the 9 official
   read-only checks
 
+### Write Approval Protocol Contract Is Documented
+
+Input:
+
+- requested validation target: Write Approval Protocol contract
+- contract:
+  `reference/materialization_lab/contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md`
+
+Expected result:
+
+- the contract is documentary/dev-only/read-only
+- the future Write Approval Protocol is defined only as a conceptual boundary
+  between validated dry-run evidence, approval precondition review,
+  conceptual approval state, and still-no-write evidence
+- conceptual input model includes request identity, dry-run evidence, source
+  evidence, template evidence, Target Adapter evidence, planned artifact
+  evidence, path safety evidence, managed artifact evidence,
+  no-read/no-write evidence, and boundary policy
+- conceptual output model includes result identity, boundary result,
+  approval state, approval preconditions, evidence summary, blocking summary,
+  still-no-write evidence, and non-authorization summary
+- accepted requests require Dry-run Report Model evidence, Materializer
+  Interface evidence, Target Adapter evidence, planned-only output entries,
+  final sources, explicit templates, path safety, managed-artifact
+  compatibility, no-read/no-write evidence, non-authorization summary,
+  documentary human review policy, and prohibited write execution policy
+- blocked requests include real write approval, Target real read/write,
+  writer, Target writer, filesystem writer, materializer, Target Adapter,
+  renderer, loader, scenario selector, persistent report, approval token,
+  signer, approval registry, persistent approval state, CLI, runner, GitHub
+  write, commit, branch, pull request, applied patch, materialized output,
+  generated file, executed operation, unsafe path, unmanaged collision,
+  invalid managed notice, real Target path, host absolute path, real drift,
+  inferred template, missing no-read/no-write evidence, missing
+  non-authorization summary, and `reference/agents/` as final source
+- allowed states are only `APPROVAL_NOT_REQUESTED`,
+  `APPROVAL_CONCEPTUALLY_ELIGIBLE`, `APPROVAL_BLOCKED`, and
+  `APPROVAL_OUT_OF_SCOPE`
+- `APPROVAL_CONCEPTUALLY_ELIGIBLE` means only that documentary
+  preconditions would be satisfied and does not authorize real writing
+- forbidden approval aliases such as `APPROVED`, `WRITE_APPROVED`,
+  `APPROVAL_GRANTED`, `READY_TO_WRITE`, `WRITE_UNLOCKED`,
+  `EXECUTION_APPROVED`, and `MERGE_APPROVED` remain prohibited except as
+  forbidden examples
+- no approval token, approval registry, persistent approval state, signer,
+  write execution ID, writer result, materializer result, real target adapter
+  result, persistent report path, Target real path, applied patch, commit
+  hash, branch name, pull request URL, GitHub write result, generated file, or
+  materialized file is produced
+- no new block codes are introduced
+- the Aggregator Checker remains stdout-only, keeps exactly the 9 official
+  read-only checks, and does not become a write approval validator or report
+  generator
+
 ### Validation Harness Aggregator Checker Passes With 9 Valid Checks
 
 Input:

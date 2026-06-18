@@ -17,10 +17,10 @@ The canonical documentary/dev-only reference bundle is organized as:
   IDs, source model contract, explicit template and output-shape contract,
   missing-template blocking rules, rendering/composition contract,
   dry-run/write-boundary contract, Dry-run Report Model contract,
-  materializer interface contract, target adapter contract, validation harness
-  contract, validation harness aggregator contract, implementation-boundary
-  contract, fixture-boundary contract, and validation expectations. This is
-  not a runtime materializer.
+  materializer interface contract, target adapter contract, write approval
+  protocol contract, validation harness contract, validation harness
+  aggregator contract, implementation-boundary contract, fixture-boundary
+  contract, and validation expectations. This is not a runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
   `contracts/` layer, and integrated seniorization validations. These profiles
   are seniorization overlays over the kernel behavior source.
@@ -73,6 +73,9 @@ The canonical documentary/dev-only reference bundle is organized as:
   canonical target intent to target surface description, target-root-relative
   output planning, simulated target state, path safety, managed-artifact
   compatibility, and planned-artifact compatibility, plus the documentary
+  write approval protocol contract for a future conceptual boundary from
+  validated dry-run evidence to approval precondition review, conceptual
+  approval state, and still-no-write evidence, plus the documentary
   fixture-boundary contract, complete documentary fixture matrix, and
   read-only fixture to
   render/dry-run integration for controlled fixture cases. This phase does not
@@ -82,7 +85,8 @@ The canonical documentary/dev-only reference bundle is organized as:
   changes, GitHub writes, inferred templates, inferred senior profiles,
   generated outputs, runtime scripts, complete fixtures, target project
   mutation, overwrite of manual files, validation writes, or a final
-  materializer.
+  materializer, approval token, approval registry, persistent approval state,
+  writer, Target writer, filesystem writer, commit, branch, or pull request.
 - `reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md` defines
   `reference/kernel_lab/` as the primary behavior source,
   `reference/seniorization_lab/` as seniorization overlay,
@@ -158,6 +162,26 @@ The canonical documentary/dev-only reference bundle is organized as:
   commit, branch, pull request, or final dependency on `reference/agents/`. It
   introduces no new block codes and preserves the current 9-check Aggregator
   unchanged.
+- `reference/materialization_lab/contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md`
+  defines the documentary/dev-only/read-only Write Approval Protocol contract
+  for a future conceptual boundary between validated dry-run evidence,
+  approval precondition review, conceptual approval state, and still-no-write
+  evidence. It defines conceptual `write_approval_request`,
+  `write_approval_result`, and `write_approval_evidence_bundle` shapes,
+  approval-state vocabulary, accepted and blocked approval requests, required
+  preconditions, evidence bundle rules, Dry-run Report Model compatibility,
+  Materializer Interface compatibility, Target Adapter compatibility,
+  planned-artifact/path-safety/managed-artifact compatibility, source/template
+  rules, drift and existing-state rules, no-read/no-write evidence, human
+  approval boundary, persistence policy, Aggregator boundary, and
+  non-authorization summary. It creates no real write approval, write
+  authorization, approval token, approval registry, persistent approval state,
+  signer, writer, Target writer, filesystem writer, materializer, Target
+  Adapter, renderer, loader, scenario selector, CLI, runner, persistent
+  report, Target real read/write, GitHub write, productive skill mutation,
+  commit, branch, pull request, applied patch, materialized output, generated
+  file, or final dependency on `reference/agents/`. It introduces no new block
+  codes and preserves the current 9-check Aggregator unchanged.
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
   defines the documentary/dev-only validation harness and dry-run smoke layer
   for future pre-materialization validation. It requires validation before real
@@ -683,6 +707,7 @@ Required files:
 - `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
 - `reference/materialization_lab/contracts/MATERIALIZER_INTERFACE_CONTRACT.md`
 - `reference/materialization_lab/contracts/TARGET_ADAPTER_CONTRACT.md`
+- `reference/materialization_lab/contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`

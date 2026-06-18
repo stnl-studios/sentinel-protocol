@@ -83,6 +83,26 @@ creates no CLI, runner, runtime payload, persistent report, executable
 adapter, target real read/write, GitHub write, productive-skill mutation, or
 real materialization; and does not expand or repurpose the Aggregator Checker.
 
+The verdict `MATERIALIZATION_WRITE_APPROVAL_PROTOCOL: PASS` may be declared
+only when the Write Approval Protocol contract exists and remains
+documentary/dev-only/read-only; defines only a conceptual boundary between
+validated dry-run evidence, approval precondition review, conceptual approval
+state, and still-no-write evidence; defines conceptual input, output, and
+evidence bundle models; accepts only dry-run-backed, final-source,
+explicit-template, planned-only, path-safe, managed-artifact-compatible,
+no-read/no-write requests with non-authorization summary; blocks real write
+approval, Target real read/write, approval token, approval registry,
+persistent approval state, signer, writer, Target writer, filesystem writer,
+materializer, Target Adapter, renderer, loader, scenario selector, persistent
+report, CLI, runner, GitHub write, commit, branch, pull request, applied
+patch, generated file, materialized output, executed operation, unsafe path,
+unmanaged collision, invalid managed notice, real drift, inferred template,
+and `reference/agents/` as final source; preserves Dry-run Report Model
+non-persistence, conceptual Materializer Interface, conceptual Target Adapter,
+planned-only operations, no-read/no-write evidence, and non-authorization
+summary; introduces no new block codes; creates no runtime authorization; and
+does not expand or repurpose the Aggregator Checker.
+
 The verdict
 `MATERIALIZATION_VALIDATION_HARNESS_CONTRACT: EXCELLENT PASS` may be declared
 only when the validation harness, dry-run smoke, matrix completeness, no-write,
@@ -334,6 +354,71 @@ runtime/materializer/renderer/writer/loader/scenario selector.
   no-read/no-write evidence is required, no new block codes are introduced,
   the 9 official Aggregator checks are not expanded, and the Aggregator
   Checker is not transformed into a report generator.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` exists and is classified as
+  documentary/dev-only/read-only.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` defines a future Write Approval
+  Protocol only as a conceptual boundary between validated dry-run evidence,
+  approval precondition review, conceptual approval state, and still-no-write
+  evidence.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` defines conceptual
+  `write_approval_request`, `write_approval_result`, and
+  `write_approval_evidence_bundle` shapes without creating a JSON schema,
+  runtime payload, executable gate, TypeScript interface, JavaScript module,
+  CLI contract, runner, approval token issuer, approval registry, approval
+  database, persistent approval state, signer, writer, Target writer,
+  filesystem writer, materializer, Target Adapter, renderer, loader, scenario
+  selector, persistent report, or Target real read/write authorization.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` accepts only conceptual requests that
+  reference dry-run evidence, Dry-run Report Model evidence, Materializer
+  Interface evidence, Target Adapter evidence, planned output entries, final
+  sources, explicit templates, path safety, managed-artifact compatibility,
+  no-read/no-write evidence, non-authorization summary, documentary human
+  review policy, and prohibited write execution policy.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` blocks requests that ask for real
+  write approval, Target real read/write, writer, Target writer, filesystem
+  writer, materializer, Target Adapter, renderer, loader, scenario selector,
+  persistent report, approval token, signer, approval registry, persistent
+  approval state, CLI, runner, GitHub write, commit, branch, pull request,
+  applied patch, materialized output, generated file, executed operation,
+  `reference/agents/` as final source, missing template, inferred template,
+  unsafe path, unmanaged collision, invalid managed notice, real Target path,
+  host absolute path, real drift, missing no-read/no-write evidence, or
+  missing non-authorization summary.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` allows only conceptual outputs such as
+  `approval_state`, `approval_preconditions`, `evidence_summary`,
+  `blocking_summary`, `still_no_write_evidence`, and
+  `non_authorization_summary`.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` allows only
+  `APPROVAL_NOT_REQUESTED`, `APPROVAL_CONCEPTUALLY_ELIGIBLE`,
+  `APPROVAL_BLOCKED`, and `APPROVAL_OUT_OF_SCOPE`, and no state authorizes
+  writing, issues a token, unlocks a writer, unlocks Target write, or unlocks
+  commit, branch, pull request, or GitHub write.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` forbids approval aliases such as
+  `APPROVED`, `WRITE_APPROVED`, `APPROVAL_GRANTED`, `READY_TO_WRITE`,
+  `WRITE_UNLOCKED`, `EXECUTION_APPROVED`, and `MERGE_APPROVED`, except as
+  forbidden examples.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` forbids approval tokens, approval
+  signatures, signer identities, approval registry entries, persisted
+  approval paths, write execution IDs, writer results, materializer results,
+  real target adapter results, renderer outputs, loader results, scenario
+  selector results, persistent report paths, Target real paths, host absolute
+  paths, materialized files, generated files, applied patches, executed
+  operation tokens, GitHub write results, commit hashes, branch names, and
+  pull request URLs.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` requires dry-run evidence, compatible
+  Dry-run Report Model evidence, conceptual Materializer Interface evidence,
+  conceptual Target Adapter evidence, valid canonical target evidence, valid
+  final source model, explicit templates, planned-only output plan entries,
+  passing path safety, passing managed-artifact policy, no blockers,
+  no-read/no-write evidence, non-authorization summary, no persistent report,
+  no Target real read/write, no GitHub write, and no commit/branch/PR for any
+  `APPROVAL_CONCEPTUALLY_ELIGIBLE` result.
+- `WRITE_APPROVAL_PROTOCOL_CONTRACT.md` introduces no new block codes,
+  preserves no-read/no-write evidence and non-authorization summary, keeps
+  `reference/agents/` forbidden as final source, preserves planned-only
+  operations, does not execute checkers, does not persist stdout, does not
+  expand the 9 official checks, and does not transform the Aggregator Checker
+  into a report generator or write approval validator.
 - `VALIDATION_HARNESS_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - `VALIDATION_HARNESS_CONTRACT.md` states that it does not create runtime

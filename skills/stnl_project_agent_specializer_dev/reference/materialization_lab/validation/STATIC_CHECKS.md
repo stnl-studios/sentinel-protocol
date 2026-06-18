@@ -2,13 +2,14 @@
 
 These checks validate only the documentary/dev-only materialization target,
 template, output, rendering, composition, dry-run/write-boundary, dry-run
-report model, materializer interface, validation harness, and
-implementation-boundary contracts. Passing them does not authorize runtime
-materialization, runtime scripts, or writes to target projects.
+report model, materializer interface, target adapter, write approval protocol,
+validation harness, and implementation-boundary contracts.
+Passing them does not authorize runtime materialization, runtime scripts, write
+approval, or writes to target projects.
 
 ## Required Files
 
-Confirm the fifteen materialization lab contract and validation files exist:
+Confirm the seventeen materialization lab contract and validation files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
@@ -18,6 +19,8 @@ Confirm the fifteen materialization lab contract and validation files exist:
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
 - `reference/materialization_lab/contracts/MATERIALIZER_INTERFACE_CONTRACT.md`
+- `reference/materialization_lab/contracts/TARGET_ADAPTER_CONTRACT.md`
+- `reference/materialization_lab/contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
@@ -299,6 +302,80 @@ descriptions only, planned output roots are target-root-relative,
 existing/drift state is simulated/documentary only, no-read/no-write evidence
 is required, the Aggregator Checker remains exactly 9 official checks, and no
 new block codes are introduced without a separately justified owning contract.
+
+Confirm the documentary/dev-only/read-only Write Approval Protocol contract
+exists:
+
+- `reference/materialization_lab/contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md`
+
+Confirm the contract defines only a conceptual boundary between validated
+dry-run evidence, approval precondition review, conceptual approval state, and
+still-no-write evidence.
+
+Confirm the contract defines conceptual `write_approval_request`,
+`write_approval_result`, and `write_approval_evidence_bundle` shapes without
+creating JSON schema, runtime payload, executable gate, TypeScript interface,
+JavaScript module, CLI contract, runner, approval token issuer, approval
+registry, approval database, persistent approval state, signer, writer,
+Target writer, filesystem writer, materializer, Target Adapter, renderer,
+loader, scenario selector, persistent report, or Target real read/write
+authorization.
+
+Confirm the contract accepts only conceptual requests that reference dry-run
+evidence, Dry-run Report Model evidence, Materializer Interface evidence,
+Target Adapter evidence, planned output entries, final source evidence,
+explicit template evidence, path safety evidence, managed-artifact evidence,
+no-read/no-write evidence, and non-authorization summary, while declaring
+real write execution prohibited and human review documentary only.
+
+Confirm the contract blocks requests that ask for real write approval, Target
+real read/write, writer, Target writer, filesystem writer, materializer,
+Target Adapter, renderer, loader, scenario selector, persistent report,
+approval token, signer, approval registry, persistent approval state, CLI,
+runner, GitHub write, commit, branch, pull request, applied patch,
+materialized output, generated file, executed operation, `reference/agents/`
+as final source, missing template, inferred template, unsafe path, unmanaged
+collision, invalid managed notice, real Target path, host absolute path, real
+drift, missing no-read/no-write evidence, or missing non-authorization
+summary.
+
+Confirm the contract allows only conceptual outputs such as
+`approval_state`, `approval_preconditions`, `evidence_summary`,
+`blocking_summary`, `still_no_write_evidence`, and
+`non_authorization_summary`.
+
+Confirm the only allowed conceptual approval states are
+`APPROVAL_NOT_REQUESTED`, `APPROVAL_CONCEPTUALLY_ELIGIBLE`,
+`APPROVAL_BLOCKED`, and `APPROVAL_OUT_OF_SCOPE`, and that no state authorizes
+writing, issues a token, unlocks a writer, unlocks Target write, or unlocks
+commit, branch, pull request, or GitHub write.
+
+Confirm the contract forbids `APPROVED`, `WRITE_APPROVED`,
+`APPROVAL_GRANTED`, `READY_TO_WRITE`, `WRITE_UNLOCKED`,
+`EXECUTION_APPROVED`, `MERGE_APPROVED`, `approval_token`,
+`approval_signature`, `signer_identity`, `approval_registry_entry`,
+`approval_persisted_path`, `write_execution_id`, writer results,
+materializer results, real target adapter results, renderer output, loader
+result, scenario selector result, persistent report path, Target real path,
+host absolute path, materialized file, generated file, applied patch,
+executed operation tokens, GitHub write result, commit hash, branch name, and
+pull request URL.
+
+Confirm the contract requires dry-run evidence, compatible Dry-run Report
+Model evidence, conceptual Materializer Interface evidence, conceptual Target
+Adapter evidence, valid canonical target evidence, valid final source model,
+explicit templates, planned-only output plan entries, passing path safety,
+passing managed-artifact policy, no blockers, no-read/no-write evidence,
+non-authorization summary, no persistent report, no Target real read/write,
+no GitHub write, and no commit/branch/PR for any
+`APPROVAL_CONCEPTUALLY_ELIGIBLE` result.
+
+Confirm the contract preserves no-read/no-write evidence, requires
+non-authorization summary, keeps `reference/agents/` forbidden as final
+source, preserves planned-only operations, introduces no new block codes,
+does not execute checkers, does not persist stdout, does not expand the 9
+official checks, and does not transform the Aggregator Checker into a report
+generator or write approval validator.
 
 Confirm the separately authorized dev-only read-only fixture to render/dry-run
 integration checker exists:
