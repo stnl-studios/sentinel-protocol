@@ -197,9 +197,10 @@ performing real materialization.
   policy using a fixed 9-script allowlist, serial execution,
   `process.execPath`, `spawn` or `execFile` without shell, no child args, no
   target path, fixed dev-skill cwd, no custom CLI env, stdout/stderr/exit-code
-  capture, timeout per check, no persistence, no smoke global, no Git
+  capture, `timeout_per_child_check: 30 seconds`, no persistence, no smoke global, no Git
   commands, and no target real read/write.
-- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` declares aggregator block codes:
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` declares the 13 mandatory
+  aggregator block codes, with no pending optional aggregator block codes:
   `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`,
   `BLOCKED_AGGREGATOR_CHECK_SKIPPED`,
   `BLOCKED_AGGREGATOR_CHECK_FAILED`,
@@ -213,6 +214,11 @@ performing real materialization.
   `BLOCKED_AGGREGATOR_STDERR_UNEXPECTED`,
   `BLOCKED_AGGREGATOR_ARGUMENT_UNSUPPORTED`, and
   `BLOCKED_AGGREGATOR_CHILD_PROCESS_ERROR`.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` states unknown aggregator block
+  codes remain blocking and no aggregator block code authorizes runtime
+  behavior, target write, persistent reports, dry-run report persistence,
+  materialization, renderer/writer/loader/scenario-selector creation, GitHub
+  write, or productive skill mutation.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it does not create scripts.

@@ -49,7 +49,8 @@ runtime payloads, target artifacts, or target writes.
   9-check checklist, order, dependencies, status model, fail-closed rules,
   zero-argument policy, stdout-only policy, no persistent report policy,
   no-target-path policy, no runtime/materializer policy, future child process
-  policy, aggregator block codes, and expected future verdict
+  policy with `timeout_per_child_check: 30 seconds`, the 13 mandatory
+  aggregator block codes, and expected future verdict
   `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. It creates no
   executable checker or runner in this phase.
 - `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`: documentary/dev-only
@@ -185,8 +186,9 @@ The future aggregator expected verdict is
 executable version must accept zero arguments only, block before child
 execution on any argument, never accept a target path, pass no child arguments,
 run child checks in the official dependency order, and be stdout-only. It must
-not create persistent reports, Markdown reports, JSON files, caches, snapshots,
-temp outputs, artifacts, dry-run reports, target reports, runtime
+apply `timeout_per_child_check: 30 seconds`. It must not create persistent
+reports, Markdown reports, JSON files, caches, snapshots, temp outputs,
+artifacts, dry-run reports, target reports, runtime
 materializer, renderer, writer, loader, scenario selector, target real
 read/write, GitHub write, or productive skill changes. The warning that
 `check-static.mjs` does not reject extra arguments by itself is mitigated by

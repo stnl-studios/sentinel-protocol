@@ -260,9 +260,10 @@ Expected result:
 - future child process policy requires fixed allowlist, serial execution,
   `process.execPath`, `spawn` or `execFile` without shell, no child args, no
   target path, fixed cwd, no custom CLI env, stdout/stderr/exit-code capture,
-  timeout per check, no persistence, no smoke global, no Git commands, and no
+  `timeout_per_child_check: 30 seconds`, no persistence, no smoke global, no Git commands, and no
   target real read/write
-- aggregator block codes such as `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`,
+- aggregator block codes are the 13-code mandatory set:
+  `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`,
   `BLOCKED_AGGREGATOR_CHECK_SKIPPED`,
   `BLOCKED_AGGREGATOR_CHECK_FAILED`,
   `BLOCKED_AGGREGATOR_CHECK_OUTPUT_UNRECOGNIZED`,
@@ -270,8 +271,15 @@ Expected result:
   `BLOCKED_AGGREGATOR_TARGET_ARG`,
   `BLOCKED_AGGREGATOR_REPORT_UNAUTHORIZED`,
   `BLOCKED_AGGREGATOR_RUNTIME_SCOPE`,
-  `BLOCKED_AGGREGATOR_DEPENDENCY_ORDER`, and
-  `BLOCKED_AGGREGATOR_TIMEOUT` are documented
+  `BLOCKED_AGGREGATOR_DEPENDENCY_ORDER`,
+  `BLOCKED_AGGREGATOR_TIMEOUT`,
+  `BLOCKED_AGGREGATOR_STDERR_UNEXPECTED`,
+  `BLOCKED_AGGREGATOR_ARGUMENT_UNSUPPORTED`, and
+  `BLOCKED_AGGREGATOR_CHILD_PROCESS_ERROR`
+- unknown aggregator block codes remain blocking, and no aggregator block code
+  authorizes runtime behavior, target write, persistent reports, dry-run report
+  persistence, materialization, renderer/writer/loader/scenario-selector
+  creation, GitHub write, or productive skill mutation
 
 ### Fixture Schema Is Documentary Only
 

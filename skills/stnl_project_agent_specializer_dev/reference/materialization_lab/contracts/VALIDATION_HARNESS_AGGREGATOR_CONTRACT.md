@@ -255,7 +255,7 @@ If a future executable aggregator is separately authorized, it must:
 - use fixed cwd inside `skills/stnl_project_agent_specializer_dev/`;
 - not accept custom environment through CLI;
 - capture stdout, stderr, and exit code;
-- apply a timeout per child check;
+- apply `timeout_per_child_check: 30 seconds`;
 - treat timeout as `BLOCKED`;
 - treat stderr as `BLOCKED`;
 - treat unexpected output as `BLOCKED`;
@@ -267,7 +267,9 @@ If a future executable aggregator is separately authorized, it must:
 ## Aggregator Block Codes
 
 The following aggregator-specific block codes are introduced because existing
-codes do not precisely describe child-check aggregation failures:
+codes do not precisely describe child-check aggregation failures. These 13
+codes are the mandatory documented aggregator set; there are no pending
+optional aggregator block codes in this contract.
 
 - `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`
 - `BLOCKED_AGGREGATOR_CHECK_SKIPPED`
@@ -285,6 +287,11 @@ codes do not precisely describe child-check aggregation failures:
 
 Unknown aggregator block codes must not be normalized or downgraded to
 warnings. They block.
+
+None of these block codes authorizes runtime behavior, target write,
+persistent report creation, dry-run report persistence, materialization,
+renderer/writer/loader/scenario-selector creation, GitHub write, or productive
+skill mutation.
 
 ## Phase Ordering
 

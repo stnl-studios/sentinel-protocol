@@ -124,7 +124,8 @@ The canonical documentary/dev-only reference bundle is organized as:
   statuses, final statuses, fail-closed rules, zero-argument policy,
   stdout-only policy, no-persistent-report policy, no-target-path policy,
   no-runtime/materializer policy, future child process policy without shell,
-  and aggregator block codes. It records expected future verdict
+  `timeout_per_child_check: 30 seconds`, and the 13 mandatory aggregator block
+  codes. It records expected future verdict
   `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. It does not
   register or create an executable aggregator checker, runner, persistent
   report, dry-run report model, materializer interface, target adapter, write
@@ -614,6 +615,7 @@ Required files:
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
+- `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`

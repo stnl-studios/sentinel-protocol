@@ -267,10 +267,11 @@ snapshots, temp outputs, artifacts, dry-run reports, and target reports.
 Confirm the aggregator future child process policy requires a fixed 9-script
 allowlist, serial execution, `process.execPath`, `spawn` or `execFile` without
 shell, no child args, no target path, fixed dev-skill cwd, no custom CLI env,
-stdout/stderr/exit-code capture, timeout per check, no persistence, no smoke
+stdout/stderr/exit-code capture, `timeout_per_child_check: 30 seconds`, no persistence, no smoke
 global, no Git commands, and no target real read/write.
 
-Confirm the aggregator block codes are documented:
+Confirm the aggregator block codes are documented as the 13-code mandatory
+set, with no pending optional aggregator block codes:
 
 - `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`
 - `BLOCKED_AGGREGATOR_CHECK_SKIPPED`
@@ -285,6 +286,11 @@ Confirm the aggregator block codes are documented:
 - `BLOCKED_AGGREGATOR_STDERR_UNEXPECTED`
 - `BLOCKED_AGGREGATOR_ARGUMENT_UNSUPPORTED`
 - `BLOCKED_AGGREGATOR_CHILD_PROCESS_ERROR`
+
+Confirm unknown aggregator block codes remain blocking and no aggregator block
+code authorizes runtime behavior, target write, persistent reports, dry-run
+report persistence, materialization, renderer/writer/loader/scenario-selector
+creation, GitHub write, or productive skill mutation.
 
 ## Contract Anchors
 

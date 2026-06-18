@@ -12,7 +12,8 @@ the future aggregation policy for the 9 existing read-only child checks,
 including official order, dependencies, status model, fail-closed rules,
 zero-argument policy, stdout-only policy, no persistent report policy,
 no-target-path policy, no runtime/materializer policy, child process policy,
-aggregator block codes, and future expected verdict
+`timeout_per_child_check: 30 seconds`, the 13 mandatory aggregator block
+codes, and future expected verdict
 `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. It does not create
 an executable checker or runner in this phase.
 
