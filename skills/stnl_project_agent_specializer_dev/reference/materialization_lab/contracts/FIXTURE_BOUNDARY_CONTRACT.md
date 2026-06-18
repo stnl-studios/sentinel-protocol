@@ -146,6 +146,15 @@ Fixtures must test the source model
 or require a base-agent-driven final source model, and `reference/agents/`
 must not become a final source.
 
+The read-only fixture to render/dry-run integration is a fixture validator, not
+a materializer. `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+uses normalized fixture projections for the authorized matrix, validates
+project fixtures, expected-output snapshot fixtures, blocked cases by
+responsible layer, explicit template sources, simulated target paths, and
+forbidden real target paths, and writes no report. The lazy-load gate remains
+independent. The expected dev-only verdict is
+`MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
+
 ## Explicit Non-Authorization
 
 Fixtures do not authorize:

@@ -13,6 +13,8 @@ const textCache = new Map();
 
 const expectedScriptPath =
   "scripts/materialization_lab/check-render-context.mjs";
+const fixtureRenderDryRunIntegrationChecker =
+  "scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs";
 
 const previousScripts = [
   "scripts/materialization_lab/check-static.mjs",
@@ -262,6 +264,7 @@ async function validateScriptBoundary() {
     await requireFile(previousScript);
   }
   await requireFile(expectedScriptPath);
+  await requireFile(fixtureRenderDryRunIntegrationChecker);
 }
 
 async function validateCanonicalAgentIds() {
@@ -579,14 +582,19 @@ async function validateRegistrationDocs() {
   const manifest = await readText("reference/MANIFEST.md");
   requireAll(manifest, "reference/MANIFEST.md", [
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "render-context planner/checker",
+    "read-only fixture to render/dry-run integration",
     "read-only",
   ], "render-context checker manifest registration");
 
   const staticChecks = await readText(validationPath("STATIC_CHECKS.md"));
   requireAll(staticChecks, validationPath("STATIC_CHECKS.md"), [
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "render-context planner/checker",
+    "normalized fixture",
+    "projections",
     "read-only",
     "MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS",
   ], "render-context checker static-check registration");
@@ -594,7 +602,10 @@ async function validateRegistrationDocs() {
   const expectations = await readText(validationPath("EXCELLENT_PASS_EXPECTATIONS.md"));
   requireAll(expectations, validationPath("EXCELLENT_PASS_EXPECTATIONS.md"), [
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "render-context planner/checker",
+    "normalized fixture",
+    "projections",
     "read-only",
     "MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS",
   ], "render-context checker expectation registration");

@@ -165,11 +165,11 @@ Expected result:
   `.codex/**`, `AGENTS.md`, GitHub write, productive skill change, or real
   materialization is performed
 
-### Fixture Skeleton Exists Without Complete Cases
+### Fixture Matrix Exists As Documentary Cases
 
 Input:
 
-- requested validation target: materialization lab fixture skeleton
+- requested validation target: materialization lab fixture matrix
 - fixture root: `reference/materialization_lab/fixtures/`
 
 Expected result:
@@ -178,12 +178,40 @@ Expected result:
 - `README.md` and `FIXTURE_SCHEMA.md` exist
 - `projects/README.md`, `expected_outputs/README.md`,
   `lazy_load/README.md`, and `blocked_cases/README.md` exist
-- no complete positive project fixture is present
-- no complete blocked-case fixture is present
-- no complete expected-output snapshot is present
+- six positive project `FIXTURE.md` files are present
+- eight lazy-load `FIXTURE.md` files are present
+- ten blocked-case `FIXTURE.md` files are present
+- four minimal expected-output snapshot `FIXTURE.md` files and
+  `expected_outputs/SNAPSHOT_POLICY.md` are present
+- expected-output snapshot fixtures are minimal/documentary and do not contain
+  rendered outputs
 - no runtime materializer, scenario selector, lazy-load runtime, renderer,
   writer, target artifact, GitHub write, target real read/write, or productive
   skill mutation is performed
+
+### Fixture Render Dry-Run Integration Is Read-Only
+
+Input:
+
+- requested validation target: read-only fixture to render/dry-run integration
+- checker:
+  `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+
+Expected result:
+
+- normalized fixture projections are built in memory only
+- project fixtures are compared to the abstract render-context matrix and
+  selected-agent matrix
+- fixture `template_sources` are explicit and resolve under
+  `reference/templates/`
+- expected-output fixtures stay minimal/documentary and no rendered output or
+  full snapshot is created
+- `simulated_target_paths` remain relative/documentary strings and
+  `forbidden_real_target_paths` are recognized without target read/write
+- blocked cases are routed by responsible layer
+- lazy-load gate remains independent and no runtime loader is implemented
+- expected verdict:
+  `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`
 
 ### Fixture Schema Is Documentary Only
 
@@ -1018,3 +1046,4 @@ The expected checker verdicts are:
 - `MATERIALIZATION_FIXTURE_BOUNDARY_CHECK: PASS`
 - `MATERIALIZATION_LAZY_LOAD_FIXTURE_CHECK: PASS`
 - `MATERIALIZATION_PROJECT_SCENARIO_FIXTURE_CHECK: PASS`
+- `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`

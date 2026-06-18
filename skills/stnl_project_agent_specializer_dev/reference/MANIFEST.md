@@ -61,8 +61,9 @@ The canonical documentary/dev-only reference bundle is organized as:
   future pre-materialization validation and dry-run smoke reporting, plus the
   documentary implementation-boundary contract for a later separately
   authorized dev-only script layer, plus the documentary fixture-boundary
-  contract and fixture skeleton for later controlled fixture cases. This
-  phase does not authorize runtime
+  contract, complete documentary fixture matrix, and read-only fixture to
+  render/dry-run integration for controlled fixture cases. This phase does not
+  authorize runtime
   materialization, runtime script creation,
   target-repository writes, productive-skill changes, productive-template
   changes, GitHub writes, inferred templates, inferred senior profiles,
@@ -127,8 +128,9 @@ The canonical documentary/dev-only reference bundle is organized as:
   historical-audit, and GitHub writes; and blocks unauthorized scope, paths,
   write capability, target mutation, productive mutation, and outputs.
 - `reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md`
-  defines the documentary/dev-only fixture boundary for the fixture skeleton
-  and controlled fixture cases. It states that the authorized complete
+  defines the documentary/dev-only fixture boundary for the complete
+  documentary fixture matrix and controlled fixture cases. It states that the
+  authorized complete
   fixtures are documentary `FIXTURE.md` files under the fixture root only; that
   the only fixture root is
   `skills/stnl_project_agent_specializer_dev/reference/materialization_lab/fixtures/`;
@@ -220,6 +222,16 @@ The canonical documentary/dev-only reference bundle is organized as:
   authorized read-only project scenario fixture checker. It validates the six
   positive scenario fixtures and selected-agent matrix without implementing a
   scenario selector.
+- `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+  is the separately authorized read-only fixture to render/dry-run integration
+  checker. It uses normalized fixture projections to validate project fixtures,
+  expected-output fixtures, blocked cases by responsible layer, explicit
+  template sources, abstract render-context compatibility, dry-run simulated
+  paths, and forbidden real target paths. The lazy-load gate remains
+  independent. It creates no renderer, materializer, writer, loader, scenario
+  selector, rendered output, complete snapshot, target artifact, or persistent
+  report. Expected verdict:
+  `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.

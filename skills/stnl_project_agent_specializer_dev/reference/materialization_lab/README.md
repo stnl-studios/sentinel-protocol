@@ -16,8 +16,9 @@ authorize runtime
 materialization, runtime script creation, target-repository writes,
 productive-skill changes, GitHub writes, or changes to productive templates.
 It also defines the fixture-boundary contract and the documentary/dev-only
-fixture skeleton inside the dev skill, without creating complete fixture cases
-or complete snapshots in this phase.
+fixture matrix inside the dev skill. The fixtures are complete documentary
+`FIXTURE.md` cases, but they do not create rendered outputs, full snapshots,
+runtime payloads, target artifacts, or target writes.
 
 ## Canonical Scope
 
@@ -47,7 +48,8 @@ or complete snapshots in this phase.
   sources, write prohibitions, output limits, and implementation-boundary block
   codes, but does not create or authorize scripts in this phase.
 - `contracts/FIXTURE_BOUNDARY_CONTRACT.md`: documentary/dev-only fixture
-  boundary for the fixture skeleton and later controlled fixture cases. It
+  boundary for the complete fixture matrix and later controlled fixture cases.
+  It
   declares the only fixture root, requires `FIXTURE_SCHEMA.md`, limits fixture
   target-artifact paths to that root, distinguishes fixture snapshots from real
   target artifacts, and preserves the prohibition on real target read/write,
@@ -203,11 +205,21 @@ absolute-path failures block with `BLOCKED_FIXTURE_ROOT_MISSING`,
 The authorized fixtures test `kernel_source + senior_profile_source +
 template_source`, not a base-agent-driven source model.
 
+The read-only fixture to render/dry-run integration is registered as
+`scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`.
+It uses normalized fixture projections to connect project fixtures,
+expected-output fixtures, blocked cases, explicit template sources, abstract
+render-context compatibility, dry-run simulated paths, and forbidden real
+target paths. The lazy-load gate remains independent. The expected checker
+verdict is
+`MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
+
 The fixture case phase adds these read-only checkers:
 
 - `scripts/materialization_lab/check-fixture-boundary.mjs`
 - `scripts/materialization_lab/check-lazy-load-fixtures.mjs`
 - `scripts/materialization_lab/check-project-scenarios.mjs`
+- `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
 
 ## Source Model Resync Pass Criterion
 
@@ -224,22 +236,25 @@ The fixture case phase adds these read-only checkers:
   productive skill change, target real read/write, or real materialization is
   introduced.
 
-## Fixture Skeleton Pass Criterion
+## Fixture Matrix Pass Criterion
 
-`MATERIALIZATION_FIXTURE_CONTRACT_AND_SKELETON_PHASE: PASS` requires:
+`MATERIALIZATION_FIXTURE_CASES_PHASE: PASS` requires:
 
 - the fixture root exists only under
   `reference/materialization_lab/fixtures/`;
 - `fixtures/README.md` and `fixtures/FIXTURE_SCHEMA.md` exist;
 - `projects/`, `expected_outputs/`, `lazy_load/`, and `blocked_cases/` exist
   with README files;
-- the skeleton contains no complete positive or negative fixture cases;
+- the authorized complete documentary `FIXTURE.md` matrix exists: six project
+  fixtures, eight lazy-load fixtures, ten blocked-case fixtures, four minimal
+  expected-output snapshot fixtures, and `expected_outputs/SNAPSHOT_POLICY.md`;
 - no complete rendered snapshots are created;
 - fixture paths do not escape the root and do not use absolute or traversal
   paths;
 - contracts and validation docs recognize fixture boundary, fixture schema,
-  future project scenario fixtures, future expected-output snapshots, future
-  lazy-load trace fixtures, and future blocked cases;
+  project scenario fixtures, expected-output snapshot fixtures, lazy-load trace
+  fixtures, blocked cases, and read-only fixture to render/dry-run
+  integration;
 - no runtime materializer, renderer, writer, scenario selector, target real
   read/write, GitHub write, productive-skill mutation, kernel change,
   template change, Senior Profile change, or `reference/agents/` final-source

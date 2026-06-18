@@ -30,6 +30,9 @@ const validationFiles = [
   "EXCELLENT_PASS_EXPECTATIONS.md",
 ];
 
+const fixtureRenderDryRunIntegrationChecker =
+  "scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs";
+
 const fixtureSkeletonFiles = [
   "reference/materialization_lab/fixtures/README.md",
   "reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md",
@@ -396,6 +399,8 @@ async function validateRequiredFiles() {
   for (const template of templates) {
     await requireFile(template);
   }
+
+  await requireFile(fixtureRenderDryRunIntegrationChecker);
 
   for (const agent of agents) {
     await requireFile(rel("reference/kernel_lab", kernelByAgent.get(agent)));
@@ -828,6 +833,30 @@ async function validateStaticValidatorRegistration() {
     "MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS",
     "read-only",
   ], "static validator expectation registration");
+
+  for (const relativePath of [
+    "reference/MANIFEST.md",
+    validationPath("STATIC_CHECKS.md"),
+    validationPath("GOLDEN_SCENARIOS.md"),
+    validationPath("EXCELLENT_PASS_EXPECTATIONS.md"),
+    contractPath("VALIDATION_HARNESS_CONTRACT.md"),
+    contractPath("RENDERING_AND_COMPOSITION_CONTRACT.md"),
+    contractPath("DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md"),
+    contractPath("TEMPLATES_AND_OUTPUTS_CONTRACT.md"),
+    contractPath("FIXTURE_BOUNDARY_CONTRACT.md"),
+    contractPath("IMPLEMENTATION_BOUNDARY_CONTRACT.md"),
+  ]) {
+    const content = await readText(relativePath);
+    requireAll(content, relativePath, [
+      fixtureRenderDryRunIntegrationChecker,
+      "read-only fixture to render/dry-run integration",
+      "normalized fixture",
+      "projections",
+      "lazy-load gate",
+      "independent",
+      "MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS",
+    ], "fixture render/dry-run integration registration");
+  }
 }
 
 async function main() {

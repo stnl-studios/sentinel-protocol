@@ -14,6 +14,8 @@ const textCache = new Map();
 
 const expectedScriptPath =
   "scripts/materialization_lab/check-source-inventory.mjs";
+const fixtureRenderDryRunIntegrationChecker =
+  "scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs";
 
 const agents = [
   "orchestrator",
@@ -790,6 +792,13 @@ async function validateTemplatesAndManifest() {
     "reference/MANIFEST.md",
     expectedScriptPath,
     "manifest source inventory validator",
+  );
+  await requireFile(fixtureRenderDryRunIntegrationChecker);
+  requireIncludes(
+    manifest,
+    "reference/MANIFEST.md",
+    fixtureRenderDryRunIntegrationChecker,
+    "manifest fixture render/dry-run integration validator",
   );
   await validateSeniorProfileManifestRegistration();
 }

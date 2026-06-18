@@ -88,8 +88,8 @@ dry-run, or materialization source.
 
 ## Future Fixture Validation
 
-Fixture validation must recognize the fixture skeleton and authorized complete
-fixture matrix:
+Fixture validation must recognize the fixture root, schema, and authorized
+complete fixture matrix:
 
 - `reference/materialization_lab/fixtures/README.md`
 - `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md`
@@ -111,6 +111,15 @@ target real read/write, no GitHub write, and no productive-skill mutation.
 
 Only the declared matrix is complete in this phase. Any fixture outside that
 matrix remains unauthorized and must fail closed.
+
+The read-only fixture to render/dry-run integration is validated by
+`scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`.
+It uses normalized fixture projections only; it does not create a runtime
+materializer, renderer, writer, loader, scenario selector, rendered output,
+snapshot, dry-run report, or target artifact. The lazy-load gate remains
+independent and must pass through the lazy-load fixture checker before any
+render/dry-run integration is accepted. The expected dev-only verdict is
+`MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
 
 ## Structured Validation Report
 

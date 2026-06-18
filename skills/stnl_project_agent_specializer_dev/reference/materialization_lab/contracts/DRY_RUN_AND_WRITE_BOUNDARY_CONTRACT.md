@@ -34,6 +34,15 @@ Fixture files may document simulated dry-run paths and forbidden real paths as
 strings under `reference/materialization_lab/fixtures/`. Those strings are not
 dry-run reports, not planned writes, and not target reads or writes.
 
+The read-only fixture to render/dry-run integration checks those strings by
+normalized fixture projections only. The checker
+`scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+validates relative `simulated_target_paths`, declared
+`forbidden_real_target_paths`, blocked-case routing, and the absence of target
+read/write or real drift calculation. The lazy-load gate remains independent.
+The expected dev-only verdict is
+`MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
+
 Each planned artifact entry must include at least:
 
 - `target_id`

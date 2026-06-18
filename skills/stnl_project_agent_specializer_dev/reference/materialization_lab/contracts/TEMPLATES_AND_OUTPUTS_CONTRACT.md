@@ -59,6 +59,16 @@ documentary source evidence. Minimal snapshot fixtures are authorized under
 copy full templates, render full outputs, infer templates, or create real
 `.github/**`, `.codex/**`, or `AGENTS.md` files.
 
+The read-only fixture to render/dry-run integration validates fixture
+`template_source` and `template_sources` entries through normalized fixture
+projections. The checker
+`scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+accepts only explicit template references under `reference/templates/` for
+passing fixture projections; missing or inferred templates remain blocked by
+the declared blocked-case fixtures. The lazy-load gate remains independent.
+The expected dev-only verdict is
+`MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
+
 ## Explicit Templates Still Missing
 
 No expected canonical output shape is currently listed as missing in this

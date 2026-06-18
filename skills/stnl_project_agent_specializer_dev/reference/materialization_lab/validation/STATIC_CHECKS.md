@@ -23,7 +23,8 @@ Confirm the twelve materialization lab files exist:
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
 
-Confirm the documentary/dev-only fixture skeleton exists:
+Confirm the documentary/dev-only fixture root, schema, and complete fixture
+matrix exist:
 
 - `reference/materialization_lab/fixtures/README.md`
 - `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md`
@@ -32,9 +33,14 @@ Confirm the documentary/dev-only fixture skeleton exists:
 - `reference/materialization_lab/fixtures/lazy_load/README.md`
 - `reference/materialization_lab/fixtures/blocked_cases/README.md`
 
-Confirm the skeleton contains no complete fixture case directories, no
-complete expected-output snapshots, no runtime materializer, no renderer, no
-writer, no scenario selector, and no target artifacts.
+Confirm the fixture matrix contains the authorized complete documentary
+`FIXTURE.md` cases only: six project fixtures, eight lazy-load fixtures, ten
+blocked-case fixtures, four minimal expected-output snapshot fixtures, and
+`expected_outputs/SNAPSHOT_POLICY.md`.
+
+Confirm the fixtures remain documentary/dev-only and create no rendered
+outputs, no complete rendered snapshots, no runtime materializer, no renderer,
+no writer, no loader, no scenario selector, and no target artifacts.
 
 Confirm the four explicit canonical templates exist:
 
@@ -158,6 +164,28 @@ artifacts and does not calculate drift against real target files.
 Confirm the expected successful validator output is exactly:
 
 - `MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS`
+
+Confirm the separately authorized dev-only read-only fixture to render/dry-run
+integration checker exists:
+
+- `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+
+Confirm `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+uses normalized fixture projections only and validates project fixtures,
+expected-output fixtures, blocked cases by responsible layer, explicit
+template sources, abstract render context compatibility,
+`simulated_target_paths`, `forbidden_real_target_paths`, and that the
+lazy-load gate remains independent.
+
+Confirm the read-only fixture to render/dry-run integration checker rejects
+target project path arguments, reads only inside
+`skills/stnl_project_agent_specializer_dev/`, imports no write-capable Node
+filesystem API, writes no persistent report, creates no rendered output, and
+does not calculate drift against real target files.
+
+Confirm the expected successful validator output is exactly:
+
+- `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`
 
 ## Contract Anchors
 

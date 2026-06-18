@@ -25,7 +25,8 @@ A later step may authorize only these dev-only script categories:
 - lazy-load fixture validator;
 - project scenario matrix validator;
 - expected output snapshot validator;
-- blocked case validator.
+- blocked case validator;
+- read-only fixture to render/dry-run integration validator.
 
 Any script category outside this list is out of scope unless this contract is
 updated first in a documentary/dev-only change.
@@ -35,6 +36,15 @@ authorizes read-only fixture boundary, lazy-load fixture, and project scenario
 fixture checkers under the materialization-lab script path. Those checkers may
 read fixture files and contracts only; they must not write reports, target
 files, GitHub, productive skill files, or generated outputs.
+
+`scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs` is
+the read-only fixture to render/dry-run integration checker. It uses
+normalized fixture projections only, accepts no target project path, imports no
+write-capable filesystem API, creates no runtime materializer, renderer,
+writer, loader, scenario selector, rendered output, snapshot, dry-run report,
+or target artifact, and keeps the lazy-load gate independent. Its expected
+dev-only verdict is
+`MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
 
 ## Authorized Future Script Locations
 

@@ -13,6 +13,8 @@ const textCache = new Map();
 
 const expectedScriptPath =
   "scripts/materialization_lab/check-dry-run-plan.mjs";
+const fixtureRenderDryRunIntegrationChecker =
+  "scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs";
 
 const previousScripts = [
   "scripts/materialization_lab/check-static.mjs",
@@ -339,6 +341,7 @@ async function validateScriptBoundary() {
     await requireFile(previousScript);
   }
   await requireFile(expectedScriptPath);
+  await requireFile(fixtureRenderDryRunIntegrationChecker);
 }
 
 async function validateRequiredSources() {
@@ -643,14 +646,18 @@ async function validateRegistrationDocs() {
   const manifest = await readText("reference/MANIFEST.md");
   requireAll(manifest, "reference/MANIFEST.md", [
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "dry-run output plan checker",
+    "read-only fixture to render/dry-run integration",
     "read-only",
   ], "dry-run checker manifest registration");
 
   const staticChecks = await readText(validationPath("STATIC_CHECKS.md"));
   requireAll(staticChecks, validationPath("STATIC_CHECKS.md"), [
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "dry-run output plan checker",
+    "simulated_target_paths",
     "read-only",
     "MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS",
   ], "dry-run checker static-check registration");
@@ -658,7 +665,9 @@ async function validateRegistrationDocs() {
   const expectations = await readText(validationPath("EXCELLENT_PASS_EXPECTATIONS.md"));
   requireAll(expectations, validationPath("EXCELLENT_PASS_EXPECTATIONS.md"), [
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "dry-run output plan checker",
+    "simulated_target_paths",
     "read-only",
     "MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS",
   ], "dry-run checker expectation registration");

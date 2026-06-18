@@ -106,6 +106,15 @@ against fixture expected outputs, but the comparison must remain inside
 documentary snapshot fixtures, not full rendered snapshots or generated
 outputs.
 
+The read-only fixture to render/dry-run integration is the only current bridge
+from fixture cases to this abstract render-context matrix. It is implemented by
+`scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs` and
+uses normalized fixture projections rather than rendered output. It validates
+selected-agent compatibility, explicit template sources, and source-model
+shape, while the lazy-load gate remains independent. The expected dev-only
+verdict is
+`MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
+
 ## Common Required Placeholders
 
 Every explicit agent template used by this composition contract must provide

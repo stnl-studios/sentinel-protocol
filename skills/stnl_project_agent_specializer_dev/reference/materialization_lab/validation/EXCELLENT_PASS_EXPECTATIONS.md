@@ -43,17 +43,18 @@ authorization, and block-code criteria below are also satisfied.
 
 The verdict
 `MATERIALIZATION_FIXTURE_BOUNDARY_CONTRACT: EXCELLENT PASS` may be declared
-only when the fixture boundary, fixture skeleton, fixture schema,
+only when the fixture boundary, fixture matrix, fixture schema,
 target-artifact containment, real-target prohibition, future fixture
 script/checker path restriction, non-authorization limits, and block-code
 criteria below are also satisfied.
 
-The verdict `MATERIALIZATION_FIXTURE_CONTRACT_AND_SKELETON_PHASE: PASS` may
-be declared only when the fixture root, README, schema, category READMEs,
-contract updates, validation documentation, and manifest registrations are
-present, while no complete fixture cases, complete snapshots, runtime
-materializer, target real read/write, GitHub write, productive-skill mutation,
-kernel change, template change, or Senior Profile change is introduced.
+The verdict `MATERIALIZATION_FIXTURE_CASES_PHASE: PASS` may be declared only
+when the fixture root, README, schema, category READMEs, authorized complete
+documentary `FIXTURE.md` matrix, snapshot policy, contract updates, validation
+documentation, and manifest registrations are present, while no rendered
+outputs, complete rendered snapshots, runtime materializer, target real
+read/write, GitHub write, productive-skill mutation, kernel change, template
+change, or Senior Profile change is introduced.
 
 The validator output
 `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS` may be accepted only when
@@ -97,6 +98,18 @@ the abstract planned-artifact matrix without accepting a target project path,
 reading a target project, writing a target project, calculating drift against
 real target files, creating complete fixtures, creating generated outputs,
 creating persistent reports, writing GitHub, changing the productive skill, or
+performing real materialization.
+
+The validator output
+`MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS` may be
+accepted only when
+`scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+exists in the authorized materialization-lab script path and the read-only
+fixture to render/dry-run integration checker validates normalized fixture
+projections without accepting a target project path, reading a target project,
+writing a target project, rendering templates, creating snapshots, creating
+generated outputs, creating persistent reports, writing GitHub, changing the
+productive skill, implementing a loader, implementing a scenario selector, or
 performing real materialization.
 
 ## Required Criteria
@@ -234,9 +247,32 @@ performing real materialization.
   required lazy-load module, missing lazy-load trace, real `.github` write,
   real `.codex` write, real `AGENTS.md` write, runtime materializer created,
   productive skill mutation, and GitHub write.
-- The fixture skeleton contains no complete positive project fixture, no
-  complete blocked case, no complete lazy-load trace payload, and no complete
-  expected-output snapshot.
+- The fixture matrix contains only the authorized complete documentary
+  `FIXTURE.md` cases: six positive project fixtures, eight lazy-load trace
+  fixtures, ten blocked-case fixtures, four minimal expected-output snapshot
+  fixtures, and `expected_outputs/SNAPSHOT_POLICY.md`.
+- The read-only fixture to render/dry-run integration uses normalized fixture
+  projections with `fixture_id`, `fixture_type`, `scenario`,
+  `selected_agents`, `source_model`, `template_sources`, `expected_outputs`,
+  `target_safety`, `blocked_expectation`, and `validation`.
+- Project fixtures are checked against the abstract render-context matrix,
+  explicit template sources, simulated target surface, `dev_only: true`,
+  `no_real_write: true`, `should_block: false`, and
+  `expected_verdict: PASS`.
+- Expected-output fixtures remain minimal and documentary; they cite explicit
+  template sources, use paths only as strings, do not copy full templates, do
+  not contain rendered outputs, and create no `.github/**`, `.codex/**`, or
+  `AGENTS.md` files.
+- Blocked cases are routed by responsible layer: template coverage,
+  source/render/dry-run source model, dry-run/write-boundary, fixture
+  boundary, target write boundary, implementation boundary, and GitHub
+  boundary.
+- Dry-run fixture safety checks only documentary `simulated_target_paths` and
+  `forbidden_real_target_paths`; it accepts no target project path and performs
+  no target read, write, or real drift calculation.
+- The lazy-load gate remains independent before render/dry-run integration;
+  the integration checker confirms the lazy-load fixtures are owned by
+  `check-lazy-load-fixtures.mjs` and does not implement a runtime loader.
 - `scripts/materialization_lab/check-static.mjs` exists as the first
   separately authorized dev-only static contract validator implementation.
 - `scripts/materialization_lab/check-static.mjs` is read-only, uses Node.js ESM,

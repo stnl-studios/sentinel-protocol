@@ -13,6 +13,8 @@ const textCache = new Map();
 
 const expectedScriptPath =
   "scripts/materialization_lab/check-template-coverage.mjs";
+const fixtureRenderDryRunIntegrationChecker =
+  "scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs";
 
 const templates = [
   {
@@ -207,6 +209,7 @@ async function validateScriptBoundary() {
   await requireFile("scripts/materialization_lab/check-static.mjs");
   await requireFile("scripts/materialization_lab/check-source-inventory.mjs");
   await requireFile(expectedScriptPath);
+  await requireFile(fixtureRenderDryRunIntegrationChecker);
 }
 
 async function validateRequiredFiles() {
@@ -379,6 +382,7 @@ async function validateManifestAndValidatorDocs() {
     "reference/materialization_lab/contracts/SOURCE_MODEL_CONTRACT.md",
     "primary behavior source",
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "template coverage validator",
     "read-only",
   ], "template coverage validator manifest registration");
@@ -386,7 +390,9 @@ async function validateManifestAndValidatorDocs() {
   const staticChecks = await readText(validationPath("STATIC_CHECKS.md"));
   requireAll(staticChecks, validationPath("STATIC_CHECKS.md"), [
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "template coverage validator",
+    "read-only fixture to render/dry-run integration",
     "read-only",
     "MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS",
   ], "template coverage validator static-check registration");
@@ -394,7 +400,9 @@ async function validateManifestAndValidatorDocs() {
   const expectations = await readText(validationPath("EXCELLENT_PASS_EXPECTATIONS.md"));
   requireAll(expectations, validationPath("EXCELLENT_PASS_EXPECTATIONS.md"), [
     expectedScriptPath,
+    fixtureRenderDryRunIntegrationChecker,
     "template coverage validator",
+    "read-only fixture to render/dry-run integration",
     "read-only",
     "MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS",
   ], "template coverage validator expectation registration");
