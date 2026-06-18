@@ -10,9 +10,11 @@ combining kernel source bundles, Senior Agent Profiles, and explicit templates.
 It also defines the render-context composition contract, the dry-run
 output-plan and write-boundary contract for future artifact planning, and the
 validation harness contract for future pre-materialization validation and
-dry-run smoke reporting. It also defines the documentary implementation
-boundary for a later, separately authorized dev-only script layer. It does not
-authorize runtime
+dry-run smoke reporting. It also defines a dedicated documentary/dev-only
+Validation Harness Aggregator contract for a future zero-argument,
+stdout-only aggregator over the current 9 read-only checks. It also defines
+the documentary implementation boundary for a later, separately authorized
+dev-only script layer. It does not authorize runtime
 materialization, runtime script creation, target-repository writes,
 productive-skill changes, GitHub writes, or changes to productive templates.
 It also defines the fixture-boundary contract and the documentary/dev-only
@@ -42,6 +44,14 @@ runtime payloads, target artifacts, or target writes.
   harness and dry-run smoke contract for future pre-materialization checks,
   structured reporting, no-write enforcement, matrix completeness, and
   productive-skill immutability.
+- `contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`: documentary/dev-only
+  contract for a future Validation Harness Aggregator. It records the official
+  9-check checklist, order, dependencies, status model, fail-closed rules,
+  zero-argument policy, stdout-only policy, no persistent report policy,
+  no-target-path policy, no runtime/materializer policy, future child process
+  policy, aggregator block codes, and expected future verdict
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. It creates no
+  executable checker or runner in this phase.
 - `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`: documentary/dev-only
   implementation boundary for a later, separately authorized dev-only script
   layer. It lists allowed future script categories, script locations, read
@@ -155,6 +165,33 @@ The only validation statuses are `VALIDATION_PASS`, `VALIDATION_BLOCKED`, and
 with `BLOCKED_TARGET_FILE_MUTATION`; incomplete matrix coverage blocks with
 `BLOCKED_MATRIX_INCOMPLETE`; and unknown block codes block with
 `BLOCKED_UNKNOWN_BLOCK_CODE`.
+
+Validation Harness Aggregator planning is also contract-only in this phase.
+`VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines a future aggregator over
+the current 9 read-only checks:
+
+- `scripts/materialization_lab/check-static.mjs`
+- `scripts/materialization_lab/check-source-inventory.mjs`
+- `scripts/materialization_lab/check-template-coverage.mjs`
+- `scripts/materialization_lab/check-fixture-boundary.mjs`
+- `scripts/materialization_lab/check-lazy-load-fixtures.mjs`
+- `scripts/materialization_lab/check-project-scenarios.mjs`
+- `scripts/materialization_lab/check-render-context.mjs`
+- `scripts/materialization_lab/check-dry-run-plan.mjs`
+- `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+
+The future aggregator expected verdict is
+`MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. The first future
+executable version must accept zero arguments only, block before child
+execution on any argument, never accept a target path, pass no child arguments,
+run child checks in the official dependency order, and be stdout-only. It must
+not create persistent reports, Markdown reports, JSON files, caches, snapshots,
+temp outputs, artifacts, dry-run reports, target reports, runtime
+materializer, renderer, writer, loader, scenario selector, target real
+read/write, GitHub write, or productive skill changes. The warning that
+`check-static.mjs` does not reject extra arguments by itself is mitigated by
+the aggregator contract because the aggregator must enforce zero arguments and
+must not pass arguments to child checks.
 
 Implementation-boundary planning is also contract-only in this phase. A later
 step may authorize only dev-only scripts for static contract validation, source

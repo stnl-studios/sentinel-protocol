@@ -213,6 +213,66 @@ Expected result:
 - expected verdict:
   `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`
 
+### Validation Harness Aggregator Contract Is Documented
+
+Input:
+
+- requested validation target: future Validation Harness Aggregator contract
+- contract:
+  `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
+
+Expected result:
+
+- the contract is documentary/dev-only and creates no executable checker,
+  runner, persistent report, dry-run report model, materializer interface,
+  target adapter, write approval protocol, runtime materializer, runtime
+  renderer, runtime writer, runtime loader, runtime scenario selector, target
+  real read/write, GitHub write, productive skill authorization, or final
+  source dependency on `reference/agents/`
+- the official checklist lists exactly the 9 existing read-only child checks
+  in order:
+  `check-static.mjs`, `check-source-inventory.mjs`,
+  `check-template-coverage.mjs`, `check-fixture-boundary.mjs`,
+  `check-lazy-load-fixtures.mjs`, `check-project-scenarios.mjs`,
+  `check-render-context.mjs`, `check-dry-run-plan.mjs`, and
+  `check-fixture-render-dry-run-integration.mjs`
+- the expected future verdict is
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`
+- the dependency matrix requires each downstream check to depend on its
+  prerequisite contract layers, and the integration checker depends on all
+  previous checks
+- child statuses are `PASS`, `BLOCKED`, `SKIPPED`, `INCONCLUSIVE`,
+  `UNKNOWN_CHECK`, `CHECK_FAILED_TO_RUN`, `CHECK_OUTPUT_UNRECOGNIZED`,
+  `CHECK_EXIT_CODE_MISMATCH`, and `CHECK_TIMED_OUT`
+- final statuses are `PASS` and `BLOCKED`, where `PASS` maps to
+  `VALIDATION_PASS` and anything else maps to `VALIDATION_BLOCKED`
+- fail-closed rules block missing, skipped, unknown, inconclusive, failed,
+  timed-out, stderr, unexpected stdout, exit-code mismatch, child crash,
+  `ENOENT`, permission denied, unknown block code, dependency-order failure,
+  and stdout extra except trailing newline
+- zero-argument policy blocks any CLI argument before child execution, never
+  accepts target paths, forbids first-version flags such as `--json`, `--help`,
+  and `--list-checks`, and mitigates the `check-static.mjs` extra-argument
+  warning by not passing arguments to child checks
+- stdout-only policy forbids persistent reports, Markdown reports, JSON files,
+  caches, snapshots, temp outputs, artifacts, dry-run reports, and target
+  reports
+- future child process policy requires fixed allowlist, serial execution,
+  `process.execPath`, `spawn` or `execFile` without shell, no child args, no
+  target path, fixed cwd, no custom CLI env, stdout/stderr/exit-code capture,
+  timeout per check, no persistence, no smoke global, no Git commands, and no
+  target real read/write
+- aggregator block codes such as `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`,
+  `BLOCKED_AGGREGATOR_CHECK_SKIPPED`,
+  `BLOCKED_AGGREGATOR_CHECK_FAILED`,
+  `BLOCKED_AGGREGATOR_CHECK_OUTPUT_UNRECOGNIZED`,
+  `BLOCKED_AGGREGATOR_EXIT_CODE_MISMATCH`,
+  `BLOCKED_AGGREGATOR_TARGET_ARG`,
+  `BLOCKED_AGGREGATOR_REPORT_UNAUTHORIZED`,
+  `BLOCKED_AGGREGATOR_RUNTIME_SCOPE`,
+  `BLOCKED_AGGREGATOR_DEPENDENCY_ORDER`, and
+  `BLOCKED_AGGREGATOR_TIMEOUT` are documented
+
 ### Fixture Schema Is Documentary Only
 
 Input:

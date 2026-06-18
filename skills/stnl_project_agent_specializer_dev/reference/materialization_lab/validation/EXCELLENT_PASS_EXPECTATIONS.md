@@ -35,6 +35,13 @@ The verdict
 only when the validation harness, dry-run smoke, matrix completeness, no-write,
 and mutation-boundary criteria below are also satisfied.
 
+The future verdict
+`MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` may be accepted
+only after a separately authorized executable aggregator exists and all
+contractual aggregator criteria below are satisfied. In this phase the
+aggregator contract is documentary/dev-only only; no executable checker or
+runner is created.
+
 The verdict
 `MATERIALIZATION_IMPLEMENTATION_BOUNDARY_CONTRACT: EXCELLENT PASS` may be
 declared only when the documentary implementation boundary, future dev-only
@@ -145,6 +152,67 @@ performing real materialization.
   scripts.
 - `VALIDATION_HARNESS_CONTRACT.md` requires validation before any real
   materialization.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` exists and is classified as
+  documentary/dev-only.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` states that this phase does not
+  create an executable checker, runner, persistent report, dry-run report
+  model, materializer interface, target adapter, write approval protocol,
+  runtime materializer, renderer, writer, loader, scenario selector, target
+  real read/write, GitHub write, productive skill authorization, or final
+  dependency on `reference/agents/`.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` lists exactly the 9 current
+  read-only child checks in official order with expected verdicts:
+  `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS`,
+  `MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS`,
+  `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS`,
+  `MATERIALIZATION_FIXTURE_BOUNDARY_CHECK: PASS`,
+  `MATERIALIZATION_LAZY_LOAD_FIXTURE_CHECK: PASS`,
+  `MATERIALIZATION_PROJECT_SCENARIO_FIXTURE_CHECK: PASS`,
+  `MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS`,
+  `MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS`, and
+  `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines the official dependency
+  matrix, requiring `check-fixture-render-dry-run-integration.mjs` to depend on
+  all previous checks and requiring downstream checks not to be treated as PASS
+  when a dependency failed.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines child statuses `PASS`,
+  `BLOCKED`, `SKIPPED`, `INCONCLUSIVE`, `UNKNOWN_CHECK`,
+  `CHECK_FAILED_TO_RUN`, `CHECK_OUTPUT_UNRECOGNIZED`,
+  `CHECK_EXIT_CODE_MISMATCH`, and `CHECK_TIMED_OUT`, final statuses `PASS` and
+  `BLOCKED`, and mapping `PASS -> VALIDATION_PASS`, anything else ->
+  `VALIDATION_BLOCKED`.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines fail-closed rules for
+  missing, skipped, unknown, inconclusive, failed, timed-out, stderr,
+  unexpected stdout, exit-code mismatch, child crash, `ENOENT`, permission
+  denied, unknown block code, dependency-order failure, stdout extra except
+  trailing newline, and exact expected PASS line plus exit code 0.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines zero-argument policy,
+  forbids target paths and first-version flags such as `--json`, `--help`, and
+  `--list-checks`, and mitigates the `check-static.mjs` extra-argument warning
+  by requiring the aggregator not to pass arguments to child checks.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines stdout-only behavior and
+  forbids persistent reports, Markdown reports, JSON files, caches, snapshots,
+  temp outputs, artifacts, dry-run reports, and target reports.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines future child process
+  policy using a fixed 9-script allowlist, serial execution,
+  `process.execPath`, `spawn` or `execFile` without shell, no child args, no
+  target path, fixed dev-skill cwd, no custom CLI env, stdout/stderr/exit-code
+  capture, timeout per check, no persistence, no smoke global, no Git
+  commands, and no target real read/write.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` declares aggregator block codes:
+  `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`,
+  `BLOCKED_AGGREGATOR_CHECK_SKIPPED`,
+  `BLOCKED_AGGREGATOR_CHECK_FAILED`,
+  `BLOCKED_AGGREGATOR_CHECK_OUTPUT_UNRECOGNIZED`,
+  `BLOCKED_AGGREGATOR_EXIT_CODE_MISMATCH`,
+  `BLOCKED_AGGREGATOR_TARGET_ARG`,
+  `BLOCKED_AGGREGATOR_REPORT_UNAUTHORIZED`,
+  `BLOCKED_AGGREGATOR_RUNTIME_SCOPE`,
+  `BLOCKED_AGGREGATOR_DEPENDENCY_ORDER`,
+  `BLOCKED_AGGREGATOR_TIMEOUT`,
+  `BLOCKED_AGGREGATOR_STDERR_UNEXPECTED`,
+  `BLOCKED_AGGREGATOR_ARGUMENT_UNSUPPORTED`, and
+  `BLOCKED_AGGREGATOR_CHILD_PROCESS_ERROR`.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it does not create scripts.

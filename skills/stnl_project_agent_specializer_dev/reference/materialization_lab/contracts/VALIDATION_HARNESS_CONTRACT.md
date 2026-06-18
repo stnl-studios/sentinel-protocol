@@ -6,6 +6,16 @@ This contract defines the validation harness and dry-run smoke boundary for a
 future senior materializer implementation. It is not a runtime materializer and
 does not create runtime scripts.
 
+The Validation Harness Aggregator has its own dedicated documentary/dev-only
+contract at `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`. That contract defines
+the future aggregation policy for the 9 existing read-only child checks,
+including official order, dependencies, status model, fail-closed rules,
+zero-argument policy, stdout-only policy, no persistent report policy,
+no-target-path policy, no runtime/materializer policy, child process policy,
+aggregator block codes, and future expected verdict
+`MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. It does not create
+an executable checker or runner in this phase.
+
 Validation must run before any real materialization, target-project write,
 generated output write, repair, delete, cleanup, or GitHub write can occur in a
 separately authorized later phase.
@@ -215,6 +225,7 @@ The future validation harness must check this contract together with:
 - `TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `FIXTURE_BOUNDARY_CONTRACT.md`
 
 The validation harness must also preserve earlier source, template,

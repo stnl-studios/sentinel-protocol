@@ -8,7 +8,7 @@ projects.
 
 ## Required Files
 
-Confirm the twelve materialization lab files exist:
+Confirm the thirteen materialization lab files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
@@ -17,6 +17,7 @@ Confirm the twelve materialization lab files exist:
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
+- `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/contracts/FIXTURE_BOUNDARY_CONTRACT.md`
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
@@ -186,6 +187,104 @@ does not calculate drift against real target files.
 Confirm the expected successful validator output is exactly:
 
 - `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`
+
+Confirm the dedicated documentary/dev-only Validation Harness Aggregator
+contract exists:
+
+- `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
+
+Confirm the aggregator contract does not create an executable checker, runner,
+persistent report, dry-run report model, materializer interface, target
+adapter, write approval protocol, runtime materializer, renderer, writer,
+loader, scenario selector, target real read/write, GitHub write, productive
+skill authorization, or final dependency on `reference/agents/`.
+
+Confirm the future aggregator checklist lists exactly the 9 read-only child
+checks in this official order and with these expected verdicts:
+
+- `scripts/materialization_lab/check-static.mjs`:
+  `MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS`
+- `scripts/materialization_lab/check-source-inventory.mjs`:
+  `MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS`
+- `scripts/materialization_lab/check-template-coverage.mjs`:
+  `MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS`
+- `scripts/materialization_lab/check-fixture-boundary.mjs`:
+  `MATERIALIZATION_FIXTURE_BOUNDARY_CHECK: PASS`
+- `scripts/materialization_lab/check-lazy-load-fixtures.mjs`:
+  `MATERIALIZATION_LAZY_LOAD_FIXTURE_CHECK: PASS`
+- `scripts/materialization_lab/check-project-scenarios.mjs`:
+  `MATERIALIZATION_PROJECT_SCENARIO_FIXTURE_CHECK: PASS`
+- `scripts/materialization_lab/check-render-context.mjs`:
+  `MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS`
+- `scripts/materialization_lab/check-dry-run-plan.mjs`:
+  `MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS`
+- `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`:
+  `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`
+
+Confirm the future aggregator expected verdict is:
+
+- `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`
+
+Confirm the aggregator contract documents the required dependency matrix:
+`check-static.mjs` has no dependencies;
+`check-source-inventory.mjs` depends on `check-static.mjs`;
+`check-template-coverage.mjs` depends on `check-static.mjs` and
+`check-source-inventory.mjs`; `check-fixture-boundary.mjs` depends on
+`check-static.mjs`; `check-lazy-load-fixtures.mjs` depends on
+`check-static.mjs` and `check-fixture-boundary.mjs`;
+`check-project-scenarios.mjs` depends on `check-static.mjs`,
+`check-source-inventory.mjs`, `check-template-coverage.mjs`, and
+`check-fixture-boundary.mjs`; `check-render-context.mjs` depends on
+`check-static.mjs`, `check-source-inventory.mjs`,
+`check-template-coverage.mjs`, `check-fixture-boundary.mjs`, and
+`check-project-scenarios.mjs`; `check-dry-run-plan.mjs` depends on
+`check-static.mjs`, `check-source-inventory.mjs`,
+`check-template-coverage.mjs`, and `check-render-context.mjs`; and
+`check-fixture-render-dry-run-integration.mjs` depends on all previous checks.
+
+Confirm the aggregator status model contains child statuses `PASS`, `BLOCKED`,
+`SKIPPED`, `INCONCLUSIVE`, `UNKNOWN_CHECK`, `CHECK_FAILED_TO_RUN`,
+`CHECK_OUTPUT_UNRECOGNIZED`, `CHECK_EXIT_CODE_MISMATCH`, and
+`CHECK_TIMED_OUT`; final statuses `PASS` and `BLOCKED`; and mapping
+`PASS -> VALIDATION_PASS`, anything else -> `VALIDATION_BLOCKED`.
+
+Confirm the aggregator fail-closed rules require every mandatory child check to
+return exactly the expected PASS line with exit code 0, block on missing,
+skipped, unknown, inconclusive, failed, timed-out, stderr, unrecognized output,
+exit-code mismatch, child crash, `ENOENT`, permission denied, unknown block
+code, dependency failure, and stdout extra except trailing newline.
+
+Confirm the aggregator zero-argument policy accepts zero arguments only, blocks
+any argument before child execution, never accepts target paths, forbids
+`--json`, `--help`, and `--list-checks` in the first version, and mitigates the
+`check-static.mjs` extra-argument warning by not passing arguments to child
+checks.
+
+Confirm the aggregator stdout-only policy allows only minimal contracted
+stdout and forbids persistent reports, Markdown reports, JSON files, caches,
+snapshots, temp outputs, artifacts, dry-run reports, and target reports.
+
+Confirm the aggregator future child process policy requires a fixed 9-script
+allowlist, serial execution, `process.execPath`, `spawn` or `execFile` without
+shell, no child args, no target path, fixed dev-skill cwd, no custom CLI env,
+stdout/stderr/exit-code capture, timeout per check, no persistence, no smoke
+global, no Git commands, and no target real read/write.
+
+Confirm the aggregator block codes are documented:
+
+- `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`
+- `BLOCKED_AGGREGATOR_CHECK_SKIPPED`
+- `BLOCKED_AGGREGATOR_CHECK_FAILED`
+- `BLOCKED_AGGREGATOR_CHECK_OUTPUT_UNRECOGNIZED`
+- `BLOCKED_AGGREGATOR_EXIT_CODE_MISMATCH`
+- `BLOCKED_AGGREGATOR_TARGET_ARG`
+- `BLOCKED_AGGREGATOR_REPORT_UNAUTHORIZED`
+- `BLOCKED_AGGREGATOR_RUNTIME_SCOPE`
+- `BLOCKED_AGGREGATOR_DEPENDENCY_ORDER`
+- `BLOCKED_AGGREGATOR_TIMEOUT`
+- `BLOCKED_AGGREGATOR_STDERR_UNEXPECTED`
+- `BLOCKED_AGGREGATOR_ARGUMENT_UNSUPPORTED`
+- `BLOCKED_AGGREGATOR_CHILD_PROCESS_ERROR`
 
 ## Contract Anchors
 

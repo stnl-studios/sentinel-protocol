@@ -17,7 +17,7 @@ The canonical documentary/dev-only reference bundle is organized as:
   IDs, source model contract, explicit template and output-shape contract,
   missing-template blocking rules, rendering/composition contract,
   dry-run/write-boundary contract, validation harness contract,
-  implementation-boundary contract,
+  validation harness aggregator contract, implementation-boundary contract,
   fixture-boundary contract, and validation expectations. This is not a
   runtime materializer.
 - `reference/seniorization_lab/`: the 12 Senior Agent Profiles, the shared
@@ -59,6 +59,8 @@ The canonical documentary/dev-only reference bundle is organized as:
   documentary dry-run output-plan and write-boundary contract for future
   planned artifacts, plus the documentary validation harness contract for
   future pre-materialization validation and dry-run smoke reporting, plus the
+  documentary validation harness aggregator contract for a future zero-argument
+  stdout-only coordinator over the current 9 read-only checks, plus the
   documentary implementation-boundary contract for a later separately
   authorized dev-only script layer, plus the documentary fixture-boundary
   contract, complete documentary fixture matrix, and read-only fixture to
@@ -115,6 +117,20 @@ The canonical documentary/dev-only reference bundle is organized as:
   `VALIDATION_PASS`, `VALIDATION_BLOCKED`, and `VALIDATION_FAILED`; and blocks
   write attempts, productive-skill mutation, target-file mutation, incomplete
   matrix coverage, and unknown block codes.
+- `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
+  defines the documentary/dev-only future Validation Harness Aggregator
+  contract. It lists exactly the 9 current read-only child checks in official
+  order, records their expected PASS verdicts, defines dependencies, child
+  statuses, final statuses, fail-closed rules, zero-argument policy,
+  stdout-only policy, no-persistent-report policy, no-target-path policy,
+  no-runtime/materializer policy, future child process policy without shell,
+  and aggregator block codes. It records expected future verdict
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. It does not
+  register or create an executable aggregator checker, runner, persistent
+  report, dry-run report model, materializer interface, target adapter, write
+  approval protocol, runtime materializer, renderer, writer, loader, scenario
+  selector, target real read/write, GitHub write, or productive skill
+  authorization.
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
   defines the documentary/dev-only implementation boundary for a later,
   separately authorized script layer. It permits only future static contract
