@@ -8,7 +8,7 @@ projects.
 
 ## Required Files
 
-Confirm the thirteen materialization lab files exist:
+Confirm the fourteen materialization lab contract and validation files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
@@ -16,6 +16,7 @@ Confirm the thirteen materialization lab files exist:
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
+- `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
@@ -165,6 +166,29 @@ artifacts and does not calculate drift against real target files.
 Confirm the expected successful validator output is exactly:
 
 - `MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS`
+
+Confirm the documentary/dev-only Dry-run Report Model contract exists:
+
+- `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
+
+Confirm the contract defines a conceptual `dry_run_report` shape with
+`report_identity`, `report_boundary`, `source_inventory_snapshot`,
+`target_intent`, `agent_plan_entries`, `output_plan_entries`, `gate_results`,
+`lazy_load_trace`, `blocking_summary`, `no_write_evidence`, and
+`non_authorization_summary`.
+
+Confirm the contract is not an executable schema, runtime payload, persistent
+report, report generator, checker, CLI contract, materializer interface,
+target adapter, renderer, writer, loader, scenario selector, target real
+read/write authorization, GitHub write authorization, productive-skill
+mutation authorization, or final dependency on `reference/agents/`.
+
+Confirm the contract preserves planned-only operations
+`CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and
+`BLOCKED_PLANNED`, forbids executed operation tokens, requires no-write
+evidence, requires non-authorization summary, treats lazy-load as a safety
+contract, introduces no new block codes, and does not expand the 9 official
+checks or the Aggregator Checker.
 
 Confirm the separately authorized dev-only read-only fixture to render/dry-run
 integration checker exists:

@@ -57,7 +57,9 @@ The canonical documentary/dev-only reference bundle is organized as:
   for deterministic composition from `kernel_source`, Senior Agent Profiles,
   explicit templates, and target/template/rendering contracts, plus the
   documentary dry-run output-plan and write-boundary contract for future
-  planned artifacts, plus the documentary validation harness contract for
+  planned artifacts, plus the documentary Dry-run Report Model contract for
+  future simulation evidence without persistence, target read/write, or
+  runtime authorization, plus the documentary validation harness contract for
   future pre-materialization validation and dry-run smoke reporting, plus the
   documentary validation harness aggregator contract and the separately
   authorized zero-argument stdout-only aggregator checker over the current 9
@@ -106,6 +108,18 @@ The canonical documentary/dev-only reference bundle is organized as:
   `BLOCKED_UNMANAGED_COLLISION`, `BLOCKED_INVALID_MANAGED_NOTICE`, and
   `BLOCKED_DRY_RUN_REQUIRED`, while preserving the earlier source, template,
   placeholder, render-safety, and composition block codes.
+- `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
+  defines the documentary/dev-only/read-only Dry-run Report Model contract for
+  future simulation evidence. It declares the conceptual `dry_run_report`
+  top-level shape with report identity, report boundary, source inventory
+  snapshot, target intent, agent and output plan entries, gate results,
+  lazy-load trace, blocking summary, no-write evidence, and
+  non-authorization summary. It does not create an executable schema, runtime
+  payload, persistent report, report generator, checker, CLI contract,
+  materializer interface, target adapter, renderer, writer, loader, scenario
+  selector, target real read/write, GitHub write, productive skill mutation, or
+  final dependency on `reference/agents/`. It introduces no new block codes and
+  preserves the current 9-check Aggregator unchanged.
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
   defines the documentary/dev-only validation harness and dry-run smoke layer
   for future pre-materialization validation. It requires validation before real
@@ -628,6 +642,7 @@ Required files:
 - `reference/materialization_lab/contracts/TEMPLATES_AND_OUTPUTS_CONTRACT.md`
 - `reference/materialization_lab/contracts/RENDERING_AND_COMPOSITION_CONTRACT.md`
 - `reference/materialization_lab/contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`
+- `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`

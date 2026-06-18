@@ -30,6 +30,17 @@ The verdict
 declared only when the dry-run output-plan, drift, managed-artifact,
 path-safety, and write-boundary criteria below are also satisfied.
 
+The verdict `MATERIALIZATION_DRY_RUN_REPORT_MODEL_CONTRACT: PASS` may be
+declared only when the Dry-run Report Model contract exists and remains
+documentary/dev-only/read-only; defines the conceptual `dry_run_report` shape;
+requires no-write evidence and non-authorization summary; preserves
+planned-only operations; forbids executed operation tokens; keeps
+`reference/agents/` forbidden as final source; introduces no new block codes;
+creates no persistent report, runtime payload, materializer, renderer, writer,
+loader, scenario selector, target adapter, checker, CLI contract, target real
+read/write, GitHub write, productive-skill mutation, or real materialization;
+and does not expand or repurpose the Aggregator Checker.
+
 The verdict
 `MATERIALIZATION_VALIDATION_HARNESS_CONTRACT: EXCELLENT PASS` may be declared
 only when the validation harness, dry-run smoke, matrix completeness, no-write,
@@ -137,7 +148,7 @@ runtime/materializer/renderer/writer/loader/scenario selector.
 
 ## Required Criteria
 
-- The twelve materialization lab files exist in
+- The materialization lab contract and validation files exist in
   `reference/materialization_lab/`.
 - `SOURCE_MODEL_CONTRACT.md` exists and is classified as
   documentary/dev-only.
@@ -162,6 +173,25 @@ runtime/materializer/renderer/writer/loader/scenario selector.
   documentary/dev-only.
 - `DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md` exists and is classified as
   documentary/dev-only.
+- `DRY_RUN_REPORT_MODEL_CONTRACT.md` exists and is classified as
+  documentary/dev-only/read-only.
+- `DRY_RUN_REPORT_MODEL_CONTRACT.md` defines a conceptual `dry_run_report`
+  shape with `report_identity`, `report_boundary`,
+  `source_inventory_snapshot`, `target_intent`, `agent_plan_entries`,
+  `output_plan_entries`, `gate_results`, `lazy_load_trace`,
+  `blocking_summary`, `no_write_evidence`, and
+  `non_authorization_summary`.
+- `DRY_RUN_REPORT_MODEL_CONTRACT.md` requires final sources to remain based on
+  `reference/kernel_lab/`, `reference/seniorization_lab/`,
+  `reference/templates/`, and materialization-lab contracts, while keeping
+  `reference/agents/` forbidden as final source.
+- `DRY_RUN_REPORT_MODEL_CONTRACT.md` preserves planned-only operations
+  `CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and
+  `BLOCKED_PLANNED`, forbids executed operation tokens, treats lazy-load as a
+  safety contract, requires no-write evidence, requires non-authorization
+  summary, introduces no new block codes, creates no persistent report, and
+  does not transform any validation check or the Aggregator Checker into a
+  report generator.
 - `VALIDATION_HARNESS_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - `VALIDATION_HARNESS_CONTRACT.md` states that it does not create runtime

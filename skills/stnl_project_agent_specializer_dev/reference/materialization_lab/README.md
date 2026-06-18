@@ -9,6 +9,8 @@ shape contract for the canonical targets, plus the source model contract for
 combining kernel source bundles, Senior Agent Profiles, and explicit templates.
 It also defines the render-context composition contract, the dry-run
 output-plan and write-boundary contract for future artifact planning, and the
+dry-run report model contract for future simulation evidence without
+persistence, target read/write, or runtime authorization. It also defines the
 validation harness contract for future pre-materialization validation and
 dry-run smoke reporting. It also defines a dedicated documentary/dev-only
 Validation Harness Aggregator contract and a separately authorized
@@ -40,6 +42,14 @@ runtime payloads, target artifacts, or target writes.
 - `contracts/DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md`: documentary/dev-only
   dry-run output-plan, drift classification, managed-artifact, path-safety, and
   write-boundary contract for future planned artifacts.
+- `contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`: documentary/dev-only/read-only
+  dry-run report model contract for future simulation evidence. It defines
+  conceptual sections for report identity, source inventory snapshot, target
+  intent, plan entries, gate results, lazy-load trace, blocking summary,
+  no-write evidence, and non-authorization summary, while creating no runtime
+  payload, persistent report, report generator, materializer, renderer, writer,
+  loader, scenario selector, target adapter, target read/write, GitHub write,
+  productive-skill mutation, or final dependency on `reference/agents/`.
 - `contracts/VALIDATION_HARNESS_CONTRACT.md`: documentary/dev-only validation
   harness and dry-run smoke contract for future pre-materialization checks,
   structured reporting, no-write enforcement, matrix completeness, and
@@ -110,6 +120,18 @@ block code. Deprecated field `base_agent_source` must not appear in final
 dry-run planned artifacts. During this documentary/dev-only phase, all
 operations are only planned: `CREATE_PLANNED`, `UPDATE_PLANNED`,
 `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED` write nothing.
+
+Dry-run report model planning is also contract-only in this phase.
+`DRY_RUN_REPORT_MODEL_CONTRACT.md` defines a conceptual `dry_run_report` shape
+for future simulation evidence. It requires report boundary, source inventory
+snapshot, target intent, agent and output plan entries, gate results,
+lazy-load trace, blocking summary, no-write evidence, and
+non-authorization summary. The model is not a runtime payload, executable
+schema, checker, CLI contract, persistent report, report generator, target
+adapter, renderer, writer, loader, scenario selector, materializer interface,
+or authorization for Target real read/write. It preserves
+`reference/agents/` only as a temporary development parity baseline and never
+as final source.
 
 Templates must be explicit. A target, target-agent pair, or output shape
 without an explicit template blocks with `BLOCKED_TEMPLATE_MISSING`; no
@@ -288,6 +310,28 @@ The fixture case phase adds these read-only checkers:
 - No fixture, script, generated artifact, persistent report, GitHub write,
   productive skill change, target real read/write, or real materialization is
   introduced.
+
+## Dry-run Report Model Contract Pass Criterion
+
+`MATERIALIZATION_DRY_RUN_REPORT_MODEL_CONTRACT: PASS` requires:
+
+- `contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md` exists and is documentary,
+  dev-only, and read-only;
+- the conceptual `dry_run_report` shape includes identity, boundary, source
+  inventory snapshot, target intent, agent plan entries, output plan entries,
+  gate results, lazy-load trace, blocking summary, no-write evidence, and
+  non-authorization summary;
+- no persistent report, runtime payload, materializer, renderer, writer,
+  loader, scenario selector, target adapter, checker, CLI contract, Target
+  real read/write, GitHub write, productive-skill mutation, or real
+  materialization is introduced;
+- `reference/agents/` remains forbidden as final source;
+- planned operations remain only `CREATE_PLANNED`, `UPDATE_PLANNED`,
+  `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`;
+- executed operation tokens remain forbidden;
+- lazy-load remains a safety contract, not an optimization;
+- the Aggregator Checker remains the same stdout-only gate over exactly the 9
+  current read-only checks and does not become a report generator.
 
 ## Fixture Matrix Pass Criterion
 

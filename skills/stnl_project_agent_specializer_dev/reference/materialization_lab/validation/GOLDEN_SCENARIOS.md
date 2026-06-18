@@ -286,6 +286,37 @@ Expected result:
   persistence, materialization, renderer/writer/loader/scenario-selector
   creation, GitHub write, or productive skill mutation
 
+### Dry-run Report Model Contract Is Documented
+
+Input:
+
+- requested validation target: Dry-run Report Model contract
+- contract:
+  `reference/materialization_lab/contracts/DRY_RUN_REPORT_MODEL_CONTRACT.md`
+
+Expected result:
+
+- the contract is documentary/dev-only/read-only
+- the conceptual `dry_run_report` shape includes report identity, report
+  boundary, source inventory snapshot, target intent, agent plan entries,
+  output plan entries, gate results, lazy-load trace, blocking summary,
+  no-write evidence, and non-authorization summary
+- final sources remain `reference/kernel_lab/`,
+  `reference/seniorization_lab/`, `reference/templates/`, and
+  `reference/materialization_lab/contracts/`
+- `reference/agents/` remains only a temporary development parity baseline and
+  is forbidden as final source
+- planned operations remain `CREATE_PLANNED`, `UPDATE_PLANNED`,
+  `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`
+- executed operation tokens such as `CREATE_EXECUTED`, `UPDATE_EXECUTED`,
+  `DELETE_EXECUTED`, and `WRITE_EXECUTED` are forbidden
+- no target real read/write, persistent report, report generator, checker,
+  runtime materializer, renderer, writer, loader, scenario selector, target
+  adapter, GitHub write, productive-skill mutation, or real materialization is
+  authorized
+- the Aggregator Checker remains stdout-only and keeps exactly the 9 official
+  read-only checks
+
 ### Validation Harness Aggregator Checker Passes With 9 Valid Checks
 
 Input:
