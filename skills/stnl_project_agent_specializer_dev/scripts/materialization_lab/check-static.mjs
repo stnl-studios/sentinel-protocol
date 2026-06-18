@@ -33,6 +33,54 @@ const validationFiles = [
 
 const fixtureRenderDryRunIntegrationChecker =
   "scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs";
+const validationHarnessAggregatorChecker =
+  "scripts/materialization_lab/check-validation-harness-aggregator.mjs";
+
+const aggregatorPassVerdict =
+  "MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS";
+const aggregatorBlockedVerdict =
+  "MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED";
+
+const aggregatorChildChecks = [
+  {
+    relativePath: "scripts/materialization_lab/check-static.mjs",
+    expectedStdout: "MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS",
+  },
+  {
+    relativePath: "scripts/materialization_lab/check-source-inventory.mjs",
+    expectedStdout: "MATERIALIZATION_SOURCE_INVENTORY_CHECK: PASS",
+  },
+  {
+    relativePath: "scripts/materialization_lab/check-template-coverage.mjs",
+    expectedStdout: "MATERIALIZATION_TEMPLATE_COVERAGE_CHECK: PASS",
+  },
+  {
+    relativePath: "scripts/materialization_lab/check-fixture-boundary.mjs",
+    expectedStdout: "MATERIALIZATION_FIXTURE_BOUNDARY_CHECK: PASS",
+  },
+  {
+    relativePath: "scripts/materialization_lab/check-lazy-load-fixtures.mjs",
+    expectedStdout: "MATERIALIZATION_LAZY_LOAD_FIXTURE_CHECK: PASS",
+  },
+  {
+    relativePath: "scripts/materialization_lab/check-project-scenarios.mjs",
+    expectedStdout: "MATERIALIZATION_PROJECT_SCENARIO_FIXTURE_CHECK: PASS",
+  },
+  {
+    relativePath: "scripts/materialization_lab/check-render-context.mjs",
+    expectedStdout: "MATERIALIZATION_RENDER_CONTEXT_CHECK: PASS",
+  },
+  {
+    relativePath: "scripts/materialization_lab/check-dry-run-plan.mjs",
+    expectedStdout: "MATERIALIZATION_DRY_RUN_PLAN_CHECK: PASS",
+  },
+  {
+    relativePath:
+      "scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs",
+    expectedStdout:
+      "MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS",
+  },
+];
 
 const fixtureSkeletonFiles = [
   "reference/materialization_lab/fixtures/README.md",
@@ -417,6 +465,7 @@ async function validateRequiredFiles() {
   }
 
   await requireFile(fixtureRenderDryRunIntegrationChecker);
+  await requireFile(validationHarnessAggregatorChecker);
 
   for (const agent of agents) {
     await requireFile(rel("reference/kernel_lab", kernelByAgent.get(agent)));
@@ -539,6 +588,38 @@ async function validateContractAnchors() {
     "`codex` root instructions",
   ], "validation matrix");
 
+  const aggregator = await readText(
+    contractPath("VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md"),
+  );
+  requireAll(aggregator, contractPath("VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md"), [
+    validationHarnessAggregatorChecker,
+    aggregatorPassVerdict,
+    aggregatorBlockedVerdict,
+    "zero arguments",
+    "stdout-only",
+    "no-persistent-report",
+    "no-target-path",
+    "no-runtime/materializer",
+    "process.execPath",
+    "child_process.spawn",
+    "shell: false",
+    "not use `exec`",
+    "timeout_per_child_check: 30 seconds",
+    "capture stdout, stderr, exit code, signal, and spawn error",
+    "generic runner",
+    "target adapter",
+    "write approval",
+    "runtime materializer",
+    "persistent report",
+    "target real read/write",
+  ], "validation harness aggregator");
+  for (const check of aggregatorChildChecks) {
+    requireAll(aggregator, contractPath("VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md"), [
+      check.relativePath,
+      check.expectedStdout,
+    ], `validation harness aggregator child: ${check.relativePath}`);
+  }
+
   const implementation = await readText(
     contractPath("IMPLEMENTATION_BOUNDARY_CONTRACT.md"),
   );
@@ -549,6 +630,16 @@ async function validateContractAnchors() {
     "render-context planner",
     "dry-run output planner",
     "validation report generator",
+    "validation harness aggregator checker",
+    validationHarnessAggregatorChecker,
+    aggregatorPassVerdict,
+    aggregatorBlockedVerdict,
+    "generic runner",
+    "target adapter",
+    "materializer interface",
+    "write approval",
+    "persistent report",
+    "target real read/write",
     "skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/",
     "skills/stnl_project_agent_specializer_dev/reference/**",
     "skills/stnl_project_agent_specializer_dev/README.md",
@@ -875,6 +966,103 @@ async function validateStaticValidatorRegistration() {
   }
 }
 
+async function validateAggregatorCheckerRegistration() {
+  const aggregatorScript = await readText(validationHarnessAggregatorChecker);
+
+  requireAll(aggregatorScript, validationHarnessAggregatorChecker, [
+    "#!/usr/bin/env node",
+    "import { spawn } from \"node:child_process\";",
+    "process.argv.slice(2)",
+    "process.execPath",
+    "shell: false",
+    "cwd: skillRoot",
+    "stdio: [\"ignore\", \"pipe\", \"pipe\"]",
+    "timeoutPerChildMs = 30_000",
+    "child.kill(\"SIGTERM\")",
+    "stdoutMatchesExpected",
+    "childReturnedRecognizedFailure",
+    aggregatorPassVerdict,
+    aggregatorBlockedVerdict,
+  ], "validation harness aggregator checker implementation");
+
+  for (const check of aggregatorChildChecks) {
+    requireAll(aggregatorScript, validationHarnessAggregatorChecker, [
+      `relativePath: "${check.relativePath}"`,
+      `expectedStdout: "${check.expectedStdout}"`,
+    ], `validation harness aggregator child implementation: ${check.relativePath}`);
+  }
+
+  const childPositions = aggregatorChildChecks.map((check) =>
+    aggregatorScript.indexOf(`relativePath: "${check.relativePath}"`),
+  );
+  for (const [index, position] of childPositions.entries()) {
+    if (position === -1) {
+      recordFailure(
+        `${validationHarnessAggregatorChecker} missing child check: ${aggregatorChildChecks[index].relativePath}`,
+      );
+      continue;
+    }
+    if (index > 0 && childPositions[index - 1] > position) {
+      recordFailure(
+        `${validationHarnessAggregatorChecker} child checks are not in official aggregator order`,
+      );
+    }
+  }
+
+  for (const blockCode of blockCodesByContract[
+    contractPath("VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md")
+  ]) {
+    requireIncludes(
+      aggregatorScript,
+      validationHarnessAggregatorChecker,
+      blockCode,
+      `aggregator checker block code: ${blockCode}`,
+    );
+  }
+
+  for (const forbiddenImplementation of [
+    "exec(",
+    "execFile(",
+    "writeFile",
+    "appendFile",
+    "mkdir",
+    "rm(",
+    "rmdir",
+    "createWriteStream",
+  ]) {
+    if (aggregatorScript.includes(forbiddenImplementation)) {
+      recordFailure(
+        `${validationHarnessAggregatorChecker} contains forbidden implementation token: ${forbiddenImplementation}`,
+      );
+    }
+  }
+
+  for (const relativePath of [
+    "reference/MANIFEST.md",
+    "reference/materialization_lab/README.md",
+    validationPath("STATIC_CHECKS.md"),
+    validationPath("GOLDEN_SCENARIOS.md"),
+    validationPath("EXCELLENT_PASS_EXPECTATIONS.md"),
+    contractPath("VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md"),
+    contractPath("IMPLEMENTATION_BOUNDARY_CONTRACT.md"),
+  ]) {
+    const content = await readText(relativePath);
+    requireAll(content, relativePath, [
+      validationHarnessAggregatorChecker,
+      aggregatorPassVerdict,
+      aggregatorBlockedVerdict,
+      "zero arguments",
+      "stdout-only",
+      "child_process.spawn",
+      "shell: false",
+      "timeout_per_child_check: 30 seconds",
+      "persistent report",
+      "target real read/write",
+      "generic runner",
+    ], "validation harness aggregator checker registration");
+  }
+}
+
 async function main() {
   await validateRequiredFiles();
   await validateContractAnchors();
@@ -883,6 +1071,7 @@ async function main() {
   await validateBlockCodes();
   await validateNonAuthorization();
   await validateStaticValidatorRegistration();
+  await validateAggregatorCheckerRegistration();
 
   if (failures.length === 0) {
     console.log("MATERIALIZATION_STATIC_CONTRACT_CHECK: PASS");

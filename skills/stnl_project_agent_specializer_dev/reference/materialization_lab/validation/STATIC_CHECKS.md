@@ -193,13 +193,16 @@ contract exists:
 
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 
-Confirm the aggregator contract does not create an executable checker, runner,
-persistent report, dry-run report model, materializer interface, target
-adapter, write approval protocol, runtime materializer, renderer, writer,
-loader, scenario selector, target real read/write, GitHub write, productive
-skill authorization, or final dependency on `reference/agents/`.
+Confirm the aggregator contract registers only the separately authorized
+dev-only/read-only checker
+`scripts/materialization_lab/check-validation-harness-aggregator.mjs` and does
+not create a generic runner, persistent report, dry-run report model,
+materializer interface, target adapter, write approval protocol, runtime
+materializer, renderer, writer, loader, scenario selector, target real
+read/write, GitHub write, productive skill authorization, or final dependency
+on `reference/agents/`.
 
-Confirm the future aggregator checklist lists exactly the 9 read-only child
+Confirm the aggregator checker checklist lists exactly the 9 read-only child
 checks in this official order and with these expected verdicts:
 
 - `scripts/materialization_lab/check-static.mjs`:
@@ -221,9 +224,47 @@ checks in this official order and with these expected verdicts:
 - `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`:
   `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`
 
-Confirm the future aggregator expected verdict is:
+Confirm the aggregator checker expected verdicts are:
 
 - `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`
+- `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`
+
+Confirm the separately authorized executable aggregator checker exists:
+
+- `scripts/materialization_lab/check-validation-harness-aggregator.mjs`
+
+Confirm `scripts/materialization_lab/check-validation-harness-aggregator.mjs`
+is a read-only Node.js ESM checker with no external package dependency.
+
+Confirm the aggregator checker accepts zero arguments only, blocks any
+argument before child execution, maps target/path-like arguments internally to
+`BLOCKED_AGGREGATOR_TARGET_ARG`, maps flag-like arguments such as `--json`,
+`--help`, and `--list-checks` internally to
+`BLOCKED_AGGREGATOR_ARGUMENT_UNSUPPORTED`, and never prints block codes to
+stdout.
+
+Confirm the aggregator checker uses the exact 9-child allowlist above in the
+official order, uses `process.execPath`, `child_process.spawn`, `shell: false`,
+fixed cwd inside `skills/stnl_project_agent_specializer_dev/`, no child
+arguments, no custom CLI environment, captures stdout, stderr, exit code,
+signal, and spawn error, applies `timeout_per_child_check: 30 seconds`, kills
+timed-out children, and performs no retry.
+
+Confirm the aggregator checker accepts child stdout only when it is exactly the
+expected PASS line with optional trailing newline, blocks any prefix, suffix,
+extra line, stderr output, exit-code mismatch, timeout, spawn error, signal,
+missing child, or recognized child failure, and stops on the first
+blocked/failing child.
+
+Confirm the aggregator checker prints exactly one aggregate stdout line:
+
+- `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`
+- `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`
+
+Confirm the aggregator checker creates no JSON, Markdown, persistent report,
+cache, snapshot, temp output, artifact, dry-run report, target report,
+runtime/materializer/renderer/writer/loader/scenario selector, target real
+read/write, Git command, GitHub write, or productive skill mutation.
 
 Confirm the aggregator contract documents the required dependency matrix:
 `check-static.mjs` has no dependencies;
@@ -264,11 +305,12 @@ Confirm the aggregator stdout-only policy allows only minimal contracted
 stdout and forbids persistent reports, Markdown reports, JSON files, caches,
 snapshots, temp outputs, artifacts, dry-run reports, and target reports.
 
-Confirm the aggregator future child process policy requires a fixed 9-script
-allowlist, serial execution, `process.execPath`, `spawn` or `execFile` without
-shell, no child args, no target path, fixed dev-skill cwd, no custom CLI env,
-stdout/stderr/exit-code capture, `timeout_per_child_check: 30 seconds`, no persistence, no smoke
-global, no Git commands, and no target real read/write.
+Confirm the aggregator child process policy requires a fixed 9-script
+allowlist, serial execution, `process.execPath`, `child_process.spawn`,
+`shell: false`, no `exec`, no child args, no target path, fixed dev-skill cwd,
+no custom CLI env, stdout/stderr/exit-code/signal/spawn-error capture,
+`timeout_per_child_check: 30 seconds`, no persistence, no smoke global, no Git
+commands, and no target real read/write.
 
 Confirm the aggregator block codes are documented as the 13-code mandatory
 set, with no pending optional aggregator block codes:
@@ -546,7 +588,7 @@ Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` exists and is
 classified as documentary/dev-only.
 
 Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it does
-not create scripts.
+not create scripts outside explicitly listed dev-only/read-only categories.
 
 Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it
 prepares only a later separately authorized dev-only implementation step.
@@ -560,6 +602,7 @@ future script categories:
 - render-context planner;
 - dry-run output planner;
 - validation report generator.
+- validation harness aggregator checker.
 
 Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` authorizes the future
 script path:
@@ -607,9 +650,11 @@ script with write capability outside an authorized dev-only report output must
 block.
 
 Confirm `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md` does not authorize
-script creation, runtime execution, fixtures, target writes, generated outputs,
+script creation outside explicitly listed dev-only/read-only categories,
+generic runner, target adapter, materializer interface, write approval, runtime
+execution, fixtures, target writes, generated outputs, persistent reports,
 productive skill changes, GitHub writes, real materialization, runtime
-materializer, or fixture creation.
+materializer, target real read/write, or fixture creation.
 
 Confirm `contracts/FIXTURE_BOUNDARY_CONTRACT.md` exists and is classified as
 documentary/dev-only.
@@ -684,7 +729,9 @@ coverage validator, plus
 `scripts/materialization_lab/check-render-context.mjs` as a render-context
 planner/checker, plus
 `scripts/materialization_lab/check-dry-run-plan.mjs` as a dry-run output plan
-checker.
+checker, plus
+`scripts/materialization_lab/check-validation-harness-aggregator.mjs` as a
+validation harness aggregator checker.
 
 Confirm that this implementation remains dev-only and read-only and does not
 create reports, fixtures, generated artifacts, target artifacts, `.github/**`,

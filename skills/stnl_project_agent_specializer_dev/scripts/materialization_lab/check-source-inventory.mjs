@@ -16,6 +16,8 @@ const expectedScriptPath =
   "scripts/materialization_lab/check-source-inventory.mjs";
 const fixtureRenderDryRunIntegrationChecker =
   "scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs";
+const validationHarnessAggregatorChecker =
+  "scripts/materialization_lab/check-validation-harness-aggregator.mjs";
 
 const agents = [
   "orchestrator",
@@ -324,6 +326,7 @@ async function validateScriptBoundary() {
 
   await requireFile("scripts/materialization_lab/check-static.mjs");
   await requireFile(expectedScriptPath);
+  await requireFile(validationHarnessAggregatorChecker);
 }
 
 async function validateAgentInventory() {
@@ -800,6 +803,13 @@ async function validateTemplatesAndManifest() {
     "reference/MANIFEST.md",
     fixtureRenderDryRunIntegrationChecker,
     "manifest fixture render/dry-run integration validator",
+  );
+  await requireFile(validationHarnessAggregatorChecker);
+  requireIncludes(
+    manifest,
+    "reference/MANIFEST.md",
+    validationHarnessAggregatorChecker,
+    "manifest validation harness aggregator checker",
   );
   await validateSeniorProfileManifestRegistration();
 }

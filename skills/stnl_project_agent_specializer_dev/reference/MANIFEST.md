@@ -59,14 +59,15 @@ The canonical documentary/dev-only reference bundle is organized as:
   documentary dry-run output-plan and write-boundary contract for future
   planned artifacts, plus the documentary validation harness contract for
   future pre-materialization validation and dry-run smoke reporting, plus the
-  documentary validation harness aggregator contract for a future zero-argument
-  stdout-only coordinator over the current 9 read-only checks, plus the
-  documentary implementation-boundary contract for a later separately
-  authorized dev-only script layer, plus the documentary fixture-boundary
+  documentary validation harness aggregator contract and the separately
+  authorized zero-argument stdout-only aggregator checker over the current 9
+  read-only checks, plus the documentary implementation-boundary contract for
+  the separately authorized dev-only script layer, plus the documentary
+  fixture-boundary
   contract, complete documentary fixture matrix, and read-only fixture to
   render/dry-run integration for controlled fixture cases. This phase does not
   authorize runtime
-  materialization, runtime script creation,
+  materialization, generic runner creation,
   target-repository writes, productive-skill changes, productive-template
   changes, GitHub writes, inferred templates, inferred senior profiles,
   generated outputs, runtime scripts, complete fixtures, target project
@@ -118,20 +119,21 @@ The canonical documentary/dev-only reference bundle is organized as:
   write attempts, productive-skill mutation, target-file mutation, incomplete
   matrix coverage, and unknown block codes.
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
-  defines the documentary/dev-only future Validation Harness Aggregator
-  contract. It lists exactly the 9 current read-only child checks in official
-  order, records their expected PASS verdicts, defines dependencies, child
-  statuses, final statuses, fail-closed rules, zero-argument policy,
-  stdout-only policy, no-persistent-report policy, no-target-path policy,
-  no-runtime/materializer policy, future child process policy without shell,
+  defines the documentary/dev-only Validation Harness Aggregator contract and
+  its separately authorized executable checker. It lists exactly the 9 current
+  read-only child checks in official order, records their expected PASS
+  verdicts, defines dependencies, child statuses, final statuses, fail-closed
+  rules, zero-argument policy, stdout-only policy, no-persistent-report
+  policy, no-target-path policy, no-runtime/materializer policy, child process
+  policy with `process.execPath`, `child_process.spawn`, `shell: false`,
   `timeout_per_child_check: 30 seconds`, and the 13 mandatory aggregator block
-  codes. It records expected future verdict
-  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. It does not
-  register or create an executable aggregator checker, runner, persistent
-  report, dry-run report model, materializer interface, target adapter, write
-  approval protocol, runtime materializer, renderer, writer, loader, scenario
-  selector, target real read/write, GitHub write, or productive skill
-  authorization.
+  codes. It records expected verdicts
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` and
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`. It does not
+  register or create a generic runner, persistent report, dry-run report
+  model, materializer interface, target adapter, write approval protocol,
+  runtime materializer, renderer, writer, loader, scenario selector, target
+  real read/write, GitHub write, or productive skill authorization.
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
   defines the documentary/dev-only implementation boundary for a later,
   separately authorized script layer. It permits only future static contract
@@ -249,6 +251,18 @@ The canonical documentary/dev-only reference bundle is organized as:
   selector, rendered output, complete snapshot, target artifact, or persistent
   report. Expected verdict:
   `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
+- `scripts/materialization_lab/check-validation-harness-aggregator.mjs` is the
+  separately authorized dev-only/read-only Validation Harness Aggregator gate.
+  It runs exactly the 9 current child checks in official order using
+  `process.execPath`, `child_process.spawn`, `shell: false`, a fixed
+  `skills/stnl_project_agent_specializer_dev/` cwd, no child arguments, and
+  `timeout_per_child_check: 30 seconds`. It accepts zero arguments only,
+  blocks target/flag arguments before executing any child check, emits only
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` or
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`, persists no
+  report, reads/writes no real target, creates no runtime/materializer/
+  renderer/writer/loader/scenario selector, runs no Git command, and does not
+  authorize GitHub write or productive skill mutation.
 - `planner_kernel` has read-only executable validation harnesses as blocking
   support, but harness success does not grant automatic promotion for this or
   any future kernel.
@@ -664,6 +678,8 @@ Required files:
 - `scripts/materialization_lab/check-fixture-boundary.mjs`
 - `scripts/materialization_lab/check-lazy-load-fixtures.mjs`
 - `scripts/materialization_lab/check-project-scenarios.mjs`
+- `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
+- `scripts/materialization_lab/check-validation-harness-aggregator.mjs`
 - `reference/templates/copilot/agent.md`
 - `reference/templates/codex/agent.toml`
 - `reference/templates/codex/AGENTS.md`

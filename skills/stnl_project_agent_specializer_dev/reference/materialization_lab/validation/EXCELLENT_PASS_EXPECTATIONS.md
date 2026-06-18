@@ -35,12 +35,14 @@ The verdict
 only when the validation harness, dry-run smoke, matrix completeness, no-write,
 and mutation-boundary criteria below are also satisfied.
 
-The future verdict
-`MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` may be accepted
-only after a separately authorized executable aggregator exists and all
-contractual aggregator criteria below are satisfied. In this phase the
-aggregator contract is documentary/dev-only only; no executable checker or
-runner is created.
+The verdict `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` may be
+accepted only when the separately authorized executable aggregator checker
+exists, runs the 9 current read-only checks in the official order, and all
+contractual aggregator criteria below are satisfied. This verdict does not
+authorize a generic runner, persistent report, dry-run report model,
+materializer interface, target adapter, write approval, runtime materializer,
+renderer, writer, loader, scenario selector, target real read/write, GitHub
+write, productive skill mutation, or materialization.
 
 The verdict
 `MATERIALIZATION_IMPLEMENTATION_BOUNDARY_CONTRACT: EXCELLENT PASS` may be
@@ -119,6 +121,20 @@ generated outputs, creating persistent reports, writing GitHub, changing the
 productive skill, implementing a loader, implementing a scenario selector, or
 performing real materialization.
 
+The validator output
+`MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` may be accepted
+only when
+`scripts/materialization_lab/check-validation-harness-aggregator.mjs` exists
+in the authorized materialization-lab script path and the checker accepts zero arguments
+only, executes exactly the 9 official child checks serially with no
+child arguments, uses `process.execPath`, `child_process.spawn`,
+`shell: false`, fixed cwd, and `timeout_per_child_check: 30 seconds`, requires exact
+child PASS stdout with empty stderr and exit code `0`, stops on first block,
+prints only `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` or
+`MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`, persists no
+report, runs no Git command, reads/writes no target project, and creates no
+runtime/materializer/renderer/writer/loader/scenario selector.
+
 ## Required Criteria
 
 - The twelve materialization lab files exist in
@@ -154,11 +170,13 @@ performing real materialization.
   materialization.
 - `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` exists and is classified as
   documentary/dev-only.
-- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` states that this phase does not
-  create an executable checker, runner, persistent report, dry-run report
-  model, materializer interface, target adapter, write approval protocol,
-  runtime materializer, renderer, writer, loader, scenario selector, target
-  real read/write, GitHub write, productive skill authorization, or final
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` states that this phase registers
+  only the separately authorized dev-only/read-only checker
+  `scripts/materialization_lab/check-validation-harness-aggregator.mjs` and
+  does not create a generic runner, persistent report, dry-run report model,
+  materializer interface, target adapter, write approval protocol, runtime
+  materializer, renderer, writer, loader, scenario selector, target real
+  read/write, GitHub write, productive skill authorization, or final
   dependency on `reference/agents/`.
 - `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` lists exactly the 9 current
   read-only child checks in official order with expected verdicts:
@@ -193,12 +211,13 @@ performing real materialization.
 - `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines stdout-only behavior and
   forbids persistent reports, Markdown reports, JSON files, caches, snapshots,
   temp outputs, artifacts, dry-run reports, and target reports.
-- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines future child process
-  policy using a fixed 9-script allowlist, serial execution,
-  `process.execPath`, `spawn` or `execFile` without shell, no child args, no
-  target path, fixed dev-skill cwd, no custom CLI env, stdout/stderr/exit-code
-  capture, `timeout_per_child_check: 30 seconds`, no persistence, no smoke global, no Git
-  commands, and no target real read/write.
+- `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines child process policy
+  using a fixed 9-script allowlist, serial execution, `process.execPath`,
+  `child_process.spawn`, `shell: false`, no `exec`, no child args, no target
+  path, fixed dev-skill cwd, no custom CLI env,
+  stdout/stderr/exit-code/signal/spawn-error capture,
+  `timeout_per_child_check: 30 seconds`, no persistence, no smoke global, no
+  Git commands, and no target real read/write.
 - `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` declares the 13 mandatory
   aggregator block codes, with no pending optional aggregator block codes:
   `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`,
@@ -221,13 +240,15 @@ performing real materialization.
   write, or productive skill mutation.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` exists and is classified as
   documentary/dev-only.
-- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it does not create scripts.
-- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` prepares only a later separately
-  authorized dev-only implementation step.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` states that it does not create scripts
+  outside explicitly listed dev-only/read-only categories.
+- `IMPLEMENTATION_BOUNDARY_CONTRACT.md` authorizes only explicitly listed
+  dev-only/read-only implementation steps.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` allows only these future script
   categories: static contract validator, source inventory validator, template
   coverage validator, render-context planner, dry-run output planner, and
-  validation report generator.
+  validation report generator, fixture validators, and validation harness
+  aggregator checker.
 - `IMPLEMENTATION_BOUNDARY_CONTRACT.md` authorizes future scripts only inside
   `skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/`, or
   another dev-only path explicitly registered in that contract.

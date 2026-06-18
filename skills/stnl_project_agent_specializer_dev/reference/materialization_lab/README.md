@@ -11,10 +11,10 @@ It also defines the render-context composition contract, the dry-run
 output-plan and write-boundary contract for future artifact planning, and the
 validation harness contract for future pre-materialization validation and
 dry-run smoke reporting. It also defines a dedicated documentary/dev-only
-Validation Harness Aggregator contract for a future zero-argument,
-stdout-only aggregator over the current 9 read-only checks. It also defines
-the documentary implementation boundary for a later, separately authorized
-dev-only script layer. It does not authorize runtime
+Validation Harness Aggregator contract and a separately authorized
+zero-argument, stdout-only checker over the current 9 read-only checks. It
+also defines the documentary implementation boundary for the explicitly
+authorized dev-only script layer. It does not authorize runtime
 materialization, runtime script creation, target-repository writes,
 productive-skill changes, GitHub writes, or changes to productive templates.
 It also defines the fixture-boundary contract and the documentary/dev-only
@@ -45,14 +45,18 @@ runtime payloads, target artifacts, or target writes.
   structured reporting, no-write enforcement, matrix completeness, and
   productive-skill immutability.
 - `contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`: documentary/dev-only
-  contract for a future Validation Harness Aggregator. It records the official
-  9-check checklist, order, dependencies, status model, fail-closed rules,
-  zero-argument policy, stdout-only policy, no persistent report policy,
-  no-target-path policy, no runtime/materializer policy, future child process
-  policy with `timeout_per_child_check: 30 seconds`, the 13 mandatory
-  aggregator block codes, and expected future verdict
-  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. It creates no
-  executable checker or runner in this phase.
+  contract for the Validation Harness Aggregator checker. It records the
+  official 9-check checklist, order, dependencies, status model, fail-closed
+  rules, zero-argument policy, stdout-only policy, no persistent report policy,
+  no-target-path policy, no runtime/materializer policy, child process policy
+  with `process.execPath`, `child_process.spawn`, `shell: false`,
+  `timeout_per_child_check: 30 seconds`, the 13 mandatory aggregator block
+  codes, and expected verdicts
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` and
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`. It creates
+  no generic runner, persistent report, dry-run report, runtime materializer,
+  renderer, writer, loader, scenario selector, target read/write, GitHub
+  write, or productive skill authorization.
 - `contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`: documentary/dev-only
   implementation boundary for a later, separately authorized dev-only script
   layer. It lists allowed future script categories, script locations, read
@@ -167,8 +171,8 @@ with `BLOCKED_TARGET_FILE_MUTATION`; incomplete matrix coverage blocks with
 `BLOCKED_MATRIX_INCOMPLETE`; and unknown block codes block with
 `BLOCKED_UNKNOWN_BLOCK_CODE`.
 
-Validation Harness Aggregator planning is also contract-only in this phase.
-`VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines a future aggregator over
+Validation Harness Aggregator checking is a dev-only/read-only gate in this
+phase. `VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md` defines the checker over
 the current 9 read-only checks:
 
 - `scripts/materialization_lab/check-static.mjs`
@@ -181,12 +185,16 @@ the current 9 read-only checks:
 - `scripts/materialization_lab/check-dry-run-plan.mjs`
 - `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
 
-The future aggregator expected verdict is
-`MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`. The first future
-executable version must accept zero arguments only, block before child
-execution on any argument, never accept a target path, pass no child arguments,
-run child checks in the official dependency order, and be stdout-only. It must
-apply `timeout_per_child_check: 30 seconds`. It must not create persistent
+The aggregator checker is registered as
+`scripts/materialization_lab/check-validation-harness-aggregator.mjs`. Its
+expected verdicts are `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`
+and `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`. It accepts
+zero arguments only, blocks before child
+execution on any argument, never accepts a target path, passes no child arguments,
+run child checks in the official dependency order, and be stdout-only. It uses
+`process.execPath`, `child_process.spawn`, `shell: false`, captures stdout,
+stderr, exit code, signal, and spawn error, and applies
+`timeout_per_child_check: 30 seconds`. It must not create persistent
 reports, Markdown reports, JSON files, caches, snapshots, temp outputs,
 artifacts, dry-run reports, target reports, runtime
 materializer, renderer, writer, loader, scenario selector, target real
@@ -198,12 +206,14 @@ must not pass arguments to child checks.
 Implementation-boundary planning is also contract-only in this phase. A later
 step may authorize only dev-only scripts for static contract validation, source
 inventory validation, template coverage validation, render-context planning,
-dry-run output planning, and validation report generation. Future scripts may
-live only in
+dry-run output planning, validation report generation, fixture validation, and
+the validation harness aggregator checker. Future scripts may live only in
 `skills/stnl_project_agent_specializer_dev/scripts/materialization_lab/`, or
 another dev-only path explicitly registered by
-`IMPLEMENTATION_BOUNDARY_CONTRACT.md`. This phase does not create scripts,
-runtime execution, fixtures, target writes, generated outputs, productive-skill
+`IMPLEMENTATION_BOUNDARY_CONTRACT.md`. This phase creates only the explicitly
+authorized aggregator checker and does not create a generic runner, target
+adapter, materializer interface, write approval, persistent report, runtime
+execution, fixtures, target writes, generated outputs, productive-skill
 changes, GitHub writes, or real materialization.
 
 Implementation-boundary failures block with

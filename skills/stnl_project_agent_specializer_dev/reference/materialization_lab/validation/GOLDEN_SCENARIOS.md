@@ -236,8 +236,9 @@ Expected result:
   `check-lazy-load-fixtures.mjs`, `check-project-scenarios.mjs`,
   `check-render-context.mjs`, `check-dry-run-plan.mjs`, and
   `check-fixture-render-dry-run-integration.mjs`
-- the expected future verdict is
-  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`
+- the expected checker verdicts are
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` and
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`
 - the dependency matrix requires each downstream check to depend on its
   prerequisite contract layers, and the integration checker depends on all
   previous checks
@@ -257,11 +258,12 @@ Expected result:
 - stdout-only policy forbids persistent reports, Markdown reports, JSON files,
   caches, snapshots, temp outputs, artifacts, dry-run reports, and target
   reports
-- future child process policy requires fixed allowlist, serial execution,
-  `process.execPath`, `spawn` or `execFile` without shell, no child args, no
-  target path, fixed cwd, no custom CLI env, stdout/stderr/exit-code capture,
-  `timeout_per_child_check: 30 seconds`, no persistence, no smoke global, no Git commands, and no
-  target real read/write
+- child process policy requires fixed allowlist, serial execution,
+  `process.execPath`, `child_process.spawn`, `shell: false`, no `exec`, no
+  child args, no target path, fixed cwd, no custom CLI env,
+  stdout/stderr/exit-code/signal/spawn-error capture,
+  `timeout_per_child_check: 30 seconds`, no persistence, no smoke global, no
+  Git commands, and no target real read/write
 - aggregator block codes are the 13-code mandatory set:
   `BLOCKED_AGGREGATOR_UNKNOWN_CHECK`,
   `BLOCKED_AGGREGATOR_CHECK_SKIPPED`,
@@ -280,6 +282,56 @@ Expected result:
   authorizes runtime behavior, target write, persistent reports, dry-run report
   persistence, materialization, renderer/writer/loader/scenario-selector
   creation, GitHub write, or productive skill mutation
+
+### Validation Harness Aggregator Checker Passes With 9 Valid Checks
+
+Input:
+
+- requested validation target: Validation Harness Aggregator checker
+- checker:
+  `scripts/materialization_lab/check-validation-harness-aggregator.mjs`
+- CLI arguments: none
+- zero arguments are accepted; any argument blocks before child execution
+- child checks: the 9 official materialization-lab checkers in contracted
+  order, each returning exactly its expected `PASS` line, exit code `0`, and
+  empty stderr
+
+Expected result:
+
+- the checker executes the child checks serially in the official order
+- no argument is passed to any child check
+- `process.execPath`, `child_process.spawn`, `shell: false`, fixed
+  `skills/stnl_project_agent_specializer_dev/` cwd, and
+  `timeout_per_child_check: 30 seconds` are used
+- stdout is exactly
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`
+- exit code is `0`
+- no JSON, Markdown, persistent report, target path, target read/write,
+  runtime materializer, renderer, writer, loader, scenario selector, Git
+  command, generic runner, GitHub write, or productive skill mutation is
+  created or performed
+
+### Validation Harness Aggregator Blocks Target Argument
+
+Input:
+
+- requested validation target: Validation Harness Aggregator checker
+- checker:
+  `scripts/materialization_lab/check-validation-harness-aggregator.mjs`
+- CLI argument: `/tmp/fake-target`
+
+Expected result:
+
+- the argument is classified internally as `BLOCKED_AGGREGATOR_TARGET_ARG`
+- the checker blocks before executing any child check
+- stdout is exactly
+  `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`
+- exit code is `1`
+- no child check receives the argument
+- no target path is read or written
+- no JSON, Markdown, persistent report, runtime materializer, renderer,
+  writer, loader, scenario selector, Git command, GitHub write, or productive
+  skill mutation is created or performed
 
 ### Fixture Schema Is Documentary Only
 

@@ -2,14 +2,15 @@
 
 Status: documentary/dev-only contract.
 
-This contract defines the documentary implementation boundary for a later,
+This contract defines the documentary implementation boundary for the
 separately authorized dev-only script layer in
-`stnl_project_agent_specializer_dev`. It does not create scripts, runtime
-entrypoints, fixtures, generated outputs, or target-project writes.
+`stnl_project_agent_specializer_dev`. It authorizes only explicitly listed
+dev-only/read-only validators and does not create runtime entrypoints,
+fixtures, generated outputs, or target-project writes.
 
-This contract prepares a future implementation step only. That later step must
-remain dev-only, must be explicitly authorized, and must comply with every
-read/write boundary below before any script is added or executed.
+Any implementation step must remain dev-only, must be explicitly authorized,
+and must comply with every read/write boundary below before any script is added
+or executed.
 
 ## Future Script Types
 
@@ -26,7 +27,8 @@ A later step may authorize only these dev-only script categories:
 - project scenario matrix validator;
 - expected output snapshot validator;
 - blocked case validator;
-- read-only fixture to render/dry-run integration validator.
+- read-only fixture to render/dry-run integration validator;
+- validation harness aggregator checker.
 
 Any script category outside this list is out of scope unless this contract is
 updated first in a documentary/dev-only change.
@@ -45,6 +47,21 @@ writer, loader, scenario selector, rendered output, snapshot, dry-run report,
 or target artifact, and keeps the lazy-load gate independent. Its expected
 dev-only verdict is
 `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`.
+
+`scripts/materialization_lab/check-validation-harness-aggregator.mjs` is the
+validation harness aggregator checker. It is dev-only/read-only and may only
+coordinate the fixed 9 current materialization-lab child checks in the
+contracted order. It accepts zero arguments, passes no arguments to children,
+uses `process.execPath`, `child_process.spawn`, `shell: false`, a fixed cwd
+inside `skills/stnl_project_agent_specializer_dev/`, stdout-only aggregate
+verdicts, `timeout_per_child_check: 30 seconds`, no persistent report, no
+target path, and no Git commands. It is not a generic runner and does not
+authorize a target adapter, materializer
+interface, write approval, runtime materializer, persistent report, dry-run
+report persistence, target real read/write, renderer, writer, loader, scenario
+selector, GitHub write, or productive skill mutation. Its expected dev-only
+verdicts are `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS` and
+`MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: BLOCKED`.
 
 ## Authorized Future Script Locations
 
@@ -119,7 +136,13 @@ beyond authorized read-only dry-run, or materialization.
 
 The following remain out of scope:
 
+- generic runner;
+- target adapter;
+- materializer interface;
+- write approval;
 - runtime materializer;
+- persistent report;
+- target real read/write;
 - runtime fixture creation outside the authorized documentary matrix;
 - target writes;
 - real materialization.
@@ -128,11 +151,16 @@ The following remain out of scope:
 
 This stage does not authorize:
 
-- creation of scripts;
+- creation of scripts outside the explicitly listed dev-only/read-only
+  categories;
 - runtime execution;
 - runtime fixtures outside the authorized documentary matrix;
 - target writes;
 - generated outputs;
+- persistent reports;
+- target adapter;
+- materializer interface;
+- write approval;
 - productive skill changes;
 - GitHub writes;
 - real materialization;
