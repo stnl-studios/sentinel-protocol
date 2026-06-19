@@ -19,6 +19,11 @@ const materializationContracts = [
   "TEMPLATES_AND_OUTPUTS_CONTRACT.md",
   "RENDERING_AND_COMPOSITION_CONTRACT.md",
   "DRY_RUN_AND_WRITE_BOUNDARY_CONTRACT.md",
+  "DRY_RUN_REPORT_MODEL_CONTRACT.md",
+  "MATERIALIZER_INTERFACE_CONTRACT.md",
+  "TARGET_ADAPTER_CONTRACT.md",
+  "WRITE_APPROVAL_PROTOCOL_CONTRACT.md",
+  "DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md",
   "VALIDATION_HARNESS_CONTRACT.md",
   "VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md",
   "IMPLEMENTATION_BOUNDARY_CONTRACT.md",
@@ -219,6 +224,13 @@ const plannedOperations = [
   "UPDATE_PLANNED",
   "UNCHANGED_PLANNED",
   "BLOCKED_PLANNED",
+];
+
+const executedOperations = [
+  "CREATE_EXECUTED",
+  "UPDATE_EXECUTED",
+  "DELETE_EXECUTED",
+  "WRITE_EXECUTED",
 ];
 
 const validationStatuses = [
@@ -435,11 +447,14 @@ function hasForbiddenPositiveAuthorization(line, term) {
     "separately authorized",
     "authorized fixture root",
     "outside the authorized documentary matrix",
+    "authorized fixtures",
     "blocked_",
     "future outputs",
     "only inside",
     "remain prohibited",
     "outside the authorized fixture root",
+    "separate explicit authorization",
+    "real write authorization",
   ];
 
   return !denialMarkers.some((marker) => lowerLine.includes(marker));
@@ -575,6 +590,248 @@ async function validateContractAnchors() {
     ".codex/config.toml",
     "AGENTS.md",
   ], "planned path");
+
+  const dryRunReportModel = await readText(
+    contractPath("DRY_RUN_REPORT_MODEL_CONTRACT.md"),
+  );
+  requireAll(
+    dryRunReportModel,
+    contractPath("DRY_RUN_REPORT_MODEL_CONTRACT.md"),
+    [
+      "Status: documentary/dev-only/read-only contract.",
+      "dry_run_report",
+      "report_identity",
+      "report_boundary",
+      "source_inventory_snapshot",
+      "target_intent",
+      "agent_plan_entries",
+      "output_plan_entries",
+      "gate_results",
+      "lazy_load_trace",
+      "blocking_summary",
+      "no_write_evidence",
+      "non_authorization_summary",
+      "not a runtime payload",
+      "persistent report",
+      "target real read/write",
+      "reference/agents/",
+      "final source",
+      "does not expand the Aggregator Checker",
+      "Aggregator stdout must remain outside persistent report storage.",
+    ],
+    "dry-run report model contract",
+  );
+  requireAll(
+    dryRunReportModel,
+    contractPath("DRY_RUN_REPORT_MODEL_CONTRACT.md"),
+    plannedOperations,
+    "dry-run report model planned operation",
+  );
+  requireAll(
+    dryRunReportModel,
+    contractPath("DRY_RUN_REPORT_MODEL_CONTRACT.md"),
+    executedOperations,
+    "dry-run report model executed operation",
+  );
+
+  const materializerInterface = await readText(
+    contractPath("MATERIALIZER_INTERFACE_CONTRACT.md"),
+  );
+  requireAll(
+    materializerInterface,
+    contractPath("MATERIALIZER_INTERFACE_CONTRACT.md"),
+    [
+      "Status: documentary/dev-only/read-only contract.",
+      "dry-run-only Materializer Interface",
+      "materializer_interface_request",
+      "materializer_interface_result",
+      "output_plan_entries",
+      "dry_run_report_model_ref",
+      "no_write_evidence",
+      "non_authorization_summary",
+      "compatibility with the existing Dry-run Report Model",
+      "planned output entries",
+      "runtime payload",
+      "CLI contract",
+      "runner",
+      "real writer",
+      "real renderer",
+      "runtime loader",
+      "runtime scenario selector",
+      "target adapter",
+      "write approval",
+      "Target real read/write",
+      "reference/agents/",
+      "final source",
+      "expand the Aggregator",
+      "does not make the Aggregator a runtime dependency",
+    ],
+    "materializer interface contract",
+  );
+  requireAll(
+    materializerInterface,
+    contractPath("MATERIALIZER_INTERFACE_CONTRACT.md"),
+    plannedOperations,
+    "materializer interface planned operation",
+  );
+  requireAll(
+    materializerInterface,
+    contractPath("MATERIALIZER_INTERFACE_CONTRACT.md"),
+    executedOperations,
+    "materializer interface executed operation",
+  );
+
+  const targetAdapter = await readText(
+    contractPath("TARGET_ADAPTER_CONTRACT.md"),
+  );
+  requireAll(targetAdapter, contractPath("TARGET_ADAPTER_CONTRACT.md"), [
+    "Status: documentary/dev-only/read-only contract.",
+    "future conceptual Target Adapter boundary",
+    "target_adapter_request",
+    "target_adapter_result",
+    "target-root-relative",
+    "planned output roots",
+    "filesystem adapter",
+    "path resolver",
+    "Target reader",
+    "Target writer",
+    "real drift detector",
+    "absolute host path",
+    "path safety",
+    "managed-artifact",
+    "simulated_existing_state",
+    "simulated_drift_state",
+    "no_read_no_write_evidence",
+    "non_authorization_summary",
+    "Target real read/write",
+    "reference/agents/",
+    "final source",
+    "Aggregator remains unchanged",
+    "does not make the Aggregator a runtime dependency",
+  ], "target adapter contract");
+  requireAll(
+    targetAdapter,
+    contractPath("TARGET_ADAPTER_CONTRACT.md"),
+    plannedOperations,
+    "target adapter planned operation",
+  );
+  requireAll(
+    targetAdapter,
+    contractPath("TARGET_ADAPTER_CONTRACT.md"),
+    executedOperations,
+    "target adapter executed operation",
+  );
+
+  const writeApproval = await readText(
+    contractPath("WRITE_APPROVAL_PROTOCOL_CONTRACT.md"),
+  );
+  requireAll(
+    writeApproval,
+    contractPath("WRITE_APPROVAL_PROTOCOL_CONTRACT.md"),
+    [
+      "Status: documentary/dev-only/read-only contract.",
+      "conceptual Write Approval Protocol",
+      "still-no-write boundary",
+      "write_approval_request",
+      "write_approval_result",
+      "write_approval_evidence_bundle",
+      "approval token",
+      "approval registry",
+      "real signer",
+      "real writer",
+      "Target writer",
+      "filesystem writer",
+      "approval_state",
+      "APPROVAL_NOT_REQUESTED",
+      "APPROVAL_CONCEPTUALLY_ELIGIBLE",
+      "APPROVAL_BLOCKED",
+      "APPROVAL_OUT_OF_SCOPE",
+      "APPROVED",
+      "WRITE_APPROVED",
+      "APPROVAL_GRANTED",
+      "READY_TO_WRITE",
+      "WRITE_UNLOCKED",
+      "EXECUTION_APPROVED",
+      "MERGE_APPROVED",
+      "commit, branch, or pull request",
+      "no_read_no_write_evidence",
+      "non_authorization_summary",
+      "Target real read/write",
+      "reference/agents/",
+      "final source",
+      "This contract introduces no tenth child check and no Aggregator policy change.",
+    ],
+    "write approval protocol contract",
+  );
+  requireAll(
+    writeApproval,
+    contractPath("WRITE_APPROVAL_PROTOCOL_CONTRACT.md"),
+    plannedOperations,
+    "write approval protocol planned operation",
+  );
+  requireAll(
+    writeApproval,
+    contractPath("WRITE_APPROVAL_PROTOCOL_CONTRACT.md"),
+    executedOperations,
+    "write approval protocol executed operation",
+  );
+
+  const dryRunOnlyPrototype = await readText(
+    contractPath("DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md"),
+  );
+  requireAll(
+    dryRunOnlyPrototype,
+    contractPath("DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md"),
+    [
+      "Status: documentary/dev-only/read-only contract.",
+      "Dry Run Only Materializer Prototype Contract",
+      "dry_run_materializer_request",
+      "dry_run_materializer_result",
+      "request-boundary-normalizer",
+      "contract-chain-verifier",
+      "source-plan-resolver",
+      "template-plan-verifier",
+      "render-context-planner",
+      "target-adapter-planner",
+      "planned-output-builder",
+      "dry-run-boundary-evaluator",
+      "write-approval-protocol-evaluator",
+      "dry-run-report-model-builder",
+      "result-boundary-enforcer",
+      "No file, code module, script, CLI, runner, executable interface, or runtime",
+      "runtime materializer",
+      "renderer",
+      "writer",
+      "loader",
+      "scenario selector",
+      "Target Adapter implementation",
+      "Write Approval implementation",
+      "approval token",
+      "approval registry",
+      "persistent report",
+      "Target real read/write",
+      "zero persistence",
+      "no_read_no_write_evidence",
+      "non_authorization_summary",
+      "reference/agents/",
+      "final source",
+      "lazy-load remains a safety contract",
+      "Aggregator Checker remains exactly 9 checks",
+    ],
+    "dry-run-only materializer prototype contract",
+  );
+  requireAll(
+    dryRunOnlyPrototype,
+    contractPath("DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md"),
+    plannedOperations,
+    "dry-run-only materializer prototype planned operation",
+  );
+  requireAll(
+    dryRunOnlyPrototype,
+    contractPath("DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md"),
+    executedOperations,
+    "dry-run-only materializer prototype executed operation",
+  );
 
   const validation = await readText(contractPath("VALIDATION_HARNESS_CONTRACT.md"));
   requireAll(validation, contractPath("VALIDATION_HARNESS_CONTRACT.md"), validationStatuses, "validation status");
