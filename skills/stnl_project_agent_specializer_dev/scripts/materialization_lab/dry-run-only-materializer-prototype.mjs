@@ -42,7 +42,9 @@ const allowedTemplateSet = new Set(explicitTemplateRefs);
 const requiredContractSet = new Set(materializationContractRefs);
 const allowedOperationSet = new Set(allowedPlannedOperations);
 const forbiddenOperationSet = new Set(forbiddenExecutedOperations);
-const positiveApprovalSet = new Set(forbiddenPositiveApprovalSemantics);
+const normalizedPositiveApprovalSet = new Set(
+  forbiddenPositiveApprovalSemantics.map(normalizeApprovalTerm),
+);
 
 export function runDryRunOnlyMaterializerPrototype(request) {
   const boundaryBlocks = validateDryRunOnlyMaterializerRequest(request);
@@ -226,11 +228,19 @@ export function validateDryRunOnlyMaterializerRequest(request) {
     );
   }
   if (request.approval_policy !== "conceptual/still-no-write only") {
-    addBlock(
-      "BLOCKED_APPROVAL_POLICY_INVALID",
-      "approval_policy",
-      "approval policy must remain conceptual and still-no-write",
-    );
+    if (isPositiveApprovalSemantics(request.approval_policy)) {
+      addBlock(
+        "BLOCKED_APPROVAL_POSITIVE_SEMANTICS",
+        "approval_policy",
+        "positive write approval semantics are forbidden",
+      );
+    } else {
+      addBlock(
+        "BLOCKED_APPROVAL_POLICY_INVALID",
+        "approval_policy",
+        "approval policy must remain conceptual and still-no-write",
+      );
+    }
   }
 
   validateSources(request.source_roots, addBlock);
@@ -446,10 +456,7 @@ function validateForbiddenContent(request, addBlock) {
     ) {
       addBlock("BLOCKED_RUNTIME_PAYLOAD_REQUIRED", key, "CLI requirements are forbidden");
     }
-    if (
-      positiveApprovalSet.has(upperValue) ||
-      forbiddenPositiveApprovalSemantics.some((term) => upperValue.includes(term))
-    ) {
+    if (isPositiveApprovalSemantics(value)) {
       addBlock(
         "BLOCKED_APPROVAL_POSITIVE_SEMANTICS",
         key,
@@ -580,6 +587,33 @@ function isRecord(value) {
 
 function normalizeConceptualPath(value) {
   return String(value).replaceAll("\\", "/").replace(/\/+/g, "/");
+}
+
+function normalizeApprovalTerm(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+  return value.trim().toUpperCase().replace(/[\s-]+/g, "_").replace(/_+/g, "_");
+}
+
+function isPositiveApprovalSemantics(value) {
+  const normalized = normalizeApprovalTerm(value);
+  if (normalized === "") {
+    return false;
+  }
+  const compact = normalized.replaceAll("_", "");
+  for (const positiveTerm of normalizedPositiveApprovalSet) {
+    const compactPositiveTerm = positiveTerm.replaceAll("_", "");
+    if (
+      normalized === positiveTerm ||
+      normalized.includes(positiveTerm) ||
+      compact === compactPositiveTerm ||
+      compact.includes(compactPositiveTerm)
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function ensureTrailingSlash(value) {
