@@ -182,6 +182,25 @@ The canonical documentary/dev-only reference bundle is organized as:
   commit, branch, pull request, applied patch, materialized output, generated
   file, or final dependency on `reference/agents/`. It introduces no new block
   codes and preserves the current 9-check Aggregator unchanged.
+- `reference/materialization_lab/contracts/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md`
+  defines the documentary/dev-only/read-only Dry-run-only Materializer
+  Prototype contract for a future conceptual boundary between validated
+  dry-run request, contract-chain planning, source/template/render/target
+  planning, planned-only output entries, conceptual Dry-run Report Model
+  compatibility, and still-no-write result enforcement. It defines conceptual
+  input and output models plus non-executable conceptual modules for boundary
+  normalization, contract-chain verification, source/template/render/target
+  planning, planned-output construction, dry-run boundary evaluation, Write
+  Approval Protocol evaluation, Dry-run Report Model construction, and result
+  boundary enforcement. It creates no executable prototype, runtime
+  materializer, TypeScript interface, JavaScript module, JSON schema, CLI,
+  runner, renderer, writer, loader, scenario selector, Target Adapter
+  implementation, Write Approval implementation, approval token, approval
+  registry, signer, persistent report, Target real read/write, GitHub write,
+  productive skill mutation, commit, branch, pull request, applied patch,
+  generated file, materialized output, or final dependency on
+  `reference/agents/`. It introduces no new block codes and preserves the
+  current 9-check Aggregator unchanged.
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
   defines the documentary/dev-only validation harness and dry-run smoke layer
   for future pre-materialization validation. It requires validation before real
@@ -708,6 +727,7 @@ Required files:
 - `reference/materialization_lab/contracts/MATERIALIZER_INTERFACE_CONTRACT.md`
 - `reference/materialization_lab/contracts/TARGET_ADAPTER_CONTRACT.md`
 - `reference/materialization_lab/contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md`
+- `reference/materialization_lab/contracts/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`

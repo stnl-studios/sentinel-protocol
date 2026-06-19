@@ -9,7 +9,7 @@ approval, or writes to target projects.
 
 ## Required Files
 
-Confirm the seventeen materialization lab contract and validation files exist:
+Confirm the eighteen materialization lab contract and validation files exist:
 
 - `reference/materialization_lab/README.md`
 - `reference/materialization_lab/contracts/TARGETS_CONTRACT.md`
@@ -21,6 +21,7 @@ Confirm the seventeen materialization lab contract and validation files exist:
 - `reference/materialization_lab/contracts/MATERIALIZER_INTERFACE_CONTRACT.md`
 - `reference/materialization_lab/contracts/TARGET_ADAPTER_CONTRACT.md`
 - `reference/materialization_lab/contracts/WRITE_APPROVAL_PROTOCOL_CONTRACT.md`
+- `reference/materialization_lab/contracts/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_AGGREGATOR_CONTRACT.md`
 - `reference/materialization_lab/contracts/IMPLEMENTATION_BOUNDARY_CONTRACT.md`
@@ -376,6 +377,70 @@ source, preserves planned-only operations, introduces no new block codes,
 does not execute checkers, does not persist stdout, does not expand the 9
 official checks, and does not transform the Aggregator Checker into a report
 generator or write approval validator.
+
+Confirm the documentary/dev-only/read-only Dry-run-only Materializer Prototype
+contract exists:
+
+- `reference/materialization_lab/contracts/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md`
+
+Confirm the contract defines only a conceptual dry-run-only boundary between
+validated dry-run request, contract-chain planning,
+source/template/render/target planning, planned-only output entries,
+conceptual Dry-run Report Model compatibility, and still-no-write result
+enforcement.
+
+Confirm the contract defines conceptual `dry_run_materializer_request` and
+`dry_run_materializer_result` shapes without creating JSON schema, runtime
+payload, executable interface, TypeScript interface, JavaScript module, CLI
+contract, runner, stdout contract, persistent report, materializer runtime,
+renderer, writer, loader, scenario selector, Target Adapter implementation,
+Write Approval implementation, approval token, approval registry, signer, or
+Target real read/write authorization.
+
+Confirm the contract documents only non-executable conceptual modules:
+`request-boundary-normalizer`, `contract-chain-verifier`,
+`source-plan-resolver`, `template-plan-verifier`,
+`render-context-planner`, `target-adapter-planner`,
+`planned-output-builder`, `dry-run-boundary-evaluator`,
+`write-approval-protocol-evaluator`, `dry-run-report-model-builder`, and
+`result-boundary-enforcer`.
+
+Confirm the contract accepts only conceptual dry-run-required requests that
+forbid Target real read/write, real write execution, persistent report,
+approval token, write execution ID, absolute host paths, real Target paths,
+runtime payloads, generated files, materialized outputs, `reference/agents/`
+as final source, and inferred templates.
+
+Confirm the contract allows only conceptual outputs such as
+`contract_chain_result`, `resolved_source_plan`,
+`template_resolution_result`, `render_context_plan`, `target_adapter_plan`,
+`output_plan_entries`, `dry_run_boundary_result`,
+`write_approval_protocol_result`, `dry_run_report_model_ref`,
+`blocking_summary`, `no_read_no_write_evidence`, and
+`non_authorization_summary`.
+
+Confirm the contract preserves the allowed planned operations
+`CREATE_PLANNED`, `UPDATE_PLANNED`, `UNCHANGED_PLANNED`, and
+`BLOCKED_PLANNED`, and forbids `CREATE_EXECUTED`, `UPDATE_EXECUTED`,
+`DELETE_EXECUTED`, and `WRITE_EXECUTED`.
+
+Confirm the contract preserves final sources from `reference/kernel_lab/`,
+`reference/seniorization_lab/`, `reference/templates/`, and
+`reference/materialization_lab/contracts/`; keeps `reference/agents/` only as
+a temporary development parity baseline; requires explicit templates; keeps
+lazy-load as a safety contract; and requires no-read/no-write evidence plus
+non-authorization summary.
+
+Confirm the contract treats the Dry-run Report Model as conceptual and
+non-persistent, the Materializer Interface as conceptual, the Target Adapter
+as conceptual, and the Write Approval Protocol as still-no-write with only
+`APPROVAL_NOT_REQUESTED`, `APPROVAL_CONCEPTUALLY_ELIGIBLE`,
+`APPROVAL_BLOCKED`, and `APPROVAL_OUT_OF_SCOPE`.
+
+Confirm the contract introduces no new block codes, does not execute
+checkers, does not persist stdout, does not expand the 9 official checks, and
+does not transform the Aggregator Checker into a report generator, prototype
+runner, materializer runner, or write approval validator.
 
 Confirm the separately authorized dev-only read-only fixture to render/dry-run
 integration checker exists:

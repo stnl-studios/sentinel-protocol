@@ -104,6 +104,28 @@ summary; introduces no new block codes; creates no runtime authorization; and
 does not expand or repurpose the Aggregator Checker.
 
 The verdict
+`MATERIALIZATION_DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT: PASS` may be
+declared only when the Dry-run-only Materializer Prototype contract exists and
+remains documentary/dev-only/read-only; defines only a conceptual
+dry-run-only boundary between validated dry-run request, contract-chain
+planning, source/template/render/target planning, planned-only output
+entries, conceptual Dry-run Report Model compatibility, and still-no-write
+result enforcement; defines conceptual input and output models; documents
+only non-executable conceptual modules; accepts only dry-run-required,
+no-target-read, no-target-write, no-write-execution, no-persistent-report,
+no-approval-token, no-real-target-path, no-absolute-host-path requests with
+final sources and explicit templates; blocks runtime, CLI, runner, renderer,
+writer, loader, scenario selector, Target Adapter implementation, Write
+Approval implementation, generated files, materialized outputs, applied
+patches, commit, branch, pull request, real drift, inferred template, and
+`reference/agents/` as final source; preserves Dry-run Report Model
+non-persistence, conceptual Materializer Interface, conceptual Target Adapter,
+still-no-write Write Approval Protocol, planned-only operations, lazy-load as
+safety contract, no-read/no-write evidence, and non-authorization summary;
+introduces no new block codes; creates no runtime authorization; and does not
+expand or repurpose the Aggregator Checker.
+
+The verdict
 `MATERIALIZATION_VALIDATION_HARNESS_CONTRACT: EXCELLENT PASS` may be declared
 only when the validation harness, dry-run smoke, matrix completeness, no-write,
 and mutation-boundary criteria below are also satisfied.
@@ -419,6 +441,64 @@ runtime/materializer/renderer/writer/loader/scenario selector.
   operations, does not execute checkers, does not persist stdout, does not
   expand the 9 official checks, and does not transform the Aggregator Checker
   into a report generator or write approval validator.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` exists and is classified
+  as documentary/dev-only/read-only.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` defines a future
+  dry-run-only materializer prototype only as a conceptual boundary between
+  validated dry-run request, contract-chain planning,
+  source/template/render/target planning, planned-only output entries,
+  conceptual Dry-run Report Model compatibility, and still-no-write result
+  enforcement.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` defines conceptual
+  `dry_run_materializer_request` and `dry_run_materializer_result` shapes
+  without creating JSON schema, runtime payload, executable interface,
+  TypeScript interface, JavaScript module, CLI contract, runner, stdout
+  contract, persistent report, materializer runtime, renderer, writer,
+  loader, scenario selector, Target Adapter implementation, Write Approval
+  implementation, approval token, approval registry, signer, or Target real
+  read/write authorization.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` documents only
+  non-executable conceptual modules: `request-boundary-normalizer`,
+  `contract-chain-verifier`, `source-plan-resolver`,
+  `template-plan-verifier`, `render-context-planner`,
+  `target-adapter-planner`, `planned-output-builder`,
+  `dry-run-boundary-evaluator`, `write-approval-protocol-evaluator`,
+  `dry-run-report-model-builder`, and `result-boundary-enforcer`.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` accepts only conceptual
+  dry-run-required requests that forbid Target real read/write, real write
+  execution, persistent report, approval token, write execution ID, absolute
+  host paths, real Target paths, runtime payloads, generated files,
+  materialized outputs, `reference/agents/` as final source, and inferred
+  templates.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` allows only conceptual
+  outputs such as `contract_chain_result`, `resolved_source_plan`,
+  `template_resolution_result`, `render_context_plan`,
+  `target_adapter_plan`, `output_plan_entries`,
+  `dry_run_boundary_result`, `write_approval_protocol_result`,
+  `dry_run_report_model_ref`, `blocking_summary`,
+  `no_read_no_write_evidence`, and `non_authorization_summary`.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` preserves the allowed
+  planned operations `CREATE_PLANNED`, `UPDATE_PLANNED`,
+  `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`, and forbids
+  `CREATE_EXECUTED`, `UPDATE_EXECUTED`, `DELETE_EXECUTED`, and
+  `WRITE_EXECUTED`.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` preserves final sources
+  from `reference/kernel_lab/`, `reference/seniorization_lab/`,
+  `reference/templates/`, and `reference/materialization_lab/contracts/`;
+  keeps `reference/agents/` only as a temporary development parity baseline;
+  requires explicit templates; keeps lazy-load as a safety contract; and
+  requires no-read/no-write evidence plus non-authorization summary.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` treats the Dry-run Report
+  Model as conceptual and non-persistent, the Materializer Interface as
+  conceptual, the Target Adapter as conceptual, and the Write Approval
+  Protocol as still-no-write with only `APPROVAL_NOT_REQUESTED`,
+  `APPROVAL_CONCEPTUALLY_ELIGIBLE`, `APPROVAL_BLOCKED`, and
+  `APPROVAL_OUT_OF_SCOPE`.
+- `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` introduces no new block
+  codes, does not execute checkers, does not persist stdout, does not expand
+  the 9 official checks, and does not transform the Aggregator Checker into a
+  report generator, prototype runner, materializer runner, or write approval
+  validator.
 - `VALIDATION_HARNESS_CONTRACT.md` exists and is classified as
   documentary/dev-only.
 - `VALIDATION_HARNESS_CONTRACT.md` states that it does not create runtime

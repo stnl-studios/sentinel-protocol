@@ -472,6 +472,71 @@ Expected result:
   read-only checks, and does not become a write approval validator or report
   generator
 
+### Dry-run-only Materializer Prototype Contract Is Documented
+
+Input:
+
+- requested validation target: Dry-run-only Materializer Prototype contract
+- contract:
+  `reference/materialization_lab/contracts/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md`
+
+Expected result:
+
+- the contract is documentary/dev-only/read-only
+- the future dry-run-only materializer prototype is defined only as a
+  conceptual boundary between validated dry-run request, contract-chain
+  planning, source/template/render/target planning, planned-only output
+  entries, conceptual Dry-run Report Model compatibility, and still-no-write
+  result enforcement
+- conceptual input model includes request identity, target intent, agent
+  selection, source policy, template policy, render context policy, Target
+  Adapter policy, dry-run policy, Write Approval Protocol policy, report model
+  policy, and boundary policy
+- conceptual output model includes boundary result, contract-chain result,
+  resolved source plan, template resolution result, render context plan,
+  target adapter plan, output plan entries, dry-run boundary result, Write
+  Approval Protocol result, Dry-run Report Model reference, blocking summary,
+  no-read/no-write evidence, and non-authorization summary
+- conceptual modules remain non-executable: request boundary normalizer,
+  contract-chain verifier, source plan resolver, template plan verifier,
+  render context planner, target adapter planner, planned output builder,
+  dry-run boundary evaluator, Write Approval Protocol evaluator, Dry-run
+  Report Model builder, and result boundary enforcer
+- accepted requests require dry-run, prohibit Target real read/write, prohibit
+  real write execution, prohibit persistent report, prohibit approval token and
+  write execution ID, prohibit real Target path and host absolute path,
+  prohibit runtime payloads, prohibit generated or materialized output, keep
+  final sources under `reference/kernel_lab/`,
+  `reference/seniorization_lab/`, `reference/templates/`, and
+  `reference/materialization_lab/contracts/`, keep `reference/agents/`
+  forbidden as final source, and require explicit templates
+- allowed planned operations remain only `CREATE_PLANNED`, `UPDATE_PLANNED`,
+  `UNCHANGED_PLANNED`, and `BLOCKED_PLANNED`
+- executed operation tokens such as `CREATE_EXECUTED`, `UPDATE_EXECUTED`,
+  `DELETE_EXECUTED`, and `WRITE_EXECUTED` remain prohibited
+- Dry-run Report Model remains conceptual and non-persistent
+- Materializer Interface remains conceptual
+- Target Adapter remains conceptual and never becomes Target real access
+- Write Approval Protocol remains still-no-write with only
+  `APPROVAL_NOT_REQUESTED`, `APPROVAL_CONCEPTUALLY_ELIGIBLE`,
+  `APPROVAL_BLOCKED`, and `APPROVAL_OUT_OF_SCOPE`
+- no-read/no-write evidence records no Target read, no Target write, no
+  filesystem stat, no directory listing, no file-content read, no files
+  written, no persistent report, no GitHub write, no productive-skill
+  mutation, no token, no write execution, no patch, no commit, no branch, and
+  no pull request
+- non-authorization summary states that no real materializer, runtime
+  materializer, writer, renderer, loader, scenario selector, Target Adapter,
+  Write Approval implementation, approval token, approval registry, Target
+  real read/write, persistent report, productive skill mutation, GitHub write,
+  commit, branch, pull request, or real materialization is authorized
+- fixtures remain simulated inputs/states/cases only and are not altered
+- lazy-load remains a safety contract, not an optimization
+- no new block codes are introduced
+- the Aggregator Checker remains stdout-only, keeps exactly the 9 official
+  read-only checks, and does not become a report generator, prototype runner,
+  materializer runner, or write approval validator
+
 ### Validation Harness Aggregator Checker Passes With 9 Valid Checks
 
 Input:

@@ -99,6 +99,23 @@ runtime payloads, target artifacts, or target writes.
   write, productive-skill mutation, commit, branch, pull request, applied
   patch, generated file, materialized output, or final dependency on
   `reference/agents/`.
+- `contracts/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md`:
+  documentary/dev-only/read-only contract for a future dry-run-only
+  materializer prototype boundary. It defines a conceptual lifecycle from
+  validated dry-run request to contract-chain planning,
+  source/template/render/target planning, planned-only output entries,
+  conceptual Dry-run Report Model compatibility, and still-no-write result
+  enforcement. It documents non-executable conceptual modules for request
+  normalization, contract-chain verification, source/template/render/target
+  planning, planned-output construction, dry-run boundary evaluation, Write
+  Approval Protocol evaluation, Dry-run Report Model construction, and result
+  boundary enforcement. It creates no executable prototype, runtime
+  materializer, CLI, runner, renderer, writer, loader, scenario selector,
+  Target Adapter implementation, Write Approval implementation, approval
+  token, approval registry, persistent report, Target real read/write, GitHub
+  write, productive-skill mutation, commit, branch, pull request, applied
+  patch, generated file, materialized output, or final dependency on
+  `reference/agents/`.
 - `contracts/VALIDATION_HARNESS_CONTRACT.md`: documentary/dev-only validation
   harness and dry-run smoke contract for future pre-materialization checks,
   structured reporting, no-write enforcement, matrix completeness, and
@@ -207,6 +224,20 @@ conceptual approval state, and still-no-write evidence. It is not an approval
 implementation, executable gate, token issuer, registry, persistent approval
 state, signer, writer, Target writer, filesystem writer, materializer, Target
 Adapter, CLI, runner, persistent report, Target real read/write authorization,
+GitHub write authorization, productive-skill mutation authorization, commit,
+branch, pull request, generated output, applied patch, or materialization
+authorization.
+
+Dry-run-only materializer prototype planning is also contract-only in this
+phase. `DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` defines a future
+prototype only as a conceptual boundary between validated dry-run request,
+contract-chain planning, source/template/render/target planning, planned-only
+output entries, conceptual Dry-run Report Model compatibility, and
+still-no-write result enforcement. It is not an executable prototype, runtime
+materializer, TypeScript interface, JavaScript module, JSON schema, CLI,
+runner, renderer, writer, loader, scenario selector, Target Adapter
+implementation, Write Approval implementation, approval token, approval
+registry, signer, persistent report, Target real read/write authorization,
 GitHub write authorization, productive-skill mutation authorization, commit,
 branch, pull request, generated output, applied patch, or materialization
 authorization.
@@ -505,6 +536,39 @@ The fixture case phase adds these read-only checkers:
   read-only checks and no report-generator behavior;
 - no new block code is introduced without a separately justified owning
   contract.
+
+## Dry-run-only Materializer Prototype Contract Pass Criterion
+
+`MATERIALIZATION_DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT: PASS` requires:
+
+- `contracts/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_CONTRACT.md` exists and is
+  documentary, dev-only, and read-only;
+- the contract defines only a conceptual dry-run-only boundary from validated
+  dry-run request through contract-chain planning,
+  source/template/render/target planning, planned-only output entries,
+  conceptual Dry-run Report Model compatibility, and still-no-write result
+  enforcement;
+- the contract defines conceptual input and output models without creating a
+  JSON schema, runtime payload, executable interface, CLI, runner, persistent
+  report, or stdout contract;
+- conceptual modules remain non-executable and create no code files, scripts,
+  Target Adapter implementation, Write Approval implementation, renderer,
+  writer, loader, scenario selector, or materializer runtime;
+- final sources remain `reference/kernel_lab/`,
+  `reference/seniorization_lab/`, `reference/templates/`, and
+  `reference/materialization_lab/contracts/`;
+- `reference/agents/` remains forbidden as final source;
+- explicit templates, planned-only operations, no-read/no-write evidence,
+  non-authorization summary, and lazy-load as safety contract remain
+  mandatory;
+- Dry-run Report Model remains conceptual and non-persistent;
+- Materializer Interface remains conceptual;
+- Target Adapter remains conceptual;
+- Write Approval Protocol remains still-no-write and emits no token;
+- the Aggregator Checker remains unchanged with exactly the 9 current
+  read-only checks and no report-generator, prototype-runner, or
+  materializer-runner behavior;
+- no new block code is introduced in this phase.
 
 ## Fixture Matrix Pass Criterion
 
