@@ -43,12 +43,20 @@ export const forbiddenExecutedOperations = Object.freeze([
   "WRITE_EXECUTED",
 ]);
 
+const forbiddenRealOperations = Object.freeze([
+  "CREATE_REAL",
+  "UPDATE_REAL",
+  "DELETE_REAL",
+  "WRITE_REAL",
+]);
+
 const allowedTargetKinds = Object.freeze(["codex", "copilot"]);
 const allowedFinalSourceRootSet = new Set(allowedFinalSourceRoots);
 const allowedExplicitTemplateRefSet = new Set(allowedExplicitTemplateRefs);
 const materializationContractRefSet = new Set(materializationContractRefs);
 const allowedPlannedOperationSet = new Set(allowedPlannedOperations);
 const forbiddenExecutedOperationSet = new Set(forbiddenExecutedOperations);
+const forbiddenRealOperationSet = new Set(forbiddenRealOperations);
 
 const forbiddenPositiveApprovalSemantics = Object.freeze([
   "APPROVED",
@@ -193,6 +201,7 @@ const forbiddenSignalRules = Object.freeze([
       "runtime_payload",
       "cli_execution_payload",
       "cli_argument_payload",
+      "materializer_execution_id",
       "runtime_materializer",
       "loader_payload",
       "loader_created",
@@ -1214,6 +1223,7 @@ function hasExecutedOperationToken(value) {
   const upperValue = value.toUpperCase();
   return (
     forbiddenExecutedOperationSet.has(upperValue) ||
+    forbiddenRealOperationSet.has(upperValue) ||
     upperValue.endsWith("_EXECUTED")
   );
 }
