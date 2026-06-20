@@ -242,6 +242,44 @@ GitHub write authorization, productive-skill mutation authorization, commit,
 branch, pull request, generated output, applied patch, or materialization
 authorization.
 
+The audited dry-run-only materializer prototype implementation is a narrow
+local/dev-only embodiment of that boundary for fixture and model assertions
+only. It exists to exercise the approved contract chain, source/template/render
+planning, planned-only output entries, no-read/no-write evidence, and
+non-authorization summary without promoting any productive path. It remains
+fixture-only, model-only, in-memory-only, dry-run-only, and still-no-write.
+
+Manual/local/dev-only test command:
+
+```txt
+node scripts/materialization_lab/dry-run-only-materializer-prototype.test.mjs
+```
+
+This command is not an Aggregator child, official checker, runtime command,
+productive materializer command, write gate, runner, CLI, persistent report
+generator, or Target access path.
+
+Prototype boundaries:
+
+- it does not access, read, stat, list, or write a real Target;
+- it does not write files, persist reports, create generated output, apply
+  patches, create commits, create branches, create pull requests, or write to
+  GitHub;
+- it does not authorize writing, emit an approval token, create an approval
+  registry, create a signer, or execute real Write Approval;
+- it is not runtime, not a checker, not an Aggregator child, not a writer, not
+  a renderer, not a loader, not a real Target Adapter, and not a real Write
+  Approval implementation;
+- it does not touch `skills/stnl_project_agent_specializer/`, use
+  `reference/agents/` as final source, infer templates, or promote positive
+  approval language into write permission.
+
+Hardening coverage is documented only by category: request shape, source
+roots, contract refs, template refs, path safety, planned operations, approval
+positive semantics, output shape, no-read/no-write evidence, and
+non-authorization summary. Positive approval phrases remain blocking semantics
+only; conceptual eligibility never authorizes a write.
+
 Templates must be explicit. A target, target-agent pair, or output shape
 without an explicit template blocks with `BLOCKED_TEMPLATE_MISSING`; no
 template may be inferred from output path, legacy naming, or the productive

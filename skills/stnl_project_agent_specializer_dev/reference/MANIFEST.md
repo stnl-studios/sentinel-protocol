@@ -201,6 +201,24 @@ The canonical documentary/dev-only reference bundle is organized as:
   generated file, materialized output, or final dependency on
   `reference/agents/`. It introduces no new block codes and preserves the
   current 9-check Aggregator unchanged.
+- `reference/materialization_lab/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_DOCUMENTATION_INTEGRATION_PLAN.md`
+  records the narrow documentation-integration plan for the audited
+  dry-run-only materializer prototype. It is documentary/dev-only/read-only
+  planning and grants no runtime, checker, Aggregator child, materializer,
+  writer, renderer, loader, Target Adapter, Write Approval, approval token,
+  persistent report, Target real access, GitHub write, productive-skill
+  mutation, commit, branch, or pull request authorization.
+- `scripts/materialization_lab/dry-run-only-materializer-prototype.mjs`,
+  `scripts/materialization_lab/dry-run-only-materializer-prototype.fixture-model.mjs`,
+  and `scripts/materialization_lab/dry-run-only-materializer-prototype.test.mjs`
+  are dev-only/reference-only/manual-local prototype artifacts. They are
+  fixture-only, model-only, in-memory-only, dry-run-only, and still-no-write;
+  the test is manual/local/dev-only and remains outside the official
+  Aggregator. They are not runtime materializer commands, official checkers, a
+  tenth Aggregator check, writers, renderers, loaders, real Target Adapters,
+  real Write Approval implementations, approval token issuers, approval
+  registries, persistent report generators, Target real read/write paths,
+  GitHub writers, or productive-skill mutation paths.
 - `reference/materialization_lab/contracts/VALIDATION_HARNESS_CONTRACT.md`
   defines the documentary/dev-only validation harness and dry-run smoke layer
   for future pre-materialization validation. It requires validation before real
@@ -735,6 +753,7 @@ Required files:
 - `reference/materialization_lab/validation/STATIC_CHECKS.md`
 - `reference/materialization_lab/validation/GOLDEN_SCENARIOS.md`
 - `reference/materialization_lab/validation/EXCELLENT_PASS_EXPECTATIONS.md`
+- `reference/materialization_lab/DRY_RUN_ONLY_MATERIALIZER_PROTOTYPE_DOCUMENTATION_INTEGRATION_PLAN.md`
 - `reference/materialization_lab/fixtures/README.md`
 - `reference/materialization_lab/fixtures/FIXTURE_SCHEMA.md`
 - `reference/materialization_lab/fixtures/projects/README.md`
@@ -780,6 +799,9 @@ Required files:
 - `scripts/materialization_lab/check-project-scenarios.mjs`
 - `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`
 - `scripts/materialization_lab/check-validation-harness-aggregator.mjs`
+- `scripts/materialization_lab/dry-run-only-materializer-prototype.fixture-model.mjs`
+- `scripts/materialization_lab/dry-run-only-materializer-prototype.mjs`
+- `scripts/materialization_lab/dry-run-only-materializer-prototype.test.mjs`
 - `reference/templates/copilot/agent.md`
 - `reference/templates/codex/agent.toml`
 - `reference/templates/codex/AGENTS.md`

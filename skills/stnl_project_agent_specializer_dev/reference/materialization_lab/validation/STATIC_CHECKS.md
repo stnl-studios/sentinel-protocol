@@ -500,6 +500,21 @@ checks in this official order and with these expected verdicts:
 - `scripts/materialization_lab/check-fixture-render-dry-run-integration.mjs`:
   `MATERIALIZATION_FIXTURE_RENDER_DRY_RUN_INTEGRATION_CHECK: PASS`
 
+Confirm the audited dry-run-only materializer prototype test remains
+manual/local/dev-only, fixture-only, model-only, in-memory-only, dry-run-only,
+and still-no-write.
+
+Confirm the prototype test is outside the Aggregator, is not a static check, is
+not a tenth check, is not a runtime command, is not a materializer runner, and
+is not a write gate.
+
+Confirm there is no
+`scripts/materialization_lab/check-dry-run-only-materializer-prototype.mjs`,
+and do not create a checker for the prototype in this track.
+
+Confirm the prototype test is not added to the official child-check list above;
+the Aggregator remains closed at exactly the 9 official read-only checks.
+
 Confirm the aggregator checker expected verdicts are:
 
 - `MATERIALIZATION_VALIDATION_HARNESS_AGGREGATOR_CHECK: PASS`
