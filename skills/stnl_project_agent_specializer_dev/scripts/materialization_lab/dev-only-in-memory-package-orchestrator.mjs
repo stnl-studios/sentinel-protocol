@@ -112,6 +112,20 @@ const forbiddenExecutedOperations = Object.freeze([
   "WRITE_REAL",
 ]);
 
+const positiveRealWriteAuthorizationSignals = Object.freeze([
+  "APPROVED",
+  "WRITE_APPROVED",
+  "APPROVAL_GRANTED",
+  "READY_TO_WRITE",
+  "WRITE_UNLOCKED",
+  "EXECUTION_APPROVED",
+  "MERGE_APPROVED",
+]);
+
+const positiveRealWriteAuthorizationSignalSet = new Set(
+  positiveRealWriteAuthorizationSignals.map(normalizeSignal),
+);
+
 const codexTargetLevelArtifactPaths = new Set(
   codexTargetLevelArtifacts.map((artifact) => artifact.conceptual_path),
 );
@@ -160,6 +174,8 @@ const forbiddenSignalRules = Object.freeze([
   {
     code: "BLOCKED_TARGET_REAL_READ",
     aliases: [
+      "target_read",
+      "target_read_attempt",
       "target_read_real",
       "real_target_read",
       "target_file_content_read",
@@ -173,6 +189,8 @@ const forbiddenSignalRules = Object.freeze([
   {
     code: "BLOCKED_TARGET_REAL_WRITE",
     aliases: [
+      "target_write",
+      "target_write_attempt",
       "target_write_real",
       "real_target_write",
       "filesystem_write_target",
@@ -186,6 +204,10 @@ const forbiddenSignalRules = Object.freeze([
   {
     code: "BLOCKED_TARGET_FILESYSTEM_INSPECTION",
     aliases: [
+      "target_stat",
+      "target_list",
+      "target_listing",
+      "target_drift",
       "filesystem_stat_request",
       "target_filesystem_stat",
       "directory_listing_request",
@@ -308,25 +330,39 @@ const forbiddenSignalRules = Object.freeze([
   {
     code: "BLOCKED_TARGET_ADAPTER_SIGNAL",
     aliases: [
+      "target_adapter",
       "target_adapter_payload",
+      "target_adapter_real",
       "target_adapter_real_payload",
       "target_adapter_created",
       "real_target_adapter",
+      "target_payload",
+      "target_filesystem",
+      "filesystem_target_access",
     ],
     reason: "real Target Adapter signals are forbidden",
   },
   {
     code: "BLOCKED_WRITE_APPROVAL_SIGNAL",
     aliases: [
+      "write_approval",
       "write_approval_real",
       "write_approval_payload",
+      "real_write_approval",
       "approval_token",
+      "approval_token_issued",
       "approval_signature",
       "approval_registry",
       "approval_signer",
+      "signer",
       "signer_created",
     ],
     reason: "Write Approval, approval token, registry, signature, and signer signals are forbidden",
+  },
+  {
+    code: "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL",
+    aliases: [...positiveRealWriteAuthorizationSignals],
+    reason: "positive real-write authorization vocabulary is forbidden",
   },
   {
     code: "BLOCKED_CHECKER_OR_AGGREGATOR_SIGNAL",
@@ -628,8 +664,14 @@ export function buildNoWriteEvidence() {
 }
 
 export function buildNonAuthorizationEvidence(status = "PASS") {
+  const safeStatus = positiveRealWriteAuthorizationSignalSet.has(
+    normalizeSignal(status),
+  )
+    ? "NOT_AUTHORIZED_STILL_NO_WRITE"
+    : status;
+
   return {
-    status,
+    status: safeStatus,
     materialization_authorized: false,
     target_read_authorized: false,
     target_write_authorized: false,
@@ -1227,11 +1269,53 @@ function validateTargetMatrixEntries(entries, agents, targets, addBlock) {
       );
     }
 
+    if (entry.conceptual_artifact_kind !== "agent") {
+      addBlock(
+        "BLOCKED_TARGET_MATRIX_ARTIFACT_KIND_INVALID",
+        `${field}.conceptual_artifact_kind`,
+        "target matrix entries must represent agent artifacts only",
+      );
+    }
+
+    if (codexTargetLevelArtifactPaths.has(entry.conceptual_path)) {
+      addBlock(
+        "BLOCKED_CODEX_TARGET_LEVEL_ARTIFACT_AS_AGENT",
+        `${field}.conceptual_path`,
+        "Codex target-level artifacts must not appear in the agent target matrix",
+      );
+    }
+
     if (!explicitTemplateRefSet.has(entry.template_ref)) {
       addBlock(
         "BLOCKED_TEMPLATE_MISSING",
         `${field}.template_ref`,
         "target matrix entries must use explicit templates",
+      );
+    }
+
+    const expectedTemplateRef = expectedAgentTemplateRef(
+      entry.target_id,
+    );
+    if (expectedTemplateRef !== null && entry.template_ref !== expectedTemplateRef) {
+      addBlock(
+        "BLOCKED_TARGET_MATRIX_TEMPLATE_MISMATCH",
+        `${field}.template_ref`,
+        "target matrix template must match the target-specific agent template",
+      );
+    }
+
+    const expectedConceptualPath = expectedAgentConceptualPath(
+      entry.target_id,
+      entry.agent_id,
+    );
+    if (
+      expectedConceptualPath !== null &&
+      entry.conceptual_path !== expectedConceptualPath
+    ) {
+      addBlock(
+        "BLOCKED_TARGET_MATRIX_OUTPUT_SHAPE_INVALID",
+        `${field}.conceptual_path`,
+        "target matrix output shape must match the target-specific agent artifact path",
       );
     }
 
@@ -1304,6 +1388,14 @@ function validateCodexTargetLevelArtifacts(artifacts, agents, addBlock) {
       );
     }
 
+    if (artifact.artifact_level !== "target-level") {
+      addBlock(
+        "BLOCKED_CODEX_TARGET_LEVEL_ARTIFACT_AS_AGENT",
+        `${field}.artifact_level`,
+        "Codex config and AGENTS.md must remain target-level artifacts",
+      );
+    }
+
     if (agents.includes(artifact.conceptual_path)) {
       addBlock(
         "BLOCKED_CODEX_TARGET_LEVEL_ARTIFACT_AS_AGENT",
@@ -1319,6 +1411,20 @@ function validateCodexTargetLevelArtifacts(artifacts, agents, addBlock) {
         "Codex target-level artifacts must use explicit Codex templates",
       );
     }
+
+    const expectedTemplateRef =
+      artifact.conceptual_path === ".codex/config.toml"
+        ? "reference/templates/codex/config.toml"
+        : artifact.conceptual_path === "AGENTS.md"
+          ? "reference/templates/codex/AGENTS.md"
+          : null;
+    if (expectedTemplateRef !== null && artifact.template_ref !== expectedTemplateRef) {
+      addBlock(
+        "BLOCKED_CODEX_TARGET_LEVEL_TEMPLATE_MISMATCH",
+        `${field}.template_ref`,
+        "Codex target-level artifacts must use their canonical target-level templates",
+      );
+    }
   }
 
   for (const requiredPath of [".codex/config.toml", "AGENTS.md"]) {
@@ -1330,6 +1436,34 @@ function validateCodexTargetLevelArtifacts(artifacts, agents, addBlock) {
       );
     }
   }
+}
+
+function expectedAgentTemplateRef(targetId) {
+  if (targetId === "copilot") {
+    return "reference/templates/copilot/agent.md";
+  }
+
+  if (targetId === "codex") {
+    return "reference/templates/codex/agent.toml";
+  }
+
+  return null;
+}
+
+function expectedAgentConceptualPath(targetId, agentId) {
+  if (!canonicalAgents.includes(agentId)) {
+    return null;
+  }
+
+  if (targetId === "copilot") {
+    return `.github/agents/${agentId}.agent.md`;
+  }
+
+  if (targetId === "codex") {
+    return `.codex/agents/${agentId}.toml`;
+  }
+
+  return null;
 }
 
 function buildCanonicalAgentMatrix(agents, agentToKernel) {
@@ -1433,10 +1567,16 @@ function validateForbiddenSignals(value, addBlock) {
 
     for (const rule of forbiddenSignalRules) {
       if (matchesForbiddenSignal(item, rule)) {
-        addBlock(rule.code, field, rule.reason);
+        addBlock(rule.code, safeForbiddenSignalField(field, rule), rule.reason);
       }
     }
   }
+}
+
+function safeForbiddenSignalField(field, rule) {
+  return rule.code === "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL"
+    ? "positive_write_authorization_signal"
+    : field;
 }
 
 function validateCommonConceptualString(value, field, addBlock) {
@@ -1514,7 +1654,8 @@ function matchesForbiddenSignal(item, rule) {
     return (
       normalizedKey === normalizedAlias ||
       normalizedPath.includes(normalizedAlias) ||
-      normalizedValue.includes(normalizedAlias)
+      normalizedValue === normalizedAlias ||
+      (alias.includes("/") && normalizedValue.includes(normalizedAlias))
     );
   });
 }

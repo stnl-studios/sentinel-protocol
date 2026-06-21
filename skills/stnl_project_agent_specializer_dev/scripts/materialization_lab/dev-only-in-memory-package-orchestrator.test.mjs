@@ -140,6 +140,7 @@ function assertNonAuthorizationEvidence(result, caseName) {
 function assertNoPositiveWriteAuthorization(value, caseName) {
   const json = JSON.stringify(value);
   for (const term of [
+    "APPROVED",
     "WRITE_APPROVED",
     "APPROVAL_GRANTED",
     "READY_TO_WRITE",
@@ -167,6 +168,30 @@ function packageSourceRefs() {
     ...explicitTemplateRefs,
     ...materializationContractRefs,
   ];
+}
+
+function targetMatrixWithEntryPatch(targetId, agentId, patch) {
+  return happy.target_output_plan_summary.planned_agent_output_entries.map((entry) =>
+    entry.target_id === targetId && entry.agent_id === agentId
+      ? { ...entry, ...patch }
+      : entry,
+  );
+}
+
+function semanticallyCrossedTargetMatrixEntries() {
+  return happy.target_output_plan_summary.planned_agent_output_entries.map((entry) =>
+    entry.target_id === "copilot"
+      ? {
+          ...entry,
+          conceptual_path: `.codex/agents/${entry.agent_id}.toml`,
+          template_ref: "reference/templates/codex/agent.toml",
+        }
+      : {
+          ...entry,
+          conceptual_path: `.github/agents/${entry.agent_id}.agent.md`,
+          template_ref: "reference/templates/copilot/agent.md",
+        },
+  );
 }
 
 const happy = compose();
@@ -211,6 +236,19 @@ assert.equal(happy.target_matrix_summary.copilot.entries.length, 12);
 assert.equal(happy.target_matrix_summary.codex.entries.length, 12);
 assert.equal(happy.target_matrix_summary.copilot.complete, true);
 assert.equal(happy.target_matrix_summary.codex.complete, true);
+for (const entry of happy.target_matrix_summary.copilot.entries) {
+  assert.equal(entry.conceptual_artifact_kind, "agent");
+  assert.equal(entry.template_ref, "reference/templates/copilot/agent.md");
+  assert.equal(
+    entry.conceptual_path,
+    `.github/agents/${entry.agent_id}.agent.md`,
+  );
+}
+for (const entry of happy.target_matrix_summary.codex.entries) {
+  assert.equal(entry.conceptual_artifact_kind, "agent");
+  assert.equal(entry.template_ref, "reference/templates/codex/agent.toml");
+  assert.equal(entry.conceptual_path, `.codex/agents/${entry.agent_id}.toml`);
+}
 assert.equal(
   happy.target_matrix_summary.expected_total_agent_target_entries,
   24,
@@ -252,6 +290,11 @@ assert.deepEqual(
     "reference/templates/codex/AGENTS.md",
   ],
 );
+for (const artifact of happy.codex_target_level_artifact_summary.artifacts) {
+  assert.equal(artifact.target_id, "codex");
+  assert.equal(artifact.artifact_level, "target-level");
+  assert.equal(artifact.treated_as_agent, false);
+}
 assert.equal(happy.source_coverage_summary.reference_agents_final_source, false);
 assert.equal(happy.source_coverage_summary.base_agent_source_used, false);
 assert.equal(happy.source_coverage_summary.source_files_read, false);
@@ -264,6 +307,21 @@ assert.equal(
 );
 assert.equal(happy.non_authorization_evidence.package_pass_authorizes_write, false);
 assert.deepEqual(buildNonAuthorizationEvidence("PASS"), happy.non_authorization_evidence);
+const dangerousNonAuthorizationEvidence =
+  buildNonAuthorizationEvidence("WRITE_APPROVED");
+assert.equal(
+  dangerousNonAuthorizationEvidence.status,
+  "NOT_AUTHORIZED_STILL_NO_WRITE",
+);
+assert.equal(dangerousNonAuthorizationEvidence.eligibility_policy, "still-no-write");
+assert.equal(dangerousNonAuthorizationEvidence.materialization_authorized, false);
+assert.equal(dangerousNonAuthorizationEvidence.target_write_authorized, false);
+assert.equal(dangerousNonAuthorizationEvidence.write_approval_authorized, false);
+assert.equal(dangerousNonAuthorizationEvidence.approval_token_authorized, false);
+assertNoPositiveWriteAuthorization(
+  dangerousNonAuthorizationEvidence,
+  "non-authorization evidence sanitizes dangerous external status",
+);
 assert.equal(validatePackageRequestBoundary({}).status, "PASS");
 assert.deepEqual(detectUnsafeSignals({}).map((block) => block.code), []);
 
@@ -312,6 +370,67 @@ const blockedCases = [
     "BLOCKED_CODEX_MATRIX_INCOMPLETE",
   ],
   [
+    "copilot with Codex agent output shape",
+    {
+      target_matrix_entries: targetMatrixWithEntryPatch("copilot", "orchestrator", {
+        conceptual_path: ".codex/agents/orchestrator.toml",
+      }),
+    },
+    "BLOCKED_TARGET_MATRIX_OUTPUT_SHAPE_INVALID",
+  ],
+  [
+    "copilot with Codex agent template",
+    {
+      target_matrix_entries: targetMatrixWithEntryPatch("copilot", "orchestrator", {
+        template_ref: "reference/templates/codex/agent.toml",
+      }),
+    },
+    "BLOCKED_TARGET_MATRIX_TEMPLATE_MISMATCH",
+  ],
+  [
+    "codex with Copilot agent output shape",
+    {
+      target_matrix_entries: targetMatrixWithEntryPatch("codex", "orchestrator", {
+        conceptual_path: ".github/agents/orchestrator.agent.md",
+      }),
+    },
+    "BLOCKED_TARGET_MATRIX_OUTPUT_SHAPE_INVALID",
+  ],
+  [
+    "codex with Copilot agent template",
+    {
+      target_matrix_entries: targetMatrixWithEntryPatch("codex", "orchestrator", {
+        template_ref: "reference/templates/copilot/agent.md",
+      }),
+    },
+    "BLOCKED_TARGET_MATRIX_TEMPLATE_MISMATCH",
+  ],
+  [
+    ".codex/config.toml treated as agent in target matrix",
+    {
+      target_matrix_entries: targetMatrixWithEntryPatch("codex", "orchestrator", {
+        conceptual_path: ".codex/config.toml",
+        template_ref: "reference/templates/codex/config.toml",
+      }),
+    },
+    "BLOCKED_CODEX_TARGET_LEVEL_ARTIFACT_AS_AGENT",
+  ],
+  [
+    "AGENTS.md treated as agent in target matrix",
+    {
+      target_matrix_entries: targetMatrixWithEntryPatch("codex", "orchestrator", {
+        conceptual_path: "AGENTS.md",
+        template_ref: "reference/templates/codex/AGENTS.md",
+      }),
+    },
+    "BLOCKED_CODEX_TARGET_LEVEL_ARTIFACT_AS_AGENT",
+  ],
+  [
+    "complete but semantically crossed target matrix",
+    { target_matrix_entries: semanticallyCrossedTargetMatrixEntries() },
+    "BLOCKED_TARGET_MATRIX_OUTPUT_SHAPE_INVALID",
+  ],
+  [
     "missing codex config",
     {
       codex_target_level_artifacts: codexTargetLevelArtifacts.filter(
@@ -328,6 +447,45 @@ const blockedCases = [
       ),
     },
     "BLOCKED_CODEX_TARGET_LEVEL_ARTIFACT_MISSING",
+  ],
+  [
+    "codex config target-level artifact with agent template",
+    {
+      codex_target_level_artifacts: codexTargetLevelArtifacts.map((artifact) =>
+        artifact.conceptual_path === ".codex/config.toml"
+          ? {
+              ...artifact,
+              template_ref: "reference/templates/codex/agent.toml",
+            }
+          : artifact,
+      ),
+    },
+    "BLOCKED_CODEX_TARGET_LEVEL_TEMPLATE_MISMATCH",
+  ],
+  [
+    "AGENTS.md target-level artifact with agent template",
+    {
+      codex_target_level_artifacts: codexTargetLevelArtifacts.map((artifact) =>
+        artifact.conceptual_path === "AGENTS.md"
+          ? {
+              ...artifact,
+              template_ref: "reference/templates/codex/agent.toml",
+            }
+          : artifact,
+      ),
+    },
+    "BLOCKED_CODEX_TARGET_LEVEL_TEMPLATE_MISMATCH",
+  ],
+  [
+    "codex config target-level artifact marked as agent level",
+    {
+      codex_target_level_artifacts: codexTargetLevelArtifacts.map((artifact) =>
+        artifact.conceptual_path === ".codex/config.toml"
+          ? { ...artifact, artifact_level: "agent" }
+          : artifact,
+      ),
+    },
+    "BLOCKED_CODEX_TARGET_LEVEL_ARTIFACT_AS_AGENT",
   ],
   [
     "codex target-level artifact as agent",
@@ -460,14 +618,89 @@ const blockedCases = [
     "BLOCKED_TARGET_ADAPTER_SIGNAL",
   ],
   [
+    "Target Adapter direct signal",
+    { target_adapter: true },
+    "BLOCKED_TARGET_ADAPTER_SIGNAL",
+  ],
+  [
     "Write Approval signal",
     { write_approval_payload: {} },
+    "BLOCKED_WRITE_APPROVAL_SIGNAL",
+  ],
+  [
+    "Write Approval direct signal",
+    { write_approval: true },
     "BLOCKED_WRITE_APPROVAL_SIGNAL",
   ],
   [
     "approval token signal",
     { approval_token: "token" },
     "BLOCKED_WRITE_APPROVAL_SIGNAL",
+  ],
+  [
+    "approval registry signal",
+    { approval_registry: true },
+    "BLOCKED_WRITE_APPROVAL_SIGNAL",
+  ],
+  [
+    "signer signal",
+    { signer: true },
+    "BLOCKED_WRITE_APPROVAL_SIGNAL",
+  ],
+  [
+    "target read signal",
+    { target_read: true },
+    "BLOCKED_TARGET_REAL_READ",
+  ],
+  [
+    "target stat signal",
+    { target_stat: true },
+    "BLOCKED_TARGET_FILESYSTEM_INSPECTION",
+  ],
+  [
+    "target list signal",
+    { target_list: true },
+    "BLOCKED_TARGET_FILESYSTEM_INSPECTION",
+  ],
+  [
+    "target write signal",
+    { target_write: true },
+    "BLOCKED_TARGET_REAL_WRITE",
+  ],
+  [
+    "APPROVED status signal",
+    { status: "APPROVED" },
+    "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL",
+  ],
+  [
+    "WRITE_APPROVED signal",
+    { WRITE_APPROVED: true },
+    "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL",
+  ],
+  [
+    "APPROVAL_GRANTED status signal",
+    { status: "APPROVAL_GRANTED" },
+    "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL",
+  ],
+  [
+    "READY_TO_WRITE status signal",
+    { status: "READY_TO_WRITE" },
+    "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL",
+  ],
+  [
+    "WRITE_UNLOCKED status signal",
+    { status: "WRITE_UNLOCKED" },
+    "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL",
+  ],
+  [
+    "EXECUTION_APPROVED status signal",
+    { status: "EXECUTION_APPROVED" },
+    "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL",
+  ],
+  [
+    "MERGE_APPROVED status signal",
+    { status: "MERGE_APPROVED" },
+    "BLOCKED_POSITIVE_WRITE_AUTHORIZATION_SIGNAL",
   ],
   [
     "checker signal",
