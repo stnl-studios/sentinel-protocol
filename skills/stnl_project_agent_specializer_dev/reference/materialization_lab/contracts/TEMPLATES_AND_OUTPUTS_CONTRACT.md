@@ -101,12 +101,16 @@ No template may be inferred from:
 The future materializer must fail closed when the template source is missing,
 ambiguous, or only implied by naming.
 
-## Productive Skill References
+## Productive Skill Boundary
 
-Templates from the productive `skills/stnl_project_agent_specializer/` skill
-may be read only as conceptual reference during this dev-only phase. They must
-never be used as an automatic source for writing, generating, repairing, or
-backfilling templates in the dev skill or in a target project.
+The productive `skills/stnl_project_agent_specializer/` skill is outside the
+absolute scope of this dev-only phase. It is not a source, reference,
+baseline, fallback, comparison target, template source, fixture, or conceptual
+reference, and it must not be accessed, read, compared, or used to infer
+templates.
+
+The only permitted template sources are the explicit dev-skill templates
+listed in this contract under `reference/templates/`.
 
 ## Source Model Boundary
 
@@ -128,6 +132,9 @@ This contract does not authorize:
   target project;
 - changes to `skills/stnl_project_agent_specializer/`;
 - changes to productive templates;
+- access to, reading of, comparison with, or use of
+  `skills/stnl_project_agent_specializer/` as source, reference, baseline,
+  fallback, template source, fixture, or conceptual reference;
 - GitHub writes;
 - broad or blind replacement of `vscode`, `VS Code`, or `VS Code/GitHub`;
 - use of `reference/agents/` as a final materialization source;

@@ -975,8 +975,12 @@ runtime/materializer/renderer/writer/loader/scenario selector.
   with `BLOCKED_TEMPLATE_MISSING`.
 - No template is inferred from output path, legacy name, productive-skill
   template, existing target-project artifact, or naming symmetry.
-- Productive templates are allowed only as read-only conceptual reference in
-  this phase and never as automatic write sources.
+- The productive `skills/stnl_project_agent_specializer/` skill is outside
+  absolute scope: it is not accessed, read, compared, used as source, baseline,
+  fallback, fixture, template source, or conceptual reference, and templates
+  are not inferred from it.
+- The only permitted template sources are the explicit dev-skill templates
+  under `reference/templates/`.
 - Rendering/composition sources are explicit: kernel source, Senior Agent
   Profile, target template, `TARGETS_CONTRACT.md`,
   `TEMPLATES_AND_OUTPUTS_CONTRACT.md`, and

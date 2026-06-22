@@ -1054,15 +1054,18 @@ Input:
 
 - requested target: `copilot` or `codex`
 - requested output shape has no explicit dev-skill template
-- implementation attempts to reuse a productive
-  `skills/stnl_project_agent_specializer/` template automatically
+- implementation attempts to access, read, compare, reuse, or infer a template
+  from `skills/stnl_project_agent_specializer/`
 
 Expected result:
 
 - block before writing
 - return `BLOCKED_TEMPLATE_MISSING`
-- explain that productive templates may be read only as conceptual reference
-  in this phase, never as an automatic source of writing
+- explain that the productive skill is outside absolute scope and is not a
+  source, reference, baseline, fallback, comparison target, template source,
+  fixture, or conceptual reference
+- explain that only explicit dev-skill templates under `reference/templates/`
+  are permitted template sources
 
 ### Infer Template By Path
 
