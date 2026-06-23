@@ -9,6 +9,7 @@ import {
   createSandboxMinimalImplementationPlan,
   requiredNoWriteEvidence,
   requiredNonAuthorizationEvidenceKeys,
+  requiredSandboxTemplateReferences,
 } from "./dev-only-in-memory-sandbox-minimal-implementation.mjs";
 
 function clone(value) {
@@ -181,4 +182,79 @@ assertBlocked(
     },
   },
   "incomplete no-write evidence blocks",
+);
+
+assertBlocked(
+  {
+    templateReferences: requiredSandboxTemplateReferences.slice(1),
+  },
+  "missing required template reference blocks",
+);
+
+{
+  const conceptualArtifacts = clone(
+    createSandboxMinimalImplementationPlan().conceptualArtifacts,
+  );
+  conceptualArtifacts[0].materialized = true;
+
+  assertBlocked(
+    {
+      conceptualArtifacts,
+    },
+    "conceptual artifact materialized=true blocks",
+  );
+}
+
+{
+  const conceptualArtifacts = clone(
+    createSandboxMinimalImplementationPlan().conceptualArtifacts,
+  );
+  conceptualArtifacts[0].writeAttempted = true;
+
+  assertBlocked(
+    {
+      conceptualArtifacts,
+    },
+    "conceptual artifact writeAttempted=true blocks",
+  );
+}
+
+{
+  const nonAuthorizationEvidence = buildSandboxNonAuthorizationEvidence();
+  delete nonAuthorizationEvidence.real_target_read_authorized;
+
+  assertBlocked(
+    {
+      nonAuthorizationEvidence,
+    },
+    "incomplete non-authorization evidence blocks",
+  );
+}
+
+assertBlocked(
+  {
+    targetRealPath: "/tmp/sentinel-target",
+  },
+  "target real signal blocks",
+);
+
+assertBlocked(
+  {
+    githubWriteAttempted: true,
+  },
+  "github write signal blocks",
+);
+
+assertBlocked(
+  {
+    productiveSkillReadAuthorized: true,
+  },
+  "productive skill signal blocks",
+);
+
+assertBlocked(
+  {
+    persistentOutputPath: "/tmp/sentinel-output.json",
+  },
+  "persistent output signal blocks",
 );
