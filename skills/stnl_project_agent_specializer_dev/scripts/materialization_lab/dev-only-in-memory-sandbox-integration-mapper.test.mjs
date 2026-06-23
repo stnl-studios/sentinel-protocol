@@ -219,6 +219,34 @@ assertBlocked({ ...passPlan(), status: "READY" }, "unknown sandbox status reject
 
 {
   const plan = clone(passPlan());
+  plan.outputPersisted = true;
+
+  assertBlocked(plan, "output persisted signal rejected");
+}
+
+{
+  const plan = clone(passPlan());
+  plan.packageOrchestratorExecuted = true;
+
+  assertBlocked(plan, "package orchestrator execution signal rejected");
+}
+
+{
+  const plan = clone(passPlan());
+  plan.reviewLayerExecuted = true;
+
+  assertBlocked(plan, "review layer execution signal rejected");
+}
+
+{
+  const plan = clone(passPlan());
+  plan.dryRunMaterializerExecuted = true;
+
+  assertBlocked(plan, "dry-run materializer execution signal rejected");
+}
+
+{
+  const plan = clone(passPlan());
   plan.aggregatorChangeAuthorized = true;
 
   assertBlocked(plan, "Aggregator signal rejected");
